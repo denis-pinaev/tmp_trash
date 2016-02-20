@@ -1,0 +1,75 @@
+{% load i18n %}
+{% include "a_header.html" %}
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/video_faces.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2><a href="{{ root_path }}/page_calendar1/">Календарь</a> - <a href="{{ root_path }}/page_video_day/">Видеоролики за 06.01.2011</a> - Лица c камеры 192.168.0.13 AV1300<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				{% include "current_time.html" %}
+				<form method="post" action="">
+					<div class="frm_block">
+						<div class="search">
+							<span class="left"></span>
+							<span class="center"><input type="text" name="filter" value="Поиск" value="" class="txt_search" onFocus="javascript: search(this, true, 'Поиск');" onBlur="javascript: search(this, false, 'Поиск');" /></span>
+							<input type="submit" name="" value="" class="btn_search" title="Найти" />
+						</div>
+						<div class="block_faces"><label for="khow" class="selected"><input type="radio" name="faces" value="" class="inp_check" id="khow" checked="checked" />Известные лица (4)</label><label for="unkhow"><input type="radio" name="faces" value="" class="inp_check" id="unkhow" />Неизвестные лица (2)</label></div>
+					</div>
+					<div class="frm_block">
+						<div class="bl_btn_check">
+							<input type="button" name="" value="Выделить всё" class="inp_btn inp_btn120" />
+							<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAll(this, 1);" id="choose_all" />
+						</div>
+						<input type="button" name="" value="Экспорт фотографий" class="inp_btn inp_btn170 dist_left" onClick="javascript: showMessageExport(1, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						<input type="button" name="" value="Удалить выделенные" class="inp_btn inp_btn170 dist_left" onClick="javascript: showMessageDelete(1, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+					</div>
+					<ul class="list_photos">
+						<li>
+							<div class="block_photo"><img src="{{ root_path }}/files/images/image_test3.jpg" alt="" /></div>
+							<input type="checkbox" name="photo1" value="" class="inp_check" id="check1" onClick="javascript: checkPhoto(this, 1)" />
+							<a href="/#">Иванов Иван Сергеевич</a>
+							<div><span>Время:</span> 10:00</div>
+						</li>
+						<li>
+							<div class="block_photo"><img src="{{ root_path }}/files/images/image_test3.jpg" alt="" /></div>
+							<input type="checkbox" name="photo1" value="" class="inp_check" id="check1" onClick="javascript: checkPhoto(this, 1)" />
+							<a href="/#">Сидоров Пётр Сергеевич</a>
+							<div><span>Время:</span> 10:01</div>
+						</li>
+						<li>
+							<div class="block_photo"><img src="{{ root_path }}/files/images/image_test3.jpg" alt="" /></div>
+							<input type="checkbox" name="photo1" value="" class="inp_check" id="check1" onClick="javascript: checkPhoto(this, 1)" />
+							<a href="/#">Михайлов Иван Петрович</a>
+							<div><span>Время:</span> 10:02</div>
+						</li>
+						<li>
+							<div class="block_photo"><img src="{{ root_path }}/files/images/image_test3.jpg" alt="" /></div>
+							<input type="checkbox" name="photo1" value="" class="inp_check" id="check1" onClick="javascript: checkPhoto(this, 1)" />
+							<a href="/#">Иванов Иван Сергеевич</a>
+							<div><span>Время:</span> 10:10</div>
+						</li>															
+					</ul>
+					<div class="frm_block">
+						<div class="bl_btn_check">
+							<input type="button" name="" value="Выделить всё" class="inp_btn inp_btn120" />
+							<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAll(this, 1);" id="choose_all" />
+						</div>
+						<input type="button" name="" value="Экспорт фотографий" class="inp_btn inp_btn170 dist_left" onClick="javascript: showMessageExport(1, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						<input type="button" name="" value="Удалить выделенные" class="inp_btn inp_btn170 dist_left" onClick="javascript: showMessageDelete(1, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+					</div>					
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "a_footer.html" %}
+
+</body>
+</html>

@@ -1,0 +1,82 @@
+{% load i18n %}
+{% load a_templatetags %}
+<a class="link_search_right" href="#" onClick="javascript: showSearch(this, 'search_ext'); return false;" id="a_click_filter">{% trans "Расширенный поиск" %}</a>
+					</div>
+					<div id="search_ext" class="bl_frm frm dist_top" style="display:{% if params|length > 0 and params.signal_type != 'import' or params|length > 1 and params.signal_type == 'import' %} block{% else %} none{% endif %};">
+						<div class="bl_search">
+							<div class="head">{% trans "Общие параметры" %}</div>							
+							<div class="field">
+								<label for="source" class="label_txt">{% trans "Источник:" %}</label>
+								<div class="enter">
+									<select name="camera" class="select" id="source" style="width: 206px;">
+										<option value="0" {% if not params.source %}selected="selected"{% endif %}>{% trans "Любой" %}</option>										
+										{% if cameras and cameras|length > 0 %}
+											{% for camera in cameras %}
+												<option value="{{ camera.uuid }}" {% if params.camera and params.camera == camera.uuid %}selected="selected"{% endif %}>{% if camera.name %}{{ camera.name }}{% else %}{{ camera.ip }} {{ camera.type }}{% endif %}</option>
+											{% endfor %}
+										{% endif %}
+									</select>
+								</div>
+							</div>
+							{% if not not_show_import_signal %}
+							<div class="field">
+								<label for="signal" class="label_txt">{% trans "Запуск задачи:" %}</label>
+								<div class="enter">
+									<select name="signal" class="select{% if errors.signal %} error_border{% endif %}" id="signal" style="width: 206px;">
+										<option value="0" {% if not params.signal %}selected="selected"{% endif %}>{% trans "Любой" %}</option>
+										{% for signal in all_signals %}
+											<option value="{{ signal.str_id }}" {% if params.signal and params.signal == signal.str_id %}selected="selected"{% endif %}>{% trans signal.name %}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+							{% endif %}
+							<div class="field">
+								<label for="dates" class="label_txt">{% trans "Интервал дат:" %}</label>
+								<div class="enter">
+									<div class="block_radio"><input type="radio" name="interval" value="0" id="always" class="inp_check" {% if params.interval == 0 or not params.interval %}checked="checked"{% endif %} onClick="javascript: removeRulesDates();" /><label for="always">{% trans "Постоянная запись" %}</label></div>
+									<div id="date_warning" class="error"></div>
+									<div class="block_radio last" style="display:inline;">
+										<input type="radio" name="interval" value="1" id="period_dates" class="inp_check"  {% if params.interval == 1 %}checked="checked"{% endif %} onClick="javascript: addRulesDates();" />
+										{% trans "с" %}<input type="text" name="dateBegin" id="dateBegin" value="{{ params.dateBegin }}" class="inp_txt inp_date" onClick="javascript: clickIntervalLable();" maxlength="10" />
+										<input type="button" name="" value="" class="btn_calend" title="Выбрать дату" />
+										<span class="dist_left">{% trans "по" %}</span><input type="text" name="dateEnd" id="dateEnd" value="{{ params.dateEnd }}" class="inp_txt inp_date" onClick="javascript: clickIntervalLable();" maxlength="10" />
+										<input type="button" name="" value="" class="btn_calend" title="Выбрать дату" />										
+									</div>
+								</div>
+								{% if not params.startDate and not params.endDate %}
+									<script type="text/javascript">getCurrentDate(".", "startDate", "endDate");</script>
+								{% endif %}
+							</div>
+							<div class="field">
+								<label for="time" class="label_txt">{% trans "Интервал времени:" %}</label>
+								<div class="enter">
+									<div class="block_radio"><input type="radio" name="period_date" value="0" id="allday" class="inp_check" {% if params.period_date == 0 or not params.period_date %}checked="checked"{% endif %} onClick="javascript: removeRulesTime();" /><label for="allday">{% trans "Целый день" %}</label></div>
+									<div class="block_radio"><input type="radio" name="period_date" value="1" id="daily" class="inp_check" {% if params.period_date == 1 %}checked="checked"{% endif %} onClick="javascript: addRulesTime();" /><label for="daily">{% trans "Ежедневно" %}</label></div>
+										<div class="error" id="error_time"></div>
+										<div class="block_ie">
+											<div class="block" id="block_time">
+												<div class="delim_txt">{% trans "c" %}</div>
+												{% spinbox "hour1" "hour1" params.hour1 "25" "0" "23" "1" %}
+												<div class="delim">:</div>
+												{% spinbox "minute1" "minute1" params.minute1 "25" "0" "59" "1" %}
+												<div class="delim">:</div>
+												{% spinbox "second1" "second1" params.second1 "25" "0" "59" "10" %}
+												<div class="delim_txt dist_left">{% trans "по" %}</div>
+												{% spinbox "hour2" "hour2" params.hour2 "25" "0" "23" "1" %}
+												<div class="delim">:</div>
+												{% spinbox "minute2" "minute2" params.minute2 "25" "0" "59" "1" %}
+												<div class="delim">:</div>
+												{% spinbox "second2" "second2" params.second2 "25" "0" "59" "10" %}
+											</div>
+										</div>
+									<input type="hidden" name="" value="" id="time_begin" />							
+									<input type="hidden" name="" value="" id="time_end" />
+								</div>
+								{% if not params.startTime and not params.endTime %}
+									<script type="text/javascript">getCurrentTime({hour1: 'hour1', minute1: 'minute1', second1: 'second1'}, {hour2: 'hour2', minute2: 'minute2', second2: 'second2'});</script>
+								{% endif %}
+								<input type="hidden" id="cr" name="cr" value="{{ params.cr }}" />
+							</div>
+						</div>
+						<div class="btn"><input type="submit" value="{% trans "Применить" %}" class="inp_btn inp_blue" /></div>				

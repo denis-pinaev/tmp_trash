@@ -1,0 +1,14 @@
+{% load i18n %}
+{% load a_templatetags %}
+<table cellpadding="0px" cellspacing="0px" border="0px" class="table dist_top" id="list_communicators">
+	<tr>
+		<th class="th_first"><a href="#" onclick="sort_communicators(0, {% if sort == 0 %}{{ order }}{% else %}0{% endif %});" {% if sort == 0 and order == 1%}class="btn_arrow up"{% endif %}>№</a></th>
+		<th><a href="#"><a href="#" onclick="sort_communicators(1, {% if sort == 1 %}{{ order }}{% else %}0{% endif %});" {% if sort == 1 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Коммуникатор" %}</a></th>
+	</tr>
+	{% for comm in communicators %}
+		<tr{% cycle '' ' class="odd"' %}>
+			<td class="td_first td_check"><input type="checkbox" name="" value="{{ comm.id }}" class="inp_check" id="communicator{{ forloop.counter }}" />{{ forloop.counter }}.</td>
+			<td class="td_comr"><label for="communicator{{ forloop.counter }}">{{ comm.host }}:{{ comm.port }}</label></td>
+		</tr>
+	{% endfor %}
+</table>

@@ -1,0 +1,535 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Журнал видеоаналитики' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/journal_new.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<script src="/files/js/jquery.maskedinput-1.3.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js-global/FancyZoom.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js-global/FancyZoomHTML.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript" src="/files/js/system_events.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+
+function refreshPage() {  // Если будет кнопка вкл/выкл автообновления журнала видеоаналитики, то необходимо здесь добавить проверку
+	window.location.reload();
+}
+setInterval('refreshPage()', 600000);  // перезагрузка страницы раз в 10 мин.
+
+var TEXT_MORE_SEARCH = "{% trans 'Дополнительные параметры поиска' %}";
+var TEXT_MORE_SEARCH_HIDE = "{% trans 'Скрыть дополнительные параметры поиска' %}";
+var params = new Array();
+$(function() {	
+	setFreeSpaceDisk();
+	initTooltip();
+	setupZoom();
+	checkForm();
+	initRulesForm();	
+	init();
+	initCamerasList();
+	checkFormClearJournal();
+}); 
+function initCamerasList() {
+	$("#list_cameras li input[type=checkbox]").click(function() {
+		chooseCamera($(this));
+	});
+	$("#list_cameras li").mouseover(function() {
+		if ($(this).attr("class").indexOf("lc_dis") < 0) {
+			showInfoCamera($(this));
+		}
+	});
+	$("#list_cameras li").mouseout(function() {
+		$(this).removeClass("lc_over");
+		if ($(this).attr("class").indexOf("lc_dis") < 0) {
+			closeChangeWindow("easyTooltip_camera");  
+		}
+	});	
+}
+
+function showVideoAnaliticsPhoto(id, src, name, full_name, id) {
+    $('#original_image').html('<img src=' + src + ' />');
+	$('#win_journalphoto_id').html(id);
+	$('#win_journalphoto_camera').html(name);
+	$('#win_journalphoto_camera').attr("title", full_name);
+	changeWindow2({id: 'win_journalphoto', css: { "width": "559px", "height": "485px" }});
+    initTooltip();                                           
+}
+function journalRefresh(){
+    setTimeout('refreshDataJournal()', 15000);
+}
+function initTooltip() {
+    $(".short_descr").easyTooltip();
+}
+function refreshDataJournal() {
+    $.ajax({
+        type: "GET",
+        url: "{% url journal-videoanalytics %}?{{ dataGet }}&data=True",
+        data: {},
+        success: function(msg){
+            journalRefresh();
+            $("#dataJournal").html(msg);
+			setupZoom();
+			setFreeSpaceDisk();
+            initTooltip();
+        },
+        error: function(msg) {
+            journalRefresh();
+			setupZoom();
+            initTooltip();
+        }
+    });
+}
+// проверка формы очистки журнала
+function checkFormClearJournal() {
+	var validator = $("#ClearJournalData").validate({	
+		errorPlacement: function(error, element) {
+			var block_error = $("#error_date_clear");
+			error.appendTo( block_error ); 
+		},	
+		submitHandler: function() {
+			clearJournalOk();
+		}
+	});
+}
+// добавить проверку на дату очистки журнала
+function addRulesDataClear() {
+	$("#dataClear").rules("add", {
+		checkDateReq: true,
+		checkDateFormat: true,		
+		checkDate: true,
+		messages: {
+			checkDateReq: "{% trans 'Введите дату' %}",
+			checkDateFormat: "{% trans 'Некорректный формат (ДД.ММ.ГГГГ)' %}",
+			checkDate: "{% trans 'Некорректное значение' %}"			
+		}
+	});
+}
+// удалить проверку на дату очистки журнала
+function removeRulesDataClear() {	
+	$("#dataClear").rules("remove");
+}
+// выбор для очистки журнала
+function clearJournal() {
+	$("#periods option:first").attr("selected", "selected");
+	$("#otherPeriod").hide();
+	$("#otherPeriod .error").html("");
+	$("#dataClear").removeClass("err_forms");
+	$("#dataClear").val("{% now "d.m.Y" %}");
+	removeRulesDataClear();	
+	changeWindow({id: 'win_clear', css: {width: '320px', height: '200px'}});	
+}
+// список для выбора периода
+function selectPeriod(obj) {
+	var list = $(obj);
+	var selected = list.find("option:selected").attr("value");
+	if (selected == 3) {
+		$("#otherPeriod").show();
+		addRulesDataClear();
+	} else {
+		$("#otherPeriod").hide();
+		$("#datepicker").hide();
+		removeRulesDataClear();
+	}
+}
+// дополнительное окно для очистки журнала
+function clearJournalOk(name_block) {
+    closeChangeWindow('win_clear');
+    var val = $('#periods option:selected').val();
+    if (val == 4) {
+	var txt = '{% trans "Очистить все записи журнала?" %}';
+    } else {
+	var txt = '{% trans "Очистить записи журнала" %} '+getPeriodClear()+'?';
+    }
+    changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});    
+}
+function getPeriodClear() {
+	var val = $('#periods option:selected').val();
+	if (val == 3) {
+		return '{% trans "старше" %} ' + $('#dataClear').val();
+	}
+	return '{% trans "за период" %} "' + $('#periods option:selected').text() + '"';
+}                                
+function clearJournalData(){
+    showIndicator(true);
+    $.ajax({
+        type: "GET",
+        url: "{% url clear_journal_va %}",
+        data: {'period':document.getElementById('periods').value, 'dataClear': document.getElementById('dataClear').value},
+        success: function(msg){
+            if  (msg=="True"){
+                location.reload();
+            }
+            showIndicator(false);
+        },
+        error: function(msg){
+            showIndicator(false);
+        }
+    });
+}
+function checkForm() {
+	$.validator.addMethod("checkDateReq", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) return true;
+		return false;
+	}, "{% trans 'Введите дату' %}" );
+	$.validator.addMethod("checkDateFormat", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			var regexp = /^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})$/;
+			if (regexp.test(val)) return true;
+			return false
+		}
+		return true;
+	}, "{% trans 'Некорректный формат даты (ДД.ММ.ГГГГ)' %}" );		
+	$.validator.addMethod("checkDate", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			if (checkDateValidator(val)) return true;
+			return false;
+		}
+		return true;
+	}, "{% trans 'Некорректное значение даты' %}" );
+	$.validator.addMethod("checkDateRangeReq", function(value, element) {
+		if (!$("#dateBegin").val() && !$("#dateEnd").val()) return false;
+		return true;
+	}, "{% trans 'Введите период' %}" );		
+	$.validator.addMethod("checkDateRange", function(value, element) {
+		var date1 = $("#dateBegin").val();
+		var date2 = $("#dateEnd").val();
+		if (date1 && (date1 != "") && date2 && (date2 != "")) {
+			if (checkDateValidator(date1) && checkDateValidator(date2)) { 
+				var dates = checkDateRangeValidator('dateBegin', 'dateEnd');
+				if (dates[0] <= dates[1]) return true;
+				return false;
+			}
+			return true;
+		}
+		return true;
+	}, "{% trans 'Указан некорректный период дат' %}" );		
+	$.validator.addMethod("checkTimeHoursRange", function(value, element) {
+		if ($("#hour_beg").val() && $("#min_beg").val() && $("#hour_end").val() && $("#min_end").val()) {
+			var intStart = parseInt($("#hour_beg").val())*60;
+			var intStop = parseInt($("#hour_end").val())*60;
+			if ($("#dateBegin").val() ==  $("#dateEnd").val()) {
+				if (intStart <= intStop) {
+					return true;
+				}	
+				return false; 
+			}
+			return true;
+		}
+		return true;
+	}, "{% trans 'Указан некорректный период времени' %}" );	
+	$.validator.addMethod("checkTimeMinutesRange", function(value, element) {
+		if ($("#hour_beg").val() && $("#min_beg").val() && $("#hour_end").val() && $("#min_end").val()) {
+			var intStart = parseInt($("#min_beg").val());
+			var intStop = parseInt($("#min_end").val());			
+			if (($("#dateBegin").val() == $("#dateEnd").val()) && ($("#hour_beg").val() == $("#hour_end").val())) {
+				if (intStart <= intStop) {
+					return true;
+				}	
+				return false; 
+			}
+			return true;
+		}
+		return true;
+	}, "{% trans 'Указан некорректный период времени' %}" );
+	$.validator.addMethod('integer', function(value, element) {
+		return (value == parseInt(value, 10));
+	}, "{% trans 'Введено некорректное значение' %}" );	
+	var validator = $("#mainForm").validate({
+		rules: {
+			dateBegin: {
+				checkDateRangeReq: true,
+				checkDateReq: true,
+				checkDateFormat: true,
+				checkDate: true
+			},
+			dateEnd: {
+				checkDateRangeReq: true,
+				checkDateReq: true,
+				checkDateFormat: true,
+				checkDate: true,
+				checkDateRange: true
+			}
+		},
+		messages: {
+			dateBegin: {
+				checkDateRangeReq: "{% trans 'Укажите период' %}",
+				checkDateReq: "{% trans 'Введите дату начала' %}",
+				checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+				checkDate: "{% trans 'Введено некорректное значение' %}"
+			},
+			dateEnd: {
+				checkDateRangeReq: "{% trans 'Укажите период' %}",
+				checkDateReq: "{% trans 'Введите дату окончания' %}",	
+				checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+				checkDate: "{% trans 'Введено некорректное значение' %}",
+				checkDateRange: "{% trans 'Указан некорректный период дат' %}"
+			}			
+		},		
+		errorPlacement: function(error, element) {			
+			var block_error = $("#error_ext_search");
+			var id = element.attr("id");
+			if ((id == "dateBegin") || (id == "dateEnd")) {
+				block_error = element.parent().prev();
+			} 
+			block_error.html("");
+			error.appendTo( block_error ); 			
+		},	
+		submitHandler: function() {
+			filter = $("#filter_cameras");
+			if (!filter.attr("checked")) {
+				$("#cameras").attr("name", "");
+			} else {
+				addIDCamerasToInput();
+			}
+			if (!$("#filter_status").attr("checked")) {
+				$("#select_status").attr("name", "")
+			}
+			if (!$("#filter_type").attr("checked")) {
+				$("#select_type").attr("name", "")
+			}			
+			document.getElementById("mainForm").submit();
+		}
+	});
+}
+
+function addRulesTime() {
+	$("#hour_beg").rules("add", {
+		number: true,
+		integer: true,
+		checkTimeHoursRange: true,
+		messages: {
+			integer: "{% trans 'Введено некорректное значение' %}",
+			number: "{% trans 'Введено некорректное значение' %}",
+			checkTimeHoursRange: "{% trans 'Указан некорректный период времени' %}"
+		}
+	});
+	$("#min_beg").rules("add", {
+		number: true,
+		integer: true,
+		checkTimeMinutesRange: true,
+		messages: {
+			integer: "{% trans 'Введено некорректное значение' %}",
+			number: "{% trans 'Введено некорректное значение' %}",
+			checkTimeMinutesRange: "{% trans 'Указан некорректный период времени' %}"
+		}
+	});	
+
+	$("#hour_end").rules("add", {
+		number: true,
+		integer: true,
+		checkTimeHoursRange: true,
+		messages: {
+			integer: "{% trans 'Введено некорректное значение' %}",
+			number: "{% trans 'Введено некорректное значение' %}",
+			checkTimeHoursRange: "{% trans 'Указан некорректный период времени' %}"
+		}
+	});
+	$("#min_end").rules("add", {
+		number: true,
+		integer: true,
+		checkTimeMinutesRange: true,
+		messages: {
+			integer: "{% trans 'Введено некорректное значение' %}",
+			number: "{% trans 'Введено некорректное значение' %}",
+			checkTimeMinutesRange: "{% trans 'Указан некорректный период времени' %}"
+		}
+	});		
+}
+function removeRulesTime() {
+	$("#hour_end").rules("remove");
+	$("#min_end").rules("remove");
+}
+function addRulesIdRecord() {
+	$("#id_record").rules("add", {
+		number: true,
+		min: 0,
+		messages: {
+			number: "{% trans 'Введено некорректное значение' %}",
+			min: "{% trans 'Введено некорректное значение' %}"
+		}
+	});
+}
+function removeRulesIdRecord() {
+	$("#id_record").rules("remove");
+}
+
+
+// добавить id выбранных камер в скрытый инпут
+function addIDCamerasToInput() {
+	
+   var checks = $("#list_cameras li input[type=checkbox]:checked");
+   if (checks.size() > 0) {
+      var array = [];
+      $.each(checks, function(key, value) {
+          array[key] = $(this).attr("id").split("_")[1];
+      });
+      $("#cameras").val("[" + array + "]");
+   }
+}
+// выбрать камеру
+function chooseCamera(inp) {
+    if (inp.attr("checked")) {
+        inp.parent().addClass("lc_act");
+    } else {
+        inp.parent().removeClass("lc_act");
+    }
+}
+// показать видео с камеры
+function showInfoCamera(obj) {
+    obj.addClass("lc_over");
+    var info = obj.find("input[type=checkbox]").val();
+    if (info) {
+        var arr = info.split('|');
+        var info = $("#easyTooltip_camera div.info_camera");
+        var block_img = $("#camera_frame");
+        $("#camera_frame").empty();
+        info.hide();
+        createTitleWindow({id: "easyTooltip_camera", obj: obj.find("label"), width: 200, height: 200, distY: -15 });
+        if ( arr.length > 2 ){
+	    block_img.find("img").remove();
+	    window.stop();
+            block_img.html("<img alt='' width='200' src='' id='img_" + (new Date()).getTime() + "' />");
+            var img = block_img.find("img");
+            img.attr("src", 'http://' + arr[3] + ':' + arr[4] + '/video?uuid=' + arr[2]+'&width=640&height=480&fps={{ fps_of_the_cameras }}');
+			$("#camera_name").html(arr[1]);
+            info.show(); 
+        } else {
+            block_img.html("<img alt='' width='200' src='/files/images/camera_200x150.jpg' id='img_" + (new Date()).getTime() + "' />");
+            info.show();             
+        }      
+    }                              
+}
+// окно для камеры
+function createTitleWindow(param) {
+    var distX = param.distX ? param.distX : 0; 
+    var distY = param.distY ? param.distY : 0; 
+    var win = $("#" + param.id);   
+    var pos_win = positionScreen({obj: param.obj, win_width: parseInt(win.css("max-width")), win_height: parseInt(win.css("max-height")), distX: distX, distY: distY});
+    var coord_left = pos_win.left + "px";
+    var coord_top = pos_win.top + "px";
+    win.css("left", coord_left);
+    win.css("top", coord_top);
+    win.show();
+}
+// список камер, добавление/удаление стилей и свойств
+function propertiesListCameras(state) {
+	var checks = $("#list_cameras li input[type=checkbox]");
+	var checks_sel = $("#list_cameras li input[type=checkbox]:checked");
+	if (state == "add") {
+		checks.attr("disabled", false);
+		if (checks_sel.size() > 0) {
+			$.each(checks_sel, function() {
+				$(this).parent().addClass("lc_act");
+			});
+		}	
+	} else {
+		checks.attr("disabled", "disabled");
+		if (checks_sel.size() > 0) {
+			$.each(checks_sel, function() {
+				$(this).parent().removeClass("lc_act");
+			});
+		}		
+	}
+}
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_journal.html" %}{% endblock %}
+{% block subcontent %}
+<h2><div id="bodyid"></div>{% trans "Журнал видеоаналитики" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Журнал видеоаналитики' %}');" /></h2>
+{% include "current_time.html" %}
+{% include "system_blocks/free_space_disk.html" %}
+<div class="block_results">{% trans "Общее количество записей" %}: <strong id="journal_rows_count">{{ journals_count }}</strong></div>                
+<form method="get" action="" name="" id="mainForm">
+	{% if journals_count > 0 %}
+		<div class="block_filter dist_top">		
+			<div class="bl_error"></div>
+			<div class="block block_filter_param">
+				
+				{% if perms.user_perms.perm_logs_clear %}<input type="button" name="" value="{% trans "Очистить журнал" %}" class="inp_btn inp_btn140 btn_clear" onClick="javascript: clearJournal();" />{% endif %}
+				<input class="inp_txt inp_date" type="text" value="{{ dateBegin|date:"d.m.Y" }}" name="dateBegin" id="dateBegin" maxlength="10" />
+				<input type="button" title="{% trans "Выбрать дату начала" %}" class="btn_calend short_descr" value="" name=""/>
+				<span class="dist_date">{% trans 'по' %}</span> <input class="inp_txt inp_date" type="text" value="{{ dateEnd|date:"d.m.Y" }}" name="dateEnd" id="dateEnd" maxlength="10" />
+				<input type="button" title="{% trans "Выбрать дату окончания" %}" class="btn_calend short_descr" value="" name=""/>
+				<a href="#" class="link_ext_search blue" id="link_more_search">{% trans 'Дополнительные параметры поиска' %}</a>
+			</div>
+			<div style="display: {% if time_check or id_record or type or description or cameras %}block{% else %}none{% endif %};" id="block_more_search">
+				<div class="block_filter_param">
+					<div class="bl_error" id="error_ext_search"></div>
+					<div class="block">
+						<div class="filter_param filter_param_dis">
+							<input type="checkbox" name="" {% if time_check %}checked="checked"{% endif %} id="filter_time" value="" class="inp_check check_filter" /><label for="filter_time" class="filter_txt">{% trans 'Время' %}</label>
+							<div class="filter_param_enter" id="filter_time_param">
+								{% spinbox "hour_beg" "hour_beg" timeBegin.hour "25" "0" "23" "1" %}
+								<div class="delim_time">:</div>
+								{% spinbox "min_beg" "min_beg" timeBegin.minute "25" "0" "59" "1" %}
+								<div class="delim_time2">{% trans "по" %}</div>
+								{% spinbox "hour_end" "hour_end" timeEnd.hour "25" "0" "23" "1" %}
+								<div class="delim_time">:</div>
+								{% spinbox "min_end" "min_end" timeEnd.minute "25" "0" "59" "1" %}
+							</div>
+						</div>
+						<div class="filter_param filter_param_dis">
+							<input type="checkbox" name="" {% if id_record %}checked="checked"{% endif %} id="filter_id" value="" class="inp_check check_filter" /><label for="filter_id" class="filter_txt">{% trans 'ID записи' %}</label>
+							<div class="filter_param_enter"><input class="inp_txt" type="text" value="{{ id_record }}" name="id_record" id="id_record" /></div>
+						</div>
+						<div class="filter_param filter_param_dis">
+							<input type="checkbox" name="" {% if type %}checked="checked"{% endif %} id="filter_type" value="" class="inp_check check_filter" /><label for="filter_type" class="filter_txt">{% trans 'Тип' %}</label>
+							<div class="filter_param_enter">
+								<select name="type" class="select" id="select_type">
+								{% for t in types%}
+								{% if not t.id == 2 %}
+									<option value="{{ t.id }}"{% ifequal t.id type %} selected="selected"{% endifequal %}>{% trans t.name %}</option>
+								{% endif %}
+								{% endfor %} 
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="block_filter_param">
+					<div class="block">
+						<div class="filter_param no_dist_right{% if cameras %} filter_param_dis{% endif %}">
+							<input type="checkbox" name="" value="" class="inp_check check_filter" id="filter_cameras"{% if cameras %} checked="checked"{% endif %} /><label for="filter_cameras">{% trans "ID видеокамеры" %} ({% trans "всего камер" %} {{ all_cameras|length }})</label>
+							<div class="block">
+								<input type="hidden" name="cameras" value="" id="cameras" />
+								<ul class="list_cameras" id="list_cameras">							
+								{% for camera in all_cameras %}
+									<li class="list_cameras_camera short_descr {% if not camera.active %}lc_del{% else %}{% if not camera.available %}lc_dis{% endif %}{% endif %} "{% if not camera.available %} title='{% trans "Камера" %} "{% if camera.name %}{{ camera.name }}{% else %}{{ camera.ip }}:{{ camera.type }}{% endif %}" <strong>{% trans "недоступна" %}</strong>''{% endif %}>
+										<input type="checkbox" name="" value="{{ camera.id }}|{{ camera.full_name }}{% if camera.available %}|{{ camera.uuid }}|{{ camera.commun.host }}|{{ camera.commun.mjpeg_port }}{% endif %}"  class="inp_check" id="camera_{{camera.id}}" {% if cameras %}{% if camera.id in cameras %}checked="checked"{% endif %}{% else %}disabled="disabled"{% endif %}  />
+										<label for="camera_{{camera.id}}">{{ camera.display_name|truncchar:22 }}</label>
+									</li>
+								{% endfor %}
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>					
+			</div>
+			<div>
+				<input type="submit" class="inp_btn btn_apply" value="{% trans 'Применить' %}" name="" />
+				<input type="button" class="inp_btn inp_btn140 dist_left" value="{% trans 'Сбросить фильтр' %}" name="" id="btn_clear_filter" onClick="javascript: window.location.href='{% url journal-videoanalytics %}';" />
+			</div>						
+		</div>		
+		{% if filter or dateBegin or dateEnd %}
+			<div class="block_results">{% trans 'Отфильтровано' %} <strong id="search_data_journal">{{ all_users }}</strong> {% trans 'из' %} <strong>{{ journals_count }}</strong> {% trans 'записей' %}</div>
+			{% comment %}<div>{% trans "Количество отфильтрованных записей" %}: <span class="info_important" id="search_data_journal">{{ all_users }}</span></div>{% endcomment %}
+		{% endif %}
+	{% endif %}
+	<div id="dataJournal">{% include "data_journal_videoanalitics.html" %}</div>
+	<script type="text/javascript">journalRefresh();</script>
+</form>
+{% endblock %}
+{% block windows %}
+<div id="easyTooltip_auto" style="display: none;"></div>
+<div id="easyTooltip_camera" class="tooltip" style="display: none;">
+	<div class="indicator_camera" style="display: none;"><div>{% trans "Идёт загрузка данных" %}.<br />{% trans "Пожалуйста, подождите" %}...</div></div>
+	<div class="info_camera" style="display: none;">
+		<div id="camera_name"></div>
+		<div id='camera_frame'></div>
+	</div>
+</div>
+{% include "window_journal_videoanalytics.html" %}
+{% endblock %}

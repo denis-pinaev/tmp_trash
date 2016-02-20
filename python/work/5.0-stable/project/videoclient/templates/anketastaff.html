@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load i18n templatetags %}
+{% block title %}{% if id %}{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}{% else %}{% trans 'Добавление сотрудника' %}{% endif %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4anketastaff.css?v=v{{ version }}" />
+<script src="/files/js/anketa.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript">
+var WARNING = {
+	"surname": "{% trans 'Фамилия содержит некорректные символы' %}",
+	"name": "{% trans 'Имя содержит некорректные символы' %}",
+	"patronymic": "{% trans 'Отчество содержит некорректные символы' %}"
+}
+function checkForm() {
+	$.validator.addMethod("requiredUserName", function(value, element) {
+		var surname = $("#first_name");
+		var name = $("#last_name");
+		if ((!surname.val()) && (!name.val())) {
+			surname.addClass("err_forms");
+			name.addClass("err_forms");
+			return false;
+		}
+		$("#error_fio").html("");
+		surname.removeClass("err_forms");
+		name.removeClass("err_forms");		
+		return true;
+	}, "{% trans "Введите фамилию или имя" %}" );
+	$.validator.addMethod("checkPhone", function(value, element) {
+		var value = $.trim($(element).attr("value"));
+		if (value) {
+			//var reg = /^[+()-#0-9]{1, 20}$/;
+			var reg = /^[\/+\\/(\\/)\-#0-9]{1,20}$/;
+			if (reg.test(value)) return true;
+			return false;
+		}
+		return true;
+	}, "{% trans "Введено некорректное значение" %}" );		
+	$("#formAnketaStaff").validate({
+		rules: {
+			first_name: {
+				requiredUserName: true
+			},
+			last_name: {
+				requiredUserName: true
+			},
+			phone_work: {
+				checkPhone: true
+			},
+			phone_home: {
+				checkPhone: true
+			},
+			phone_mobile: {
+				checkPhone: true
+			}				
+		},
+		messages: {
+			first_name: {
+				requiredUserName: "{% trans "Введите фамилию или имя" %}"
+			},
+			last_name: {
+				requiredUserName: "{% trans "Введите фамилию или имя" %}"
+			},
+			phone_work: {
+				checkPhone: "{% trans "Введено некорректное значение" %}"
+			},				
+			phone_home: {
+				checkPhone: "{% trans "Введено некорректное значение" %}"
+			},				
+			phone_mobile: {
+				checkPhone: "{% trans "Введено некорректное значение" %}"
+			}				
+		},
+		errorPlacement: function(error, element) {
+			var id = $(element).attr("id");
+			var block = element.parent().parent().prev()
+			if (id && ((id == "first_name") || (id == "last_name"))) {
+				block = $("#error_fio");
+				block.html("");
+			}
+			error.appendTo(block); 
+		},
+		submitHandler: function() {
+			document.getElementById("formAnketaStaff").submit();
+		}
+	});
+}
+function getParameterByName(name)
+{
+  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+  var regexS = "[\\?&]" + name + "=([^&#]*)";
+  var regex = new RegExp(regexS);
+  var results = regex.exec(window.location.search);
+  if(results == null)
+    return "";
+  else
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+$(function() {
+	checkForm();
+	addFuncsNameValid();
+	isSavedNameValid();
+	if (getParameterByName('save') == '1') $('#saveData').show();
+});    
+</script>
+{% endblock %}
+{% block content %}
+	{% if select_page == "historychange" or select_sub_page == "historychange" %}
+		<div class="block_settings">
+			{% include "menu_journal.html" %}
+			<div class="block_cont">
+				<div class="block_cont_top2">
+					<div class="block_cont_bottom min_height"> 
+						{% include "content/anketastaff_content.html" %}
+					</div>
+				</div>
+			</div>
+		</div>		
+	{% else %}
+		<div class="block_cont">
+			<div class="block_cont_top">
+				<div class="block_cont_bottom min_height">
+					{% include "content/anketastaff_content.html" %}
+				</div>
+			</div>
+		</div>	
+	{% endif %}
+{% endblock %}
+{% block windows %}{% include "content/windows.html" %}{% endblock %}

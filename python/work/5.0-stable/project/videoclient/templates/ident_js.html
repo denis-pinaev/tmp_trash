@@ -1,0 +1,1857 @@
+{% extends "base_notab.html" %}
+{% load i18n %}
+{% load templatetags %}
+{% block title %}{% trans "Просмотр" %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/ident_js.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/js/lib/draw/jquery.svg.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/js/lib/carusel/skin_ident7.css?v=v{{ version }}" />
+
+<script type="text/javascript" src="/files/js/lib/draw/jquery.svg.js?v=v{{ version }}"></script>
+{% include "system_blocks/system_windows.html" %}
+<script type="text/javascript" src="/files/js/ident.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+windowOnFocusFunctions.push('checkForDetectorsAlerts()');
+windowOnFocusFunctions.push('checkJournalForDetects()');
+windowOnFocusFunctions.push('checkVAJournalForDetects()');
+windowOnFocusFunctions.push('statusControl(true)');
+
+windowOnBlurFunctions.push('inactiveTab()');
+windowOnFocusFunctions.push('activeTab()');
+
+// неактивное окно - показываем сообщение
+function inactiveTab() {
+	var time = $("#current_time").html();
+	errorJavascript(time + " <span>{% trans 'Окно браузера неактивно. Отображение детектов и идентификаций приостановлено.' %}</span>");
+}
+// активное окно - убираем сообщение
+function activeTab() {
+	closeErrorJavascript();
+}
+
+var NOT_SEEN = "{% trans 'не просмотрено' %}";
+
+var windowIsActive = true;
+var isOperator = {% if perms.user_perms.perm_lists %}false{% else %}true{% endif %};
+
+$(window).focus(function() {
+	if (!windowIsActive) {
+		windowIsActive = true;
+
+	}
+});
+
+$(window).blur(function() {
+	if (windowIsActive) {
+
+		windowIsActive = false;
+	}
+});
+
+//person urls help array
+var urls_arr = [];
+{% for key,value in urls_arr.items %}
+urls_arr[{{ key }}] = '{{ value }}';
+{% endfor %}
+
+{% if selected_camera and all_active_cameras|length > 0 %}
+//queue part
+var default_speed = 300;
+function arrayQueue(array_qnt) {
+	//constructor
+	this.array_qnt = array_qnt;
+	this.first = 0;
+	this.last = 0;
+	this.speed = default_speed;
+
+	this.array_qnt = array_qnt;
+	this.array_storage = new Array(this.array_qnt);
+
+	this.indexIsEmpty = new Array(this.array_qnt);
+
+	for (var z = 0; z < this.array_storage.length; z++){
+		this.array_storage[z] = null;
+		this.indexIsEmpty[z] = true;
+	}
+
+	//methods
+	this.getArrayLength = function getArrayLength() {
+		return this.array_storage.length;
+	}
+
+	//push
+	this.exPush = function (test_data) {
+
+		if(this.last == this.array_storage.length)
+		{
+			this.last = 0;
+		}
+
+		if(this.indexIsEmpty[this.last]){
+			this.array_storage[this.last] = test_data;
+			this.indexIsEmpty[this.last] = false;
+			this.last++;
+			this.calcSpeed();
+		}else{
+			for (var z = 0; z < this.array_storage.length; z++){
+				this.array_storage[z] = null;
+				this.indexIsEmpty[z] = true;
+			}
+			//this.calcSpeed();
+			//alert("storage is overflow");
+		}
+	}
+
+	//pop
+	this.exPop = function () {
+		if(this.first == this.array_storage.length)
+		{
+			this.first = 0;
+		}
+
+		var cur_data = this.array_storage[this.first];
+
+		this.indexIsEmpty[this.first] = true;
+		this.first++;
+
+		return cur_data;
+	}
+
+	//isEmpty
+	this.isEmpty = function () {
+		if(this.first == this.last)
+		{
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	this.getIndexData = function getIndexData(index) {
+		return this.array_storage[index];
+	}
+
+	this.getStorageArray = function getStorageArray(){
+		return this.array_storage;
+	}
+
+	this.getIndexIsEmpty = function getIndexIsEmpty(){
+		return this.indexIsEmpty;
+	}
+
+	this.getStorageArraySize = function getStorageArraySize(){
+		if(this.last > this.first){
+			return (this.last - this.first);
+		}else{
+			return (this.last + this.getStorageArray.length - this.first);
+		}
+	}
+
+	this.getFirst = function getFirst(){
+		return this.first;
+	}
+
+	this.getLast = function getLast(){
+		return this.last;
+	}
+
+	this.getArrayQnt = function getArrayQnt(){
+		return this.array_qnt;
+	}
+
+	this.getSpeed = function getSpeed(){
+		return this.speed;
+	}
+
+	this.calcSpeed = function calcSpeed(){
+		var tmp_speed = parseInt(default_speed / this.getStorageArraySize());
+		if(isNaN(tmp_speed) || tmp_speed <= 0){
+			tmp_speed = default_speed / 1000;
+		}
+		this.speed = tmp_speed;
+	}
+
+	this.queueEmpty = function queueEmpty() {
+		for (var z = 0; z < this.array_storage.length; z++){
+			this.array_storage[z] = null;
+			this.indexIsEmpty[z] = true;
+		}
+	}
+}
+
+//initializing array queue
+var detectsQueue = new arrayQueue(101);
+var identsQueue = new arrayQueue(300);
+var objectsQueue = new arrayQueue(500);
+
+var personIdStory = {};
+var personNameStory = {};
+var personURLStory = {};
+
+var last_detect_message_id = {{ last_detect_message_id }};
+var last_ident_message_id = {{ last_ident_message_id }};
+var fps = 0;
+var face_ps = 0;
+var frame_delay = '';
+
+var boundFactor = {{ boundFactor }};
+//var boundFactor = 0.3;
+//var boundFactor = 0.38;
+//var boundFactor = 0;
+var carousel_elements_limit = 3;
+
+var face_detect_qnt = 1;
+var face_qnt = 1;
+
+var clearAfter = {{ clearCarouselAfter }};
+var arr_items = null;
+
+var clearFacesAfter = {{ clearCarouselAfter }};
+var arr_faces_items = null;
+
+var unIdentPersons = null;
+var person_name = null;
+
+var identSum = null;
+var html = null;
+var easytooltips = null;
+var identGroups = []; 
+
+function checkForDetectorsAlerts() {
+	try{
+		if (!windowIsActive) {
+			return;
+		}
+		$.ajax({
+			type: "GET",
+			url: "{% url check_detector_warnings %}",
+			data: {checkid: last_detect_message_id, identid: last_ident_message_id},
+			success: function(data){
+				if(data.alerts.length > 0){
+					var d_color = "#000000";
+					var d_name = "";
+					for (var z = 0; z < data.alerts.length; z++){
+					    var createDetWindow = true;
+						switch (data.alerts[z].d_type) {
+							case "leftThings":
+								data.alerts[z].d_name = '{% trans "Оставленные вещи" %}';
+								d_color = "#cc00cc";
+								break;
+							case "fireDetect":
+								data.alerts[z].d_name = '{% trans "Огонь" %}';
+								d_color = "#ff0000";
+								break;
+							case "smokeDetect":
+								data.alerts[z].d_name = '{% trans "Дым" %}';
+								d_color = "#0000ff";
+								break;
+							case "flashDetect":
+								data.alerts[z].d_name = '{% trans "Вспышка" %}';
+								d_color = "#ff6600";
+								break;
+							case "crowdDetect":
+								data.alerts[z].d_name = '{% trans "Скопление людей" %}';
+								d_color = "#33CC99";
+								break;
+							case "ident":
+								data.alerts[z].d_name = '{% trans "Идентификация" %} ';
+								d_color = "#66ff66";
+								if (jQuery.inArray(data.alerts[z].d_id, identGroups) >= 0) {
+								    createDetWindow = false;
+								} else {
+								    identGroups[identGroups.length] = data.alerts[z].d_id; 
+								}
+								break;							
+						}
+						{% if show_detect_alerts %}
+						    if (createDetWindow) {
+						        createWindowDetector(d_color, data.alerts[z].d_name, data.alerts[z].d_time, data.alerts[z].image, data.alerts[z].d_camera_full_name, data.alerts[z].ident)
+						    }
+						{% endif %}
+						//если сработал детектор скопления людей, добавляем информацию в карусель
+						if(data.alerts[z].d_type == "crowdDetect"){
+							if(data.alerts[z].d_camera_uuid == "{{ selected_camera.uuid }}"){
+								total_objects++;
+								total_crowd_objects++;
+								$("#total_crowd_objects").html(total_crowd_objects);
+								$("#total_objects").html(total_objects);
+								objectsQueue.exPush(data.alerts[z].crowd_detect_data);
+							}
+						}
+					}
+				}
+				last_detect_message_id = data.checkid;
+				last_ident_message_id = data.identid;
+				setTimeout('checkForDetectorsAlerts()', 2000)
+			},
+			error: function(data) {
+				setTimeout('checkForDetectorsAlerts()', 2000)
+			}
+		});
+	}catch(e){
+		setTimeout('checkForDetectorsAlerts()', 2000)
+	}
+}
+
+setTimeout('checkForDetectorsAlerts()', 500);
+
+
+function recording(record) {
+	if (record) {
+		$('#record_stop').css('display', 'inline');
+		$('#record_play').css('display', 'none');
+	} else {
+		$('#record_stop').css('display', 'none');
+		$('#record_play').css('display', 'inline');	
+	}
+}
+
+function setDisabledButtonVideo(status) {
+	var btn = $("#record_play");
+	if (status) {
+		btn.attr("disabled", false);
+		btn.removeClass("dis");				
+	} else {
+		btn.attr("disabled", "disabled");
+		btn.addClass("dis");		
+	}	
+}
+
+function statusControl(cycle) {
+	try{
+		if (!windowIsActive) {
+			return;
+		} 
+		$.ajax({
+			type: "POST",
+			url: "{% url status-record %}",
+			data: {uuid: '{{ selected_camera.uuid }}'},
+			success: function(msg){
+				obj = msg;
+				if (obj && obj.status){
+					if (obj.value && (obj.value==2 || obj.value=="2") && {% if selected_camera.active %}true{% else %}false{% endif %} && ({{ selected_camera.mode }} != -1)) {
+						recording(true);
+						setDisabledButtonVideo(true);
+					} else if ((obj.value=="1" || obj.value=="0" || obj.value==1 || obj.value==0) && {% if selected_camera.active %}true{% else %}false{% endif %} && ({{ selected_camera.mode }} != -1)) {
+						recording(false); 
+						setDisabledButtonVideo(true);
+					} else {
+						setDisabledButtonVideo(false);	
+					}
+				} else {
+					setDisabledButtonVideo(false);
+				}
+				if (cycle){
+					setTimeout('statusControl(true)', 2000);
+				}
+				obj = null;
+				delete obj;
+			},
+			error: function(msg) {
+				if (cycle){
+					setTimeout('statusControl(true)', 2000);
+				}		
+			}
+		});
+	}catch(e){
+
+	}
+}
+statusControl(true);
+
+function getDetectCoefficients(){
+    var dateObj = new Date;
+    var unixtime_ms = dateObj.getTime();
+	$.ajax({
+	    type: "GET",
+		url: "{% url get_detect_coefficients %}?uuid={{ selected_camera.uuid }}&rand=" + unixtime_ms,
+		data: {},
+		success: function(msg) {
+		    var obj = msg;
+		    if (obj && obj.status) {
+		        if (obj.k1) {
+    		        $("#detect_k1").html(obj.k1 + " {% trans "c" %}");
+    		        $("#div_detect_k1").show();
+    		    } 
+		        if (obj.k2) {
+    		        $("#detect_k2").html(obj.k2 + " {% trans "c" %}");
+    		        $("#div_detect_k2").show();
+    		    }
+		    }
+		    setTimeout('getDetectCoefficients()', 1000);
+		},
+		error: function(msg) {
+		    setTimeout('getDetectCoefficients()', 1000);
+		}
+	});
+}
+getDetectCoefficients();
+
+function recordControl() {
+	$.ajax({
+		type: "POST",
+		url: "{% url start-record %}",
+		data: { uuid: '{{ selected_camera.uuid }}'},
+		success: function(msg){
+			obj = msg;
+			if (obj && obj.status){
+				recording(obj.id);
+				if (obj.all_rollers) {
+					$('#all_rollers').html(obj.all_rollers);
+				}
+			} else {
+				//alert('{% trans "Произошла неизвестная ошибка." %}');
+			}
+		}
+	});
+}
+
+function getBigCameraInfo() {
+	var d = new Date();
+	$.ajax({
+		type: "POST",
+		url: "{% url big-video-frame-info %}",
+		data: {'uuid': '{{ selected_camera.uuid }}', 'rnd': d.getTime()},
+		success: function(data){
+			if(data.res != 'success') {
+				showInfoBigCamera($('#bigcamera'));
+			}else{
+				$("#info_bigcamera").html(data.html);
+			}
+		},
+		error: function(data) {
+			showInfoBigCamera($('#bigcamera'));
+		}
+	});
+}
+
+function getTimeDoubleNumber(num) {
+	if (num > 9){
+		return num;
+	} else {
+		return '0' + num;
+	}
+}
+
+function getIdentTime(){
+	var timeleft = new Date();
+	var t = getTimeDoubleNumber(timeleft.getHours()) + ":" + getTimeDoubleNumber(timeleft.getMinutes()) + ":" + getTimeDoubleNumber(timeleft.getSeconds());
+	return t;
+}
+
+function updateDetectTimePeriod() {
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth() + 1;
+
+	$("#time-begin").html($("#current_time").html());
+	$("#time-begin-date").html(getTimeDoubleNumber(dd) + "." + getTimeDoubleNumber(mm) + "." + today.getFullYear() + " ");
+}
+
+function clearIdentItems(){
+
+	faces_qnt = 1;
+	total_idents = 0;
+	total_objects = 0;
+	total_sep_objects = 0;
+	total_lt_objects = 0;
+	total_fire_objects = 0;
+	total_smoke_objects = 0;
+	total_flash_objects = 0;
+	total_crowd_objects = 0;
+
+	//$("#total_sep_objects").html('0');
+	$("#total_lt_objects").html('0');
+	$("#total_fire_objects").html('0');
+	$("#total_smoke_objects").html('0');
+	$("#total_flash_objects").html('0');
+	$("#total_objects").html('0');
+	$("#total_idents").html('0');
+	$("#total_faces_count").html('0');
+	$("#total_crowd_objects").html('0');
+	updateDetectTimePeriod();
+
+	identsQueue.queueEmpty();
+	detectsQueue.queueEmpty();
+	objectsQueue.queueEmpty();
+
+	clearCarousels();
+}
+{% endif %}
+</script>
+{% endblock %}
+{% block subcontent %}
+				<h2>{% trans "Просмотр" %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Просмотр' %}');" /></h2>
+				{% include "current_time.html" %}
+				{% include "system_blocks/system_cameras.html" %}
+				{% if all_active_cameras|length > 0 %}
+				<form method="POST" action="" name="frm_learn">
+					{% if selected_camera and all_active_cameras|length > 0 %}
+					<div class="block block_camera">
+						<div class="video">
+							<div class="name_camera">{{ selected_camera.full_name }}</div>
+							<div class="video_img" onclick="javascript: showInfoBigCamera($(this));">
+								
+								<img id="video-frame1" src="http://{{ selected_camera.commun.host }}:{{ selected_camera.commun.mjpeg_port }}/video?uuid={{ selected_camera.uuid }}&width=640&height=480&fps={{ fps_of_the_cameras }}" width="{{ width }}"/>
+								<div id="svgobjects" class="svgblock objects" style="left: {{ svg_margin }}px; width: {{ width}}px; height: {{ height }}px;"></div>
+								<div id="svgdraw" class="svgblock draw" style="left: {{ svg_margin }}px; width: {{ width }}px; height: {{ height }}px;"></div>
+								<div class="info_bigcamera" id="info_bigcamera" style="display: none;"><div class="info_bigcamera_load">{% trans "Пожалуйста, подождите" %}</div></div>
+								<div class="ico_active" style="display: none;"></div>
+								<div class="ico_noactive" style="display: none;"></div>
+								<div class="params_time">
+									<div style="display: none;" id="div_detect_k1">{% trans "Время детектирования лиц с учетом накладных расходов и очередей" %}: <span id="detect_k1">-</span></div>
+									<div style="display: none;" id="div_detect_k2">{% trans "Среднее время обработки кадра" %}: <span id="detect_k2">-</span></div>
+								</div>
+							</div>
+							<div class="block_record" id="block_record">
+								<input id="record_play" type="button" name="" value="{% trans 'Начать запись' %}" class="inp_btn inp_btn140" onclick="javascript: recordControl();" />
+								<span style="display: none;" id="record_stop"><input type="button" name="" value="{% trans "Остановить запись" %}" class="inp_btn inp_btn140" onClick="javascript: recordControl();" />
+								<span class="info_important dist_left">{% trans "Внимание! Идёт запись" %}.</span></span>
+								<a href="{% url video-clips %}" class="blue dist_left">{% trans "Все видеоролики" %} (<span id="all_rollers">{{ videoclips }}</span>)</a>
+							</div>
+						</div>
+						<div class="camera_panels">
+							<div class="block_ie">
+								<div class="block panel_period">
+									<a href="#" title="{% trans 'Очистить все записи за текущий период' %}" class="short_descr" onclick="javascript: clearIdentItems(); return false;" >{% trans "Очистить всё" %}</a>
+									<div>{% trans "Период" %}: <strong><span id="time-begin-date">{% now "d.m.Y" %} </span><span id="time-begin">{% now "H:i:s" %}</span> - <span id="time-left">{% now "H:i:s" %}</span></strong></div>
+								</div>
+								<div class="block_action dist_top_small">
+									<div class="block">
+										<a href="#" id="link_show_all_ident" class="link_show_all short_descr" title="{% trans "Просмотреть все идентификации за текущий период" %}">{% trans 'Просмотреть всё' %}</a>
+										<a href="#" class="link_action_head"><span class="link_action_head_arrow short_descr" title="{% trans 'Свернуть/Развернуть' %}"></span>{% trans "Идентификации" %}: <span id="total_idents">0</span></a>
+									</div>
+									<div class="content_ident dist_top_small">
+										<ul id="face_idents_elements_tape" class="list list_ident" style="width: 1000px;">
+										{% for ident in last_idents reversed %}
+											{% if not ident.is_free %}	
+												<li>
+													<div class="info_photo"><span class="count_ident short_descr" title="" id="ident_qnt_{{ forloop.counter }}" style="display: none;">&nbsp;</span><span class="time" title="" id="ident_time_{{ forloop.counter }}">{{ ident.dt_first_fixed|date:"H:i:s" }} {{ ident.detect_date }}</span></div>
+													<a class="info_photo_name" active="0" person_id="{{ ident.person.person.id }}" href="#" id="ident_name_{{ forloop.counter }}"{% if perms.user_perms.perm_lists %} target="_blank"{% endif %}>{{ ident.person_name }}</a>
+													<div class="block_photo_cam short_descr" title="">
+														<a class="person_ident_url" person_id="{{ ident.person.person.id }}" id="person_ident_url{{ forloop.counter }}" href="#"{% if perms.user_perms.perm_lists %} target="_blank"{% endif %}><img id="photo_ident_{{ forloop.counter }}" src="{{ ident.original.url }}" alt="" /></a>
+														<div class="koeff_ident short_descr" title='{% trans "Коэффициент похожести" %} (C<sub>sm</sub>): {% if ident.coeff == 100 %}1.00{% else %}{{ ident.coeff|fdiv:100 }}{% endif %}' id="ident_factor_{{ forloop.counter }}">{% if ident.coeff == 100 %}1.00{% else %}{{ ident.coeff|fdiv:100|floatformat:"-3" }}{% endif %}</div>
+														<div class="sign_photo_cam short_descr" id="ident_sign_cam_{{ forloop.counter }}" title="{% trans 'Изображение с камеры' %}"></div>
+													</div>
+													<div class="block_photo_base">
+														<a id="base_ident_url{{ forloop.counter }}" href="#"{% if perms.user_perms.perm_lists %} target="_blank"{% endif %}><img id="photo_db_ident_{{ forloop.counter }}" src="{{ ident.found_url }}" alt="" /></a>
+														<div class="sign_photo_base short_descr" id="ident_sign_base_{{ forloop.counter }}" title="{% trans 'Изображение из базы' %}"></div>
+													</div>
+												</li>
+											{% else %}
+												<li>
+													<div class="info_photo"><span class="count_ident short_descr" title="" id="ident_qnt_{{ forloop.counter }}" style="display: none;">&nbsp;</span><span class="time" title="" id="ident_time_{{ forloop.counter }}" style="visibility: hidden;">&nbsp;</span></div>
+													<a href="#" class="info_photo_name" active="0" person_id="" id="ident_name_{{ forloop.counter }}" style="visibility: hidden;">&nbsp;</a>
+													<div class="block_photo_cam short_descr" title="">
+														<a class="person_ident_url" person_id="" id="person_ident_url{{ forloop.counter }}" href="#"><img id="photo_ident_{{ forloop.counter }}" src="/files/images/img120x120.jpg" alt="" /></a>
+														<div class="koeff_ident" id="ident_factor_{{ forloop.counter }}" style="display: none;"></div>
+														<div class="sign_photo_cam short_descr" id="ident_sign_cam_{{ forloop.counter }}" style="display: none;" title="{% trans 'Изображение с камеры' %}"></div>
+													</div>
+													<div class="block_photo_base">
+														<a id="base_ident_url{{ forloop.counter }}" href="#"><img id="photo_db_ident_{{ forloop.counter }}" src="/files/images/img120x120.jpg" alt="" /></a>
+														<div class="sign_photo_base short_descr" id="ident_sign_base_{{ forloop.counter }}" style="display: none;" title="{% trans 'Изображение из базы' %}"></div>
+													</div>
+												</li>
+											{% endif %}
+										{% endfor %}
+										</ul>
+									</div>
+								</div>
+								<!-- max_width = 72px; max_height = 72px -->
+								<div class="block_action dist_top_small">
+									<div class="block">
+										<a href="#" id="link_show_all_faces" class="link_show_all short_descr" title="{% trans 'Просмотреть все лица за текущий период' %}">{% trans 'Просмотреть всё' %}</a>
+										<a href="#" class="link_action_head"><span class="link_action_head_arrow short_descr" title="{% trans 'Свернуть/Развернуть' %}"></span>{% trans "Лица" %}: <span id="total_faces_count">0</span></a>
+									</div>
+									<div class="content_faces">
+										<ul id="face_detect_elements_tape" class="list list_faces" style="width: 2000px;">
+											<li>
+												<div class="info_photo"><span class="param_photo time short_descr" title="" id="fd_time_1" style="visibility: hidden;">&nbsp;</span></div>
+												<div class="photo"><a href="#"><img id="fd_img_1" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+											<li>
+												<div class="info_photo"><span class="param_photo time short_descr" title="" id="fd_time_2" style="visibility: hidden;">&nbsp;</span></div>
+												<div class="photo"><a href="#"><img id="fd_img_2" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+											<li>
+												<div class="info_photo"><span class="param_photo time short_descr" title="" id="fd_time_3" style="visibility: hidden;">&nbsp;</span></div>
+												<div class="photo"><a href="#"><img id="fd_img_3" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+											<li>
+												<div class="info_photo"><span class="param_photo time short_descr" title="" id="fd_time_4" style="visibility: hidden;">&nbsp;</span></div>
+												<div class="photo"><a href="#"><img id="fd_img_4" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+											<li>
+												<div class="info_photo"><span class="param_photo time short_descr" title="" id="fd_time_5" style="visibility: hidden;">&nbsp;</span></div>
+												<div class="photo"><a href="#"><img id="fd_img_5" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+											<li>
+												<div class="info_photo"><span class="param_photo time short_descr" title="" id="fd_time_6" style="visibility: hidden;">&nbsp;</span></div>
+												<div class="photo"><a href="#"><img id="fd_img_6" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+											<li>
+												<div class="info_photo"><span class="param_photo time short_descr" title="" id="fd_time_7" style="visibility: hidden;">&nbsp;</span></div>
+												<div class="photo"><a href="#"><img id="fd_img_7" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+											<li>
+												<div class="info_photo"><span class="param_photo time short_descr" title="" id="fd_time_8" style="visibility: hidden;">&nbsp;</span></div>
+												<div class="photo"><a href="#"><img id="fd_img_8" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+										</ul>
+									</div>						
+								</div>
+								<div class="block_action dist_top_small">
+									<div class="block">
+										<a href="#" id="link_show_all_things" class="link_show_all short_descr" title="{% trans 'Просмотреть все срабатывания за текущий период' %}">{% trans "Просмотреть всё" %}</a>
+										<a href="#" class="link_action_head"><span class="link_action_head_arrow short_descr" title="{% trans 'Свернуть/Развернуть' %}"></span><span id="objects_title">{% trans 'Детекторы' %}. {% trans 'Обнаружено объектов' %}: <span id="total_objects">0</span></span></a>
+										<div id="objects_title_content" style="display: none;">{% trans "Детектор оставленных вещей" %}: <span id="total_leftthings">0</span><br /><!--{% trans "Детектор отделения объекта от фона" %}: <span id="total_sep_objects">0</span><br />-->{% trans "Детектор огня" %}: <span id="total_fire_objects">0</span><br />{% trans "Детектор дыма" %}: <span id="total_smoke_objects">0</span><br />{% trans "Детектор вспышки" %}: <span id="total_flash_objects">0</span><br />{% trans "Детектор скопления людей" %}: <span id="total_crowd_objects">0</span></div>
+										<script type="text/javascript">
+											/*$("#objects_title").easyTooltip({
+												useElement: "objects_title_content"	
+											});*/
+										</script>
+									</div>
+									<div class="content_things dist_top_small">
+										<ul id="object_detect_elements_tape" class="list list_things" style="width: 1000px;">
+
+											<!-- <li style="border-color: #0000ff;" title="<strong>Время покоя: 00:01:00</strong><br />Время обнаружения: 13:07:00<br />ID вещи: 656568" class="short_descr">
+												<div class="info_photo"><span class="param_photo time">13:07:00</span></div>
+												<div class="info_photo">ID: 656568</div>
+												<a href="#"><img src="/files/images/img72x72.jpg" alt="" /></a>
+											</li>-->									
+											<li id="obj_frame1">
+												<div id="obj_detect_time1" class="info_photo">&nbsp;</div>
+												<div id="obj_detect_id1" class="info_photo">&nbsp;</div>
+												<div class="photo"><a href="#"><img id="od_img_1" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+											<li id="obj_frame2">
+												<div id="obj_detect_time2" class="info_photo">&nbsp;</div>
+												<div id="obj_detect_id2" class="info_photo">&nbsp;</div>
+												<div class="photo"><a href="#"><img id="od_img_2" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+											<li id="obj_frame3">
+												<div id="obj_detect_time3" class="info_photo">&nbsp;</div>
+												<div id="obj_detect_id3" class="info_photo">&nbsp;</div>
+												<div class="photo"><a href="#"><img id="od_img_3" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+											<li id="obj_frame4">
+												<div id="obj_detect_time4" class="info_photo">&nbsp;</div>
+												<div id="obj_detect_id4" class="info_photo">&nbsp;</div>
+												<div class="photo"><a href="#"><img id="od_img_4" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+											<li id="obj_frame5">
+												<div id="obj_detect_time5" class="info_photo">&nbsp;</div>
+												<div id="obj_detect_id5" class="info_photo">&nbsp;</div>
+												<div class="photo"><a href="#"><img id="od_img_5" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+											<li id="obj_frame6">
+												<div id="obj_detect_time6" class="info_photo">&nbsp;</div>
+												<div id="obj_detect_id6" class="info_photo">&nbsp;</div>
+												<div class="photo"><a href="#"><img id="od_img_6" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+											<li id="obj_frame7">
+												<div id="obj_detect_time7" class="info_photo">&nbsp;</div>
+												<div id="obj_detect_id7" class="info_photo">&nbsp;</div>
+												<div class="photo"><a href="#"><img id="od_img_7" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+											<li id="obj_frame8">
+												<div id="obj_detect_time8" class="info_photo">&nbsp;</div>
+												<div id="obj_detect_id8" class="info_photo">&nbsp;</div>
+												<div class="photo"><a href="#"><img id="od_img_8" src="/files/images/img72x72.jpg" alt="" /></a></div>
+											</li>
+										</ul>
+									</div>
+								</div>								
+							</div>
+						</div>
+					</div>
+					{% else %}
+					<div class="block_noact_camera">
+						<div id="big_camera_info" class="txt_noact_camera">{% trans "Камера выключена или недоступна" %}.</div>
+						<div class="block_record" id="block_record">
+							<input id="record_play" type="button" name="" value="{% trans 'Начать запись' %}" class="inp_btn inp_btn140" onclick="javascript: recordControl();" />
+							<span style="display: none;" id="record_stop"><input type="button" name="" value="{% trans "Остановить запись" %}" class="inp_btn inp_btn140" onClick="javascript: recordControl();" />
+							<span class="info_important dist_left">{% trans "Внимание! Идёт запись" %}.</span></span>
+							<a href="{% url video-clips %}" class="blue dist_left">{% trans "Все видеоролики" %} (<span id="all_rollers">{{ videoclips }}</span>)</a>
+						</div>
+					</div>
+					{% endif%}				
+				</form>
+				{% if perms.user_perms.perm_security %}
+					<div class="dist_top"><a href="/view/all/">{% trans "Перейти к просмотру видео всех камер" %} &raquo;</a></div>
+				{% endif %}
+				{% else %}
+				{% if not all_active_cameras %}
+				{% trans "Проверьте коммуникаторы" %}
+				{% endif %}
+				{% endif %}
+				<div id="easytooltips"></div>
+	<script type="text/javascript">
+
+	{% if selected_camera and all_active_cameras|length > 0 %}
+		{% if last_idents %}
+			{% for ident in last_idents reversed %}
+				{% if not ident.is_free %}
+				if(!isOperator){
+					$("#ident_name_{{ forloop.counter }}").attr("href", urls_arr['{{ ident.person.person.group.pk }}'] +'{{ ident.person.person.id }}/?group={{ ident.person.person.group.pk}}');
+					$("#person_ident_url{{ forloop.counter }}").attr("href", urls_arr['{{ ident.person.person.group.pk }}'] +'{{ ident.person.person.id }}/?group={{ ident.person.person.group.pk}}');
+					$("#base_ident_url{{ forloop.counter }}").attr("href", urls_arr['{{ ident.person.person.group.pk }}'] +'{{ ident.person.person.id }}/?group={{ ident.person.person.group.pk}}');
+				}
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+
+		//SVG
+		var OBJ_LINE_WIDTH = 1;
+		var OBJ_FILL_ALPHA = 0.1;
+		var FACE_CORNER_LENGTH = 15;
+		var FACE_EYE_RADIUS = 4;
+		var svgObjects;
+		var receivedTime;
+		var lt_receivedTime;
+		
+		var COUNT_ELEMS_IDENT = 5;
+		var COUNT_ELEMS_DETECT = 8;		
+		var COUNT_ELEMS_DETECTORS = 8;
+
+		function initSvgObject(svg) {
+			svgObjects = svg;
+		}
+		$('#svgobjects').svg({onLoad: initSvgObject});
+		var sep_objects_queue = [];
+		var sep_objects_receive_time = 0;
+		var sep_objects_draw_delay_time = 300;
+
+		var lt_objects_queue = [];
+		var lt_objects_receive_time = 0;
+		var lt_objects_draw_delay_time = 300;
+
+		var face_objects_queue = [];
+		var face_objects_receive_time = 0;
+		var face_objects_draw_delay_time = {{ draw_frame_face_delay }};
+
+		var fire_objects_queue = [];
+		var fire_objects_receive_time = 0;
+		var fire_objects_draw_delay_time = {{ draw_frame_fire_delay }};
+
+		var smoke_objects_queue = [];
+		var smoke_objects_receive_time = 0;
+		var smoke_objects_draw_delay_time = {{ draw_frame_smoke_delay }};
+
+		var flash_objects_queue = [];
+		var flash_objects_receive_time = 0;
+		var flash_objects_draw_delay_time = {{ draw_frame_flash_delay }};
+
+		var left_objects_queue = [];
+		var left_objects_receive_time = 0;
+		var left_objects_draw_delay_time = {{ draw_frame_leftthings_delay }};
+
+		{% if selected_camera.cam_num > show_links_count %}$('#all_cameras').show();{% endif %}
+		var frame_colors = ['#ff0000', '#ff00ff', '#0000ff', '#00ff00', '#00ffff', '#330099'];
+		var c = 0;
+
+		function showAlertMessage(text){
+			$("#message_warning_content").html('');
+			$("#message_warning_content").html(text);
+			$("#message_warning_live").show('slow');
+		}
+
+		function showAlertMessageHide()
+		{
+			$("#message_warning_live").hide('slow');
+		}
+
+		var frame_counter = 0;
+		var face_counter = 0;
+		var faces_qnt = 1;
+		var total_idents = 0;
+
+		var total_objects = 0;
+		var total_sep_objects = 0;
+		var total_lt_objects = 0;
+		var total_fire_objects = 0;
+		var total_smoke_objects = 0;
+		var total_flash_objects = 0;
+		var total_crowd_objects = 0;
+
+		var fire_add_to_car_delay_time = {{ add_to_carousel_fire_delay }};
+		var flash_add_to_car_delay_time = {{ add_to_carousel_flash_delay }};
+		var smoke_add_to_car_delay_time = {{ add_to_carousel_smoke_delay }};
+		var leftthings_add_to_car_delay_time = {{ add_to_carousel_leftthings_delay }};
+
+		var ddst = new Date();
+		var detectors_fire_delay_start_time = ddst.getTime();
+		var detectors_smoke_delay_start_time = ddst.getTime();
+		var detectors_flash_delay_start_time = ddst.getTime();
+		var detectors_leftthings_delay_start_time = ddst.getTime();
+
+		var last_journal_id = {{ last_journal_id }};
+
+		//check for person detects
+		function checkJournalForDetects(){
+			if (!windowIsActive) {
+				return;
+			}
+			$.ajax({
+				type: "GET",
+				url: "{% url api_get_faces_last_log %}",
+				data: {'limit': '7', 'first_id': last_journal_id, 'wait': '5', 'sleep': '1', 'filter_camera_uuid': '{{ selected_camera.uuid }}'},
+				cache: false,
+				success: function(data){
+					if(data.status = 'true'){
+						if(data.ident_data.length > 0){
+							for (var z = 0; z < data.ident_data.length; z++){
+								//idents
+								if(data.ident_data[z].factor > boundFactor)
+								{
+									if(typeof personIdStory[data.ident_data[z].person_id] === "undefined")
+									{
+										personIdStory[data.ident_data[z].person_id] = 1;
+                                        personNameStory[data.ident_data[z].person_id] = data.ident_data[z].person_name;
+										personURLStory[data.ident_data[z].person_id] = urls_arr[data.ident_data[z].person.person.group] + data.ident_data[z].person_id +'/?group='+ data.ident_data[z].person.person.group;
+									}else{
+										personIdStory[data.ident_data[z].person_id] = parseInt(personIdStory[data.ident_data[z].person_id]) + 1;
+									}
+
+									total_idents++;
+									data.ident_data[z].idents_count = personIdStory[data.ident_data[z].person_id];
+
+									identsQueue.exPush(data.ident_data[z]);
+								}
+
+								//detects
+								detectsQueue.exPush(data.ident_data[z]);
+								face_counter++;
+								$("#total_idents").html(total_idents);
+								$("#total_faces_count").html(faces_qnt);
+
+								face_qnt++;
+								faces_qnt++;
+							}
+							last_journal_id = data.ident_data[data.ident_data.length - 1].last_journal_id;
+						}
+						checkJournalForDetects();
+					}else{
+						checkJournalForDetects();
+					}
+				},
+				error: function(data) {
+					checkJournalForDetects();
+				}
+			});
+		}
+
+		var last_detect_journal_id = {{ last_detect_message_id }};
+
+		function checkVAJournalForDetects(){
+			if (!windowIsActive) {
+				return;
+			}
+			$.ajax({
+				type: "GET",
+				url: "{% url api_get_videoanalytics_last_log %}",
+				data: {'limit': '100', 'first_id': last_detect_journal_id, 'wait': '5', 'sleep': '1', 'filter_camera_uuid': '{{ selected_camera.uuid }}'},
+				cache: false,
+				success: function(data){
+					if(data.status = 'true'){
+						if(data.result_data.length > 0){
+							for (var z = 0; z < data.result_data.length; z++){
+								for (var i = 0; i < data.result_data[z].length; i++){
+									total_objects++;
+									$("#total_objects").html(total_objects);
+
+									switch(data.result_data[z][i].data_type){
+										case "fireDetect":
+											data.result_data[z][i].frame_color = "#ff0000";
+											total_fire_objects++;
+											$("#total_fire_objects").html(total_fire_objects);
+										break
+										case "smokeDetect":
+											data.result_data[z][i].frame_color = "#0000ff";
+											total_smoke_objects++;
+											$("#total_smoke_objects").html(total_smoke_objects);
+										break
+										case "flashDetect":
+											data.result_data[z][i].frame_color = "#ff6600";
+											total_flash_objects++;
+											$("#total_flash_objects").html(total_flash_objects);
+										break
+										case "leftThings":
+											data.result_data[z][i].frame_color = "#cc00cc";
+											total_lt_objects++;
+											$("#total_lt_objects").html(total_lt_objects);
+										break
+										case "crowdDetect":
+											data.result_data[z][i].frame_color = "#33CC99";
+											total_crowd_objects++;
+										break										
+									}
+
+									objectsQueue.exPush(data.result_data[z][i]);
+								}
+							}
+							last_detect_journal_id = data.journal[data.journal.length - 1].id;
+							//alert(data.journal[data.journal.length - 1].id)
+						}
+						checkVAJournalForDetects();
+					}else{
+						checkVAJournalForDetects();
+					}
+				},
+				error: function(data) {
+					checkVAJournalForDetects();
+				}
+			});
+		}
+
+		function identificationFunc(data){
+
+			//объекты и фон
+			//separating objects
+			if(data.sep_obj_data.length > 0){
+				//рисование объектов
+				sep_objects_queue = [];
+				receivedTime = new Date();
+				sep_objects_receive_time = receivedTime.getTime();
+				sep_objects_queue.push(data.sep_obj_data);
+			}
+
+			//leftthings objects
+			//if(data.leftthings_data.length > 0){
+				//рисование объектов
+			//	lt_objects_queue = [];
+			//	lt_receivedTime = new Date();
+			//	lt_objects_receive_time = lt_receivedTime.getTime();
+			//	lt_objects_queue.push(data.leftthings_data);
+			//}
+
+			//fire objects
+			if(data.firedetect_data.length > 0){
+				//рисование объектов
+				fire_objects_queue = [];
+				fire_receivedTime = new Date();
+				fire_objects_receive_time = fire_receivedTime.getTime();
+				fire_objects_queue.push(data.firedetect_data);
+			}
+
+			//smoke objects
+			if(data.smokedetect_data.length > 0){
+				//рисование объектов
+				smoke_objects_queue = [];
+				smoke_receivedTime = new Date();
+				smoke_objects_receive_time = smoke_receivedTime.getTime();
+				smoke_objects_queue.push(data.smokedetect_data);
+			}
+
+			//flash objects
+			if(data.flashdetect_data.length > 0){
+				//рисование объектов
+				flash_objects_queue = [];
+				flash_receivedTime = new Date();
+				flash_objects_receive_time = flash_receivedTime.getTime();
+				flash_objects_queue.push(data.flashdetect_data);
+			}
+
+			//left things objects
+			if(data.leftthings_data.length > 0){
+				//рисование объектов
+				left_objects_queue = [];
+				left_receivedTime = new Date();
+				left_objects_receive_time = left_receivedTime.getTime();
+				left_objects_queue.push(data.leftthings_data);
+			}
+
+			//face objects
+			if(data.ident_data_for_js.length > 0){
+
+				//рисование объектов
+				face_objects_queue = [];
+				face_receivedTime = new Date();
+				face_objects_receive_time = face_receivedTime.getTime();
+				face_objects_queue.push(data.ident_data_for_js);
+			}
+
+			frame_counter++;
+
+			frame_delay = data.frame_delay_time / 1000;
+			showAlertMessageHide();
+		}
+
+		{% include "system_blocks/video_js.html" %}
+
+		function getCurrentFps() {
+			fps = frame_counter;
+			frame_counter = 0;
+
+			face_ps = face_counter;
+			face_counter = 0;
+
+			$("#time-left").html($("#current_time").html());
+		}
+		setInterval('getCurrentFps()', 1000);
+
+		//update carousels
+		function clearCarousels() {
+			//idents carousel
+			for (i = 1; i <= COUNT_ELEMS_IDENT; i++) {
+				$("#photo_ident_" + i).attr('src', '/files/images/img120x120.jpg');
+				$("#photo_db_ident_" + i).attr('src', '/files/images/img120x120.jpg');
+				$("#ident_time_" + i).html('&nbsp;');
+				$("#ident_time_" + i).css('visibility', 'hidden');
+				$("#ident_name_" + i).attr('person_id', '');
+				$("#ident_name_" + i).attr('active', '0');
+				$("#ident_name_" + i).html('&nbsp;');
+				$("#ident_name_" + i).css('visibility', 'hidden');
+				$("#ident_qnt_" + i).css('display', 'none');
+				$("#ident_factor_" + i).css('display', 'none');
+				$("#ident_sign_cam_" + i).css('display', 'none');
+				$("#ident_sign_base_" + i).css('display', 'none');			
+			}		
+			//detects carousel
+			for (var i = 1; i <= COUNT_ELEMS_DETECT; i++) {
+				$("#fd_time_" + i).css('visibility', 'hidden');
+				$("#fd_img_" + i).attr('src', '/files/images/img72x72.jpg');
+			}
+			//objects carousel
+			for (i = 1; i <= COUNT_ELEMS_DETECTORS; i++) {
+				$("#obj_frame" + i).css('border-color', '#BBBBBB');
+				$("#od_img_" + i).attr('src', '/files/images/img72x72.jpg');
+				$("#obj_detect_time" + i).html("&nbsp;");
+				$("#obj_detect_id" + i).html("&nbsp;");			
+			}
+		}
+
+		//carousel part
+		function detectsCarousel(id) {
+			this.id = id;
+			this.isAnimEnd = true;
+
+			this.addItem = function (){
+				var detect_data = detectsQueue.exPop();
+
+				$('#' + this.id).css('margin-left', '0px');
+				var j = 0;
+				for (var i = 1; i <= (COUNT_ELEMS_DETECT - 1); i++) {
+					j = i + 1;
+					$("#fd_img_" + i).attr('src', $("#fd_img_" + j).attr('src'));
+					$("#fd_time_" + i).html($("#fd_time_" + j).html());
+					$("#fd_time_" + i).css('visibility', $("#fd_time_" + j).css('visibility'));				
+				}
+				//$("#fd_img_8").css('margin-top', detect_data.carousel_face_margin_top + 'px');
+				$("#fd_img_" + j).attr('src', 'data:image/jpeg;base64,' + detect_data.carousel_image);
+				$("#fd_time_" + j).html(detect_data.detectTime);
+				$("#fd_time_" + j).css('visibility', 'visible');
+
+				this.isAnimEnd = false;
+
+				$('#' + this.id).animate({
+					marginLeft: '-78'
+				  }, detectsQueue.getSpeed(), function() {
+					  detects_carousel.setIsAnimEnd();
+				});
+			}
+
+			this.getIsAnimEnd = function (){
+				return this.isAnimEnd;
+			}
+
+			this.setIsAnimEnd = function (){
+				this.isAnimEnd = true;
+			}
+		}
+
+		var detects_carousel = new detectsCarousel('face_detect_elements_tape');
+
+		function updateDetectsCarousel(){
+			try{
+				if(detects_carousel.getIsAnimEnd() && !detectsQueue.isEmpty()){
+					detects_carousel.addItem();
+
+				}
+			}catch(e){
+
+			}
+		}
+
+		//setInterval('updateDetectsCarousel()', 10);
+
+		function identsCarousel(id) {
+			this.id = id;
+			this.isAnimEnd = true;
+
+			this.addItem = function (){
+				var detect_data = identsQueue.exPop();
+	
+				var j = 0;
+				
+				//check for existance of ident in the carousel
+				var isExist = false;
+				for (var k = 2; k <= COUNT_ELEMS_IDENT; k++) {
+					if(parseInt($("#ident_name_" + k).attr('person_id')) == parseInt(detect_data.person_id)){
+						isExist = true;
+						j = k;
+						break;
+					}
+				}
+				
+				if(!isExist){
+					$('#' + this.id).css('margin-left', '0px');
+				}
+				
+				if(!isExist){
+					for (var i = 1; i <= (COUNT_ELEMS_IDENT - 1); i++) {
+						j = i + 1;
+						$("#photo_ident_" + i).attr('src', $("#photo_ident_" + j).attr('src'));
+						$("#photo_db_ident_" + i).attr('src', $("#photo_db_ident_" + j).attr('src'));
+						$("#ident_factor_" + i).html($("#ident_factor_" + j).html());
+						$("#ident_factor_" + i).attr("title", $("#ident_factor_" + j).attr("title"));
+						$("#ident_factor_" + i).css('display', $("#ident_factor_" + j).css('display'));
+						$("#ident_time_" + i).html($("#ident_time_" + j).html());
+						$("#ident_time_" + i).css('visibility', $("#ident_time_" + j).css('visibility'));
+						$("#ident_qnt_" + i).html($("#ident_qnt_" + j).html());
+						$("#ident_qnt_" + i).css('display', $("#ident_qnt_" + j).css('display'));
+						$("#ident_name_" + i).attr('person_id', $("#ident_name_" + j).attr('person_id'));
+						$("#ident_name_" + i).attr('active', $("#ident_name_" + j).attr('active'));
+						$("#ident_name_" + i).html($("#ident_name_" + j).html());	
+						$("#ident_name_" + i).css('visibility', $("#ident_name_" + j).css('visibility'));
+						$("#person_ident_url" + i).attr('person_id', $("#person_ident_url" + j).attr('person_id'));
+						$("#person_ident_url" + i).attr('href', $("#person_ident_url" + j).attr('href'));
+						$("#person_ident_url" + i).attr('target', $("#person_ident_url" + j).attr('target'));
+						$("#person_ident_url" + i).css('cursor', $("#person_ident_url" + j).css('cursor'));
+						$("#base_ident_url" + i).attr('href', $("#base_ident_url" + j).attr('href'));
+						$("#ident_sign_cam_" + i).css('display', $("#ident_sign_cam_" + j).css("display"));
+						$("#ident_sign_base_" + i).css('display', $("#ident_sign_cam_" + j).css("display"));						
+					}
+				}
+				
+
+				$("#photo_ident_" + j).attr('src', 'data:image/jpeg;base64,' + detect_data.image);
+				$("#photo_db_ident_" + j).attr('src', 'data:image/jpeg;base64,' + detect_data.db_image);
+				$("#ident_factor_" + j).html(setKoeffFormat(detect_data.factor));
+				$("#ident_factor_" + j).attr("title", '{% trans "Коэффициент похожести" %} (C<sub>sm</sub>): ' + detect_data.factor);
+				$("#ident_factor_" + j).css('display', 'block');
+				$("#ident_time_" + j).html(detect_data.detectTime);
+				$("#ident_time_" + j).attr("title", '{% trans "Коэффициент похожести" %} (C<sub>sm</sub>):' + detect_data.detectTime);
+				$("#ident_time_" + j).css('visibility', 'visible');
+				
+				$("#ident_qnt_" + j).html(detect_data.idents_count);
+
+				$("#ident_qnt_" + j).css('display', 'inline');
+				$("#person_ident_url" + j).attr('person_id', detect_data.person_id);
+				$("#ident_name_" + j).attr('person_id', detect_data.person_id);
+				if (detect_data.person) {
+					$("#ident_name_" + j).html(detect_data.person_name);
+					if (!isOperator){
+						$("#ident_name_" + j).attr('href', urls_arr[detect_data.person.person.group] + detect_data.person.person.id +'/?group='+ detect_data.person.person.group  );
+						$("#person_ident_url" + j).attr('href', urls_arr[detect_data.person.person.group] + detect_data.person.person.id +'/?group='+ detect_data.person.person.group );
+						$("#base_ident_url" + j).attr('href', urls_arr[detect_data.person.person.group] + detect_data.person.person.id +'/?group='+ detect_data.person.person.group  );
+					}			
+				} else {
+					$("#ident_name_" + j).html({% trans "Отсутствует" %});
+				}
+				$("#ident_name_" + j).css('visibility', 'visible');
+				$("#ident_sign_cam_" + j).css('display', 'block');
+				$("#ident_sign_base_" + j).css('display', 'block');				
+				
+				if(!isExist){
+					this.isAnimEnd = false;
+					$('#' + this.id).animate({
+						marginLeft: '-135'
+					  }, identsQueue.getSpeed(), function() {
+						  idents_carousel.setIsAnimEnd();
+					});
+				}else{
+					idents_carousel.setIsAnimEnd();
+				}
+			}
+			this.getIsAnimEnd = function (){
+				return this.isAnimEnd;
+			}
+			this.setIsAnimEnd = function (){
+				this.isAnimEnd = true;
+			}
+			initTooltip();
+		}
+		var idents_carousel = new identsCarousel('face_idents_elements_tape');
+		function updateIdentsCarousel(){
+			try{
+				if(idents_carousel.getIsAnimEnd() && !identsQueue.isEmpty()){
+					idents_carousel.addItem();
+				}
+			}catch(e){
+			}
+		}
+		
+		// возвращает число, с фиксированным количеством символов после запятой или полностью, разделителем является запятая
+		// k - число
+		// numberOfDecimalPlaces - количество знаков после запятой, по умолчанию 3, если число должно передаваться полностью, то переменная имеет значение FULL
+		function setKoeffFormat(k, numberOfDecimalPlaces) {
+			var count = 3;
+			if (numberOfDecimalPlaces) count = numberOfDecimalPlaces;
+			if (count != 'FULL') {
+				return replace_string(parseFloat(k).toFixed(count), ".", ",");
+			}
+			return replace_string(k, ".", ",");
+		}		
+
+		//setInterval('updateIdentsCarousel()', 10);
+
+		function objectsCarousel(id) {
+			this.id = id;
+			this.isAnimEnd = true;
+			this.tTime = "00:00:00";
+
+			this.addItem = function (){
+				var detect_data = objectsQueue.exPop();
+
+				$('#' + this.id).css('margin-left', '0px');
+				var j = 0;
+				for (i = 1; i <= (COUNT_ELEMS_DETECTORS - 1); i++) {
+					j = i + 1;
+					//$("#obj_frame" + i).attr('title', $("#obj_frame" + j).attr('title'));
+					$("#obj_frame" + i).css('border-color', $("#obj_frame" + j).css('border-top-color'));
+					$("#od_img_" + i).attr('src', $("#od_img_" + j).attr('src'));
+					$("#obj_detect_time" + i).html($("#obj_detect_time" + j).html());
+					$("#obj_detect_id" + i).html($("#obj_detect_id" + j).html());					
+				}
+				$("#obj_frame" + j).css('border-color', detect_data.frame_color);
+				$("#od_img_" + j).attr('src', 'data:image/jpeg;base64,' + detect_data.image);
+				$("#obj_detect_time" + j).html('<span class="param_photo time">' + detect_data.detectTime + '</span>');
+				//$("#obj_frame" + j).attr('title', '<strong>Время обнаружения: ' + this.tTime + '</strong>');
+				$("#obj_detect_id" + j).html("&nbsp;");
+				//if(detect_data.data_type == "fire_detect" || detect_data.data_type == "smoke_detect" || detect_data.data_type == "flash_detect" || detect_data.data_type == "left_detect"){
+				//	$("#obj_detect_id" + j).html("ID-" + detect_data.id);
+				//}
+				switch(detect_data.data_type) {
+					case "crowd_detect":
+						$("#obj_detect_id" + j).html("{% trans 'Скопл. людей' %}");
+					break
+					case "fireDetect":
+						$("#obj_detect_id" + j).html("{% trans 'Огонь' %}");
+					break
+					case "smokeDetect":
+						$("#obj_detect_id" + j).html("{% trans 'Дым' %}");
+					break
+					case "flashDetect":
+						$("#obj_detect_id" + j).html("{% trans 'Вспышка' %}");
+					break
+					case "leftThings":
+						$("#obj_detect_id" + j).html("{% trans 'Ост. вещь' %}");
+					break
+				}
+				//$(".short_descr").easyTooltip();
+				this.isAnimEnd = false;
+				$('#' + this.id).animate({
+					marginLeft: '-78'
+				  }, objectsQueue.getSpeed(), function() {
+					  objects_carousel.setIsAnimEnd();
+				});
+			}
+
+			this.getIsAnimEnd = function (){
+				return this.isAnimEnd;
+			}
+
+			this.setIsAnimEnd = function (){
+				this.isAnimEnd = true;
+			}
+
+			this.settTime = function (t){
+				this.tTime = t;
+			}
+		}
+
+
+		var objects_carousel = new objectsCarousel('object_detect_elements_tape');
+
+		function updateObjectsCarousel(){
+			try{
+				if(objects_carousel.getIsAnimEnd() && !objectsQueue.isEmpty()){
+					//objects_carousel.settTime(getIdentTime());
+					objects_carousel.addItem();
+				}
+			}catch(e){
+
+			}
+		}
+
+		function updateCarousels(){
+			updateIdentsCarousel();
+			updateDetectsCarousel();
+			updateObjectsCarousel();
+		}
+
+		setInterval('updateCarousels()', 50);
+
+		setTimeout('window.location.reload()', {{ page_refresh_time }});
+
+		function objectsFilter(){
+			$("#block_list_objects").empty();
+
+			var html = '';
+			var count = 0;
+
+			switch ($("#win_detectors").val()) {
+				case "0":
+					//all objects
+					var html = '';
+					var count = 0;
+					var p_id = "&nbsp;";
+					for (var i = objectsQueue.getLast()-1; i >= 0; i--){
+						if(objectsQueue.getIndexData(i) != null){
+							if(objectsQueue.getIndexData(i).data_type == "fireDetect" || objectsQueue.getIndexData(i).data_type == "smokeDetect" || objectsQueue.getIndexData(i).data_type == "leftThings"){
+								p_id = "ID - " + objectsQueue.getIndexData(i).id;
+							}
+							if(objectsQueue.getIndexData(i).data_type == "crowd_detect"){
+								p_id = "{% trans 'Скопл. людей' %}";
+							}
+							if(objectsQueue.getIndexData(i).data_type == "fireDetect"){
+								p_id = "{% trans 'Огонь' %}";
+							}
+							if(objectsQueue.getIndexData(i).data_type == "smokeDetect"){
+								p_id = "{% trans 'Дым' %}";
+							}
+							if(objectsQueue.getIndexData(i).data_type == "leftThings"){
+								p_id = "{% trans 'Ост. вещь' %}";
+							}
+							if(objectsQueue.getIndexData(i).data_type == "flashDetect"){
+								p_id = "{% trans 'Вспышка' %}";
+							}
+							html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + objectsQueue.getIndexData(i).detectTime + '</strong>">' + objectsQueue.getIndexData(i).detectTime + '</span></div><div class="info_photo">' + p_id+ '</div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + objectsQueue.getIndexData(i).image + '" alt="" /></a></div></li>';
+							$("#block_list_objects").append(html);
+							count++;
+						}
+					}
+
+					for (var i = objectsQueue.getArrayQnt()-1; i > objectsQueue.getLast(); i--){
+						if(objectsQueue.getIndexData(i) != null){
+							if(objectsQueue.getIndexData(i).data_type == "fireDetect" || objectsQueue.getIndexData(i).data_type == "smokeDetect" || objectsQueue.getIndexData(i).data_type == "leftThings"){
+								p_id = "ID - " + objectsQueue.getIndexData(i).id;
+							}
+							html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + objectsQueue.getIndexData(i).detectTime + '</strong>">' + objectsQueue.getIndexData(i).detectTime + '</span></div><div class="info_photo">' + p_id+ '</div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + objectsQueue.getIndexData(i).image + '" alt="" /></a></div></li>';
+							$("#block_list_faces2").append(html);
+							count++;
+						}
+					}
+					$("#total_obj_window").html(total_objects);
+				break
+				case "1":
+
+					//left things objects
+					var html = '';
+					var count = 0;
+					for (var i = objectsQueue.getLast()-1; i >= 0; i--){
+						if(objectsQueue.getIndexData(i) != null && objectsQueue.getIndexData(i).data_type == "leftThings"){
+							html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + objectsQueue.getIndexData(i).detectTime + '</strong>">' + objectsQueue.getIndexData(i).detectTime + '</span></div><div class="info_photo">{% trans "Ост. вещь" %}</div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + objectsQueue.getIndexData(i).image + '" alt="" /></a></div></li>';
+							$("#block_list_objects").append(html);
+							count++;
+						}
+					}
+
+					for (var i = objectsQueue.getArrayQnt()-1; i > objectsQueue.getLast(); i--){
+						if(objectsQueue.getIndexData(i) != null && objectsQueue.getIndexData(i).data_type == "leftThings"){
+							html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + objectsQueue.getIndexData(i).detectTime + '</strong>">' + objectsQueue.getIndexData(i).detectTime + '</span></div><div class="info_photo">{% trans "Ост. вещь" %}</div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + objectsQueue.getIndexData(i).image + '" alt="" /></a></div></li>';
+							$("#block_list_faces2").append(html);
+							count++;
+						}
+					}
+					$("#total_obj_window").html(total_lt_objects);
+				break
+				case "2":
+					//separating objects
+					var html = '';
+					var count = 0;
+					for (var i = objectsQueue.getLast()-1; i >= 0; i--){
+						if(objectsQueue.getIndexData(i) != null && objectsQueue.getIndexData(i).data_type == "sep_obj_data"){
+							html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + objectsQueue.getIndexData(i).detectTime + '</strong>">' + objectsQueue.getIndexData(i).detectTime + '</span></div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + objectsQueue.getIndexData(i).image + '" alt="" /></a></div></li>';
+							$("#block_list_objects").append(html);
+							count++;
+						}
+					}
+
+					for (var i = objectsQueue.getArrayQnt()-1; i > objectsQueue.getLast(); i--){
+						if(objectsQueue.getIndexData(i) != null && objectsQueue.getIndexData(i).data_type == "sep_obj_data"){
+							html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + objectsQueue.getIndexData(i).detectTime + '</strong>">' + objectsQueue.getIndexData(i).detectTime + '</span></div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + objectsQueue.getIndexData(i).image + '" alt="" /></a></div></li>';
+							$("#block_list_faces2").append(html);
+							count++;
+						}
+					}
+					$("#total_obj_window").html(total_sep_objects);
+				break
+				case "3":
+					//fire objects
+					var html = '';
+					var count = 0;
+					for (var i = objectsQueue.getLast()-1; i >= 0; i--){
+						if(objectsQueue.getIndexData(i) != null && objectsQueue.getIndexData(i).data_type == "fireDetect"){
+							html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + objectsQueue.getIndexData(i).detectTime + '</strong>">' + objectsQueue.getIndexData(i).detectTime + '</span></div><div class="info_photo">{% trans "Огонь" %}</div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + objectsQueue.getIndexData(i).image + '" alt="" /></a></div></li>';
+							$("#block_list_objects").append(html);
+							count++;
+						}
+					}
+
+					for (var i = objectsQueue.getArrayQnt()-1; i > objectsQueue.getLast(); i--){
+						if(objectsQueue.getIndexData(i) != null && objectsQueue.getIndexData(i).data_type == "fireDetect"){
+							html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + objectsQueue.getIndexData(i).detectTime + '</strong>">' + objectsQueue.getIndexData(i).detectTime + '</span></div><div class="info_photo">{% trans "Огонь" %}</div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + objectsQueue.getIndexData(i).image + '" alt="" /></a></div></li>';
+							$("#block_list_faces2").append(html);
+							count++;
+						}
+					}
+					$("#total_obj_window").html(total_fire_objects);
+				break
+				case "4":
+					//smoke objects
+					var html = '';
+					var count = 0;
+					for (var i = objectsQueue.getLast()-1; i >= 0; i--){
+						if(objectsQueue.getIndexData(i) != null && objectsQueue.getIndexData(i).data_type == "smokeDetect"){
+							html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + objectsQueue.getIndexData(i).detectTime + '</strong>">' + objectsQueue.getIndexData(i).detectTime + '</span></div><div class="info_photo">{% trans "Дым" %}</div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + objectsQueue.getIndexData(i).image + '" alt="" /></a></div></li>';
+							$("#block_list_objects").append(html);
+							count++;
+						}
+					}
+
+					for (var i = objectsQueue.getArrayQnt()-1; i > objectsQueue.getLast(); i--){
+						if(objectsQueue.getIndexData(i) != null && objectsQueue.getIndexData(i).data_type == "smokeDetect"){
+							html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + objectsQueue.getIndexData(i).detectTime + '</strong>">' + objectsQueue.getIndexData(i).detectTime + '</span></div><div class="info_photo">{% trans "Дым" %}</div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + objectsQueue.getIndexData(i).image + '" alt="" /></a></div></li>';
+							$("#block_list_faces2").append(html);
+							count++;
+						}
+					}
+					$("#total_obj_window").html(total_smoke_objects);
+				break
+				case "5":
+					//flash objects
+					var html = '';
+					var count = 0;
+					for (var i = objectsQueue.getLast()-1; i >= 0; i--){
+						if(objectsQueue.getIndexData(i) != null && objectsQueue.getIndexData(i).data_type == "flashDetect"){
+							html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + objectsQueue.getIndexData(i).detectTime + '</strong>">' + objectsQueue.getIndexData(i).detectTime + '</span></div><div class="info_photo">{% trans "Вспышка" %}</div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + objectsQueue.getIndexData(i).image + '" alt="" /></a></div></li>';
+							$("#block_list_objects").append(html);
+							count++;
+						}
+					}
+
+					for (var i = objectsQueue.getArrayQnt()-1; i > objectsQueue.getLast(); i--){
+						if(objectsQueue.getIndexData(i) != null && objectsQueue.getIndexData(i).data_type == "flashDetect"){
+							html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + objectsQueue.getIndexData(i).detectTime + '</strong>">' + objectsQueue.getIndexData(i).detectTime + '</span></div><div class="info_photo">{% trans "Вспышка" %}</div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + objectsQueue.getIndexData(i).image + '" alt="" /></a></div></li>';
+							$("#block_list_faces2").append(html);
+							count++;
+						}
+					}
+					$("#total_obj_window").html(total_flash_objects);
+				break
+				case "6":
+					//crowd objects
+					var html = '';
+					var count = 0;
+					for (var i = objectsQueue.getLast()-1; i >= 0; i--){
+						if(objectsQueue.getIndexData(i) != null && objectsQueue.getIndexData(i).data_type == "crowd_detect"){
+							html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + objectsQueue.getIndexData(i).detectTime + '</strong>">' + objectsQueue.getIndexData(i).detectTime + '</span></div><div class="info_photo">{% trans "Скопл. людей" %}</div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + objectsQueue.getIndexData(i).image + '" alt="" /></a></div></li>';
+							$("#block_list_objects").append(html);
+							count++;
+						}
+					}
+
+					for (var i = objectsQueue.getArrayQnt()-1; i > objectsQueue.getLast(); i--){
+						if(objectsQueue.getIndexData(i) != null && objectsQueue.getIndexData(i).data_type == "crowd_detect"){
+							html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + objectsQueue.getIndexData(i).detectTime + '</strong>">' + objectsQueue.getIndexData(i).detectTime + '</span></div><div class="info_photo">{% trans "Скопл. людей" %}</div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + objectsQueue.getIndexData(i).image + '" alt="" /></a></div></li>';
+							$("#block_list_faces2").append(html);
+							count++;
+						}
+					}
+					$("#total_obj_window").html(total_crowd_objects);
+				break
+			}
+
+			$("#objects_window_time_interval").html($("#time-begin").html() + " - " + $("#time-left").html());
+			$("#total_objects_window").html(total_objects);
+		}
+
+		//show detects window
+		function createDetectsWindow() {
+			$("#block_list_faces2").empty();
+
+			var html = '';
+			var count = 0;
+			for (var i = detectsQueue.getLast()-1; i >= 0; i--){
+				if(detectsQueue.getIndexData(i) != null){
+					html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + detectsQueue.getIndexData(i).detectTime + '</strong>">' + detectsQueue.getIndexData(i).detectTime + '</span></div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + detectsQueue.getIndexData(i).carousel_image + '" alt="" /></a></div></li>';
+					$("#block_list_faces2").append(html);
+					count++;
+				}
+			}
+
+			for (var i = detectsQueue.getArrayQnt()-1; i > detectsQueue.getLast(); i--){
+				if(detectsQueue.getIndexData(i) != null){
+					html = '<li><div class="info_photo"><span class="param_photo time short_descr" title="{% trans "Время" %}: <strong>' + detectsQueue.getIndexData(i).detectTime + '</strong>">' + detectsQueue.getIndexData(i).detectTime + '</span></div><div class="photo"><a href="#"><img src="data:image/jpeg;base64,' + detectsQueue.getIndexData(i).carousel_image + '" alt="" /></a></div></li>';
+					$("#block_list_faces2").append(html);
+					count++;
+				}
+			}
+
+			$("#detects_window_count").html(count);
+			$("#detects_window_time_interval").html($("#time-begin").html() + " - " + $("#time-left").html());
+			$(".short_descr").easyTooltip();
+		}
+
+		//show objects window
+		function createObjectsWindow() {
+			objectsFilter();
+		}
+
+		//show detects window
+		function createIdentsWindow() {
+			var personIdIgnore = {};
+			$("#block_list_idents").empty();
+			var count = 0;
+
+			var html = '';
+			for (var i = identsQueue.getLast()-1; i >= 0; i--){
+				if(identsQueue.getIndexData(i) != null){
+					var pname = '{% trans "Неизвестно" %}';
+					var url = "#";
+					if(typeof personNameStory[identsQueue.getIndexData(i).person_id] !== "undefined")
+					{
+						pname = personNameStory[identsQueue.getIndexData(i).person_id];
+						if(!isOperator){	
+							url = personURLStory[identsQueue.getIndexData(i).person_id];
+						}
+					}
+
+					if(identsQueue.getIndexData(i).person_name !== ""){
+						pname = identsQueue.getIndexData(i).person_name;
+					}
+
+					var target = '';
+					if(url != "#"){
+						target = ' style="cursor: pointer;" target="_blank" ';
+					}
+					
+					var title = '<div>{% trans "Имя" %}: <strong>' + pname + '</strong></div><div class=\'info_delim\'></div><div>{% trans "Количество идентификаций" %}: <strong>' + identsQueue.getIndexData(i).idents_count + '</strong></div><div>{% trans "Время" %}: <strong>' + identsQueue.getIndexData(i).detectTime + '</strong></div><div>{% trans "Коэффициент похожести" %}: <strong>' + setKoeffFormat(identsQueue.getIndexData(i).factor) + '</strong></div><div class=\'info_delim\'></div><div>{% trans "Расстояние между глазами" %}: <strong>' + setKoeffFormat(identsQueue.getIndexData(i).eyes_distance, 1) + '</strong></div>';
+					
+					if(identsQueue.getIndexData(i).focusfactor.length > 0){
+						title += '<div>{% trans "Фокус" %}: <strong>' + identsQueue.getIndexData(i).focusfactor + '</strong></div>'
+					}
+					if(identsQueue.getIndexData(i).noisefactor.length > 0){
+						title += '<div>{% trans "Шум" %}: <strong>' + identsQueue.getIndexData(i).noisefactor + '</strong></div>';
+					}
+					if(identsQueue.getIndexData(i).noiseStdDev.length > 0){
+						title += '<div>{% trans "Сигнал / Шум" %}: <strong>' + identsQueue.getIndexData(i).noiseStdDev + '</strong></div><!--<div>Математическое ожидание: <strong>87.7</strong></div><div>Среднее отклонение: <strong>48.7</strong></div>-->';
+					}
+					
+					
+					html = '<li><table cellpadding="0px" cellspacing="0px" class="table_list_ident2"><tr>';
+					html += '<td><span class="sign_photo">{% trans "Фото с камеры" %}</span><div class="block_photo_cam short_descr" title="' + title + '"><a ' + target + ' href="' + url + '"><img src="data:image/jpeg;base64,' + identsQueue.getIndexData(i).image + '" alt="" /></a><div class="koeff_ident">Csm=' + setKoeffFormat(identsQueue.getIndexData(i).factor) + '</div></div></td>';
+					html += '<td><span class="sign_photo">{% trans "Фото из базы" %}</span><div class="block_photo_base"><a ' + target + ' href="' + url + '"><img src="data:image/jpeg;base64,' + identsQueue.getIndexData(i).db_image + '" alt="" /></a></div></td>';
+					html += '</tr></table>';
+					html += '<div class="info_photo dist_top_small"><span class="param_photo count_ident short_descr" title="{% trans "Количество идентификаций" %}: <strong>' + identsQueue.getIndexData(i).idents_count + '</strong>">' + identsQueue.getIndexData(i).idents_count + '</span><span class="param_photo time short_descr" title="{% trans "Время последней идентификации" %}: <strong>' + identsQueue.getIndexData(i).detectTime + '</strong>">' + identsQueue.getIndexData(i).detectTime + '</span><span class="param_photo eye short_descr" title="{% trans "Расстояние между глазами" %}: <strong>' + setKoeffFormat(identsQueue.getIndexData(i).eyes_distance, 'FULL') + '</strong>">' + setKoeffFormat(identsQueue.getIndexData(i).eyes_distance, 1) + '</span></div>';
+					html += '<div class="info_photo">' + pname + '</div></li>';
+
+
+					if(typeof personIdIgnore[identsQueue.getIndexData(i).person_id] === "undefined")
+					{
+						$("#block_list_idents").append(html);
+						count++;
+						personIdIgnore[identsQueue.getIndexData(i).person_id] = 1;
+					}
+				}
+			}
+
+			for (var i = identsQueue.getArrayQnt()-1; i > identsQueue.getLast(); i--){
+				if(identsQueue.getIndexData(i) != null){
+					var pname = '{% trans "Неизвестно" %}';
+					if(identsQueue.getIndexData(i).person_name !== ""){
+						pname = identsQueue.getIndexData(i).person_name.substring(0,15) + "...";
+					}
+					
+					var title = '<div>{% trans "Имя" %}: <strong>' + pname + '</strong></div><div class=\'info_delim\'></div><div>{% trans "Количество идентификаций" %}: <strong>' + identsQueue.getIndexData(i).idents_count + '</strong></div><div>{% trans "Время" %}: <strong>' + identsQueue.getIndexData(i).detectTime + '</strong></div><div>{% trans "Коэффициент похожести" %}: <strong>' + setKoeffFormat(identsQueue.getIndexData(i).factor) + '</strong></div><div class=\'info_delim\'></div><div>{% trans "Расстояние между глазами" %}: <strong>' + setKoeffFormat(identsQueue.getIndexData(i).eyes_distance, 1) + '</strong></div>';
+					
+					if(identsQueue.getIndexData(i).focusfactor.length > 0){
+						title += '<div>{% trans "Фокус" %}: <strong>' + identsQueue.getIndexData(i).focusfactor + '</strong></div>'
+					}
+					if(identsQueue.getIndexData(i).noisefactor.length > 0){
+						title += '<div>{% trans "Шум" %}: <strong>' + identsQueue.getIndexData(i).noisefactor + '</strong></div>';
+					}
+					if(identsQueue.getIndexData(i).noiseStdDev.length > 0){
+						title += '<div>{% trans "Сигнал / Шум" %}: <strong>' + identsQueue.getIndexData(i).noiseStdDev + '</strong></div><!--<div>Математическое ожидание: <strong>87.7</strong></div><div>Среднее отклонение: <strong>48.7</strong></div>-->';
+					}
+					
+					html = '<li><table cellpadding="0px" cellspacing="0px" class="table_list_ident2"><tr>';
+					html += '<td>{% trans "Фото с камеры" %}<div class="block_photo_cam short_descr" title="' + title + '"><a href="#"><img src="data:image/jpeg;base64,' + identsQueue.getIndexData(i).image + '" alt="" /></a><div class="koeff_ident">Csm=' + setKoeffFormat(identsQueue.getIndexData(i).factor) + '</div></div></td>';
+					html += '<td>{% trans "Фото из базы" %}<div class="block_photo_base"><a href="#"><img src="data:image/jpeg;base64,' + identsQueue.getIndexData(i).db_image + '" alt="" /></a></div></td>';
+					html += '</tr></table>';
+					html += '<div class="info_photo dist_top_small"><span class="param_photo count_ident short_descr" title="{% trans "Количество идентификаций" %}: <strong>' + identsQueue.getIndexData(i).idents_count + '</strong>">' + identsQueue.getIndexData(i).idents_count + '</span><span class="param_photo time short_descr" title="{% trans "Время последней идентификации" %}: <strong>' + identsQueue.getIndexData(i).detectTime + '</strong>">' + identsQueue.getIndexData(i).detectTime + '</span><span class="param_photo eye short_descr" title="{% trans "Расстояние между глазами" %}: <strong>' + setKoeffFormat(identsQueue.getIndexData(i).eyes_distance, 'FULL') + '</strong>">' + setKoeffFormat(identsQueue.getIndexData(i).eyes_distance, 1) + '</span></div>';
+					html += '<div class="info_photo"><span class="param_photo">' + pname + '</span></div></li>';
+
+
+					if(typeof personIdIgnore[identsQueue.getIndexData(i).person_id] === "undefined")
+					{
+						$("#block_list_idents").append(html);
+						count++;
+						personIdIgnore[identsQueue.getIndexData(i).person_id] = 1;
+					}
+				}
+			}
+
+
+			$("#idents_window_count").html(count);
+			$("#idents_window_time_interval").html($("#time-begin").html() + " - " + $("#time-left").html());
+			$(".short_descr").easyTooltip();
+		}
+
+		function updateWindows(){
+			createIdentsWindow();
+			//createDetectsWindow();
+		}
+		setInterval('updateWindows()', 1000);	
+
+		{% include "system_blocks/draw_js_functions.html" %}
+
+		//render loop
+		function renderSVGObjects(){
+			svgObjects.clear();
+
+			//очищаем очередь, если время отображения истекло
+			var cur_draw_time = new Date();
+
+			if(cur_draw_time.getTime()-sep_objects_receive_time > sep_objects_draw_delay_time){
+				sep_objects_queue = [];
+			}
+
+			if(cur_draw_time.getTime()-lt_objects_receive_time > lt_objects_draw_delay_time){
+				lt_objects_queue = [];
+			}
+
+			if(cur_draw_time.getTime()-face_objects_receive_time > face_objects_draw_delay_time){
+				face_objects_queue = [];
+			}
+
+			if(cur_draw_time.getTime()-fire_objects_receive_time > fire_objects_draw_delay_time){
+				fire_objects_queue = [];
+			}
+
+			if(cur_draw_time.getTime()-smoke_objects_receive_time > smoke_objects_draw_delay_time){
+				smoke_objects_queue = [];
+			}
+
+			if(cur_draw_time.getTime()-flash_objects_receive_time > flash_objects_draw_delay_time){
+				flash_objects_queue = [];
+			}
+
+			if(cur_draw_time.getTime()-left_objects_receive_time > left_objects_draw_delay_time){
+				left_objects_queue = [];
+			}
+
+			//svgObjects.line(0,0, 630, 320, {stroke: '#ff0000', strokeWidth: OBJ_LINE_WIDTH});
+
+			//face objects
+			for(var q = 0; q < face_objects_queue.length; q++){
+				data = face_objects_queue[q];
+
+				var OBJ_COLORS = ['#66FF33', '#FFCC33', '#33CCFF', '#FF00FF', '#FFFF00', '#FF0000'];
+				var cur_color = 0;
+				for (var i = 0; i < data.length; i++){
+					try{
+						//функция находится в файле system_blocks/draw_js_functions.html, рисует рамку и лицо
+						face_length = drawFace(data[i], OBJ_COLORS[cur_color]);
+
+						//var bal_id = "";
+						//if( data[i].bal_id != null){
+						//	bal_id = "ID - " + data[i].bal_id + "";
+						//}
+
+						//svgObjects.text(data[i].bot_l[0], data[i].bot_l[1] + 20, bal_id, {fill: OBJ_COLORS[cur_color], class_: "svgDraw_text"});
+
+						if(data[i].ident_factor > boundFactor){
+							createArrowIdent({x: data[i].top_l[0], y: data[i].top_l[1], width: data[i].bot_r[0] - data[i].top_l[0], color: OBJ_COLORS[cur_color]});
+						}
+					}catch(e){
+					}
+					cur_color++;
+					if(cur_color >= OBJ_COLORS.length)
+					{
+						cur_color = 0;
+					}
+				}
+			}
+
+			//separating objects
+			for(var q = 0; q < sep_objects_queue.length; q++){
+				data = sep_objects_queue[q];
+
+				var OBJ_COLORS = ['#66FF33', '#FFCC33', '#33CCFF', '#FF00FF', '#FFFF00', '#FF0000'];
+				var cur_color = 0;
+				for (var i = 0; i < data.length; i++){
+
+					//карусель объектов
+					//data[i].detectTime = getIdentTime();
+					data[i].frame_color = OBJ_COLORS[cur_color];
+					if(data[i].need_to_show == 1){
+						objectsQueue.exPush(data[i]);
+						total_objects++;
+						total_sep_objects++;
+						$("#total_objects").html(total_objects);
+						//$("#total_sep_objects").html(total_sep_objects);
+					}
+					data[i].need_to_show = 0;
+
+					//squares	
+					try{
+						for (var j = 0; j < data[i].crds.length; j++){
+							svgObjects.line(data[i].crds[j][1] * data[i].b_w * data[i].factor, data[i].crds[j][0] * data[i].b_h * data[i].factor, ((data[i].crds[j][1] * data[i].b_w) + data[i].b_w) * data[i].factor, data[i].crds[j][0] * data[i].b_h * data[i].factor, {stroke: OBJ_COLORS[cur_color], strokeWidth: OBJ_LINE_WIDTH});
+							svgObjects.line(data[i].crds[j][1] * data[i].b_w * data[i].factor, data[i].crds[j][0] * data[i].b_h * data[i].factor, data[i].crds[j][1] * data[i].b_w * data[i].factor, ((data[i].crds[j][0] * data[i].b_h) + data[i].b_h) * data[i].factor, {stroke: OBJ_COLORS[cur_color], strokeWidth: OBJ_LINE_WIDTH});
+							svgObjects.line(((data[i].crds[j][1] * data[i].b_w) + data[i].b_w) * data[i].factor, data[i].crds[j][0] * data[i].b_h * data[i].factor, ((data[i].crds[j][1] * data[i].b_w) + data[i].b_w) * data[i].factor, ((data[i].crds[j][0] * data[i].b_h) + data[i].b_h) * data[i].factor, {stroke: OBJ_COLORS[cur_color], strokeWidth: OBJ_LINE_WIDTH});
+							svgObjects.line(data[i].crds[j][1] * data[i].b_w * data[i].factor, ((data[i].crds[j][0] * data[i].b_h) + data[i].b_h) * data[i].factor, ((data[i].crds[j][1] * data[i].b_w) + data[i].b_w) * data[i].factor, ((data[i].crds[j][0] * data[i].b_h) + data[i].b_h) * data[i].factor, {stroke: OBJ_COLORS[cur_color], strokeWidth: OBJ_LINE_WIDTH});
+						}
+					}catch(e){
+					}
+
+					cur_color++;
+					if(cur_color >= OBJ_COLORS.length)
+					{
+						cur_color = 0;
+					}
+				}
+			}
+
+			//leftthings objects
+			for(var q = 0; q < left_objects_queue.length; q++){
+				data = left_objects_queue[q];
+				var carousel_data = left_objects_queue[q];
+
+				for (var i = 0; i < data.length; i++){
+					try {
+						svgObjects.polygon([[data[i].l_x, data[i].l_y], [data[i].r_x, data[i].l_y],[data[i].r_x, data[i].r_y], [data[i].l_x, data[i].r_y]], { fill: "#cc00cc", stroke: "#cc00cc", strokeWidth: OBJ_LINE_WIDTH, fillOpacity: OBJ_FILL_ALPHA, class_: "svgDraw_polyline", id: "svgDraw_polyline"});						
+						svgObjects.text(data[i].l_x - 1, data[i].r_y + 20 + 1, "ID: " + data[i].id + "; {% trans 'ОСТ. ВЕЩЬ' %}", {fill: "#000000", class_: "svgDraw_text"});
+						svgObjects.text(data[i].l_x, data[i].r_y + 20, "ID: " + data[i].id + "; {% trans 'ОСТ. ВЕЩЬ' %}", {fill: "#cc00cc", class_: "svgDraw_text"});
+					}catch(e){
+					}
+				}
+				/*
+				ddst = new Date();
+				if((ddst.getTime() - detectors_leftthings_delay_start_time) > leftthings_add_to_car_delay_time) {
+					for (var i = 0; i < carousel_data.length; i++){
+						carousel_data[i].frame_color = "#cc00cc";
+						if(carousel_data[i].need_to_show == 1){
+							objectsQueue.exPush(carousel_data[i]);
+							total_objects++;
+							total_lt_objects++;
+							$("#total_objects").html(total_objects);
+							$("#total_leftthings").html(total_lt_objects);
+						}
+						carousel_data[i].need_to_show = 0;
+					}
+					detectors_leftthings_delay_start_time = ddst.getTime();
+				}*/
+			}
+
+			//fire objects
+			for(var q = 0; q < fire_objects_queue.length; q++){
+				data = fire_objects_queue[q];
+				var carousel_data = fire_objects_queue[q];
+
+				for (var i = 0; i < data.length; i++){
+					try {
+						svgObjects.polygon([[data[i].l_x, data[i].l_y], [data[i].r_x, data[i].l_y],[data[i].r_x, data[i].r_y], [data[i].l_x, data[i].r_y]], { fill: "#ff0000", stroke: "#ff0000", strokeWidth: OBJ_LINE_WIDTH, fillOpacity: OBJ_FILL_ALPHA, class_: "svgDraw_polyline", id: "svgDraw_polyline"});
+						svgObjects.text(data[i].l_x - 1, data[i].r_y + 20 + 1, "ID: " + data[i].id + "; {% trans 'ОГОНЬ' %}", {fill: "#000000", class_: "svgDraw_text"});
+						svgObjects.text(data[i].l_x, data[i].r_y + 20, "ID: " + data[i].id + "; {% trans 'ОГОНЬ' %}", {fill: "#ff0000", class_: "svgDraw_text"});
+					}catch(e){
+					}
+				}
+				/*
+				ddst = new Date();
+				if((ddst.getTime() - detectors_fire_delay_start_time) > fire_add_to_car_delay_time) {
+
+					for (var i = 0; i < carousel_data.length; i++){
+						carousel_data[i].frame_color = "#ff0000";
+						if(carousel_data[i].need_to_show == 1){	
+							objectsQueue.exPush(carousel_data[i]);
+							total_objects++;
+							total_fire_objects++;
+							$("#total_objects").html(total_objects);
+							$("#total_fire_objects").html(total_fire_objects);
+						}
+						carousel_data[i].need_to_show = 0;
+					}
+					detectors_fire_delay_start_time = ddst.getTime();
+				}*/
+			}
+
+			//smoke objects
+			for(var q = 0; q < smoke_objects_queue.length; q++){
+				data = smoke_objects_queue[q];
+				var carousel_data = smoke_objects_queue[q];
+
+				for (var i = 0; i < data.length; i++){
+					try {
+						svgObjects.polygon([[data[i].l_x, data[i].l_y], [data[i].r_x, data[i].l_y],[data[i].r_x, data[i].r_y], [data[i].l_x, data[i].r_y]], { fill: "#0000ff", stroke: "#0000ff", strokeWidth: OBJ_LINE_WIDTH, fillOpacity: OBJ_FILL_ALPHA, class_: "svgDraw_polyline", id: "svgDraw_polyline"}); 
+						svgObjects.text(data[i].l_x - 1, data[i].r_y + 20 + 1, "ID: " + data[i].id + "; {% trans 'ДЫМ' %}", {fill: "#000000", class_: "svgDraw_text"});
+						svgObjects.text(data[i].l_x, data[i].r_y + 20, "ID: " + data[i].id + "; {% trans 'ДЫМ' %}", {fill: "#0000ff", class_: "svgDraw_text"});
+					}catch(e){
+					}
+				}
+				/*
+				ddst = new Date();
+				if((ddst.getTime() - detectors_smoke_delay_start_time) > smoke_add_to_car_delay_time) {
+					for (var i = 0; i < carousel_data.length; i++){
+						carousel_data[i].frame_color = "#0000ff";
+						if(carousel_data[i].need_to_show == 1){
+							objectsQueue.exPush(carousel_data[i]);
+							total_objects++;
+							total_smoke_objects++;
+							$("#total_objects").html(total_objects);
+							$("#total_smoke_objects").html(total_smoke_objects);
+						}
+						carousel_data[i].need_to_show = 0;
+					}
+					detectors_smoke_delay_start_time = ddst.getTime();
+				}*/
+			}
+
+			//flash objects
+			for(var q = 0; q < flash_objects_queue.length; q++){
+				data = flash_objects_queue[q];
+				var carousel_data = flash_objects_queue[q];
+
+				for (var i = 0; i < data.length; i++){
+					try {
+						svgObjects.polygon([[data[i].l_x, data[i].l_y], [data[i].r_x, data[i].l_y],[data[i].r_x, data[i].r_y], [data[i].l_x, data[i].r_y]], { fill: "#ff6600", stroke: "#ff6600", strokeWidth: OBJ_LINE_WIDTH, fillOpacity: OBJ_FILL_ALPHA, class_: "svgDraw_polyline", id: "svgDraw_polyline"});
+						svgObjects.text(data[i].l_x - 1, data[i].r_y + 20 + 1, "ID: " + data[i].id + "; {% trans 'ВСПЫШКА' %}", {fill: "#000000", class_: "svgDraw_text"});
+						svgObjects.text(data[i].l_x, data[i].r_y + 20, "ID: " + data[i].id + "; {% trans 'ВСПЫШКА' %}", {fill: "#ff6600", class_: "svgDraw_text"});
+
+					}catch(e){
+					}
+				}
+				/*
+				ddst = new Date();
+				if((ddst.getTime() - detectors_flash_delay_start_time) > flash_add_to_car_delay_time) {
+					for (var i = 0; i < carousel_data.length; i++){
+						carousel_data[i].frame_color = "#ff6600";
+						if(carousel_data[i].need_to_show == 1){
+							objectsQueue.exPush(carousel_data[i]);
+							total_objects++;
+							total_flash_objects++;
+							$("#total_objects").html(total_objects);
+							$("#total_flash_objects").html(total_flash_objects);
+						}
+						carousel_data[i].need_to_show = 0;
+					}
+					detectors_flash_delay_start_time = ddst.getTime();
+				}*/
+			}
+		}
+		setInterval('renderSVGObjects()', 100);
+
+		$(document).ready(function() {
+			$('#face_idents_elements_tape').css('margin-left', '-135px');
+			checkJournalForDetects();
+			checkVAJournalForDetects();
+		});
+
+		{% endif %}
+	</script>
+{% endblock %}
+{% block windows %}
+{% include "window_ident_js.html" %}
+{% endblock %}

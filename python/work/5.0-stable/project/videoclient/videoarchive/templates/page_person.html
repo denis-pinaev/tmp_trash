@@ -1,0 +1,145 @@
+{% load i18n %}
+{% include "a_header.html" %}
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/persons.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2><a href="{{ root_path }}/page_persons/">Персоны</a> - Фотографии персоны №1<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				{% include "current_time.html" %}
+				<form method="post" action="">
+					<div>Всего фотографий: <span class="info_important">18</span></div>
+					<div class="frm_block">
+						<div class="bl_btn_check">
+							<input type="button" name="" value="Выделить всё" class="inp_btn inp_btn120" onClick="javascript: checkAll('choose_all', 12);" />
+							<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAll(this, 12);" id="choose_all" />
+						</div>
+						<input type="button" name="" value="Экспорт фотографий" class="inp_btn inp_btn170 dist_btn" onClick="javascript: showMessageExport(12, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						<input type="button" name="" value="Удалить выделенные" class="inp_btn inp_btn170 dist_btn" onClick="javascript: showMessageDelete(12, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+					</div>					
+					<ul class="list_photos">
+						<li>
+							<div class="block_photo" onClick="javascript: checkPhoto2(this, 1, 12);"><img src="{{ root_path }}/files/images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<div class="block_info">Разрешение:<span class="info_add">640x480</span></div>
+							<input type="checkbox" name="" value="value1" class="inp_check" id="check1" onClick="javascript: checkPhoto(this, 12);" />
+						</li>
+						<li>
+							<div class="block_photo" onClick="javascript: checkPhoto2(this, 2, 12);"><img src="{{ root_path }}/files/images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<div class="block_info">Разрешение:<span class="info_add">640x480</span></div>
+							<input type="checkbox" name="" value="value2" class="inp_check" id="check2" onClick="javascript: checkPhoto(this, 12);" />
+						</li>
+						<li>
+							<div class="block_photo" onClick="javascript: checkPhoto2(this, 3, 12);"><img src="{{ root_path }}/files/images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<div class="block_info">Разрешение:<span class="info_add">640x480</span></div>
+							<input type="checkbox" name="" value="value3" class="inp_check" id="check3" onClick="javascript: checkPhoto(this, 12);" />
+						</li>
+						<li>
+							<div class="block_photo" onClick="javascript: checkPhoto2(this, 4, 12);"><img src="{{ root_path }}/files/images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<div class="block_info">Разрешение:<span class="info_add">640x480</span></div>
+							<input type="checkbox" name="" value="value4" class="inp_check" id="check4" onClick="javascript: checkPhoto(this, 12);" />
+						</li>
+						<li>
+							<div class="block_photo" onClick="javascript: checkPhoto2(this, 5, 12);"><img src="{{ root_path }}/files/images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<div class="block_info">Разрешение:<span class="info_add">640x480</span></div>
+							<input type="checkbox" name="" value="value5" class="inp_check" id="check5" onClick="javascript: checkPhoto(this, 12);" />
+						</li>
+						<li>
+							<div class="block_photo" onClick="javascript: checkPhoto2(this, 6, 12);"><img src="{{ root_path }}/files/images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<div class="block_info">Разрешение:<span class="info_add">640x480</span></div>
+							<input type="checkbox" name="" value="value6" class="inp_check" id="check6" onClick="javascript: checkPhoto(this, 12);" />
+						</li>
+						<li>
+							<div class="block_photo" onClick="javascript: checkPhoto2(this, 7, 12);"><img src="{{ root_path }}/files/images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<div class="block_info">Разрешение:<span class="info_add">640x480</span></div>
+							<input type="checkbox" name="" value="value7" class="inp_check" id="check7" onClick="javascript: checkPhoto(this, 12);" />
+						</li>
+						<li>
+							<div class="block_photo" onClick="javascript: checkPhoto2(this, 8, 12);"><img src="{{ root_path }}/files/images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<div class="block_info">Разрешение:<span class="info_add">640x480</span></div>
+							<input type="checkbox" name="" value="value8" class="inp_check" id="check8" onClick="javascript: checkPhoto(this, 12);" />
+						</li>
+						<li>
+							<div class="block_photo" onClick="javascript: checkPhoto2(this, 9, 12);"><img src="{{ root_path }}/files/images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<div class="block_info">Разрешение:<span class="info_add">640x480</span></div>
+							<input type="checkbox" name="" value="value9" class="inp_check" id="check9" onClick="javascript: checkPhoto(this, 12);" />
+						</li>
+						<li>
+							<div class="block_photo" onClick="javascript: checkPhoto2(this, 10, 12);"><img src="{{ root_path }}/files/images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<div class="block_info">Разрешение:<span class="info_add">640x480</span></div>
+							<input type="checkbox" name="" value="value10" class="inp_check" id="check10" onClick="javascript: checkPhoto(this, 12);" />
+						</li>
+						<li>
+							<div class="block_photo" onClick="javascript: checkPhoto2(this, 11, 12);"><img src="{{ root_path }}/files/images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<div class="block_info">Разрешение:<span class="info_add">640x480</span></div>
+							<input type="checkbox" name="" value="value11" class="inp_check" id="check11" onClick="javascript: checkPhoto(this, 12);" />
+						</li>
+						<li>
+							<div class="block_photo" onClick="javascript: checkPhoto2(this, 12, 12);"><img src="{{ root_path }}/files/images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<div class="block_info">Разрешение:<span class="info_add">640x480</span></div>
+							<input type="checkbox" name="" value="value12" class="inp_check" id="check12" onClick="javascript: checkPhoto(this, 12);" />
+						</li>						
+					</ul>
+					<!--<div class="btn_result"><input type="button" name="" value="Ещё персоны" class="inp_btn inp_btn170" /></div>-->
+					<div class="frm_block">
+						<div class="bl_btn_check">
+							<input type="button" name="" value="Выделить всё" class="inp_btn inp_btn120" onClick="javascript: checkAll('choose_all2', 12);" />
+							<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAll(this, 12);" id="choose_all2" />
+						</div>
+						<input type="button" name="" value="Экспорт фотографий" class="inp_btn inp_btn170 dist_btn" onClick="javascript: showMessageExport(12, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						<input type="button" name="" value="Удалить выделенные" class="inp_btn inp_btn170 dist_btn" onClick="javascript: showMessageDelete(12, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+					</div>					
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "a_footer.html" %}
+
+<div id="win_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="Закрыть окно" /></div>
+			<div class="headWF_txt" id="win_mess_headWF">Предупреждение</div>
+		</div>
+		<div class="contWF" id="win_mess_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="ОК" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />    
+		</div>
+	</div>
+</div>
+<div id="win_del" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_del');" title="Закрыть окно" /></div>
+			<div class="headWF_txt">Удаление</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_del_contWF"></div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="Да" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_del');" />
+			<input type="button" name="" value="Нет" class="btn_wf" onClick="javascript: closeChangeWindow('win_del');" />
+		</div>
+	</div>
+</div>
+<div id="win_export" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_export');" /></div>
+			<div class="headWF_txt">Экспорт фотографий</div>
+		</div>
+		<div class="contWF" id="win_export_contWF">&nbsp;</div>
+		<div class="footerWF">
+			<input type="button" name="" value="Да" class="btn_wf_blue" onClick="
+				javascript: saveArchive(true);" />		
+			<input type="button" name="" value="Нет" class="btn_wf" onClick="javascript: closeChangeWindow('win_export');" />
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

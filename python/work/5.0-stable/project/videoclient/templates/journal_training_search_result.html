@@ -1,0 +1,37 @@
+{% load i18n %}
+{% load templatetags %}
+{% if search_status %}
+<script type="text/javascript">
+function updateSearchUrlLink(group_id, id){
+	var url = urls_arr[group_id] + id + '/?group=' + group_id + '&journal_ids=' + persIdVals.join(',');
+	$('#searchUrlLink_' + id).attr('href', url);
+	doTimeRefresh();
+}
+function selectPID(id_person, id_obj) {
+	p_id = id_person;
+	$("#list_photos li").removeClass("sel");
+	var inp = $("#" + id_obj);
+	inp.attr("checked", "checked");
+	inp.parent().parent().addClass("sel");
+}
+</script>
+<ul class="block list_photos" id="list_photos">
+	{% for res in results %}
+	<li{% if forloop.first %} class="sel"{% endif %}>
+		<div class="block_photo" id="searchUrlLink_{{ res.person.pk }}" onClick="javascript: selectPID('{{ res.person.pk }}', 'person_search_{{ res.person.pk }}');"><div class="block_name short_descr" title="{{ res.person.first_name }} {{ res.person.last_name }} {{ res.person.middle_name }}">{{ res.person.first_name }} {{ res.person.last_name }} {{ res.person.middle_name }}</div>{% if res|getPersonPhotoById %}<img src="{{ res|getPersonPhotoById }}" alt="" />{% else %}<img src="/files/images/no_photo120x120.gif" alt="" />{% endif %}</div>
+		<div class="block_check"><input type="radio" name="person_search" id="person_search_{{ res.person.pk }}" value="" class="inp_check" onClick="javascript: selectPID('{{ res.person.pk }}', 'person_search_{{ res.person.pk }}');"{% if forloop.first %} checked="checked"{% endif %} /></div>
+		{% if res|getPersonPhotoById %}<a href="{{ res|getPersonPhotoById }}&big=.jpg" class="btn_loupe" target="_blank"><span class="short_descr" title="Увеличить изображение"></span></a>{% endif %}
+		<a href="#" onClick="personLink('{{ res.person.pk }}', '{{ res.person.group.pk }}');">{% trans "Перейти к анкете" %} &raquo;</a>
+		{% if forloop.first %}<script type="text/javascript">selectPID('{{ res.person.pk }}', 'person_search_{{ res.person.pk }}');</script>{% endif %}
+	</li>	
+	{% endfor %}
+</ul>
+{% else %}
+{% trans "Персона" %} <strong>"{{ search }}"</strong> {% trans "не найдена" %}.
+{% endif %}
+<script type="text/javascript">
+$(function() {
+	setupZoom();
+	initTooltip();
+});
+</script>

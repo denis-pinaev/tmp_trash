@@ -1,0 +1,64 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+var MESSAGES = {
+	"answer": "{% trans 'Вы действительно хотите перезапустить систему?' %}",
+	"success": "{% trans 'Система перезапущена' %}.",
+	"error": "{% trans 'Ошибка перезапуска системы' %}."
+}
+// перезапуск системы
+function reboot_system(params){
+    $.ajax({
+        type: "GET",
+        url: "/control_settings/rebootsystem/",
+        data: {},
+        success: function(msg){
+            if (msg == "True") { 
+                if (params.type && (params.type == 'save')) {
+					runStrFunc(params.hooks && params.hooks.hook_success_save_and_reboot ? params.hooks.hook_success_save_and_reboot : 'showMessage(\'' + SET_SAVE_APPLY + '\')');			
+                } else {
+					runStrFunc(params.hooks && params.hooks.hook_success_reboot ? params.hooks.hook_success_reboot : 'showMessage(\'' + MESSAGES["success"] + '\')');
+                }             
+            }
+            else {
+                if (params.type && (params.type == 'save')) {
+					runStrFunc(params.hooks && params.hooks.hook_error_save_and_reboot ? params.hooks.hook_error_save_and_reboot : 'showMessage("' + SET_SAVE + '<div class=\'error dist_top\'>' + MESSAGES["error"] + '</div>")');
+                } else {
+					runStrFunc(params.hooks && params.hooks.hook_error_reboot ? params.hooks.hook_error_reboot : 'showMessage("<div class=\'error\'>' + MESSAGES["error"] + '</div>")');
+                }              
+            }
+        },
+        error: function(msg){
+            if (params.type && (params.type == 'save')) {
+				runStrFunc(params.hooks && params.hooks.hook_error_save_and_reboot ? params.hooks.hook_error_save_and_reboot : 'showMessage("' + SET_SAVE + '<div class=\'error dist_top\'>' + MESSAGES["error"] + '</div>")');
+            } else {
+                runStrFunc(params.hooks && params.hooks.hook_error_reboot ? params.hooks.hook_error_reboot : 'showMessage("<div class=\'error\'>' + MESSAGES["error"] + '</div>")');
+            }
+        }
+    });
+}
+function reboot_system_window(params) {
+	var btn_ok = $("#win_reboot div.bodyWF div.footerWF input[type=button].btn_wf_blue");
+	btn_ok.unbind("click");
+	btn_ok.bind("click", function() {
+		closeChangeWindow('win_reboot'); reboot_system(params ? params : {});
+	})
+	changeWindow({id: "win_reboot", css: {width: '300px', height: '200px'}, txt: MESSAGES["answer"]});	
+}
+function runStrFunc(func) {
+	if (func != null) eval(func);
+}
+</script>
+<div id="win_reboot" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_reboot');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Перезапуск системы" %}</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add" id="win_reboot_contWF"></div></div>
+        <div class="footerWF">
+            <input type="button" name=""  value="{% trans "Перезапуск" %}" class="btn_wf_blue" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_reboot');" />
+        </div>
+    </div>
+</div>

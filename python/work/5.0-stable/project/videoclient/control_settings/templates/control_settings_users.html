@@ -1,0 +1,46 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Пользователи управляющей системы' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/lists.css?v=v{{ version }}" />
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+	{% include "menu_control_settings.html" %}
+	<div class="block">
+		<h2>{% trans "Пользователи управляющей системы" %}  {{ HOST }}:{{ PORT }} <input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Пользователи управляющей системы' %}');" /></h2>
+	</div>
+	{% include "current_time.html" %}
+	{% if us_error %}
+		<div class="message_warning">{% trans "Управляющая система" %} <strong>"{{ HOST }}:{{ PORT }}"</strong> {% trans "недоступна." %}</div>
+	{% else %}        
+		<form method="post" action="">
+			<div>{% trans "Общее количество пользователей" %}: <span class="info_important">{{ all_count|default:0 }}</span></div>
+			 <div class="frm_block"><a href="/control_settings/add_user/" class="link_btn">{% trans "Добавить" %}</a></div>
+			{% include "control_settings_numerations.html" %}
+			{% if users and users|length > 0 %}
+				<div class="frm_block">
+				<table cellpadding="0px" cellspacing="0px" border="0px" class="list_users">
+					<tr>
+						<th class="first">{% trans "Логин" %}</th>
+					</tr>
+					{% for user in users %}
+					<tr{% cycle "" " class='odd'" %} onMouseOver="javascript: overRow(this);" onMouseOut="javascript: outRow(this);">
+						<td class="first"><a href="/control_settings/user/{{ user.login }}" id="user{{forloop.counter}}" class="blue">{{ user.login }}</a></td>
+					</tr>
+					{% endfor %}
+				</table>
+				</div>
+			{% endif %}
+			{% include "control_settings_numerations.html" %}
+			{% if users and users|length > 0 %}
+			<div class="frm_block"><a href="/control_settings/add_user/" class="link_btn">{% trans "Добавить" %}</a></div>  
+			{% endif %}
+		</form>
+	{% endif %}
+{% endblock %}
+{% block windows %}
+{% include "control_settings_window_users.html"%}
+{% include "window_reboot_us.html"%}
+{% endblock %}

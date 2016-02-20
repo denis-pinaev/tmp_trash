@@ -1,0 +1,30 @@
+{% load i18n %}
+{% load templatetags %}
+<div style="display: none;" id="block_fon" class="info_photo_block2"> </div>
+<div id="win_help" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_help');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Помощь" %}</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_help_contWF"></div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_help');" />	
+		</div>
+	</div>
+</div>
+{% if balancer_need_configure %}
+<div id="win_balancer_error" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_balancer_error');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Внимание!" %}</div>
+		</div>
+		<div class="contWF" id="win_balancer_error_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_balancer_error');" />	
+		</div>
+	</div>
+</div>
+<script type="text/javascript">changeWindow({id: 'win_balancer_error', css: {width: '300px', height: '200px'}, txt: '<div class="errorUS">{% trans "Система не настроена." %}</div> <div>{% trans 'Для того чтобы настроить систему, перейдите к' %} <a href="/wizard/" class="blue"><strong>{% trans 'мастеру настроек' %}</strong></a>.</div>'});</script>
+{% endif %}

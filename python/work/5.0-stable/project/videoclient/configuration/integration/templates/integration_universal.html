@@ -1,0 +1,89 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Настройка универсальных оповещений' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/settings_integration.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/settings_integration.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript">
+var ERROR1 = "{% trans "Обязательное поле для заполнения" %}";
+var ERROR_GLOBAL = "{% trans "Внимание! Произошла ошибка при сохранении настроек для универсальных сообщений. Попробуйте ещё раз." %}";
+var SET_SAVE = "{% trans "Настройки для универсальных сообщений успешно сохранены" %}.";
+var SET_SAVE_APPLY = "{% trans "Настройки для универсальных сообщений успешно сохранены и применены" %}.";
+$(function() {
+    initUniversalAlerts();
+});
+// функция для сбрасывания настроек
+function resetParamsForm() {
+	var validator = $("#formIntegration").validate();
+	validator.resetForm();
+	checkAlertUniversal();
+}
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+{% include "integration_menu.html" %}
+<h2>{% trans "Настройка универсальных оповещений" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showContextHelp('integration_settings');" /></h2>
+{% include "current_time.html" %}
+{% if params.us_error %}
+	<div class="message_warning">{% trans "Управляющая система" %} <strong>"{{ params.HOST }}:{{ params.PORT }}"</strong> {% trans "недоступна." %}</div>
+{% else %}
+<form method="post" action="" id="formIntegration">
+	<div class="block_form">{% trans "Поля, отмеченные звёздочкой" %} (<span class="req">*</span>), {% trans "являются обязательными для заполнения" %}.</div>
+	<div class="message_action" style="display: none;"></div>
+	<div class="message_warning" style="display: none;"></div>	
+	<div class="bl_param">
+		<div class="block">
+			<label for="universal_alerts_yes" class="bl_txt">{% trans "Универсальные оповещения" %}:</label>
+			<div class="bl_enter">
+				<input type="radio" name="system_control_external_need_alert" id="universal_alerts_yes" value="true" class="inp_check" {% if params.system_control_external_need_alert == 'true' %}checked="checked" {% endif %} /><label for="universal_alerts_yes">{% trans "Включить" %}</label>
+				<input type="radio" name="system_control_external_need_alert" id="universal_alerts_no" value="false" class="inp_check dist_left" {% if params.system_control_external_need_alert == 'false' or not params.system_control_external_need_alert %}checked="checked" {% endif %} /><label for="universal_alerts_no">{% trans "Выключить" %}</label>
+			</div>
+		</div>
+	</div>
+	<div id="settings_universal_alerts" style="display: none;">
+		<div class="delim_block"></div> 
+		<div class="bl_param">
+			<div class="bl_error"></div>
+			<div class="block">
+				<label for="script_videoanalytics" class="bl_txt"><span class="req">*</span>{% trans "Скрипт для отправки оповещений видеоаналитики" %}:</label>
+				<div class="bl_enter">
+					<input type="text" name="system_control_external_analytics_alert_script_name" value="{{ params.system_control_external_analytics_alert_script_name }}" class="inp_txt" id="script_videoanalytics" />
+				</div>
+			</div>
+		</div>
+		<div class="bl_param">
+			<div class="bl_error"></div>
+			<div class="block">
+				<label for="script_identification" class="bl_txt"><span class="req">*</span>{% trans "Скрипт для отправки оповещений идентификации" %}:</label>
+				<div class="bl_enter">
+					<input type="text" name="system_control_external_identification_alert_script_name" value="{{ params.system_control_external_identification_alert_script_name }}" class="inp_txt" id="script_identification" />
+				</div>
+			</div>
+		</div>
+		<div class="delim_block"></div>
+		<div class="bl_param">
+			<div class="block">
+				<label for="system_control_external_identification_alert_timeout" class="bl_txt"><span class="req">*</span>{% trans "Время (в мс)" %}:</label>
+				{% spinbox "system_control_external_identification_alert_timeout" "system_control_external_identification_alert_timeout" params.system_control_external_identification_alert_timeout "55" "0" "20120000" "100" %}
+				<span class="bl_help">{% trans "минимальное время между последовательными оповещениями об идентификации одной персоны" %}</span>
+			</div>
+		</div>
+	</div>
+	<div class="dist_top">
+		<input type="submit" name="" value="{% trans "Применить" %}" class="inp_btn inp_btn_blue" />
+		<input type="button" name="" value="{% trans "Отменить" %}" class="inp_btn inp_btn90 dist_left" onClick="javascript: resetParamsForm();" />
+		{% comment %}
+			<!-- Закооментировано до решения ворпоса с API УС --> 
+			<input type="button" name="" value="{% trans "Отправить тестовое сообщение" %}" class="inp_btn btn_send" />
+		{% endcomment %}
+	</div>
+</form>
+{% endif %}                    
+{% endblock %}
+{% block windows %}
+{% include "window_integration.html" %}
+{% include "window_reboot_us.html" %}
+{% endblock %}

@@ -1,0 +1,122 @@
+/* table */
+.table {
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    border-top: 1px solid #6e7d98;
+}
+.table.dist_top {
+    margin-top: 10px;
+}
+.table tr.odd {
+    background-color: #DBE2F0;
+}
+.table th {
+    vertical-align:top;
+    text-align: center;
+    border-right: 1px solid #6e7d98;
+    border-bottom: 1px solid #6e7d98;
+    background-color: #d9dee7;
+    padding: 3px 5px;
+    font-weight: normal;
+}
+.table th.th_first {
+    border-left: 1px solid #6e7d98;
+}
+.table th a,
+.table th a.sort_up,
+.table th a.sort_down {
+    padding-left: 14px;
+    background: url("/files/images/sort_arrow_down_noact.png") left center no-repeat;
+	color: #333333;
+}
+.table th a.sort_up {
+    background: url("/files/images/sort_arrow_up.png") left center no-repeat;
+}
+.table th a.sort_down {
+    background: url("/files/images/sort_arrow_down.png") left center no-repeat;
+}
+.table td {
+    border-bottom: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;
+    vertical-align: top;
+    padding: 3px 5px;    
+}
+.table td.td_first {
+    border-left: 1px solid #cccccc;
+    width: 60px;
+    overflow: hidden;
+}
+.table td.td_time {
+    width: 120px;
+}
+.table td.td_first .inp_check {
+    margin-right: 0px;
+    float: right;
+    margin-top: 3px;
+}
+.table td.td_stat {
+    width: 60px;
+}
+.table td.td_login {
+    width: 200px;    
+}
+.table td.td_login a {
+    display: block;
+}
+.table td.td_ip {
+    cursor: default;
+}
+.table td.td_ip span {
+    margin-right: 10px;
+}
+.lists_ip {
+    margin-top: 5px;
+}
+.lists_ip span {
+    margin-right: 10px;
+}
+/* content */
+.bl_btn_check {
+	width: 120px; 
+	height: 24px; 
+	text-align: left; 
+	background: url('/files/images/button120x24_up.gif') top left no-repeat;
+	float: left;
+	margin-right: 30px;
+	position: relative;	
+}
+.bl_btn_check div {
+	display: table-cell; 
+	vertical-align: middle; 
+	width: 120px;
+	height: 24px;
+	cursor: pointer; 
+}
+.bl_btn_check div .inp_check {
+	margin-left: 5px;
+	margin-right: 5px;
+	vertical-align: middle;
+}
+.bl_btn_check div label {
+	vertical-align: middle; 
+	line-height: 24px;
+	cursor: pointer;
+}
+.bl_btn {
+    margin-top: 10px;
+}
+.bl_btn .link_btn_ok {
+    float: left;
+    margin-right: 30px;
+}
+.inp_btn170 {
+    background: url('/files/images/button170x24_up.gif') top left no-repeat;
+    width: 170px;
+}
+.bl_count {
+    margin-top: 3px;
+}
+.block_upload {
+    text-align: center;
+}

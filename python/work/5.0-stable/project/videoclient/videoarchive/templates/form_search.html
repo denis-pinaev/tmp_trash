@@ -1,0 +1,199 @@
+{% load i18n %}
+{% load a_templatetags %}
+<script type="text/javascript">
+var list_sources = '';
+var link_sources = '';
+function chooseSource2(count, inp_radio, list, link) {
+    if (inp_radio) {
+        byId(inp_radio).checked = "checked";
+    }
+    if (count > 0) {
+        byId("block_error_add").style.display = "none";
+        list_sources = byId(list);
+        link_sources = byId(link);
+        changeWindow({id: 'win_choose_source', css: {width: '340px', height: '295px'}});
+    } else {
+        changeWindow({id: 'win_message', css: {width: '300px', height: '200px'}, txt: '{% trans "Нет источников для поиска" %}'});
+    }
+}
+function checkCancelSource(count) {
+    if (count > 0) {
+        var check;
+        var li;        
+        if (list_sources.style.display == 'none') {
+            var error = byId("block_error_add");
+            error.style.display = "none";        
+            byId('choose_all').checked = false;            
+            for (var i = 1; i <= count; i++) {
+                initRow(false, 'check'+i, 'LI', 'act');
+            }
+            list_sources.innerHTML = '';
+        } else {        
+            var list_source = list_sources.innerHTML;
+            if (list_source == 'Все') {
+                byId('choose_all').checked = false;
+            }
+            for (var i = 1; i <= count; i++) {
+                check = byId('check'+i);
+                var label = nextNode(check, 'LABEL');
+                var source = label.innerHTML;            
+                if (list_source.indexOf(source) > -1) {
+                    initRow(true, check, 'LI', 'act');
+                } else {
+                    initRow(false, check, 'LI', 'act');                
+                }
+            }
+        }
+    }
+}
+function initRow(active, id, nameNode, nodeClassActive) {
+    var check = byId(id);
+    var node = searchElem(check, nameNode);
+    if (active) {
+        overElem(node, nodeClassActive);
+        check.checked = 'checked';    
+    } else {
+        outElem(node, nodeClassActive);
+        check.checked = false;
+    }
+}
+function checkСhooseSource2(count) {
+    var check = isChecked(count);
+    if (check < 1) {
+        var error = byId("block_error_add");
+        error.innerHTML = '{% trans "Выберите источник" %}.';
+        error.style.display = "block";
+        byId('win_choose_source').style.height = '320px';
+    } else {
+        closeChangeWindow('win_choose_source');
+        selectedSources(count);
+    }
+}
+function selectedSources(count) {
+    var block_sources = list_sources;
+    var comma = '';
+    var all_sources = '';
+    var inp;
+    for (var i = 1; i <= count; i++) {
+        inp = byId('check'+i);
+        if (inp.checked) {
+            var label = nextNode(inp, 'LABEL');
+            var source = label.innerHTML;
+            comma = all_sources == '' ? '' : ', ';
+            all_sources = all_sources + comma + source;                
+        }
+    }
+    block_sources.innerHTML = all_sources;
+    block_sources.style.display = 'inline';
+    if (link_sources) {
+        link_sources.innerHTML = (all_sources.indexOf(',') < 0) ? '{% trans "Выбрать" %}' : '{% trans "Выбрать ещё" %}';
+    }
+}
+function showSearch2(elem, id_block) {
+    var search = byId(id_block);
+    if (search.style.display == 'none') {
+        search.style.display = 'block';
+        elem.className = 'link_search_bottom';
+        elem.innerHTML = '{% trans "закрыть расширенный поиск" %}';
+        byId('search').style.display = 'none';
+    } else {
+        search.style.display = 'none';
+        elem.className = 'link_search_right';
+        elem.innerHTML = '{% trans "расширенный поиск" %}';
+        byId('search').style.display = 'block';
+    }
+}
+</script>
+<form action="" method="post" class="filters">
+    <div id="search"><span class="filter">{% trans "Период с" %}: <input type="text" name="date" id="dateBegin" value="{{ date }}" class="inp_txt inp_date" /><input type="button" name="" value="" class="btn_calend" title="{% trans "Выбрать дату" %}" />
+    {% trans "по" %}: <input type="text" id="dateEnd" name="dateEnd" value="31.12.2010" class="inp_txt inp_date" /><input type="button" name="" value="" class="btn_calend" title="{% trans "Выбрать дату" %}" />
+    </span>
+    <span class="filter"><a href="#" onClick="javascript: chooseSource2(8, false, 'list_sources2', false); return false;">{% trans "Источники" %}</a>: <span id="list_sources2">{% trans "Все" %}</span></span>
+    <span class="filters_btn"><input type="submit" name="" value="Найти" class="inp_btn inp_btn80" /></span>
+    <script type="text/javascript">getCurrentDate(".", "dateBegin", "dateEnd");</script>
+    </div>
+    <div><a href="#" class="link_search_right" onClick="javascript: showSearch2(this, 'search_ext'); return false;">{% trans "расширенный поиск" %}</a></div>
+    <div class="frm search_ext" id="search_ext" style="display: none;">
+        <div class="field">
+            <label for="name_imp" class="label_txt">{% trans "Источники" %}:</label>
+            <div class="enter" style="width: 1120px;">
+                <div class="block_radio"><input type="radio" name="source" value="" id="source_all" class="inp_check" checked="checked" /><label for="source_all">{% trans "Все" %}</label></div>
+                <div class="block_radio last"><input type="radio" name="source" value="" id="source_other" class="inp_check" /><label for="source_other"><span id="list_sources" class="dist_right" style="display: none;"></span><a href="#" id="link_source" style="white-space: nowrap;" onClick="javascript: chooseSource2(8, 'source_other', 'list_sources', 'link_source'); return false;">{% trans "Выбрать" %}</a></label></div>
+            </div>
+        </div>
+        <div class="field">
+            <label for="dates" class="label_txt">{% trans "Интервал дат" %}:</label>
+            <div class="enter"><label for="period_dates">{% trans "с" %}<input type="text" name="dateBegin_ext" id="dateBegin_ext" value="" class="inp_txt inp_date dist_left" /><input type="button" name="" value="" class="btn_calend" title="{% trans "Выбрать дату" %}" />
+                    <span class="dist_left">{% trans "по" %}</span><input type="text" name="dateEnd_ext" id="dateEnd_ext" value="" class="inp_txt inp_date dist_left" /><input type="button" name="" value="" class="btn_calend" title="{% trans "Выбрать дату" %}" /></label>
+            </div>
+            <script type="text/javascript">getCurrentDate(".", "dateBegin_ext", "dateEnd_ext");</script>
+        </div>
+        <div class="field">
+            <label for="time" class="label_txt">{% trans "Интервал времени" %}:</label>
+            <div class="enter">
+                <div class="block_radio"><input type="radio" name="period_date" value="" id="allday" class="inp_check" checked="checked" /><label for="allday">{% trans "Целый день" %}</label></div>
+                <div class="other_time"><input type="radio" name="period_date" value="" id="daily" class="inp_check" /><label for="daily">{% trans "Ежедневно" %}</label></div>
+                <div class="delim_txt dist_left">{% trans "c" %}</div>
+                <div class="spinbox dist_left">
+                    <input type="text" id="hour1" name="hour1" value="09" class="inp_txt" style="width: 30px;" onBlur="javascript: checkSpin(this, 09, 00, 23);"/>
+                    <div class="spinbtns">
+                        <input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 23, 1, 'hour1');" onMouseUp="javascript: clearTimer();" />
+                        <input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 23, 1, 'hour1');" onMouseUp="javascript: clearTimer();" />
+                    </div>
+                </div>
+                <div class="delim">:</div>
+                <div class="spinbox">
+                    <input type="text" id="minute1" name="minute1" value="00" class="inp_txt" style="width: 30px;" onBlur="javascript: checkSpin(this, 00, 00, 60);"/>
+                    <div class="spinbtns">
+                        <input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 60, 10, 'minute1');" onMouseUp="javascript: clearTimer();" />
+                        <input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 60, 10, 'minute1');" onMouseUp="javascript: clearTimer();" />
+                    </div>
+                </div>
+                <div class="delim">:</div>
+                <div class="spinbox">
+                    <input type="text" id="second1" name="second1" value="00" class="inp_txt" style="width: 30px;" onBlur="javascript: checkSpin(this, 00, 00, 60);"/>
+                    <div class="spinbtns">
+                        <input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 60, 10, 'second1');" onMouseUp="javascript: clearTimer();" />
+                        <input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 60, 10, 'second1');" onMouseUp="javascript: clearTimer();" />
+                    </div>
+                </div>
+                <div class="delim_txt dist_left">{% trans "по" %}</div>
+                <div class="spinbox dist_left">
+                    <input type="text" id="hour2" name="hour2" value="09" class="inp_txt" style="width: 30px;" onBlur="javascript: checkSpin(this, 09, 00, 23);"/>
+                    <div class="spinbtns">
+                        <input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 23, 1, 'hour2');" onMouseUp="javascript: clearTimer();" />
+                        <input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 23, 1, 'hour2');" onMouseUp="javascript: clearTimer();" />
+                    </div>
+                </div>
+                <div class="delim">:</div>
+                <div class="spinbox">
+                    <input type="text" id="minute2" name="minute2" value="00" class="inp_txt" style="width: 30px;" onBlur="javascript: checkSpin(this, 00, 00, 60);"/>
+                    <div class="spinbtns">
+                        <input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 60, 10, 'minute2');" onMouseUp="javascript: clearTimer();" />
+                        <input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 60, 10, 'minute2');" onMouseUp="javascript: clearTimer();" />
+                    </div>
+                </div>
+                <div class="delim">:</div>
+                <div class="spinbox">
+                    <input type="text" id="second2" name="second2" value="00" class="inp_txt" style="width: 30px;" onBlur="javascript: checkSpin(this, 00, 00, 60);"/>
+                    <div class="spinbtns">
+                        <input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 60, 10, 'second2');" onMouseUp="javascript: clearTimer();" />
+                        <input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 60, 10, 'second2');" onMouseUp="javascript: clearTimer();" />
+                    </div>
+                </div>
+                <input type="hidden" name="" value="" id="time_begin" />                            
+                <input type="hidden" name="" value="" id="time_end" />
+            </div>
+            <script type="text/javascript">getCurrentTime({hour1: 'hour1', minute1: 'minute1', second1: 'second1'}, {hour2: 'hour2', minute2: 'minute2', second2: 'second2'});</script>
+        </div>
+        <div class="field">
+            <label for="" class="label_txt">{% trans "Произведён" %}:</label>
+            <div class="enter">
+                <input type="checkbox" name="" value="" class="inp_check" id="face_det_ext" /><label for="face_det_ext">Face Detection</label>
+                <input type="checkbox" name="" value="" class="inp_check dist_left" id="face_rec_ext" /><label for="face_rec_ext">Face Recognition</label>
+                <input type="checkbox" name="" value="" class="inp_check dist_left" id="face_ident_ext" /><label for="face_ident_ext">Face Identification</label>
+            </div>
+        </div>
+        <input type="button" name="" value="{% trans "Найти" %}" class="inp_btn inp_btn80" />
+    </div>
+</form>

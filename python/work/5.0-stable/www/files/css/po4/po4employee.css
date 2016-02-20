@@ -1,0 +1,127 @@
+﻿.block_danger {
+	text-align: center;
+	font-weight: bold;
+	/*color: #ff0000;*/
+	color: #FF6600;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	text-decoration: blink;	
+	font-size: 24px;
+}
+.block_danger2 {
+	text-align: center;
+	font-weight: bold;
+	/*color: #ff0000;*/
+	color: #FF6600;
+	margin-bottom: 5px;
+	margin-top: -5px;
+	text-decoration: blink;	
+	font-size: 20px;
+}
+.block_danger3 {
+	text-align: center;
+	font-weight: bold;
+	/*color: #ff0000;*/
+	color: #FF6600;
+	margin-bottom: 5px;
+	margin-top: 20px;
+	text-decoration: blink;	
+	font-size: 20px;
+}
+.red {
+	color: #ff0000;
+}
+.table_img {
+	margin: 0px auto;
+	width: 370px;
+	margin-bottom: 5px;
+}
+.table_img td {
+	vertical-align: top;
+}
+.table_img td.photo_base {
+	margin-right: 5px;
+	text-align:center;
+}
+.table_img td.photo_cam {
+	padding-left: 5px;
+	text-align:center;
+}
+.table_info {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	border-top: 1px solid #6e7d98;
+}
+.table_info th {
+	vertical-align:top;
+	text-align: center;
+	border-right: 1px solid #6e7d98;
+	border-bottom: 1px solid #6e7d98;
+	background-color: #d9dee7;
+	padding: 0px 5px;
+	font-weight: normal;
+}
+.table_info th.first {
+	border-left: 1px solid #6e7d98;
+}
+.table_info td {
+	border-bottom: 1px solid #cccccc;
+	border-right: 1px solid #cccccc;
+	vertical-align: top;
+	padding: 3px 5px;
+	text-align: center;
+}
+.table_info td.first {
+	border-left: 1px solid #cccccc;
+}
+.table_info td.td_ident {
+	width: 100px;
+}
+.table_info td.td_porog {
+	width: 100px;
+}
+.table_info td.td_time {
+	width: 70px;
+}
+.block_info {
+	width: 100%;
+	overflow: hidden;
+	padding-top: 5px;
+}
+.block_info .select {
+	float: left; 
+	margin-right: 5px;
+}
+.block_info .link_btn {
+	float: left;
+}
+.add_info {
+	width: 130px;
+	float: left;
+}
+.add_info_val {
+	margin-left: 140px;
+}
+.block_btns {
+	text-align: center;
+	margin-top: 10px;
+}
+.block_camera_kpp {
+	width: 100%;
+	overflow: hidden;
+	text-align: center;
+}
+.block_btns2 {
+	width: 310px;
+	margin: 0px auto;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.block_btns2 .link_btn {
+	float: left;
+	margin-right: 5px;
+}
+.block_btns2 .link_btn.last {
+	margin-right: 0px;
+}

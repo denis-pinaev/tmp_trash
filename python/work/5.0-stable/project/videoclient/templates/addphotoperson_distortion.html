@@ -1,0 +1,62 @@
+{% load i18n %}
+{% include "header.html" %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/learn.css?v=v{{ version }}" />
+
+{% load templatetags %}
+<!-- BEGIN: content-->
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+{% include "js/js_learn.html" %}
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">		
+				<h2><a href="/lists/">{% trans "Списки" %}</a> - 
+					{% if select_page == "persons" or select_sub_page == "persons" %}
+						<a href="{{ project_url }}/persons/{% if group %}?group={{ group }}{% endif %}">{{ name_group }}</a> - <a href="{{ project_url }}/anketaperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a>
+					{% endif %}
+
+					{% if select_page == "visitors" or select_sub_page == "visitors" %}
+						<a href="{{ project_url }}/visitorslist/{% if group %}?group={{ group }}{% endif %}">{{ name_group }}</a> - <a href="{{ project_url }}/anketavisitor/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a>
+					{% endif %}
+
+					{% if select_page == "staff" or select_sub_page == "staff" %}
+						<a href="{{ project_url }}/stafflist/{% if group %}?group={{ group }}{% endif %}">{{ name_group }}</a> - <a href="{{ project_url }}/anketastaff/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a>
+					{% endif %}
+
+					{% if select_page == "auto" or select_sub_page == "auto" %}
+						<a href="{{ project_url }}/autolist/{% if group %}?group={{ group }}{% endif %}">{{ name_group }}</a> - <a href="{{ project_url }}/anketaauto/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a>
+					{% endif %}
+					 - <a href="/addphotoperson/{% if select_page == "lists" %}{{ select_sub_page }}{% else %}{{ select_page }}{% endif %}/{{ id }}/{% if group %}?group={{ group }}{% endif %}">{% trans "Добавление фотографий" %}</a> - {% trans "Настройка дисторсии по изображению" %}
+					<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Добавление фотографии с исправлением дисторсии" %}');" />
+				</h2>
+				{% include "current_time.html" %}
+				<form method="" action="" name="">
+					<div class="frm_block">
+						<a style="float:left; margin-right:10px;" href="/addphotoperson/{% if select_page == "lists" %}{{ select_sub_page }}{% else %}{{ select_page }}{% endif %}/{{ id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn">{% trans "Назад" %}</a>
+					</div>
+					<div class="flash_distr" id="newFlash"></div>
+					<script type="text/javascript">
+						if (flashVersion()) {
+							byId('newFlash').innerHTML = addFlashDistortion();
+						} else {
+							byId('newFlash').innerHTML = '<div class="noFlash">{% trans "У Вас отсутствует или установлена старая версия flash плеера. Новую версию плеера можно скачать" %} <a target="_blank" href="http://get.adobe.com/flashplayer/">{% trans "здесь" %}</a></div>';
+						} 
+					</script>
+					<div class="frm_block">
+						<a style="float:left; margin-right:10px;" href="/addphotoperson/{% if select_page == "lists" %}{{ select_sub_page }}{% else %}{{ select_page }}{% endif %}/{{ id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn">{% trans "Назад" %}</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "footer.html" %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% include "window_learn.html" %}
+</body>
+</html>

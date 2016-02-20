@@ -1,0 +1,183 @@
+.inp_btn140,
+.link_btn140 {
+	width: 140px;
+	background: url('/files/images/button140x24_up.gif') top left no-repeat;
+}
+.list_formats li {
+	margin-left: 30px;
+}
+.err_mess_settings_person {
+	color: #FF6600;
+	text-align: center;
+	width: 650px; 
+	margin: 5px 0px;	
+}
+.txt_upload {
+	float: left; 
+	margin-right: 10px;
+}
+.block_flash {
+	width: 500px; 
+	height: 380px;
+	background-color: #eeeeee; 
+	float: left;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.frm_btn {
+	float: left;
+	margin-right: 10px;
+}
+.frm_block_txt {
+	width: 160px;
+	float: left;
+}
+.frm_person {
+	width: 100%;
+	overflow: hidden;
+}
+.frm_person .select {
+	width: 306px;
+	margin-left: 0px;
+}
+.frm_person .inp_check {
+	margin-right: 5px;
+}
+.frm_person .inp_txt {
+	width: 300px;
+	color: #868686;
+}
+.frm_person_block {
+	float: left;
+	margin-right: 40px;
+}
+.frm_person_cont {
+	padding-top: 5px;
+}
+.small_person {
+	color: #FE6700;
+	font-size: 85%;
+	font-weight: bold;
+}
+.process {
+	color: #FE6700;
+	font-size: 120%;
+	font-weight: bold;
+	margin: 50px 0;
+	text-align: center;
+}
+.process2 {
+	color: #FE6700;
+	font-weight: bold;
+	margin-bottom: 10px;
+	text-align: center;
+}
+.table_info_learn {
+	display: inline-table;
+	width: 100%;
+}
+.table_info_learn td {
+	background-color: #F9F9F9;
+	border-right: 5px solid #FFFFFF;
+	border-top: 5px solid #FFFFFF;
+	margin: 0px 5px;
+	padding: 5px;
+	text-align: left;
+	vertical-align: top;
+	width: 50%;
+}
+.table_info_learn td.last {
+	border-right: none;
+}
+.table_info_learn td .td_head {
+	font-weight: bold;
+}
+.table_info_learn td .inp_check {
+	margin-right: 5px;
+}
+/* список камер */
+.mini_camera {
+	float: right;
+	width: 400px;
+	height: 300px;
+	background-color: #eeeeee;
+	position: relative;
+}
+.mini_camera_info {
+	width: 400px;
+	text-align: center;
+	position: absolute;
+	left: 0px;
+	top: 140px;
+}
+.mini_camera_name {
+	width: 400px; 
+	float: right; 
+	text-align: center;
+	margin-top: 3px;
+}
+.table_cameras {
+	width: 570px;
+	padding: 0px;
+	margin: 0px;
+	border-top: 1px solid #6e7d98;
+	border-left: 1px solid #6e7d98;
+}
+.table_cameras th {
+	vertical-align: top;
+	text-align: center;
+	border-right: 1px solid #6e7d98;
+	border-bottom: 1px solid #6e7d98;
+	padding: 5px 5px;
+	background-color: #d9dee7;
+	font-weight: normal;
+}
+.table_cameras th.th_radio {
+	width: 50px;
+}
+.table_cameras_list {
+	width: 570px;
+	padding: 0px;
+	margin: 0px;
+	border-left: 1px solid #cccccc;
+}
+.table_cameras_list td {
+	border-bottom: 1px solid #cccccc;
+	border-right: 1px solid #cccccc;
+	padding: 3px 5px;
+	vertical-align: middle;
+	cursor: pointer;
+}
+.table_cameras_list td .inp_check {
+	margin-right: 0px;
+}
+.table_cameras_list td.td_num {
+	width: 40px;
+	overflow: hidden;
+}
+.table_cameras_list td.td_num span {
+	float: left;
+}
+.table_cameras_list td.td_num div {
+	float: right;
+}
+.table_cameras_list td.td_radio {
+	text-align: center;
+	width: 50px;
+}
+.table_cameras_list tr.odd {
+	background-color: #dbe2f0;
+}
+.table_cameras_list tr.act td {
+	background-color: #849ac1;
+	color: #ffffff;
+}
+.table_cameras_list tr.noact {
+	color: #9b9b9b;
+}
+.table_cameras_list tr.noact td {
+	cursor: default;
+}

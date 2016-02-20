@@ -1,0 +1,59 @@
+{% include "po4header.html" %}
+{% load a_templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4photos.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2><a href="/po4/visitors/">{% trans "Посетители" %}</a> - <a href="/po4/anketavisitor/">Иванов Сергей Петрович</a> - {% trans "Все фотографии" %} (3)<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" /></h2>
+				<form method="post" action="" name="">
+					<div class="frm_block_link"><a href="/po4/anketa/" class="link_btn">{% trans "Назад" %}</a></div>					
+					<div class="frm_block dist_link">
+						<label for="choose_all"><input type="checkbox" name="" id="choose_all" value="" class="inp_check" />{% trans "Выбрать всё на странице" %}</label>
+						<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_left" />
+					</div>
+
+					{% include "po4NavigationBlock.html" %}
+
+					<ul class="list_photos">
+						<li>
+							<div class="block_photo"><img src="/files/images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" />
+						</li>
+						<li>
+							<div class="block_photo"><img src="/files/images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" />
+						</li>
+						<li>
+							<div class="block_photo"><img src="/files/images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" />
+						</li>
+					</ul>
+
+					{% include "po4NavigationBlock.html" %}
+					
+					<div class="frm_block">
+						<label for="choose_all"><input type="checkbox" name="" id="choose_all" value="" class="inp_check" />{% trans "Выбрать всё на странице" %}</label>
+						<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_left" />
+					</div>
+					<div class="frm_block"><a href="/po4/anketaperson/" class="link_btn">{% trans "Назад" %}</a></div>					
+
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po4footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+{% include "window_help.html" %}
+
+</body>
+</html>

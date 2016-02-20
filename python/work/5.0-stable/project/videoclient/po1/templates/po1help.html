@@ -1,0 +1,27 @@
+{% load i18n %}
+{% include "po1header.html" %}
+{% load templatetags %}
+
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">				
+				<h2>{% trans "Помощь" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Помощь" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				{% trans "контекстная_помощь_Главная_страница_помощи" %}
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>			
+
+{% include "po1footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% include "window_help.html" %}
+
+</body>
+</html>

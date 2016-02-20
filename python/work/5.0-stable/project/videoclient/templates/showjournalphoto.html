@@ -1,0 +1,40 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+	$("#win_journalphoto_id").html("ID: {{ journal.agregate_id }}");
+	$("#win_journalphoto_camera").html('"{{ journal.camera.display_name|truncchar:40 }}"');
+	$("#win_journalphoto_camera").attr("title", "{{ journal.camera.display_name }}")
+</script>
+<div id="showjournalphoto_photo">
+	{% include "showjournalphoto_photo.html" %}
+</div>
+<div class="count_ident">{% trans "Всего идентификаций" %}: {{ journals|length }}</div>
+<script type="text/javascript">paramsCarousel = [];</script>
+{% for journal in journals %}
+	<script type="text/javascript">paramsCarousel['{{ forloop.counter }}'] = '<li><a href="#" onClick="changePhoto_({{ journal.pk }}, this);" title="Время: {{ journal.dt_first_fixed|date:"H:i:s"}}" class="short_descr"><img src="{% url get-journal-photo journal.pk 'original' %}" alt="" /></a></li>';</script>
+{% endfor %}
+<div id="win_journalphoto_carousel" class="block_carousel"></div>
+<table cellpadding="0px" cellspacing="0px" class="table_journal_info">
+	<tr class="odd">
+		<td class="tji_first">{% trans "Время" %}</td>
+		<td>{% trans "Объект" %}</td>
+	</tr>
+	<tr>
+		<td class="tji_first">{{ journal.dt_first_fixed|date:"H:i:s" }} - {{ journal.dt_last_fixed|date:"H:i:s" }}</td>
+		<td{% if journal.person %} class="short_descr" title="{{ journal.person.get_fio }}"{% endif %}>
+			{% if journal.person %}<div class="fio"><a href="{{ project_url }}/anketa{% if journal.person.person.status.division.id == division_person %}person{% endif %}{% if journal.person.person.status.division.id == division_employee %}staff{% endif %}{% if journal.person.person.status.division.id == division_visitor %}visitor{% endif %}/{{ journal.person.person.id }}/?group={{ journal.person.person.group.pk}}" class="blue">{{ journal.person.get_fio }}</a></div>
+			{% else %}{% trans "Не опознан" %}: {% if journal.get_info.cause %}{% trans journal.get_info.cause %}{% else %}{% trans "коэффициент похожести ниже порога" %}{% endif %}
+			{% endif %}
+		</td>
+	</tr>
+	<!--<tr class="odd">
+		<td class="tji_first">Статус</td>
+		<td>Категория</td>
+		<td>Оператор</td>
+	</tr>
+	<tr>
+		<td class="tji_first">{% if journal.person.person.status != None %}{{ journal.person.person.status }}{% else %}&nbsp;{% endif %}</td>
+		<td>{% if journal.person.person.category != None %}{{ journal.person.person.category.name }}{% else %}&nbsp;{% endif %}</td>
+		<td>{% if journal.operator and journal.person  %}{{ journal.operator.first_name }} {{ journal.operator.last_name }} {{ journal.operator.middle_name }}{% else %}{% trans "Оператор отсутствовал" %}{% endif %}</td>
+	</tr>-->
+</table>

@@ -1,0 +1,45 @@
+﻿{% load i18n %}
+{% load templatetags %}
+{% include "po1header.html" %}
+<link rel="stylesheet" type="text/css" href="/files/css/po1/po1anketa.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>Анкета пользователя: Иванова Мария Ивановна<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				<form method="post" action="" name="">
+					<div class="frm_block">
+						<div class="bl_photo_btn">
+							<div class="photo_user">
+								<a href="#"><img src="/files/images/test.jpg" width="120" height="120" alt="" /></a>
+								<div class="all_photo"><a href="po1_user_photos.html">Все фотографии</a></div>
+							</div>
+							<div class="bl_btn"><input type="button" name="" value="Основная информация" class="inp_btn inp_btn170" /></div>
+							<div class="bl_btn"><input type="button" name="" value="Дополнительная" class="inp_btn inp_btn170" /></div>
+							<div class="bl_btn"><input type="button" name="" value="Видео" class="inp_btn inp_btn170" /></div>
+							<div class="bl_btn"><input type="button" name="" value="Адрес" class="inp_btn inp_btn170" /></div>
+							<div class="bl_btn"><input type="button" name="" value="Добавить фотографии" class="inp_btn inp_btn170" style="background-image: url('/files/images/button170x24_down.gif');" /></div>
+						</div>
+						<div class="bl_info_all">
+							test
+						</div>					
+					</div>					
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po1footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+{% include "window_help.html" %}
+
+</body>
+</html>

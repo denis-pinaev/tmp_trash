@@ -1,0 +1,191 @@
+.inp_btn40 {
+	width: 40px;
+	background: url('/files/images/button40x24_up.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/button40x24_up.png', sizingMethod='crop');		
+}
+.btn_arrow {
+	padding: 0px;
+	margin: 0px;
+	border: none;
+	cursor: pointer;
+	font: 13px Tahoma;
+	background: url('/files/images/arrow.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/arrow.png', sizingMethod='crop');	
+	width: 12px; 
+	height: 6px;
+}
+.inp_btn140_ar {
+	width: 140px;
+	background: url('/files/images/button140x24_up_arr.gif') top left no-repeat;
+}
+.inp_btn140 {
+	width: 140px;
+	background: url('/files/images/button140x24_up.gif') top left no-repeat;
+}
+.inp_btn170 {
+	width: 170px;
+	background: url('/files/images/button170x24_up.gif') top left no-repeat;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.bl_btn_check {
+	position: relative;
+	float: left;
+	margin-right: 30px;
+}
+.bl_btn_check .inp_check {
+	position: absolute;
+	top: 6px;
+	left: 6px;
+	-top: 2px;
+	-left: 2px;
+}
+/* поиск */
+.search {
+	float: right;
+	width: 220px;
+	position: relative;
+}
+.search .left {
+	float: left;
+	width: 3px;
+	height: 24px;
+	background: url('/files/images/search_left.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/search_left.png', sizingMethod='crop');		
+}
+.search .btn_search {
+	float: right;
+	width: 23px;
+	height: 24px;
+	background: url('/files/images/search_right.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/search_right.png', sizingMethod='crop');			
+	padding: 0px;
+	margin: 0px;
+	border: none;
+	cursor: pointer;
+}
+.search .center {
+	width: 194px;
+	height: 24px;
+	background: url('/files/images/search_bg.gif') top left repeat-x;
+	position: absolute;
+	top: 0px;
+	left: 3px;		
+}
+.search .txt_search {
+	margin: 0px;
+	padding: 3px 2px 2px 0px;
+	border: none;
+	font: 13px Tahoma;
+	color: #868686;
+	background: none;
+	width: 190px;
+}
+/* таблица */
+.list_users_head {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	border-top: 1px solid #6e7d98;
+	border-left: 1px solid #6e7d98;	
+}
+.list_users_head th {
+	vertical-align: middle;
+	text-align: center;
+	border-right: 1px solid #6e7d98;
+	border-bottom: 1px solid #6e7d98;
+	background-color: #d9dee7;
+	font-weight: normal;
+	padding: 5px 5px;
+}
+.list_users_head th .btn_arrow {
+	float: right;
+	margin-left: 5px;
+	margin-top: 5px;	
+}
+.list_users_head th.th_check,
+.list_users td.td_check {
+	width: 52px;
+}
+.list_users_head th.th_fio,
+.list_users td.td_fio {
+	width: 200px;
+}
+.list_users_head th.th_phone,
+.list_users td.td_phone {
+	width: 150px;
+}
+.list_users {
+	width: 100%;
+	padding: 0px;
+	margin: 0px;
+	border-left: 1px solid #cccccc;
+}
+.list_users tr.odd {
+	background-color: #dbe2f0;
+}
+.list_users td {
+	border-bottom: 1px solid #cccccc;
+	border-right: 1px solid #cccccc;
+	vertical-align: top;
+	padding: 3px 5px;
+
+}
+.list_users td a {
+	color: #0088cc;
+	text-decoration: underline;
+}
+.list_users td.td_check {
+	overflow: hidden;
+}
+.list_users td.td_categ {
+	width: 150px;
+}
+.list_users td.td_check span {
+	float: left;
+}
+.list_users td.td_check .inp_check {
+	float: right;
+	margin-right: 0px;
+	margin-top: 3px;
+	-margin-top: 0px;
+}
+.list_users tr.odd {
+	background-color: #dbe2f0;
+}
+.list_users tr.act td {
+	background-color: #849ac1;
+	color: #ffffff;
+}
+.list_users tr.act td a {
+	color: #ffffff;
+}
+/* навигация */
+.block_navigation {
+	margin-top: 10px;
+	width: 100%;
+	overflow: hidden;
+}
+.block_navigation .page {
+	float: left;
+	margin-right: 0.3em;
+	padding: 0.2em 0.5em;
+	border: 1px solid #EAEAEA;
+	background-color: #F9F9F9;
+	cursor: pointer;
+}
+.block_navigation a:hover{
+	border: 1px solid #bbbaba;
+	text-decoration: none;
+}
+.block_navigation .active {
+	border: 1px solid #ff6600;
+	cursor: default;
+}

@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appmap>
+	<item type="sprite" name="main_window">
+		<item type="sprite" name="image_window" x="0" y="30">
+			<item type="sprite" name="image_window2" x="0" y="0">
+				<item type="sprite" name="fon_image" path="white" x="0" y="0" width="1024" height="768"/>
+				<item type="text" name="camera_disable_text" text="TextCameraDisable" format="Format24CenterBlack" x="212" y="300"/>
+				<item type="sprite" name="image_sprite" x="0" y="0">
+					<!--item type="texture" name="image_map2222" path="map.jpg" x="-210" y="10"/-->
+				</item>
+				<item type="sprite" name="video_sprite" x="0" y="0"/>
+				<item type="sprite" name="frame_sprite" x="0" y="0"/>
+				<item type="sprite" name="frame_sprite_net" x="0" y="0"/>
+			</item>
+			<item type="sprite" name="frame_text_sprite" x="0" y="0"/>
+			<item type="text" name="frame_text_time_sprite" text="" format="Format14LeftRed"  x="0" y="0"/>
+			<item type="text" name="fps_text" text="" format="Format14LeftBlack" x="1050" y="745"/>
+			<item type="sprite" name="camera_image_info" x="0" y="-1000">
+				<item type="sprite" name="fon_image_camera_info" path="black" x="0" y="0" width="300" height="200"/>
+				<item type="text" name="text_image_frames_ps" text="TextFramesPS" format="Format14LeftRed" x="10" y="10"/>
+				<item type="text" name="text_image_delay" text="TextDelay" format="Format14LeftRed" x="10" y="30"/>
+				<item type="text" name="text_image_faces_ps" text="TextFacesPS" format="Format14LeftRed" x="10" y="50"/>
+				<item type="text" name="text_image_time_img" text="TextTimeImg" format="Format14LeftRed" x="10" y="70"/>
+				<item type="text" name="text_image_camera_name" text="TextReq" format="Format14LeftRed" x="10" y="90"/>
+				<item type="text" name="text_image_resolution" text="TextTimeImg" format="Format14LeftRed" x="10" y="110"/>
+				<item type="text" name="text_image_corelation" text="TextCorelation" format="Format14LeftRed" x="10" y="130"/>
+				<item type="text" name="text_image_timereq" text="TextReq" format="Format14LeftRed" x="10" y="150"/>
+				<item type="text" name="text_image_mirror" text="TextReq" format="Format14LeftRed" x="10" y="170"/>
+			</item>
+		</item>
+
+		<item type="sprite" name="detect_window" x="950" y="30">
+			<item type="sprite" name="fon_detect" path="white" x="0" y="0" width="270" height="768"/>
+			<item type="sprite" name="detect_faces" x="0" y="0"/>
+			<item type="sprite" name="detect_faces_mask" path="white" x="0" y="0" width="270" height="718"/>
+			<item type="sprite" name="button_clear" path="ButtonGray" x="70" y="5"/>
+		</item>
+		
+		<item type="sprite" name="distortion_window" x="990" y="30">
+			<item type="sprite" name="fon_distortion" path="white" x="-40" y="0" width="270" height="768"/>
+			<item type="text" name="text_SettingsDistortion" text="TextDistortionSettings" format="Format16CenterBlack" x="25" y="10"/>
+			<item type="text" name="text_Camber_active" text="TextCamber" format="Format16LeftBlack" x="10" y="35"/>
+			<item type="sprite" name="slider_settings_distortion_slider_active" path="SliderClip" x="19" y="57"/>
+			<item type="text" name="text_Intensity_actve" text="TextIntensity" format="Format16LeftBlack" x="10" y="87"/>
+			<item type="sprite" name="slider_settings_distortion_slider_dop_active" path="SliderClip" x="19" y="109"/>
+			<item type="text" name="camera_settings_distortion_x_text_active" text="TextDistX" format="Format16LeftBlack" x="10" y="139"/>
+			<item type="sprite" name="camera_settings_distortion_x_clip_active" path="SliderClip" x="19" y="161"/>
+			<item type="text" name="camera_settings_distortion_y_text_active" text="TextDistY" format="Format16LeftBlack" x="10" y="191"/>
+			<item type="sprite" name="camera_settings_distortion_y_clip_active" path="SliderClip" x="19" y="213"/>
+			<item type="sprite" name="button_distortion_ok" path="ButtonGray" x="39" y="263"/>
+			<item type="sprite" name="button_distortion_cancel" path="ButtonGray" x="39" y="303"/>
+		</item>
+		
+		<item type="sprite" name="map_window" x="0" y="30">
+			<item type="sprite" name="image_mapfon" x="0" y="0"/>
+			<item type="texture" name="image_map" path="map.jpg" x="10" y="1"/>
+			<item type="sprite" name="image_map_sprite" x="10" y="1"/>
+			<item type="sprite" name="datagrid_camera" x="0" y="100">
+				<item type="text" name="text_datagrid_camera_head" text="TextMapTableCameraHead" format="MessageFormat" x="420" y="-80"/>
+			</item>
+			<item type="sprite" name="datagrid_terminal" x="0" y="100">
+				<item type="text" name="text_datagrid_terminal_head" text="TextMapTableTerminalHead" format="MessageFormat" x="420" y="-80"/>
+			</item>
+			<item type="sprite" name="window_map_map" path="ButtonGray" x="300" y="730"/>
+			<item type="sprite" name="window_map_camera" path="ButtonGray" x="500" y="730"/>
+			<item type="sprite" name="window_map_terminal" path="ButtonGray" x="700" y="730"/>
+		</item>
+
+		<item type="sprite" name="window_albums" x="0" y="0">
+			<item type="sprite" name="fon_window_albums" path="white" x="0" y="30" width="1220" height="768"/>
+			<!--item type="text" name="window_albums_text_top" text="TextDeletePhotos" format="Format14LeftBlack1000" x="10" y="10"/-->
+			<item type="text" name="window_albums_text_albums" text="ButtonCameraSettingsResolution" format="FormatBlackStatus" x="5" y="68"/>
+			<item type="text" name="window_albums_text_photos" text="ButtonCameraSettingsResolution" format="FormatBlackStatus" x="148" y="68"/>
+			<item type="sprite" name="window_albums_delete_user" path="ButtonGray" x="505" y="65"/>
+			<item type="sprite" name="window_albums_delete_photos" path="ButtonGray" x="630" y="65"/>
+			<item type="sprite" name="window_albums_ok" path="ButtonGray" x="1095" y="-963"/>
+
+			<item type="text" name="window_albums_count_photo" text="ButtonCameraSettingsResolution" format="FormatBlackStatus" x="985" y="68"/>
+			<item type="sprite" name="window_albums_prev_photo" path="ButtonGray" x="850" y="65"/>
+			<item type="sprite" name="window_albums_next_photo" path="ButtonGray" x="1090" y="65"/>
+
+			<item type="sprite" name="panel_albums" x="0" y="95">
+				<item type="sprite" name="fon_panel_albums" path="whiteSettings" x="0" y="-1" width="148" height="530"/>
+			</item>
+			<item type="sprite" name="panel_photos" x="148" y="95">
+				<item type="sprite" name="fon_panel_photos" path="white" x="0" y="-1" width="850" height="530"/>
+			</item>
+		</item>
+
+		<item type="sprite" name="camera_settings_window" x="0" y="0">
+			<item type="sprite" name="fon_camera" path="white" x="0" y="30" width="1220" height="768"/>
+			<item type="sprite" name="main_camera_container" x="120" y="0">
+				
+				<item type="sprite" name="camera_settings_communicator_list" x="3" y="63">
+					
+					<item type="sprite" name="fon_settings_communicator_current" path="white" x="0" y="12" width="414" height="717"/>
+					<item type="sprite" name="fon_settings_head_communicator" path="white" x="12" y="0" width="130" height="24"/>
+					
+					<item type="text" name="button_server_head" text="ButtonServerSettingsHead" format="Format16LeftBlack" x="14" y="2"/>
+					
+					<item type="text" name="button_distance_between_eyes_text" text="TextDistanceBetweenEyes" format="Format16LeftBlack" x="3" y="-9027"/>					
+					<item type="sprite" name="slider_distance_eyes" path="SliderClip" x="125" y="-9027"/>
+					<item type="sprite" name="button_camera_apply_distance" path="ButtonGray" x="289" y="-9025"/>
+					
+					<item type="text" name="button_server_nomer_text" text="ButtonServerSettingsNomer" format="Format16LeftBlack" x="3" y="54"/>
+					<item type="sprite" name="button_server_nomer_combo" path="comboClip" x="125" y="54"/>
+					<item type="sprite" name="button_camera_refresh" path="ButtonGray" x="289" y="-9053"/>
+				</item>
+				
+				<item type="sprite" name="camera_settings_cameras_list" x="6" y="144">					
+					<item type="sprite" name="fon_settings_communicator_list10" path="whiteSettings" x="0" y="0" width="185" height="30"/>
+					<item type="sprite" name="fon_settings_communicator_list11" path="whiteSettings" x="184" y="0" width="224" height="30"/>				
+					<item type="sprite" name="fon_settings_communicator_list20" path="whiteSettings" x="0" y="29" width="185" height="46"/>
+					
+					<item type="sprite" name="fon_settings_communicator_list21" path="whiteSettings" x="184" y="29" width="57" height="46"/>
+					<item type="sprite" name="fon_settings_communicator_list22" path="whiteSettings" x="240" y="29" width="57" height="46"/>
+					<item type="sprite" name="fon_settings_communicator_list23" path="whiteSettings" x="296" y="29" width="57" height="46"/>
+					<item type="sprite" name="fon_settings_communicator_list24" path="whiteSettings" x="352" y="29" width="56" height="46"/>
+					
+					<item type="text" name="button_cameras_list_text" text="TextCamerasList" format="Format16CenterBlack" x="17" y="5"/>
+					<item type="text" name="button_server_mode_text" text="TextServerMode" format="Format16CenterBlack" x="221" y="5"/>
+					<item type="text" name="button_camera_name_text" text="TextCameraName" format="Format16CenterBlack" x="17" y="34"/>
+					
+					<item type="text" name="button_video_mode_text" text="TextVideoMode" format="Format16CenterBlack" x="137" y="34"/>
+					<item type="text" name="button_detect_faces_text" text="TextDetectFaces" format="Format16CenterBlack" x="193" y="34"/>
+					<item type="text" name="button_ident_faces_text" text="TextIdentFaces" format="Format16CenterBlack" x="249" y="34"/>
+					<item type="text" name="button_camera_off_text" text="TextCameraOff" format="Format16CenterBlack" x="305" y="34"/>
+					
+					<item type="sprite" name="cameras_settings_sprite" x="0" y="74"/>
+					<item type="text" name="text_button_server" text="TextServerMode" format="Format16RightBlack" x="20" y="-9250"/>
+					<item type="sprite" name="button_server" path="comboClip" x="180" y="-9250"/>
+				</item>				
+				
+				<item type="sprite" name="camera_settings_client_adjusment" x="422" y="63">
+					
+					<item type="sprite" name="fon_settings_client_current" path="white" x="0" y="12" width="323" height="206"/>
+					<item type="sprite" name="fon_settings_head_client" path="white" x="12" y="0" width="123" height="24"/>					
+					
+					<item type="text" name="button_server_head" text="ButtonClientSettingsHead" format="Format16LeftBlack" x="14" y="2"/>
+					
+					<item type="sprite" name="fon_settings_client_adjusment_left" path="whiteSettings" x="4" y="27" width="315" height="55"/>
+					<item type="sprite" name="fon_settings_client_adjusment_right" path="whiteSettings" x="4" y="85" width="315" height="55"/>					
+					<item type="sprite" name="fon_settings_client_adjusment_center" path="whiteSettings" x="4" y="143" width="315" height="70"/>
+					<item type="sprite" name="fon_settings_client_adjusment_access" path="whiteSettings" x="4" y="216" width="315" height="0"/>
+					
+					<item type="text" name="text_button_client" text="TextClientMode" format="Format16LeftBlack" x="9" y="32"/>
+					<item type="sprite" name="button_client" path="comboClip" x="149" y="31"/>					
+					<item type="sprite" name="checkbox_mirror" path="CheckBox" x="76" y="59"/>
+					<item type="text" name="mirror_text" text="TextMirror" format="Format16LeftBlack" x="94" y="57"/>
+					
+					<item type="text" name="slider_deadline_text" text="TextCorelation" format="Format16LeftBlack" x="9" y="90"/>
+					<item type="sprite" name="slider_deadline" path="SliderClip" x="149" y="90"/>					
+					<item type="text" name="slider_timeRec_text" text="TextReq" format="Format16LeftBlack" x="9" y="115"/>
+					<item type="sprite" name="slider_timeRec" path="SliderClip" x="149" y="115"/>
+					
+					<item type="text" name="text_button_display" text="TextFacesVideoDisplay" format="Format16LeftBlack" x="9" y="148"/>
+					<item type="sprite" name="checkbox_frame" path="CheckBox" x="149" y="150"/>
+					<item type="text" name="frame_text" text="TextFrame" format="Format16LeftBlack" x="169" y="148"/>
+					
+					<item type="sprite" name="checkbox_eye" path="CheckBox" x="149" y="170"/>					
+					<item type="text" name="eye_text" text="TextEye" format="Format16LeftBlack" x="169" y="168"/>
+					
+					<item type="sprite" name="checkbox_nose_chin" path="CheckBox" x="149" y="190"/>
+					<item type="text" name="nose_chin_text" text="TextNoseChin" format="Format16LeftBlack" x="169" y="188"/>
+					
+					<item type="text" name="access_text" text="TextChooseAccess" format="Format16LeftBlackInfo" x="9" y="-9221"/>
+					<item type="sprite" name="slider_timeAccess" path="SliderClip" x="80" y="-9242"/>
+				</item>				
+				
+				<item type="sprite" name="camera_settings_camera_adjusment" x="750" y="-9063">
+					<item type="sprite" name="fon_settings_camera_current" path="white" x="0" y="12" width="467" height="581"/>
+					<item type="sprite" name="fon_settings_head_camera" path="white" x="12" y="0" width="130" height="24"/>				
+					<item type="text" name="button_camera_head" text="ButtonCameraSettingsHead" format="Format16LeftBlack" x="14" y="2"/>
+					
+					<item type="sprite" name="camera_settings_size" x="4" y="22">
+						<item type="sprite" name="fon_settings_camera_size" path="white" x="0" y="10" width="300" height="120"/>
+						<item type="sprite" name="fon_settings_head_size" path="white" x="12" y="0" width="250" height="24"/>
+						<item type="sprite" name="fon_settings_camera_adjusment_size" path="whiteSettings" x="0" y="25" width="300" height="105"/>						
+						<item type="text" name="button_camera_head_size" text="ButtonCameraSettingsHeadSize" format="Format16LeftBlackInfo" x="14" y="0"/>
+						
+						<item type="text" name="button_camera_resolution_main_text" text="ButtonCameraSettingsMode" format="Format16LeftBlack" x="5" y="30"/>
+						<item type="sprite" name="button_camera_resolution_main_combo" path="comboClip" x="139" y="29"/>
+						
+						<item type="text" name="button_camera_resolution_text" text="ButtonCameraSettingsResolution" format="Format16LeftBlack" x="5" y="55"/>
+						<item type="sprite" name="button_camera_resolution_combo" path="comboClip" x="139" y="54"/>
+						
+						<item type="sprite" name="camera_settings_resolution" x="5" y="80">
+							<item type="text" name="camera_settings_resolution_x_text" text="x: " format="Format16LeftBlack" x="0" y="0"/>
+							<item type="text" name="camera_settings_resolution_y_text" text="y: " format="Format16LeftBlack" x="65" y="0"/>
+							<item type="text" name="camera_settings_resolution_w_text" text="width: " format="Format16LeftBlack" x="130" y="0"/>
+							<item type="text" name="camera_settings_resolution_h_text" text="height: " format="Format16LeftBlack" x="195" y="0"/>							
+							<item type="sprite" name="camera_settings_resolution_x_clip" path="InputNumberText" x="0" y="21"/>
+							<item type="sprite" name="camera_settings_resolution_y_clip" path="InputNumberText" x="65" y="21"/>
+							<item type="sprite" name="camera_settings_resolution_w_clip" path="InputNumberText" x="130" y="21"/>
+							<item type="sprite" name="camera_settings_resolution_h_clip" path="InputNumberText" x="195" y="21"/>
+						</item>
+					</item>	
+					
+					<item type="sprite" name="camera_settings_light" x="307" y="22">
+						<item type="sprite" name="fon_settings_camera_light" path="white" x="0" y="10" width="156" height="120"/>
+						<item type="sprite" name="fon_settings_head_light" path="white" x="12" y="0" width="130" height="24"/>
+						<item type="sprite" name="fon_settings_camera_adjusment_light" path="whiteSettings" x="0" y="25" width="156" height="105"/>						
+						<item type="text" name="slider_settings_text_IlluminationMode" text="TextReq" format="Format16LeftBlack"  x="14" y="0"/>
+						
+						<item type="sprite" name="radio_light_auto" path="RadioButton" x="5" y="32"/>
+						<item type="text" name="radio_light_auto_text" text="TextCameraModeLightAuto" format="Format16LeftBlack" x="22" y="30"/>
+						
+						<item type="sprite" name="radio_light_inside" path="RadioButton" x="5" y="57"/>
+						<item type="text" name="radio_light_inside_text" text="TextCameraModeLightInside" format="Format16LeftBlack" x="22" y="55"/>
+						
+						<item type="sprite" name="radio_light_outside" path="RadioButton" x="5" y="82"/>
+						<item type="text" name="radio_light_outside_text" text="TextCameraModeLightOutside" format="Format16LeftBlack" x="22" y="80"/>
+						
+						<item type="sprite" name="radio_light_mix" path="RadioButton" x="5" y="107"/>
+						<item type="text" name="radio_light_mix_text" text="TextCameraModeLightMix" format="Format16LeftBlack" x="22" y="105"/>
+					</item>
+					
+					<item type="sprite" name="camera_settings_picture" x="4" y="157">
+						<item type="sprite" name="fon_settings_camera_picture" path="white" x="0" y="10" width="320" height="145"/>
+						<item type="sprite" name="fon_settings_head_picture" path="white" x="12" y="0" width="100" height="24"/>
+						<item type="sprite" name="fon_settings_camera_adjusment_picture" path="whiteSettings" x="0" y="25" width="320" height="130"/>						
+						<item type="text" name="slider_settings_text_PictureCamera" text="TextCameraPicture" format="Format16LeftBlack"  x="14" y="0"/>
+						
+						<item type="text" name="slider_settings_text_BrightnessCamera" text="" format="Format16LeftBlack" x="5" y="30"/>
+						<item type="sprite" name="slider_settings_BrightnessCamera" path="SliderClip" x="150" y="30"/>
+						
+						<item type="text" name="slider_settings_text_SaturationCamera" text="TextReq" format="Format16LeftBlack" x="5" y="55"/>
+						<item type="sprite" name="slider_settings_SaturationCamera" path="SliderClip" x="150" y="55"/>
+						
+						<item type="text" name="slider_settings_text_SharpnessCamera" text="TextReq" format="Format16LeftBlack" x="5" y="80"/>
+						<item type="sprite" name="slider_settings_SharpnessCamera" path="SliderClip" x="150" y="80"/>
+						
+						<item type="text" name="slider_settings_text_QualityCamera" text="TextReq" format="Format16LeftBlack" x="5" y="105"/>
+						<item type="sprite" name="slider_settings_QualityCamera" path="SliderClip" x="150" y="105"/>
+												
+						<item type="text" name="slider_settings_text_ContrastCamera" text="TextReq" format="Format16LeftBlack" x="5" y="130"/>
+						<item type="sprite" name="slider_settings_ContrastCamera" path="SliderClip" x="150" y="130"/>
+					</item>
+					
+					<item type="sprite" name="camera_settings_daynight" x="327" y="157">
+						<item type="sprite" name="fon_settings_camera_daynight" path="white" x="0" y="10" width="136" height="145"/>
+						<item type="sprite" name="fon_settings_head_daynight" path="white" x="12" y="0" width="85" height="24"/>
+						<item type="sprite" name="fon_settings_camera_adjusment_daynight" path="whiteSettings" x="0" y="25" width="136" height="130"/>
+						<item type="text" name="slider_settings_text_DayNight" text="TextCameraDayNight" format="Format16LeftBlack"  x="14" y="0"/>
+						
+						<item type="sprite" name="radio_nightmode_auto" path="RadioButton" x="5" y="32"/>
+						<item type="text" name="radio_nightmode_auto_text" text="TextCameraModeNightAuto" format="Format16LeftBlack" x="22" y="30"/>
+						
+						<item type="sprite" name="radio_nightmode_day" path="RadioButton" x="5" y="57"/>
+						<item type="text" name="radio_nightmode_day_text" text="TextCameraModeNightDay" format="Format16LeftBlack" x="22" y="55"/>
+						
+						<item type="sprite" name="radio_nightmode_night" path="RadioButton" x="5" y="82"/>
+						<item type="text" name="radio_nightmode_night_text" text="TextCameraModeNightNight" format="Format16LeftBlack" x="22" y="80"/>
+					</item>
+					
+					<item type="sprite" name="camera_settings_frequency" x="197" y="317">
+						<item type="sprite" name="fon_settings_camera_frequency" path="white" x="0" y="10" width="80" height="145"/>
+						<item type="sprite" name="fon_settings_head_frequency" path="white" x="12" y="0" width="60" height="24"/>
+						<item type="sprite" name="fon_settings_camera_adjusment_frequency" path="whiteSettings" x="0" y="25" width="80" height="130"/>						
+						<item type="text" name="slider_settings_text_LightHZCamera" text="TextReq" format="Format16LeftBlack" x="14" y="0"/>
+						
+						<item type="sprite" name="radio_freq50" path="RadioButton" x="5" y="32"/>
+						<item type="text" name="radio_freq50_text" text="TextFrequency50" format="Format16LeftBlack" x="22" y="30"/>
+						
+						<item type="sprite" name="radio_freq60" path="RadioButton" x="5" y="57"/>
+						<item type="text" name="radio_freq50_text" text="TextFrequency60" format="Format16LeftBlack" x="22" y="55"/>
+					</item>
+					
+					<item type="sprite" name="camera_settings_quality" x="280" y="317">
+						<item type="sprite" name="fon_settings_camera_quality" path="white" x="0" y="10" width="183" height="145"/>
+						<item type="sprite" name="fon_settings_head_quality" path="white" x="12" y="0" width="85" height="24"/>
+						<item type="sprite" name="fon_settings_camera_adjusment_quality" path="whiteSettings" x="0" y="25" width="183" height="130"/>
+						<item type="text" name="text_Quality" text="TextQuality" format="Format16LeftBlack" x="14" y="0"/>
+						
+						<item type="sprite" name="radio_high" path="RadioButton" x="5" y="32"/>
+						<item type="text" name="radio_high_text" text="TextQualityHigh" format="Format16LeftBlack" x="22" y="30"/>
+						<item type="sprite" name="high_quality_inputtext" path="InputNumberTextSmall" x="144" y="30"/>						
+						
+						<item type="sprite" name="radio_speed" path="RadioButton" x="5" y="57"/>
+						<item type="text" name="radio_speed_text" text="TextQualitySpeed" format="Format16LeftBlack" x="22" y="55"/>
+						
+						<item type="sprite" name="radio_balanced_high" path="RadioButton" x="5" y="82"/>
+						<item type="text" name="radio_balanced_text" text="TextQualityBalanced" format="Format16LeftBlack" x="22" y="80"/>
+						
+						<item type="sprite" name="radio_quality_high" path="RadioButton" x="5" y="107"/>
+						<item type="text" name="radio_quality_text" text="TextQualityQuality" format="Format16LeftBlack" x="22" y="105"/>
+						
+						<item type="sprite" name="radio_moon_light" path="RadioButton" x="5" y="132"/>
+						<item type="text" name="radio_moon_light_text" text="TextQualityMoonLight" format="Format16LeftBlack" x="22" y="130"/>						
+					</item>
+					
+					<item type="sprite" name="camera_settings_distortion" x="4" y="317">
+						<item type="sprite" name="fon_settings_camera_distortion" path="white" x="0" y="10" width="190" height="145"/>
+						<item type="sprite" name="fon_settings_head_distortion" path="white" x="12" y="0" width="85" height="24"/>
+						<item type="sprite" name="fon_settings_camera_adjusment_distortion" path="whiteSettings" x="0" y="25" width="190" height="130"/>
+						<item type="text" name="text_Distortion" text="TextDistortion" format="Format16LeftBlack" x="14" y="0"/>
+						
+						<item type="text" name="text_Camber" text="TextCamber" format="Format16LeftBlack" x="5" y="30"/>
+						<item type="text" name="text_Intensity" text="TextIntensity" format="Format16LeftBlack" x="5" y="55"/>
+						<item type="text" name="camera_settings_distortion_x_text" text="TextDistX" format="Format16LeftBlack" x="5" y="80"/>
+						<item type="text" name="camera_settings_distortion_y_text" text="TextDistY" format="Format16LeftBlack" x="5" y="105"/>
+						
+						<item type="sprite" name="distorsion_convexity_inputtext" path="InputNumberTextSmall" x="150" y="30"/>						
+						<item type="sprite" name="distorsion_intensity_inputtext" path="InputNumberTextSmall" x="150" y="55"/>						
+						<item type="sprite" name="distorsion_x_inputtext" path="InputNumberTextSmall" x="150" y="80"/>						
+						<item type="sprite" name="distorsion_y_inputtext" path="InputNumberTextSmall" x="150" y="105"/>						
+						
+						<item type="sprite" name="button_distortion_settings" path="ButtonGray" x="34" y="127"/>						
+					</item>						
+						
+					<item type="sprite" name="camera_settings_fps" x="4" y="477">
+						<item type="sprite" name="fon_settings_camera_fps" path="white" x="0" y="10" width="459" height="45"/>
+						<item type="sprite" name="fon_settings_head_fps" path="white" x="12" y="0" width="135" height="24"/>
+						<item type="sprite" name="fon_settings_camera_adjusment_fps" path="whiteSettings" x="0" y="25" width="459" height="30"/>			
+						<item type="text" name="button_camera_head_fps" text="TextFPS" format="Format16LeftBlack" x="14" y="0"/>
+						
+						<item type="text" name="text_FPS" text="TextFPS" format="Format16LeftBlack" x="5" y="30"/>
+						<item type="sprite" name="slider_settings_FPSCamera" path="SliderClip" x="139" y="30"/>						
+					</item>
+					
+					<item type="sprite" name="button_camera_ok" path="ButtonGray" x="40" y="547"/>
+					<item type="sprite" name="button_camera_save" path="ButtonGray" x="172" y="547"/>
+					<item type="sprite" name="button_camera_upload" path="ButtonGray" x="304" y="547"/>
+				</item>
+				
+				<item type="sprite" name="camera_settings_video" x="423" y="285">
+					<item type="sprite" name="camera_settings_video_off" x="0" y="0">
+						<item type="sprite" name="fon_settings_camera_video" path="black" x="0" y="0" width="320" height="240"/>
+						<item type="text" name="camera_settings_disable_text" text="TextCameraDisable" format="Format14LeftRed" x="50" y="100"/>
+					</item>
+				</item>
+				
+				<item type="sprite" name="camera_settings_info" x="423" y="528">
+					<item type="sprite" name="fon_settings_camera_info" path="whiteSettings" x="0" y="0" width="320" height="125"/>
+					<item type="text" name="text_settings_frames_ps" text="TextFramesPS" format="Format16LeftBlackInfo" x="4" y="5"/>
+					<item type="text" name="text_settings_delay" text="TextDelay" format="Format16LeftBlackInfo" x="4" y="30"/>
+					<item type="text" name="text_settings_faces_ps" text="TextFacesPS" format="Format16LeftBlackInfo" x="4" y="55"/>
+					<item type="text" name="text_settings_time_img" text="TextTimeImg" format="Format16LeftBlackInfo" x="4" y="80"/>
+				</item>
+
+			</item>
+		</item>
+
+		<item type="sprite" name="buttons_panel" x="0" y="0">
+			<item type="sprite" name="fon_buttons" path="white" x="0" y="0" width="1220" height="61"/>
+			<item type="sprite" name="button_connect" path="ButtonGray" x="3" y="3"/>		
+			<item type="sprite" name="button_print" path="ButtonGray" x="1020" y="-9035"/>
+			<item type="sprite" name="button_protection" path="ButtonGray" x="129" y="-9004"/>		
+			<item type="sprite" name="button_train" path="ButtonGray" x="129" y="3"/>
+			<item type="sprite" name="button_train_files" path="ButtonGray" x="379" y="-9004"/>
+			<item type="sprite" name="button_view" path="ButtonTab" x="130" y="-9011"/>
+			<item type="sprite" name="button_base" path="ButtonTab" x="130" y="-9041"/>		
+			<item type="sprite" name="button_map" path="ButtonTab" x="255" y="-9041"/>
+			<item type="sprite" name="button_camera" path="ButtonTab" x="255" y="-9011"/>
+			<item type="sprite" name="button_fullscreen" path="ButtonFullScreen" x="1190" y="3"/>
+			<item type="text" name="version_text" text="" format="FormatBlackStatus" x="1050" y="8"/>
+			<item type="text" name="status_text" text="" format="FormatBlackStatus" x="425" y="10"/>
+		</item>
+
+		<item type="sprite" name="black_fon" path="black" x="0" y="0" width="1220" height="828"/>
+		<item type="sprite" name="progress" x="0" y="0">
+			<item type="sprite" name="progress_fon" path="progress" x="0" y="30"/>
+			<item type="sprite" name="progress_circle" path="progress_circle" x="610" y="414"/>
+		</item>
+
+
+		<item type="sprite" name="dialog_window" x="405" y="200">
+			<item type="sprite" name="fon_dialog_main" path="whiteSettings" x="0" y="0" width="410" height="260"/>
+			<item type="sprite" name="fon_dialog_cont" path="whiteSettings" x="5" y="5" width="400" height="250"/>
+			<item type="sprite" name="fon_dialog_head" path="white" x="5" y="5" width="400" height="34"/>
+			<item type="sprite" name="fon_dialog_footer" path="white" x="5" y="219" width="400" height="36"/>
+			<item type="sprite" name="button_dialog_ok" path="ButtonGray" x="153" y="224"/>
+			<item type="sprite" name="button_dialog_cancel" path="ButtonGray" x="278" y="224"/>
+			<item type="sprite" name="button_dialog_close" path="ButtonClose" x="376" y="10"/>	
+			<item type="sprite" name="dialog_inputtext" path="InputText" x="115" y="159"/>
+			<item type="sprite" name="dialog_inputtext_small" path="InputNumberText" x="180" y="120"/>
+			<item type="text" name="window_dialog_text" text="ButtonCameraSettingsResolution" format="MessageFormat" x="15" y="59"/>
+			<item type="text" name="window_dialog_text_head" text="TextDialogHead" format="MessageFormatHead" x="10" y="11"/>		
+		</item>
+
+		<item type="sprite" name="message_window" x="405" y="200">
+			<item type="sprite" name="fon_dialog_main_message" path="whiteSettings" x="0" y="0" width="410" height="260"/>
+			<item type="sprite" name="fon_dialog_cont_message" path="whiteSettings" x="5" y="5" width="400" height="250"/>
+			<item type="sprite" name="fon_dialog_head_message" path="white" x="5" y="5" width="400" height="34"/>
+			<item type="sprite" name="fon_dialog_footer_message" path="white" x="5" y="219" width="400" height="36"/>		
+			<item type="text" name="window_message_text" text="ButtonCameraSettingsResolution" format="MessageFormat" x="15" y="59"/>
+			<item type="text" name="window_message_text_error" text="ButtonCameraSettingsResolution" format="FormatErrorAccess" x="15" y="59"/>
+			<item type="sprite" name="button_message_ok" path="ButtonGray" x="278" y="224"/>
+			<item type="sprite" name="button_message_close" path="ButtonClose" x="376" y="10"/>
+			<item type="text" name="window_message_text_head" text="TextMessageHead" format="MessageFormatHead" x="10" y="11"/>
+		</item>
+		
+		<item type="sprite" name="learn_files_window" x="405" y="200">
+			<item type="sprite" name="learn_files_main_window" x="0" y="0">
+				<item type="sprite" name="fon_learn_files_main" path="whiteSettings" x="0" y="0" width="410" height="260"/>
+				<item type="sprite" name="fon_learn_files_cont" path="whiteSettings" x="5" y="5" width="400" height="250"/>
+				<item type="sprite" name="fon_learn_files_head" path="white" x="5" y="5" width="400" height="34"/>
+				<item type="sprite" name="fon_learn_files_footer" path="white" x="5" y="219" width="400" height="36"/>
+				
+				<item type="sprite" name="button_learn_files_ok" path="ButtonGray" x="153" y="224"/>
+				<item type="sprite" name="button_learn_files_cancel" path="ButtonGray" x="278" y="224"/>
+				<item type="sprite" name="button_learn_files_close" path="ButtonClose" x="376" y="10"/>
+				
+				<item type="sprite" name="radio_learn_one_person" path="RadioButton" x="15" y="57"/>
+				<item type="sprite" name="radio_learn_much_person" path="RadioButton" x="15" y="135"/>
+				<item type="sprite" name="learn_files_inputtext" path="InputText" x="200" y="92"/>
+				
+				<item type="text" name="window_learn_files_text_one_person" text="TextLearnFilesOnePerson" format="MessageFormatLearn" x="35" y="54"/>
+				<item type="text" name="window_learn_files_text_much_persons" text="TextLearnFilesMuchPersons" format="MessageFormatLearn" x="35" y="132"/>
+				
+				<item type="text" name="window_learn_files_text_head" text="TextLearnHead" format="MessageFormatHead" x="10" y="11"/>		
+			</item>
+		</item>
+		
+	</item>
+</appmap>

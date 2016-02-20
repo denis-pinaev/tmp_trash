@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- orient 0-north 90-east 180-south 270-west -->
+<terminals>
+	<terminal id="1" objectID="terminal" type="1" x="1174" y="427" orient="90" nomer="1">
+		<camera id="2" objectID="camera" type="1" x="1185" y="427" name="CAM14" ip="10.176.50.104" orient="0" model="Arecont Vision AV3100" lens="4 мм" angle="45" distance="видимости: 10м,|детектирования: 5м,|распознавания: 3.5м" height="" visibleIDs="30"/>
+		<camera id="3" objectID="camera" type="1" x="1163" y="427" name="CAM8" ip="10.176.50.73" orient="180" model="Arecont Vision AV2100" lens="8 мм" angle="45" distance="видимости: 10м,|детектирования: 5м,|распознавания: 3.5м" height="" visibleIDs="28"/>
+	</terminal>
+	<terminal id="4" objectID="terminal" type="1" x="1174" y="304" orient="270" nomer="2">
+		<camera id="5" objectID="camera" type="1" x="1163" y="304" name="CAM5" ip="10.176.50.178" orient="180" model="Arecont Vision AV3100" lens="8 мм" angle="45" distance="видимости: 10м,|детектирования: 5м,|распознавания: 3.5м" height="" visibleIDs="28"/>
+		<camera id="6" objectID="camera" type="1" x="1185" y="304" name="CAM2" ip="10.176.50.34" orient="0" model="Arecont Vision AV3100" lens="12 мм" angle="45" distance="видимости: 10м,|детектирования: 5м,|распознавания: 3.5м" height="" visibleIDs="30"/>
+	</terminal>
+	<terminal id="7" objectID="terminal" type="1" x="995" y="366" orient="" nomer="3">
+		<camera id="8" objectID="camera" type="1" x="984" y="366" name="CAM6" ip="10.176.50.177" orient="180" model="Arecont Vision AV3100" lens="12 мм" angle="45" distance="видимости: 10м,|детектирования: 5м,|распознавания: 3.5м" height="" visibleIDs="10, 11"/>
+		<camera id="9" objectID="camera" type="1" x="1006" y="366" name="CAM7" ip="10.176.50.63" orient="0" model="Arecont Vision AV3100" lens="8 мм" angle="45" distance="видимости: 10м,|детектирования: 5м,|распознавания: 3.5м" height="" visibleIDs="28"/>
+	</terminal>
+	<terminal id="10" objectID="terminal" type="2" x="885" y="371" orient="" nomer="4">
+		<camera id="11" objectID="camera" type="1" x="896" y="371" name="CAM4" ip="10.176.50.44" orient="0" model="Arecont Vision AV3100" lens="12 мм" angle="45" distance="видимости: 10м,|детектирования: 5м,|распознавания: 3.5м" height="" visibleIDs="7, 8, 29, 28"/>
+	</terminal>
+	<terminal id="12" objectID="terminal" type="1" x="160" y="402" orient="90" nomer="5">
+		<camera id="13" objectID="camera" type="1" x="149" y="402" name="CAM9" ip="10.176.50.83" orient="180" model="Arecont Vision AV3100" lens="12 мм" angle="45" distance="видимости: 10м,|детектирования: 5м,|распознавания: 3.5м" height="" visibleIDs="23"/>
+		<camera id="14" objectID="camera" type="1" x="171" y="402" name="CAM12" ip="10.176.50.94" orient="0" model="Arecont Vision AV3100" lens="12 мм" angle="45" distance="видимости: 10м,|детектирования: 5м,|распознавания: 3.5м" height="" visibleIDs="24, 18, 21, 22"/>
+	</terminal>
+	<terminal id="15" objectID="terminal" type="1" x="160" y="329" orient="270" nomer="6">
+		<camera id="16" objectID="camera" type="1" x="149" y="329" name="CAM11" ip="10.176.50.93" orient="180" model="Arecont Vision AV3100" lens="12 мм" angle="45" distance="видимости: 10м,|детектирования: 5м,|распознавания: 3.5м" height="" visibleIDs="23"/>
+		<camera id="17" objectID="camera" type="1" x="171" y="329" name="CAM3" ip="10.176.50.43" orient="0" model="Arecont Vision AV3100" lens="12 мм" angle="45" distance="видимости: 10м,|детектирования: 5м,|распознавания: 3.5м" height="" visibleIDs="24, 18, 21, 22"/>
+	</terminal>
+	<terminal id="18" objectID="terminal" type="1" x="225" y="366" orient="" nomer="7">
+		<camera id="19" objectID="camera" type="1" x="214" y="366" name="CAM13" ip="10.176.50.103" orient="180" model="Arecont Vision AV3100" lens="12 мм" angle="45" distance="видимости: 10м,|детектирования: 5м,|распознавания: 3.5м" height="" visibleIDs="23, 12, 15"/>
+		<camera id="20" objectID="camera" type="1" x="236" y="366" name="CAM10" ip="10.176.50.84" orient="0" model="Arecont Vision AV3100" lens="12 мм" angle="45" distance="видимости: 10м,|детектирования: 5м,|распознавания: 3.5м" height="" visibleIDs="21, 22"/>
+	</terminal>
+	<terminal id="21" objectID="terminal" type="2" x="334" y="371" orient="" nomer="8">
+		<camera id="22" objectID="camera" type="1" x="323" y="371" name="CAM1" ip="10.176.50.33" orient="180" model="Arecont Vision AV2100" lens="8 мм" angle="45" distance="видимости: 10м,|детектирования: 5м,|распознавания: 3.5м" height="" visibleIDs="18, 20, 23, 24"/>
+	</terminal>
+
+	<object id="23" objectID="escalatorSouth" objectName="TextMapObjectName_escalatorSouth" />
+	<object id="24" objectID="boxSouth" objectName="TextMapObjectName_boxSouth" />
+	<object id="25" objectID="lobbySouth" objectName="TextMapObjectName_lobbySouth" />
+	<object id="26" objectID="desksSouth" objectName="TextMapObjectName_desksSouth" />
+	<object id="27" objectID="turnstilesSouth" objectName="TextMapObjectName_turnstilesSouth" />
+
+	<object id="28" objectID="escalatorNorth" objectName="TextMapObjectName_escalatorNorth" />
+	<object id="29" objectID="boxNorth" objectName="TextMapObjectName_boxNorth" />
+	<object id="30" objectID="lobbyNorth" objectName="TextMapObjectName_lobbyNorth" />
+	<object id="31" objectID="desksNorth" objectName="TextMapObjectName_desksNorth" />
+	<object id="32" objectID="turnstilesNorth" objectName="TextMapObjectName_turnstilesNorth" />
+
+</terminals>

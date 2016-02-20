@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<formats>
+	<format id="TempFormat" font="Arial" size="15" width="400" align="center" bold="false" italic="false" underline="false" color="0x333333" letterSpacing="0" leading="0">
+	</format>
+	<format id="TooltipFormat" font="Arial" size="15" width="150" align="center" bold="false" italic="false" underline="false" color="0x333333" letterSpacing="0" leading="0">
+	</format>
+	<format id="SignFormat" font="Arial" size="18" width="600" align="left" bold="false" italic="false" underline="false" color="0x333333" letterSpacing="0" leading="-1">
+	</format>
+	<format id="Format24CenterBlack" font="Arial" size="20" width="600" height="1" align="center" bold="false" italic="false" underline="false" color="0x333333" letterSpacing="0" leading="-1">
+	</format>
+	<format id="Format14CenterBlack" font="Arial" size="14" width="180" height="1" align="center" bold="false" italic="false" underline="false" color="0x000000" letterSpacing="0" leading="0">
+	</format>
+	<format id="Format14CenterYellow" font="Arial" size="16" width="180" height="1" align="center" bold="false" italic="false" underline="false" color="0xFF0000" letterSpacing="0" leading="0">
+		<filter name="DropShadowFilter" distance="0" angle="0" color="0x000000" alpha="1" blurX="1.05" blurY="1.05" strength="100" quality="1"/>
+	</format>
+	<format id="Format34CenterRed" font="Arial" size="34" width="600" height="1" align="center" bold="false" italic="false" underline="false" color="0xFF3333" letterSpacing="0" leading="0">
+	</format>
+	<format id="Format14LeftBlack" font="Arial" size="14" width="180" height="1" align="left" bold="false" italic="false" underline="false" color="0x000000" letterSpacing="0" leading="0">
+	</format>
+	<format id="Format12CenterBlack" font="Arial" size="12" width="180" height="1" align="center" bold="false" italic="false" underline="false" color="0x000000" letterSpacing="0" leading="-1">
+	</format>
+	<format id="Format14LeftRed" font="Arial" size="15" width="300" height="1" align="left" bold="false" italic="false" underline="false" color="0xff0000" letterSpacing="0" leading="0">
+	</format>
+	<format id="Format14RightBlack" font="Arial" size="14" width="140" height="1" align="right" bold="false" italic="false" underline="false" color="0x000000" letterSpacing="0" leading="0">
+	</format>
+	<format id="Format14LeftBlack1000" font="Arial" size="14" width="1000" height="1" align="left" bold="false" italic="false" underline="false" color="0x000000" letterSpacing="0" leading="0">
+	</format>
+	<format id="MessageFormat" font="Arial" size="17" width="380" align="center" color="0x333333" letterSpacing="0" leading="2">
+	</format>
+	<format id="MessageFormatLearn" font="Arial" size="17" width="345" align="left" color="0x333333" letterSpacing="0" leading="2">
+	</format>
+	<format id="MessageFormatHead" font="Arial" size="17" width="360" align="left" color="0x333333" letterSpacing="0" leading="0">
+	</format>	
+	<format id="TextButtonBlack" font="Arial" size="20" width="200" align="center" color="0x000000" letterSpacing="0" leading="0">
+	</format>
+	<format id="TextButtonWhite" font="Arial" size="18" width="200" align="center" color="0xFFFFFF" letterSpacing="0" leading="0">
+	</format>
+	<format id="Format16RightBlack" font="Arial" size="15" width="150" height="1" align="right" bold="false" italic="false" underline="false" color="0x333333" letterSpacing="0" leading="0">
+	</format>
+	<format id="Format16RightBlackBig" font="Arial" size="15" width="400" height="1" align="right" bold="false" italic="false" underline="false" color="0x333333" letterSpacing="0" leading="0">
+	</format>		
+	<format id="Format16CenterBlack" font="Arial" size="15" width="150" height="1" align="center" bold="false" italic="false" underline="false" color="0x333333" letterSpacing="0" leading="0">
+	</format>	
+	<format id="Format16LeftBlack" font="Arial" size="15" width="150" height="1" align="left" bold="false" italic="false" underline="false" color="0x333333" letterSpacing="0" leading="0">
+	</format>		
+	<format id="Format16LeftBlackInfo" font="Arial" size="15" width="319" height="1" align="left" bold="false" italic="false" underline="false" color="0x333333" letterSpacing="0" leading="0">
+	</format>	
+	<format id="FormatBlackStatus" font="Arial" size="15" width="200" height="1" align="left" bold="false" italic="false" underline="false" color="0x333333" letterSpacing="0" leading="0">
+	</format>
+	<format id="FormatErrorAccess" font="Arial" size="17" width="380" align="center" color="0xFF3333" letterSpacing="0" leading="2">
+	</format>
+	<format id="Format16LeftRed" font="Arial" size="16" width="240" height="1" align="left" bold="false" italic="false" underline="false" color="0xFF3333" letterSpacing="0" leading="0">
+		<filter name="DropShadowFilter" distance="0" angle="0" color="0x000000" alpha="1" blurX="1.05" blurY="1.05" strength="100" quality="1"/>
+	</format>
+	<format id="Format16RightGreen" font="Arial" size="16" width="240" height="1" align="right" bold="false" italic="false" underline="false" color="0x33FF33" letterSpacing="0" leading="0">
+		<filter name="DropShadowFilter" distance="0" angle="0" color="0x000000" alpha="1" blurX="1.05" blurY="1.05" strength="100" quality="1"/>
+	</format>
+</formats>

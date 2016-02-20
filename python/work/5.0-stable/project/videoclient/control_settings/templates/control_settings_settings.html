@@ -1,0 +1,97 @@
+{% extends "control_settings_base.html" %}
+{% load i18n %}
+{% load templatetags %}
+{% block page_content %}
+{% include "control_settings_strings.html" %}
+<script type="text/javascript" src="/files/js/spinbox.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/js_user.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/control_settings/js/funcs.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/jquery.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/jquery.validate.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+var params=new Array();
+var max_length = {{max_length|default:350}};
+var min_length = {{min_length|default:150}};
+var val_length = {{val_length|default:22}};
+var allparams = [];
+function showAllParam(obj) {
+    var elems = byId("params_content").getElementsByTagName("A");
+    var id = "";
+    var link;
+    var display = "none";
+    var linkClass = "";
+    if (obj.innerHTML == '{% trans "Свернуть всё" %}') {
+        display = "none";
+        linkClass = "link_head arrow_left";
+        byId("link_top").innerHTML = "{% trans "Развернуть всё" %}";
+        byId("link_bottom").innerHTML = "{% trans "Развернуть всё" %}";
+    } else {
+        display = "block";
+        linkClass = "link_head";
+        byId("link_top").innerHTML = "{% trans "Свернуть всё" %}";
+        byId("link_bottom").innerHTML = "{% trans "Свернуть всё" %}";
+    }
+    for(var i = 0; i < elems.length; i++) {
+        link = elems[i];
+        link.className = linkClass;
+        id = link.id.split("_")[1];
+        if (byId(id)){ 
+            byId(id).style.display = display;
+        }
+    }
+}
+$(function() {
+    {% if base != 'default' %}initFuncsSettingsAll();{% endif %}
+    checkImportForm();
+});  
+</script>
+{% load control_settings_templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/control_settings/css/settings.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/control_settings/js/js_settings.js?v=v{{ version }}"></script>
+{% include "menu_control_settings.html" %}
+<h2>{% trans title %} {% trans " управляющей системы" %} {{ HOST }}:{{ PORT }} <input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Настройки параметров управляющей системы" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+{% include "current_time.html" %}
+<form action="" method="post" id="MainParamsForm">
+    <input type="hidden" name="update" value="1" />
+	<input type="hidden" name="" id="select_page" value="{{ select_page }}" />	
+</form>
+{% if us_error %}
+    <div class="message_warning">{% trans "Управляющая система" %} <strong>"{{ HOST }}:{{ PORT }}"</strong> {% trans "недоступна." %}</div>   
+{% else %}
+	{% if not params or params|length == 0 %}
+	<div class="message_warning">{% trans "Настройки управляющей системы" %} <strong>"{{ HOST }}:{{ PORT }}"</strong> {% trans "недоступны." %}</div>
+    <form action="" method="post" id="MainParamsSaveForm">	
+        <div class="block dist_top">   
+            <input type="button" name="" value="{% trans "Импорт параметров" %}" class="inp_btn inp_btn170" onClick="javascript: importParameters();" /><input type="hidden" name="save" id="id_save" value="1" /><input type="hidden" name="base"  value="{{base}}" />
+        </div>
+        <div id="main_params_content" style="display: block;" class="dist_top"></div>
+    </form>	
+	{% else %}	
+    <form action="" method="post" id="MainParamsSaveForm">	
+        <div class="block">   
+            <a href="#" class="link_head2 dist_left" id="link_top" onClick="javascript: showAllParam(this); return false;">{% trans "Свернуть всё" %}</a>
+            <input type="button" onClick="{% if base == 'default' %}javascript: save_settings();{% else %}javascript: saveSettingsAll({id: 'win_reboot_offer_dialog', name_block: 'reboot_offer_window'});{% endif %}" name="" value="{% trans "Сохранить всё" %}" class="inp_btn btn_blue120" />
+            <!--<input type="button" name="" value="{% trans "Добавить параметр" %}" class="inp_btn inp_btn170 dist_left" onClick="javascript: addParameter();" />-->  
+            <input type="button" name="" value="{% trans "Экспорт параметров" %}" class="inp_btn inp_btn170 dist_left" onClick="javascript: exportParameters();" />
+            <input type="button" name="" value="{% trans "Импорт параметров" %}" class="inp_btn inp_btn170 dist_left" onClick="javascript: importParameters();" />
+        </div>
+        <div id="main_params_content" style="display: block;" class="dist_top">
+            {% include "control_settings_param.html" %}    
+        </div>
+        <div class="block dist_top">
+            <a href="#" class="link_head2" id="link_bottom" onClick="javascript: showAllParam(this); return false;">{% trans "Свернуть всё" %}</a>
+            <input type="button" onclick="{% if base == 'default' %}javascript: save_settings();{% else %}javascript: saveSettingsAll({id: 'win_reboot_offer_dialog', name_block: 'reboot_offer_window'});{% endif %}" name="" value="{% trans "Сохранить всё" %}" class="inp_btn btn_blue120" /><input type="hidden" name="save" id="id_save" value="1" /><input type="hidden" name="base"  value="{{base}}" />
+            <input type="button" name="" value="{% trans "Экспорт параметров" %}" class="inp_btn inp_btn170 dist_left" onClick="javascript: exportParameters();" />
+            <input type="button" name="" value="{% trans "Импорт параметров" %}" class="inp_btn inp_btn170 dist_left" onClick="javascript: importParameters();" />
+            <!--<input type="button" name="" value="{% trans "Добавить параметр" %}" class="inp_btn inp_btn170 dist_left" onClick="javascript: addParameter();" />-->
+        </div>
+    </form>
+	{% endif %}
+{% endif %}           
+<script type="text/javascript">create_params_list(allparams);</script>      
+{% endblock page_content %}
+{% block window %}
+    {% include "control_settings_window_settings.html" %}
+    {% include "window_export.html" %}
+{% endblock window %}

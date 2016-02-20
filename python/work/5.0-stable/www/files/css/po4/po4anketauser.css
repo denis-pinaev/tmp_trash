@@ -1,0 +1,143 @@
+﻿.inp_btn140 {
+	width: 140px;
+	background: url('/files/images/button140x24_up.gif') top left no-repeat;
+}
+.inp_btn170,
+.link_btn170,
+.link_btn170:hover {
+	width: 170px;
+	background: url('/files/images/button170x24_up.gif') top left no-repeat;
+}
+.btn_blue {
+	width: 90px;
+	background: url('/files/images/btn_blue_90.png') top left no-repeat;
+	-background: none;
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_90.png', sizingMethod='scale');
+	color: #ffffff;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.bl_photo_btn {
+	float: left;
+	width: 190px;
+}
+.bl_photo_btn .bl_btn {
+	margin-top: 1px;
+}
+.bl_photo_btn .photo_user {
+	border: 1px solid #AAAAAA;
+	padding: 5px;
+	background-color: #eeeeee;
+	text-align: center;
+	margin-bottom: 10px;
+}
+.bl_photo_btn .photo_user .all_photo {
+	text-align: center;
+	margin-top: 5px;
+}
+.bl_info_all {
+	margin-left: 40px;
+	float: left;
+}
+.head_info {
+	font-weight:bold;
+	margin-bottom:10px;
+}
+.bl_info {
+	margin-bottom: 10px;
+	/*width: 386px;*/
+	width: auto;
+	overflow: hidden;
+}
+.bl_info .bl_txt {
+	float: left;
+	width: 85px;
+}
+.bl_info .inp_txt {
+	width: 220px;
+}
+.bl_info .bl_phone {
+	margin-bottom: 3px;
+	margin-left: 160px;
+}
+.bl_info .bl_phone div {
+	width: 100px;
+	float: left;
+}
+.bl_info .bl_phone .inp_txt {
+	width: 120px;
+}
+.bl_info .bl_phone.last {
+	margin-bottom: 0px;
+}
+.bl_info .select {
+	width: 226px;
+}
+.bl_info_btn {
+	width: 380px;
+	text-align: center;
+}
+.bl_btn_photo {
+	float: left;
+}
+.bl_btn_photo .link_btn {
+	float: left;
+	margin-left: 10px;
+}
+.bl_btn_photo .inp_btn {
+	float: left;
+}
+
+.all_photo {
+	margin-bottom:10px;
+}
+.no_photo_user {
+	border: 1px solid #AAAAAA;
+	padding: 5px;
+	background-color: #eeeeee;
+	margin-bottom: 10px;
+}
+.no_photo_user div {
+	width: 120px;
+	height: 80px;
+	text-align: center;
+	padding-top: 40px;
+	margin: 0px auto;
+}
+
+.btn_photos {
+	width: 100%;
+	overflow: hidden;
+}
+.btn_photos .inp_btn {
+	float: right;
+}
+
+.bl_access {
+	float: left;
+	margin-left: 40px;
+}
+.access_info {
+	margin-bottom: 10px;
+}
+.access_info div {
+	float: left;
+	width: 110px;
+}
+.access_info .inp_txt {
+	width: 100px;
+}
+.block_error {
+    padding-left: 85px;
+    color: #FF6600;
+}
+.block_error_access {
+	padding-left: 110px;
+	color: #FF6600;					
+}
+.error_border {
+	border-color: #FF6600;
+}

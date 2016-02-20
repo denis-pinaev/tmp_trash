@@ -1,0 +1,121 @@
+{% load i18n %}
+{% load templatetags %}
+{% if journals_count > 0 %}
+	{% if all_users == 0 %}	
+		<div class="message_action dist_top">{% trans "Не найдены записи, соответствующие заданным условиям поиска" %}.</div>
+	{% else %}
+		<input type="hidden" id="all_data_journal_i" value="{{ journals_count }}" />
+		<input type="hidden" id="all_ident_data_journal_i" value="{{ journals_ident_count }}" />
+		<input type="hidden" id="search_data_journal_i" value="{{ all_users }}" />
+		<input type="hidden" id="search_ident_data_journal_i" value="{{ all_ident_users }}" />
+		
+		{% if allpages > 1 %}					
+			{% include "navigation/main.html" %}
+		{% else %}
+			{% include "navigation/light.html" %}
+		{% endif %}
+		<div class="frm_block">
+			{% if perms.user_perms.perm_lists or perms.user_perms.perm_logs_export %}
+				<div class="bl_btn_check short_descr" onClick="javascript: selectedAllRow('choose_all');" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all" onClick="javascript: selectedAllRow('choose_all');" /><label for="choose_all">{% trans "Выделить всё" %}</label></div></div>
+				{% if perms.user_perms.perm_lists %}	
+					<input type="button" name="" value="{% trans "Обучить" %}" onClick="javascript: personsForTraining({{ users|length }});" class="inp_btn inp_btn140" />
+					<input type="button" name="" value="{% trans "Обучить как шум" %}" onClick="javascript: personsForNoise({{ users|length }});" class="inp_btn inp_btn140 dist_left" />
+				{% endif %}
+				{% if perms.user_perms.perm_logs_export %}
+					<input type="button" name="" value="{% trans "Экспорт по фильтру" %}" onClick="javascript: journalPhotosExportAll();" class="inp_btn inp_btn140" style="margin-left: 30px;" />
+					<input type="button" name="" value="{% trans "Экспорт" %}" onClick="javascript: showMessageExport2({{ users|length }})" class="inp_btn inp_btn90 dist_left" />
+				{% endif %}
+			{% endif %}		
+		</div>
+		<div class="block">
+			  <table cellspacing="0" cellpadding="0" class="table" id="table">
+			  <tr>
+				<th class="th_first">&nbsp;</th>
+				<th class="th_check"><a href="?start={{start}}&sorto=0&up={% if sorto == 0 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if cameras %}&cameras={{cameras}}{% endif %}{% if fio %}&fio={{fio}}{% endif %}{% if time_check %}&hour_beg={{timeBegin.hour}}&min_beg={{timeBegin.minute}}&hour_end={{timeEnd.hour}}&min_end={{timeEnd.minute}}{% endif %}{% if id_person %}&id_person={{id_person}}{% endif %}{% if id_record %}&id_record={{id_record}}{% endif %}" class="btn_arrow {% if sorto == 0 and up == 1  %}up{% else %}down{% endif %}">ID</a></th>
+				<th class="th_date"><a href="?start={{start}}&sorto=1&up={% if sorto == 1 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if cameras %}&cameras={{cameras}}{% endif %}{% if fio %}&fio={{fio}}{% endif %}{% if time_check %}&hour_beg={{timeBegin.hour}}&min_beg={{timeBegin.minute}}&hour_end={{timeEnd.hour}}&min_end={{timeEnd.minute}}{% endif %}{% if id_person %}&id_person={{id_person}}{% endif %}{% if id_record %}&id_record={{id_record}}{% endif %}" class="btn_arrow {% if sorto == 1 and up == 1  %}up{% else %}down{% endif %}">{% trans "Дата" %}</a></th>
+				<th class="th_time"><a href="?start={{start}}&sorto=1&up={% if sorto == 1 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if cameras %}&cameras={{cameras}}{% endif %}{% if fio %}&fio={{fio}}{% endif %}{% if time_check %}&hour_beg={{timeBegin.hour}}&min_beg={{timeBegin.minute}}&hour_end={{timeEnd.hour}}&min_end={{timeEnd.minute}}{% endif %}{% if id_person %}&id_person={{id_person}}{% endif %}{% if id_record %}&id_record={{id_record}}{% endif %}" class="btn_arrow {% if sorto == 1 and up == 1  %}up{% else %}down{% endif %}">{% trans "Время" %}</a></th>
+				<th class="th_kpp"><a href="?start={{start}}&sorto=4&up={% if sorto == 4 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if cameras %}&cameras={{cameras}}{% endif %}{% if fio %}&fio={{fio}}{% endif %}{% if time_check %}&hour_beg={{timeBegin.hour}}&min_beg={{timeBegin.minute}}&hour_end={{timeEnd.hour}}&min_end={{timeEnd.minute}}{% endif %}{% if id_person %}&id_person={{id_person}}{% endif %}{% if id_record %}&id_record={{id_record}}{% endif %}" class="btn_arrow {% if sorto == 4 and up == 1  %}up{% else %}down{% endif %}">{% trans "Камера" %}</a></th>
+				<th class="th_event">{% trans "Фото" %}</th>
+				<th class="th_event">{% trans "Идент" %}</th>								
+				<th class="th_name"><a href="?start={{start}}&sorto=5&up={% if sorto == 5 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if cameras %}&cameras={{cameras}}{% endif %}{% if fio %}&fio={{fio}}{% endif %}{% if time_check %}&hour_beg={{timeBegin.hour}}&min_beg={{timeBegin.minute}}&hour_end={{timeEnd.hour}}&min_end={{timeEnd.minute}}{% endif %}{% if id_person %}&id_person={{id_person}}{% endif %}{% if id_record %}&id_record={{id_record}}{% endif %}" class="btn_arrow {% if sorto == 5 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "ФИО" %}</a></th>
+				<th><a href="?start={{start}}&sorto=6&up={% if sorto == 6 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if cameras %}&cameras={{cameras}}{% endif %}{% if fio %}&fio={{fio}}{% endif %}{% if time_check %}&hour_beg={{timeBegin.hour}}&min_beg={{timeBegin.minute}}&hour_end={{timeEnd.hour}}&min_end={{timeEnd.minute}}{% endif %}{% if id_person %}&id_person={{id_person}}{% endif %}{% if id_record %}&id_record={{id_record}}{% endif %}" class="btn_arrow {% if sorto == 6 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "Статус" %}</a></th>
+				<th class="th_category"><a href="?start={{start}}&sorto=6&up={% if sorto == 6 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if cameras %}&cameras={{cameras}}{% endif %}{% if fio %}&fio={{fio}}{% endif %}{% if time_check %}&hour_beg={{timeBegin.hour}}&min_beg={{timeBegin.minute}}&hour_end={{timeEnd.hour}}&min_end={{timeEnd.minute}}{% endif %}{% if id_person %}&id_person={{id_person}}{% endif %}{% if id_record %}&id_record={{id_record}}{% endif %}" class="btn_arrow {% if sorto == 6 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "Категория" %}</a></th>
+				<th class="th_name"><a href="?start={{start}}&sorto=7&up={% if sorto == 7 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if cameras %}&cameras={{cameras}}{% endif %}{% if fio %}&fio={{fio}}{% endif %}{% if time_check %}&hour_beg={{timeBegin.hour}}&min_beg={{timeBegin.minute}}&hour_end={{timeEnd.hour}}&min_end={{timeEnd.minute}}{% endif %}{% if id_person %}&id_person={{id_person}}{% endif %}{% if id_record %}&id_record={{id_record}}{% endif %}" class="btn_arrow {% if sorto == 7 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "Оператор" %}</a></th>
+				<th>{% trans "Действие" %}</th>
+			  </tr>
+			  {% for journal in users %}
+					  <tr {% cycle '' 'class="odd"' %} onMouseOver="javascript: overRow(this);" onMouseOut="javascript: outRow(this);">
+					  <td class="td_first"><div><input type="checkbox" name="pi{{forloop.counter}}" value="{{ journal.pk }}" class="inp_check" id="check{{ forloop.counter }}" onClick="javascript: stopTimeRefresh(); selectedRow(this);" /></div></td>
+					  <td class="td_check">{{ journal.agregate_id }}</td>
+					  <td class="td_date">{{ journal.dt_first_fixed|date:"d.m.Y" }}{% if journal.dt_first_fixed|date:"Y.m.d" != journal.dt_last_fixed|date:"Y.m.d" %}-{{ journal.dt_last_fixed|date:"d.m.Y" }}{% endif %}</td>
+					  <td class="td_time short_descr" title="{% trans 'Период времени детектирования может изменяться из-за сбора статистики, обновляемой каждые 15 сек.' %}">{{ journal.dt_first_fixed|date:"H:i:s" }} - {{ journal.dt_last_fixed|date:"H:i:s" }}<span>*</span></td>
+					  <td><span class="short_descr" title="{% if journal.camera.name %}{{ journal.camera.name }} ({{ journal.camera.ip }} {{ journal.camera.type }}){% else %}{{ journal.camera.ip }} {{ journal.camera.type }}{% endif %}">{% if journal.camera != None %}{% if journal.camera.name %}{{ journal.camera.name|truncchar:20 }}{% else %}{{ journal.camera.ip }}:{{ journal.camera.type }}{% endif %}{% else %}&nbsp;{% endif %}</span></td>
+					  <td class="td_photo">                          
+						<div class="photo_many">
+							{% if journal.photos_count > 1 %}
+							<div class="frame1"></div>
+							<div class="frame2"></div>
+							<div class="frame3"></div>
+							<div class="frame4">
+							{% else %}
+							<div class="frame">
+							{% endif %}
+								<a href="#" onClick="javascript: showJournalPhoto('{{ journal.id }}', {{ forloop.counter }}); return false;" class="short_descr" title="{% if journal.get_distance %}{% trans "Расcтояние между глазами:" %} {{ journal.get_distance|floatformat }}{% endif %}{% if journal.original %}<br />Разрешение: {{ journal.get_original_info.resol }}{% endif %}"><img src="{% if not journal.original %}/files/images/no_photo40x40.gif{% else %}{% url get-journal-photo journal.pk 'original' %}{% endif %}"  alt="" /></a>
+								<input type="button" title="{% trans "Посмотреть подробную информацию" %}" name="" value="" class="btn_loupe short_descr" onClick="javascript: showJournalPhoto('{{ journal.id }}', {{ forloop.counter }});" id="photo{{ forloop.counter }}" />
+							</div>
+							<div class="photo_count short_descr" title="{% trans 'Количество фотографий' %}: {{ journal.photos_count }}<br />{% trans 'Результат может изменяться из-за сбора статистики, обновляемой каждые 15 сек.' %}">{{ journal.photos_count }}<span>*</span></div>
+							{% if journal.id|get_video %}
+							   <a href="{% url archive_page "view_detail_video" %}/{{ journal.id }}/" class="photo_video short_descr" target="_blank" title="{% trans "Просмотреть запись" %}"></a>
+							{% endif %}
+							{% comment %}<a href="{% url archive_page "view_detail_video" %}/{{ journal.id }}/" class="photo_video short_descr" title="{% trans "Просмотреть запись" %}"></a>{% endcomment %}
+						</div>
+					  </td>
+					  <td class="td_photo td_photo_ident">
+						<div class="photo">
+							<div class="photo_many">
+								{% if journal.photos_count > 1 %}
+								<div class="frame1"></div>
+								<div class="frame2"></div>
+								<div class="frame3"></div>
+								<div class="frame4">
+								{% else %}
+								<div class="frame">
+								{% endif %}
+									<a href="#" onClick="javascript: showJournalPhoto('{{ journal.id }}', {{ forloop.counter }}); return false;" class="short_descr" title="{% if journal and journal.finded and journal.person %}{% trans "Разрешение" %}: {{ journal.get_found_info.resol }}{% endif %}"><img src="{% if not journal or not journal.finded or not journal.person  %}/files/images/no_photo40x40.gif{% else %}{% url get-journal-photo journal.pk 'detected' %}{% endif %}"  alt="" id="img_id_{{ forloop.counter }}" ident="{% if journal.person %}1{% else %}0{% endif %}" /></a>
+									<input type="button" title="{% trans "Посмотреть подробную информацию" %}" name="" value="" class="btn_loupe short_descr" onClick="javascript: showJournalPhoto('{{ journal.id }}', {{ forloop.counter }});" id="photo{{ forloop.counter }}" />
+								</div>
+								{% if journal.training %}<div class="photo_learn short_descr" title="{% trans "Лицо добавлено в базу" %}"></div>{% endif %}
+							</div>
+						</div>
+					</td>
+					{% if journal.person %}                   
+					<td><a href="{{ project_url }}/anketa{% if journal.person.person.status.division.id == division_person %}person{% endif %}{% if journal.person.person.status.division.id == division_employee %}staff{% endif %}{% if journal.person.person.status.division.id == division_visitor %}visitor{% endif %}/{{ journal.person.person.id }}/?group={{ journal.person.person.group.pk}}">{{ journal.person.person.first_name }} {{ journal.person.person.last_name }} {{ journal.person.person.middle_name }}</a></td>
+					{% else %}
+					<td class="info_important">{% trans "Лицо не опознано" %}</td>
+					{% endif %}                       
+					<td>{% if journal.person.person.status != None %}{% trans journal.person.person.status.name %}{% else %}&nbsp;{% endif %}</td>
+					<td>{% if journal.person.person.category != None %}{% trans journal.person.person.category.name %}{% else %}&nbsp;{% endif %}</td>
+					<td>{% if journal.operator and journal.person  %}{{ journal.operator.first_name }} {{ journal.operator.last_name }} {{ journal.operator.middle_name }}{% else %}{% trans "Оператор отсутствовал" %}{% endif %}</td>
+					<td class="td_access">{% if journal.positions_status %}{% ifequal journal.positions_status.id status_enter %}<div class="access permitted short_descr" title="{% trans 'Доступ разрешён' %}"></div>{% else %}<div class="access denied short_descr" title="{% trans 'Доступ запрещён' %}"></div>{% endifequal %}{% else %}&nbsp;{% endif %}</td>
+				</tr>
+			  {% endfor %}               
+			</table>
+
+		</div>
+		{% if perms.user_perms.perm_lists or perms.user_perms.perm_logs_export %}
+			<div class="frm_block">
+				<div class="bl_btn_check short_descr" onClick="javascript: selectedAllRow('choose_all2');" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all2" onClick="javascript: selectedAllRow('choose_all2');" /><label for="choose_all2">{% trans "Выделить всё" %}</label></div></div>
+				{% if perms.user_perms.perm_lists %}
+					<input type="button" name="" value="{% trans "Обучить" %}" onClick="javascript: personsForTraining({{ users|length }});" class="inp_btn inp_btn140" />
+					<input type="button" name="" value="{% trans "Обучить как шум" %}" onClick="javascript: personsForNoise({{ users|length }});" class="inp_btn inp_btn140 dist_left" />
+				{% endif %}
+				{% if perms.user_perms.perm_logs_export %}
+					<input type="button" name="" value="{% trans "Экспорт по фильтру" %}" onClick="javascript: journalPhotosExportAll();" class="inp_btn inp_btn140" style="margin-left: 30px;"/>
+					<input type="button" name="" value="{% trans "Экспорт" %}" onClick="javascript: showMessageExport2({{ users|length }}, 'journalexport')" class="inp_btn inp_btn90 dist_left" />
+				{% endif %}
+			</div>
+		{% endif %}								
+		{% include "navigation/main_buttom.html" %}
+	{% endif %}
+{% endif %}
+{% if space %}<input type="hidden" value="{{ space }}" name="" id="info_space" />{% endif %}

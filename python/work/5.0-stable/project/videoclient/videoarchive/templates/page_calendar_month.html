@@ -1,0 +1,37 @@
+{% load i18n %}
+{% load a_templatetags %}
+<div class="cal_cont {% if forloop.counter == 4 or forloop.counter == 8 or forloop.counter == 12 %}last{% endif %}">
+	<div class="cal_month_name{% if inf.month_num == now_month %} blue{% endif %}">{% trans inf.month %} {{ inf.year }}</div>
+	<table cellpadding="0px" cellspacing="0px" border="0px" class="cal_month">							    
+		<tr class="tr_name_days">								
+			<th>{% trans "Нд"%}</th>
+			<th>{% trans "Пн"%}</th>
+			<th>{% trans "Вт"%}</th>
+			<th>{% trans "Ср"%}</th>
+			<th>{% trans "Чт"%}</th>
+			<th>{% trans "Пт"%}</th>
+			<th>{% trans "Сб"%}</th>
+			<th class="last">{% trans "Вс"%}</th>					
+		{% for d in inf.days %}
+		     {% if forloop.counter == 1 or forloop.counter == 8 or forloop.counter == 15 or forloop.counter == 22 or forloop.counter == 29 or forloop.counter == 36 %}								         
+		         </tr>
+		         <tr class="tr_days">
+		             <td class="weeknum">{% if d.week_num == "00" %}52{% else %}{{ d.week_num }}{% endif %}</td>					             
+		             <td {% if not d.noact %}id="day{% if d.id < 10 %}0{% endif %}{{d.id}}.{% if inf.month_num < 10 %}0{% endif %}{{inf.month_num}}.{{year}}" onClick="javascript: selectDay(this);"{% endif %} class="first {% if d.noact %}noact{% else %}{% if d.count %} video {% endif %}{% endif %}{% if d.current %} daycur{% endif %}" {% if d.count %}onMouseOver="javascript: overElem(this, 'td_over'); showTitleInfoDay(this, {source: {{d.count_camera}}, video: {{d.count_roller}}, faces: {{d.count_face}}, persons: {{d.count_people}} });" onMouseOut="javascript: outElem(this, 'td_over'); closeChangeWindow('win_infoDay');">
+		                 {% if perms.user_perms.perm_videoarchive_videos %}
+		                 <a href="{% url archive_page "video" %}/?date={{d.id}}.{{inf.month_num}}.{{inf.year}}" onClick="javascript: if (isShift) return false;">{{d.id}}</a>
+		                 {% else %}{{ d.id }}{% endif %}
+		                 {% else %}><span>{{ d.id }}</span>{% endif %}
+		             </td>
+		     {% else %}
+	             <td {% if not d.noact %}id="day{% if d.id < 10 %}0{% endif %}{{d.id}}.{% if inf.month_num < 10 %}0{% endif %}{{inf.month_num}}.{{year}}" onClick="javascript: selectDay(this);"{% endif %} class="{% if d.noact %}noact{% else %}{% if d.count %} video {% endif %}{% endif %}{% if d.wday == 5 or d.wday == 6 %}dayoff{% endif %}{% if d.current %} daycur{% endif %}" {% if d.count %}onMouseOver="javascript: overElem(this, 'td_over'); showTitleInfoDay(this, {source: {{d.count_camera}}, video: {{d.count_roller}}, faces: {{d.count_face}}, persons: {{d.count_people}} });" onMouseOut="javascript: outElem(this, 'td_over'); closeChangeWindow('win_infoDay');">
+	                 {% if perms.user_perms.perm_videoarchive_videos %}
+	                 <a href="{% url archive_page "video" %}/?date={{d.id}}.{{inf.month_num}}.{{inf.year}}" onClick="javascript: if (isShift) return false;">{{d.id}}</a>
+	                 {% else %}{{ d.id }}{% endif %}
+	                 {% else %}><span>{{ d.id }}</span>{% endif %}
+	             </td>
+		     {% endif %}								     
+		{% endfor %}
+		</tr>										
+	</table>
+</div>

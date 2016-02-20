@@ -1,0 +1,24 @@
+{% load i18n %}
+{% load a_templatetags %}
+{% for roller in rollers %}
+<div class="info_roller">
+	<div class="video">
+		<div><a href="{% url archive_page "view_video" %}/{{ roller.id }}/"><img src="{{ roller.url }}files/video{{ roller.location }}.jpg" alt="" /></a></div>
+		<div class="time">{% if roller.dt_time %}{{ roller.dt_time|ttime }}{% else %}{% trans "запись" %}{% endif %}</div>
+		<a href="{% url archive_page "view_video" %}/{{ roller.id }}/" class="play_video"></a>
+	</div>
+	<div class="info">
+		<div>
+			<div><span>{% trans "Источник" %}:</span> {{ roller.ip }} {{ roller.type }}</div>
+			<div><span>{% trans "Запуск задачи" %}:</span> {% if roller.signal_name %}{% trans  roller.signal_name  %}{% else %}{% trans  roller.signal_type %}{% endif %}</div>							
+			<div><span>{% trans "Дата" %}:</span> {{ roller.tm_start|date:"d.m.Y" }}</div>
+			<div><span>{% trans "Время" %}:</span> {% trans "с" %} {{ roller.tm_start|time:"H:i:s" }} {% trans "до" %} {% if roller.tm_stop %}{{ roller.tm_stop|time:"H:i:s" }}{% else %}{% trans "Идет запись" %}{% endif %}</div>
+			<div><span>{% trans "Частота кадров" %}:</span> {{ roller.params|pParam:"fps" }} {% trans "кадр/сек" %}</div>
+			<div><span>{% trans "Размер" %}:</span> {{ roller.params|pParam:"sz"|fdiv:1024|fdiv:1024|floatformat:3 }} {% trans "Мб" %}</div>							
+			<div><span>{% trans "Формат" %}:</span> {{ roller.params|pParam:"fmt" }}</div>
+			<div><a href="#">{% trans "Найденные лица" %}: {{ roller.params|pParam:"fcs" }}</a></div>
+			<div><a href="#">{% trans "Найденные люди" %}: {{ roller.params|pParam:"prs" }}</a></div>
+		</div>
+	</div>
+</div>
+{% endfor %}

@@ -1,0 +1,88 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+var gNumCamera = null;
+var gCommunicator = null;
+var clearCameraResult = false;
+function showCameraIdent(link, nameCamera, numCamera, isSystem) {
+	setCookie('numcamera', numCamera);
+    var communicator = getInfoCommunicator();
+    var curr_class = link.className;
+    gNumCamera = numCamera;
+    gCommunicator = communicator;
+    byId("act_camera").innerHTML = ' - ' + nameCamera;
+    byId("big_camera_info").style.display = 'none';
+    byId("big_camera").style.display = 'block';
+    if (flashVersion()) {
+		if(isSystem) {
+			{% if show_flash %}byId('big_camera').innerHTML = addFlashNumCamera(numCamera, communicator.host, communicator.port);{% endif %}
+		} else {
+			byId('big_camera').innerHTML = addFlash(numCamera, communicator.host, communicator.port);
+		}
+    } else {
+        byId('big_camera').innerHTML = '<div class="noFlash">{% trans "У Вас отсутствует или установлена старая версия flash плеера. Новую версию плеера можно скачать" %} <a target="_blank" href="http://get.adobe.com/flashplayer/">{% trans "здесь" %}</a></div>';
+    }
+    clearCameraResult = true;
+}
+function getChooseCameraIdent() {
+    var parent = byId('cameras');
+    var oChilds = parent.childNodes;
+    var nameNode = 'DIV';
+    var li;
+    for (var i = 0; i < oChilds.length; i++) {
+        if (oChilds[i].nodeName == nameNode) {
+            li = oChilds[i];
+            if (li.className.indexOf('noact') == -1) {
+                return li.id.split('_')[1];
+            }
+        }
+    }
+    return false;
+}
+function showChooseCameraIdent(isSystem) {
+    //var numcamera = getChooseCameraIdent();
+	numcamera = readCookie('numcamera');
+	testnumcamera = document.getElementById('link_' + numcamera);
+	if (!testnumcamera){
+		numcamera = 0;
+		setCookie('numcamera', numcamera);
+	}
+    if (numcamera) {
+        var communicator = getInfoCommunicator();
+        var nameCamera = byId('link_' + numcamera).innerHTML;
+        byId("big_camera_info").style.display = 'none';
+        byId("big_camera").style.display = 'block';
+        byId("act_communicator").innerHTML = ' - ' + communicator.host+':'+communicator.port;
+        byId("act_camera").innerHTML = ' - ' + nameCamera;
+        if (flashVersion()) {
+			if(isSystem) {
+				{% if show_flash %}byId('big_camera').innerHTML = addFlashNumCamera(numcamera, communicator.host, communicator.port);{% endif %}
+			} else {
+            	byId('big_camera').innerHTML = addFlash(numcamera, communicator.host, communicator.port);
+			}
+        } else {
+            byId('big_camera').innerHTML = '<div class="noFlash">{% trans "У Вас отсутствует или установлена старая версия flash плеера. Новую версию плеера можно скачать" %} <a target="_blank" href="http://get.adobe.com/flashplayer/">{% trans "здесь" %}</a></div>';
+        }
+    }
+    gNumCamera = numcamera;
+    gCommunicator = communicator;
+    clearCameraResult = true;
+}
+function showListCameras(obj) {
+    var obj = byId(obj);
+    obj.className = (obj.className == '') ? 'link_bottom': '';
+    var text = (obj.innerHTML == '{% trans "Показать всё" %}') ? '{% trans "Скрыть" %}' : '{% trans "Показать всё" %}';
+    obj.innerHTML = text;
+    var block = byId('all_cameras');
+    block.style.display = (block.style.display == 'none') ? 'block' : 'none';    
+}
+function recording(record) {
+	if (record) {
+		byId("record_stop").style.display = 'inline';
+		byId("record_play").style.display = 'none';
+	} else {
+		byId("record_stop").style.display = 'none';
+		byId("record_play").style.display = 'inline';		
+	}
+}
+</script>

@@ -1,0 +1,18 @@
+{% load i18n %}
+{% load a_templatetags %}
+<ul class="menu_vkl">
+    <li{% if select_page == "page_calendar" %} class="menu_vkl_act"{% endif %}>
+        <div>
+            <div>
+                <a href="{% url archive_page "calendar" %}">{% trans "Календарь" %}</a>
+            </div>
+        </div>
+    </li>
+    <li{% if select_page == "page_video" or select_page == "page_view_video" or select_page == "page_view_detail_video" or select_page == "page_faces" or select_page == "page_roller_persons" or select_page == "page_video_persons" or select_page == "page_video_faces" %} class="menu_vkl_act"{% endif %}>
+        <div>
+            <div>
+                <a href="{% url archive_page "video" %}">{% trans "Сохраненное видео" %}</a>
+            </div>
+        </div>
+    </li>
+</ul>

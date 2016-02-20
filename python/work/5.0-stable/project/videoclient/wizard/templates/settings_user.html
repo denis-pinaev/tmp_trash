@@ -1,0 +1,49 @@
+{% extends "wizard_base.html" %}
+{% load i18n %}
+{% load templatetags %}
+{% block js %}
+<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/jquery.validate.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/additional-methods.js?v=v{{ version }}"></script>
+{% include "js/js_user.html" %}
+<script type="text/javascript">
+var next_page = '/wizard/communicator/';	
+function insertParameters() {
+	var options = {
+	  url: "/wizard/user/",
+	  type: "POST",
+	  data: {ajax: true},
+	  success: function(msg) {
+			var obj = msg;
+			if (obj && obj.status) {
+				window.location.href = next_page;
+			}
+			else {
+				$("#MainHostForm").submit();
+			}          
+	  },
+		error: function(msg){
+			showMessage("{% trans "Внимание! Произошла ошибка. Настройки не могут быть сохранены." %}");            
+		}      
+	};
+	$("#MainHostForm").ajaxSubmit(options);
+}
+$(function() {
+	checkFormUser("MainHostForm", insertParameters);
+});
+</script>
+{% endblock %}
+{% block wizard_content %}
+<div class="step"><strong>{% trans "Шаг 1 из" %} {{ all_steps }}. <span class="dist_left">{% trans "Добавление основного пользователя" %}.</span></strong></div>
+{% if error_msg %}<div class="info_important dist_top">{{ error_msg }}</div>{% endif %}
+<form method="post" action="" class="dist_top" id="MainHostForm">
+	{% include "content/anketauser_content.html" %}
+	<input type="hidden" name="{{ action }}" value="true" />
+	<div class="frm_btn dist_top">
+		<input type="hidden" name="action" value="next" id="inp_action" />
+		<input type="submit" name="" value="{% trans "Далее" %}" class="inp_btn btn_blue" />
+		<input type="button" name="" value="{% trans "Пропустить" %}" class="inp_btn inp_btn90 dist_left" onclick="window.location.href = '/wizard/communicator/';" />              
+		<input type="hidden" name="save" value="true" />
+	</div>
+</form>
+{% endblock wizard_content %}

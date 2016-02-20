@@ -1,0 +1,58 @@
+﻿/** навигация **/
+.nav {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.count_elem,
+.nav .current_page {
+	float: right;
+}
+.count_elem .select {
+	width: 60px;
+	margin-left: 5px;
+}
+.nav .current_page {
+	margin-left: 10px;
+}
+.nav .list_pages {
+	float: left;
+}
+.nav .list_pages li {
+	float: left;
+	margin-right: 5px;
+}
+.nav .list_pages li a {
+	display: block;
+	padding: 1px 6px;
+	border: 1px solid #CCCCCC;
+	color: #333333;
+}
+.nav .list_pages li a:hover {
+	text-decoration: none;
+	border: 1px solid #0088CC;
+}
+.nav .list_pages li a.act_page {
+	border: 1px solid #0088CC;
+	background-color: #0088CC;
+	color: #ffffff;
+}
+.inp_btn80 {
+	width: 80px;
+	background: url('/files/images/button80x24_up.gif') top left no-repeat;
+}
+.nav .current_page .current_page_head,
+.nav .current_page .current_page_btn {
+	float: left;
+}
+.nav .current_page .current_page_head,
+.nav .current_page .spinbox {
+	margin-top: 1px;
+}
+.nav .current_page .spinbox {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+.count_elem {
+	margin-top: 1px;
+}

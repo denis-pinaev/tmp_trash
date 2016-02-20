@@ -1,0 +1,28 @@
+{% load i18n %}
+{% load a_templatetags %}
+{% include "a_header.html" %}
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/signals.css?v=v{{ version }}" />
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>{% trans "Записи" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Видеоархив Записи" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				{% include "current_time.html" %}
+				<form method="post" action="">
+					<table cellpadding="0px" cellspacing="0px" border="0px" class="list_signals">
+						<tr>
+							<th class="first"></th>
+						</tr>
+					</table>					
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+{% include "a_footer.html" %}
+</body>
+</html>

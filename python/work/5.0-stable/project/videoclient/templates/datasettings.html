@@ -1,0 +1,188 @@
+{% load i18n %}
+{% load templatetags %}
+{% if error %}
+	<div class="message_warning dist_top">
+		{% trans "Ошибка подключения!" %} {% trans "Коммуникатор" %} <b>{{ name }}</b> {% trans "недоступен" %}. {% trans "Пожалуйста, попробуйте подключиться позднее" %}.
+		<div class="message_warning_btn"><input type="button" class="inp_btn inp_btn140" name="" onClick="javascript: location.reload(true);" value='{% trans "Подключиться" %}' onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></div>
+	</div>
+{% else %}
+	<div class="block dist_top">
+		<input type="checkbox" name="" value="" class="inp_check" id="only_active_cameras" onClick="javascript: refreshDataSettings();"{% if only_active %} checked="checked" {% endif %}/>
+	    <label for="only_active_cameras" class="short_descr" title="{% trans 'Отображать только активные камеры' %}">{% trans "Только активные камеры" %}</label>
+	</div>
+	{% if camqnt > 0 %}   
+		<div class="block dist_top">
+			<div class="bl_btn_check short_descr" title="{% trans 'Выделить все записи на данной странице' %}">
+				<div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all" onClick="javascript: selectedAllRow($(this));" /><label for="choose_all">{% trans "Выделить всё" %}</label></div>		
+			</div>	
+			<input type="button" name="" value='{% trans "Добавить" %}' class="inp_btn btn_add short_descr" onClick="javascript: addCamera();" title='{% trans "Добавить камеру вручную" %}' />
+            {% if profiles_list and profiles_list|length > 0 %}																								
+	            <input type="button" onClick="javascript: uploadCamerasProfile({% if profiles_list and profiles_list|length > 0 %}{{ profiles_list|length }}{% else %}0{% endif %});" value="{% trans "Настроить по шаблону" %}" class="inp_btn inp_btn170 dist_left tooltip btnApplyProfile" title="{% trans "Настроить выбранные камеры по сохранённому шаблону" %}" />
+            {% else %}
+                <input type="button" value="{% trans "Настроить по шаблону" %}" class="inp_btn inp_btn170 dist_left tooltip dis btnApplyProfile" title="{% trans 'Нет сохранённых шаблонов' %}." />
+            {% endif %}
+		</div>
+		<table cellspacing="0" cellpadding="0" class="table" id="cameras">
+			<tr>
+				<th colspan="2" class="th_first">{% trans 'Список камер' %}</th>
+				<th class="th_dets">{% trans 'Детекторы' %}</th>
+				<th class="th_play">{% trans 'Видео' %}</th>
+			</tr>		
+			{% for camera in cameras %}
+				{% if camera.available %}			
+					<tr{% if forloop.counter|odd %} class="odd"{% endif %} onMouseOver="javascript: overRow(this);" onMouseOut="javascript: outRow(this);">
+						<td class="td_first td_check">
+							<input type="button" class="btn_delete short_descr" name="" title='{% trans "Удалить камеру" %} "{{ camera.info }}"' onClick="javascript: cameraDelete('{{ camera.info }}', '{{ camera.uuid }}', {{ camera.id }});" />
+							<input name="" value="" type="button" title='{% trans "Создать псевдоним для камеры" %} "{{ camera.info }}"' class="btn_create_name short_descr" onClick="javascript: aliasCamera('{{ camera.info }}', '{{ camera.name|default_if_none:'' }}', '{{camera.id}}');" />
+							<input type="button" name="" value="" class="btn_turn{% if camera.mode != -1 %} on{% endif %}" onClick="javascript: turnModePower($(this),'{{ camera.uuid }}', '{{ forloop.counter }}{{ camera.cam_num }}'); return false;" onMouseOver="javascript: overTurnOnOffCamera($(this), '{% if camera.name %} {{ camera.name }} ({{ camera.info }}){% else %}{{ camera.info }}{% endif %}');" onMouseOut="javascript: outTurnOnOffCamera();" />							
+							<input type="checkbox" name="ci{{forloop.counter}}" value="{{ camera.uuid }}" class="inp_check" id="check{{ forloop.counter }}" onClick="javascript: selectedRow($(this));" />
+						</td>		
+						<td><a href="{% url camera-settings camera.uuid %}" class="short_descr" title="{% trans 'Камера' %}: {{ camera.full_name }}{% if camera.commun %}<div>{% trans "Коммуникатор" %}: {{ camera.commun }}{% endif %}">{% if res_interface == "0" %}{{ camera.display_name|truncchar:26 }}{% else %}{{ camera.display_name }}{% endif %}</a></td>
+						<td class="td_dets"> 
+							<div class="link_sets_dets">{% if show_videoanalitycs == '1' %}<a href="{% url settings_videoanalytics2 camera.uuid %}" class="short_descr" title="{% trans 'Настроить параметры детекторов' %}">{% trans 'Настроить' %}</a>{% else %}<span class="txt_dis short_descr" title="{% trans 'Модуль видеоаналитки недоступен в данной версии' %}">{% trans 'Настроить' %}</span>{% endif %}</div>
+							{% if show_videoanalitycs == '1' %}
+								{% if camera.mode != -1 %}
+									<ul class="list_detectors">
+										<li{% if camera.mode != 1 and  camera.mode != 2 %} class="det_noact"{% endif %} onMouseOver="javascript: overDetector($(this));" onMouseOut="javascript: outDetector();"><a href="#" class="det_face" onClick="javascript: turnModeScheduler($(this),'{{ camera.uuid }}','{{ camera.mode}}',1); return false;"></a></li>
+										{% if show_recognition == '1' %}
+											<li{% if not camera.mode == 2 %} class="det_noact"{% endif %} onMouseOver="javascript: overDetector($(this));" onMouseOut="javascript: outDetector();"><a href="#" class="det_person" onClick="javascript: turnModeScheduler($(this),'{{ camera.uuid }}','{{ camera.mode}}', 2); return false;" ></a></li>
+										{% else %}
+											<li class="det_not_avail short_descr" title="{% trans 'Детектор идентификации недоступен в данной версии' %}"><a href="#" class="det_person" onClick="javascript: return false;"></a></li>
+										{% endif %}
+										<li{% if not camera.detects.isOnCrowd %} class="det_noact"{% endif %} onMouseOver="javascript: overDetector($(this));" onMouseOut="javascript: outDetector();"><a href="#" class="det_people" onClick="javascript: turnCrowdDetect($(this), '{{ camera.uuid}}'); return false;"></a></li>
+										{% comment %}<li{% if not camera.detects.isOnSeparatingObjects %} class="det_noact"{% endif %} onMouseOver="javascript: overDetector($(this));" onMouseOut="javascript: outDetector();"><a href="#" class="det_stream" onClick="javascript: turnDetector($(this), '{{ camera.uuid}}', '{{ camera.com_host }}', '{{ camera.com_port }}','separatingObjects'); return false;"></a></li>{% endcomment %}
+										<li{% if not camera.detects.isOnleftThings %} class="det_noact"{% endif %} onMouseOver="javascript: overDetector($(this));" onMouseOut="javascript: outDetector();"><a href="#" class="det_things" onClick="javascript: turnDetector($(this), '{{ camera.uuid}}', '{{ camera.com_host }}', '{{ camera.com_port }}','leftThings'); return false;"></a></li>
+										<li{% if not camera.detects.isOnSmoke %} class="det_noact"{% endif %} onMouseOver="javascript: overDetector($(this));" onMouseOut="javascript: outDetector();"><a href="#" class="det_smoke" onClick="javascript: turnDetector($(this), '{{ camera.uuid}}', '{{ camera.com_host }}', '{{ camera.com_port }}','smokeDetect'); return false;"></a></li>
+										<li{% if not camera.detects.isOnFire %} class="det_noact"{% endif %} onMouseOver="javascript: overDetector($(this));" onMouseOut="javascript: outDetector();"><a href="#" class="det_fire" onClick="javascript: turnDetector($(this), '{{ camera.uuid}}', '{{ camera.com_host }}', '{{ camera.com_port }}','fireDetect'); return false;"></a></li>
+										<li{% if not camera.detects.isOnFlash %} class="det_noact"{% endif %} onMouseOver="javascript: overDetector($(this));" onMouseOut="javascript: outDetector();"><a href="#" class="det_explosion" onClick="javascript: turnDetector($(this), '{{ camera.uuid}}', '{{ camera.com_host }}', '{{ camera.com_port }}', 'flashDetect'); return false;"></a></li>
+									</ul>
+								{% else %}
+									<ul class="list_detectors list_detectors_on">
+										<li class="det_noact"><a href="#" class="det_face" onClick="javascript: return false;"></a></li>
+										{% if show_recognition == '1' %}
+											<li class="det_noact"><a href="#" class="det_person" onClick="javascript: return false;"></a></li>
+										{% else %}
+											<li class="det_not_avail short_descr" title="{% trans 'Детектор идентификации недоступен в данной версии' %}"><a href="#" class="det_person" onClick="javascript: return false;"></a></li>
+										{% endif %}
+										<li class="det_noact"><a href="#" class="det_people" onClick="javascript: return false;"></a></li>
+										<!--<li class="det_noact"><a href="#" class="det_stream" onClick="javascript: return false;"></a></li>-->
+										<li class="det_noact"><a href="#" class="det_things" onClick="javascript: return false;"></a></li>
+										<li class="det_noact"><a href="#" class="det_smoke" onClick="javascript: return false;"></a></li>
+										<li class="det_noact"><a href="#" class="det_fire" onClick="javascript: return false;"></a></li>
+										<li class="det_noact"><a href="#" class="det_explosion" onClick="javascript: return false;"></a></li>
+									</ul>							
+								{% endif %}
+							{% else %}
+								{% if camera.mode != -1 %}
+									<ul class="list_detectors">
+										<li{% if camera.mode != 1 and  camera.mode != 2 %} class="det_noact"{% endif %} onMouseOver="javascript: overDetector($(this));" onMouseOut="javascript: outDetector();"><a href="#" class="det_face" onClick="javascript: turnModeScheduler($(this),'{{ camera.uuid }}', '{{ camera.mode}}',1); return false;"></a></li>
+										{% if show_recognition == '1' %}
+											<li{% if not camera.mode == 2 %} class="det_noact"{% endif %} onMouseOver="javascript: overDetector($(this));" onMouseOut="javascript: outDetector();"><a href="#" class="det_person" onClick="javascript: turnModeScheduler($(this),'{{ camera.uuid }}','{{ camera.mode}}', 2); return false;" ></a></li>								
+										{% else %}
+											<li class="det_not_avail short_descr" title="{% trans 'Детектор идентификации недоступен в данной версии' %}"><a href="#" class="det_person" onClick="javascript: return false;"></a></li>
+										{% endif %}
+										<li class="det_not_avail short_descr" title="{% trans 'Модуль видеоаналитки недоступен в данной версии' %}"><a href="#" class="det_people" onClick="javascript: return false;"></a></li>
+										<!--<li class="det_not_avail short_descr" title="{% trans 'Модуль видеоаналитки недоступен в данной версии' %}"><a href="#" class="det_stream" onClick="javascript: return false;"></a></li>-->
+										<li class="det_not_avail short_descr" title="{% trans 'Модуль видеоаналитки недоступен в данной версии' %}"><a href="#" class="det_things" onClick="javascript: return false;"></a></li>
+										<li class="det_not_avail short_descr" title="{% trans 'Модуль видеоаналитки недоступен в данной версии' %}"><a href="#" class="det_smoke" onClick="javascript: return false;"></a></li>
+										<li class="det_not_avail short_descr" title="{% trans 'Модуль видеоаналитки недоступен в данной версии' %}"><a href="#" class="det_fire" onClick="javascript: return false;"></a></li>
+										<li class="det_not_avail short_descr" title="{% trans 'Модуль видеоаналитки недоступен в данной версии' %}"><a href="#" class="det_explosion" onClick="javascript: return false;"></a></li>										
+									</ul>
+								{% else %}
+									<ul class="list_detectors list_detectors_on">
+										<li class="det_noact"><a href="#" class="det_face" onClick="javascript: return false;"></a></li>
+										{% if show_recognition == '1' %}
+											<li class="det_noact"><a href="#" class="det_person" onClick="javascript: return false;"></a></li>
+										{% else %}
+											<li class="det_not_avail short_descr" title="{% trans 'Детектор идентификации недоступен в данной версии' %}"><a href="#" class="det_person" onClick="javascript: return false;"></a></li>
+										{% endif %}		
+										<li class="det_not_avail short_descr" title="{% trans 'Модуль видеоаналитки недоступен в данной версии' %}"><a href="#" class="det_people" onClick="javascript: return false;"></a></li>
+										<!--<li class="det_not_avail short_descr" title="{% trans 'Модуль видеоаналитки недоступен в данной версии' %}"><a href="#" class="det_stream" onClick="javascript: return false;"></a></li>-->
+										<li class="det_not_avail short_descr" title="{% trans 'Модуль видеоаналитки недоступен в данной версии' %}"><a href="#" class="det_things" onClick="javascript: return false;"></a></li>
+										<li class="det_not_avail short_descr" title="{% trans 'Модуль видеоаналитки недоступен в данной версии' %}"><a href="#" class="det_smoke" onClick="javascript: return false;"></a></li>
+										<li class="det_not_avail short_descr" title="{% trans 'Модуль видеоаналитки недоступен в данной версии' %}"><a href="#" class="det_fire" onClick="javascript: return false;"></a></li>
+										<li class="det_not_avail short_descr" title="{% trans 'Модуль видеоаналитки недоступен в данной версии' %}"><a href="#" class="det_explosion" onClick="javascript: return false;"></a></li>											
+									</ul>
+								{% endif %}
+							{% endif %}
+						</td>
+						<td class="td_play"><input type="button" name="" value="" id="btn_play{{ forloop.counter }}{{ camera.cam_num }}" class="btn_camera play short_descr" title="{% trans 'Просмотр видео с камеры' %} {% if camera.name %} {{ camera.name }} ({{ camera.info }}){% else %}{{ camera.info }}{% endif %}" onClick="javascript: playVideo($(this), '{{ camera.uuid }}', '{{ camera.commun.host }}', '{{ camera.commun.port }}', '{{ camera.commun.mjpeg_port }}', '{{ camera.ip }}'); playVideoJSVersion($(this), '{{ camera.full_name }}');" /></td>
+				{% else %}												
+					{% if camera.delete %}
+						<tr class="tr_lock short_descr" title="{% if camera.name %} {{ camera.name }} ({{ camera.info }}){% else %}{{ camera.info }}{% endif %} <strong>{% trans 'удалена' %}</strong>">
+							<td class="td_first td_check">
+								<input type="button" class="btn_delete short_descr" name="" title='{% trans "Удалить камеру" %} "{{ camera.info }}"' onClick="javascript: cameraDelete('{{ camera.info }}', '{{ camera.uuid }}', {{ camera.id }});" />
+								<input name="" value="" type="button" class="btn_create_name no_act short_descr" />
+								<input type="button" name="" value="" class="btn_turn no_act" />							
+								<input type="checkbox" name="ci{{forloop.counter}}" value="{{ camera.uuid }}" class="inp_check" id="check{{ forloop.counter }}" onClick="javascript: selectedRow($(this));" />
+							</td>
+							<td><span class="camera_delete">{% if camera.name %}{% if res_interface == "0" %}{{ camera.display_name|truncchar:26 }}{% else %}{{ camera.display_name }}{% endif %}{% endif %}</span></td>
+							<td class="td_dets">
+								<div class="link_sets_dets">{% trans 'Настроить' %}</div>
+								<ul class="list_detectors">
+									<li class="det_noact"><a href="#" class="det_face" onClick="javascript: return false;"></a></li>
+									<li class="det_noact"><a href="#" class="det_person" onClick="javascript: return false;"></a></li>
+									<li class="det_noact"><a href="#" class="det_people" onClick="javascript: return false;"></a></li>
+									<!--<li class="det_noact"><a href="#" class="det_stream" onClick="javascript: return false;"></a></li>-->
+									<li class="det_noact"><a href="#" class="det_things" onClick="javascript: return false;"></a></li>
+									<li class="det_noact"><a href="#" class="det_smoke" onClick="javascript: return false;"></a></li>
+									<li class="det_noact"><a href="#" class="det_fire" onClick="javascript: return false;"></a></li>
+									<li class="det_noact"><a href="#" class="det_explosion" onClick="javascript: return false;"></a></li>
+								</ul>
+							</td>
+							<td class="td_play"><input type="button" class="btn_camera play play_dis" name="" value="" disabled="disabled" /></td>
+					{% else %}
+						<tr class="tr_lock short_descr" title="{% if camera.name %} {{ camera.name }} ({{ camera.info }}){% else %}{{ camera.info }}{% endif %} <strong>{% trans 'недоступна' %}</strong>">
+							<td class="td_first td_check">
+								<input type="button" class="btn_delete short_descr" name="" title='{% trans "Удалить камеру" %} "{{ camera.info }}"' onClick="javascript: cameraDelete('{{ camera.info }}', '{{ camera.uuid }}', {{ camera.id }});" />
+								<input name="" value="" type="button" class="btn_create_name no_act short_descr" />
+								<input type="button" name="" value="" class="btn_turn{% if camera.mode != -1 %} on{% endif %}" onClick="javascript: turnModePower($(this),'{{ camera.uuid }}', '{{ forloop.counter }}{{ camera.cam_num }}'); return false;" onMouseOver="javascript: overTurnOnOffCamera($(this), '{% if camera.name %} {{ camera.name }} ({{ camera.info }}){% else %}{{ camera.info }}{% endif %}');" onMouseOut="javascript: outTurnOnOffCamera();" />																				
+								<input type="checkbox" name="ci{{forloop.counter}}" value="{{ camera.uuid }}" class="inp_check" id="check{{ forloop.counter }}" onClick="javascript: selectedRow($(this));" />
+							</td>	
+							<td>{% if camera.name %}{% if res_interface == "0" %}{{ camera.display_name|truncchar:26 }}{% else %}{{ camera.display_name }}{% endif %}{% endif %}</td>
+							<td class="td_dets">
+								<div class="link_sets_dets">{% trans 'Настроить' %}</div>
+								<ul class="list_detectors">
+									<li class="det_noact"><a href="#" class="det_face" onClick="javascript: return false;"></a></li>
+									<li class="det_noact"><a href="#" class="det_person" onClick="javascript: return false;"></a></li>
+									<li class="det_noact"><a href="#" class="det_people" onClick="javascript: return false;"></a></li>
+									<!--<li class="det_noact"><a href="#" class="det_stream" onClick="javascript: return false;"></a></li>-->
+									<li class="det_noact"><a href="#" class="det_things" onClick="javascript: return false;"></a></li>
+									<li class="det_noact"><a href="#" class="det_smoke" onClick="javascript: return false;"></a></li>
+									<li class="det_noact"><a href="#" class="det_fire" onClick="javascript: return false;"></a></li>
+									<li class="det_noact"><a href="#" class="det_explosion" onClick="javascript: return false;"></a></li>
+								</ul>
+							</td>
+							<td class="td_play"><input type="button" class="btn_camera play play_dis" name="" value="" disabled="disabled" /></td>
+					{% endif %}
+				{% endif %}					
+				</tr>
+			{% endfor %}
+		</table>
+		<div class="block dist_top">
+			<div class="bl_btn_check short_descr" title="{% trans 'Выделить все записи на данной странице' %}">
+				<div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all2" onClick="javascript: selectedAllRow($(this));" /><label for="choose_all2">{% trans "Выделить всё" %}</label></div>
+			</div>
+			<input type="button" name="" value='{% trans "Добавить" %}' class="inp_btn btn_add short_descr" onClick="javascript: addCamera();" title='{% trans "Добавить камеру вручную" %}'/>
+            {% if profiles_list and profiles_list|length > 0 %}																								
+	            <input type="button" onClick="javascript: uploadCamerasProfile({% if profiles_list and profiles_list|length > 0 %}{{ profiles_list|length }}{% else %}0{% endif %});" value="{% trans "Настроить по шаблону" %}" class="inp_btn inp_btn170 dist_left tooltip btnApplyProfile" title="{% trans "Настроить выбранные камеры по сохранённому шаблону" %}" />
+            {% else %}
+                <input type="button" value="{% trans "Настроить по шаблону" %}" class="inp_btn inp_btn170 dist_left tooltip dis btnApplyProfile" title="{% trans 'Нет сохранённых шаблонов' %}." />
+            {% endif %}
+		</div>
+	{% else %}
+		<div class="frm_block">
+			<input type="button" name="" value='{% trans "Добавить" %}' class="inp_btn btn_add short_descr" onClick="javascript: addCamera();" title='{% trans "Добавить камеру вручную" %}'/>
+		</div>
+	{% endif %}
+{% endif %}
+<input type="hidden" name="" value="{{ camqnt }}" id="count_cameras" />
+<input type="hidden" name="" value="{{ error }}" id="error_cameras" />
+<input type="hidden" name="" value="" id="communicator_host" />
+<input type="hidden" name="" value="" id="communicator_port" />
+<input type="hidden" name="" value="" id="number_camera" />
+<select name="" id="idprofile_dis" style="display: none;">
+    {% for pi in profiles_list %}
+        <option value="{{ pi.id }}" {% if forloop.first %}selected="selected"{% endif %}>{% if pi.name %}{% trans pi.name %}{% else %}&nbsp;{% endif %}</option>
+    {% endfor %}                        
+</select>

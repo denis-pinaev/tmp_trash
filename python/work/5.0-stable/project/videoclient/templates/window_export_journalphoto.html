@@ -1,0 +1,103 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+function exportJournalPhoto(jlist) {
+	closeChangeWindow('win_export');
+	showIndicator(true);
+	$.ajax({
+		type: "POST",
+		url: "/export_journalphotos/",
+		data: {jlist: jlist},
+		success: function(msg){
+			showIndicator(false);
+			obj = msg;
+			if (obj && obj.status) {
+				location.replace(obj.url);
+			} else {
+				txt = createTextMessage({name_block: "journalexportfailed"});
+				changeWindow({id: 'win_export_mess_filter', css: {width: '300px', height: '200px'}, txt: txt });
+			}
+		},
+		error: function(msg){
+			txt = createTextMessage({name_block: "journalexportfailed"});
+			changeWindow({id: 'win_export_mess_filter', css: {width: '300px', height: '200px'}, txt: txt });
+		}
+	});
+}
+function exportJournalPhotoAll() {
+	closeChangeWindow('win_export_filter');
+	showIndicator(true);
+	$.ajax({
+		type: "POST",
+		url: "{{ project_url }}/journal/?" + $("#mainForm").serialize() + "&data=True&makezip=True",
+		data: {},
+		success: function(msg){
+			showIndicator(false);
+			obj = msg;
+			if (obj && obj.status) {
+				location.replace(obj.url);
+			} else {
+				txt = createTextMessage({name_block: "journalexportfailed"});
+				changeWindow({id: 'win_export_mess_filter', css: {width: '300px', height: '200px'}, txt: txt });
+			}
+		},
+		error: function(msg){
+			showIndicator(false);
+			txt = createTextMessage({name_block: "journalexportfailed"});
+			changeWindow({id: 'win_export_mess_filter', css: {width: '300px', height: '200px'}, txt: txt });
+		}
+	});
+}
+</script>
+<div id="win_export" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_export');" /></div>
+			<div class="headWF_txt">{% trans "Экспорт" %}</div>
+		</div>
+		<div class="contWF" id="win_export_contWF">&nbsp;</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Экспорт" %}" class="btn_wf_blue" onClick="
+				javascript: exportJournalPhoto(clickDelete({{ users|length }}));" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_export');" />
+		</div>
+	</div>
+</div>
+<div id="win_export_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_export_mess');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF" id="win_export_mess_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_export_mess');" />	
+		</div>
+	</div>
+</div>
+<div id="win_export_filter" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_export_filter');" /></div>
+			<div class="headWF_txt">{% trans "Экспорт фотографий по фильтру" %}</div>
+		</div>
+		<div class="contWF" id="win_export_filter_contWF">&nbsp;</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Экспорт" %}" class="btn_wf_blue" onClick="
+				javascript: exportJournalPhotoAll();" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_export_filter');" />
+		</div>
+	</div>
+</div>
+<div id="win_export_mess_filter" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_export_mess_filter');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF" id="win_export_mess_filter_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_export_mess_filter');" />	
+		</div>
+	</div>
+</div>

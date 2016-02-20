@@ -1,0 +1,47 @@
+﻿.header_log {
+	padding-top: 60px;
+}
+.block_log {
+	width: 300px;
+	background: url('/files/images/bg_form_log.gif') top left repeat-y;
+	margin: 0px auto 0px auto;
+	overflow: hidden;
+}
+.block_log_top {
+	background: url('/files/images/bg_form_log_top.gif') left top no-repeat;
+}
+.block_log_bottom {
+	background: url('/files/images/bg_form_log_bottom.gif') left bottom no-repeat;
+	padding: 10px;
+}
+.lang_login {
+	background: url('/files/images/lang_ru.gif') 0px 5px no-repeat;
+	cursor: pointer;
+	width: 16px;
+	padding: 0px 3px 0px 20px;	
+	float: right;
+}
+.err_mess {
+	color: #FF6600;
+	padding-bottom: 10px;
+	text-align: center;
+}
+.frm_log {
+	width: 200px;
+	margin: 0px auto;
+}
+.frm_log_block {
+	width: 100%;
+	overflow: hidden;
+	margin-bottom: 5px;
+}
+.frm_log_block .bl_txt {
+	width: 60px;
+	float: left;
+}
+.frm_log_block .bl_inp {
+	margin-left: 60px;
+}
+.frm_log_block .bl_inp .inp_txt {
+	width: 120px;
+}

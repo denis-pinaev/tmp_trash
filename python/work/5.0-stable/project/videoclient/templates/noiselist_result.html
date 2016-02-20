@@ -1,0 +1,78 @@
+﻿{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Результат обучения "шумящих" фотографий' %} (ID = {{ res }}){% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/photos.css?v=v{{ version }}" />
+<script type="text/javascript">
+    $(function() {
+        initTooltip();
+    });    
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_journal.html" %}{% endblock %}
+{% block subcontent %}
+	<h2><a href="{% url ident-journal %}">{% trans "Журнал идентификаций" %}</a> - {% trans 'Результат обучения "шумящих" фотографий' %} (ID = {{ res }})<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Обучение шума' %}');" /></h2>
+	{% include "current_time.html" %}
+	<form method="post" action="" name="">
+		<div class="message_action">
+			{% trans "После просмотра результата нажмите на кнопку" %} <strong>{% trans "Завершить обучение" %}</strong>.
+		</div>         
+		<div class="frm_block">
+			<div>{% trans "Всего обученных лиц" %}: <span class="info_important">{{ status_true }}</span></div>
+		</div>
+		<ul class="list_result_learn" id="block_all">
+			{% for photo in photos %}
+				<li{% if not photo.status %} class="lrl_error"{% endif %}>
+					<div class="block_photo_cont">
+						<div class="block_photo">
+						{% if photo.journal.original %}
+							<a href="{% url get-journal-photo photo.journal.pk 'original' %}?big={{ forloop.counter }}.jpg" target="_blank"><img src="{% url get-journal-photo photo.journal.pk 'original' %}" alt="" /></a>
+							<a href="{% url get-journal-photo photo.journal.pk 'original' %}?big={{ forloop.counter }}.jpg" target="_blank" class="btn_loupe short_descr" title="{% trans "Увеличить изображение" %}"><span></span></a>
+						{% else  %}
+							<img src="/files/images/no_photo120x120.gif" alt="" />
+						{% endif %}
+						</div>
+						<div class="photo_info"><div class="photo_param eyes short_descr" title="{% trans "Расстояние между глазами" %}: {{ photo.journal.get_distance|floatformat:"-2" }}">{{ photo.journal.get_distance|floatformat:"-2" }}</div><div class="photo_param short_descr" title="{% trans 'Разрешение' %}: {{ photo.journal.get_original_info.resol }}">{{ photo.journal.get_original_info.resol }}</div></div>
+					</div>
+					{% if not photo.status %}
+						<div class="result_learn_status error"></div>
+						<div class="result_learn_text">{% trans "Не обучено" %} 
+                                            {% if photo.res2.cause or photo.res2.log_error %}
+                                                <span class="error_learn">
+												{% if "FR disable" in photo.res2.cause or "FR disable" in photo.res2.log_error %}
+													({% trans "Распознавание лиц недоступно" %})
+												{% else %}
+												{% if "Threshold" in photo.res2.cause or "Threshold" in photo.res2.log_error %}
+													({% trans "Ниже порога идентификации" %})
+												{% else %}
+												{% if "invalid eyes" in photo.res2.cause or "invalid eyes" in photo.res2.log_error %}
+													({% trans "Неверные координаты глаз" %})
+												{% else %}
+												{% if photo.res2.cause in all_learn_errors %}
+													({% trans photo.res2.cause %})
+												{% else %}
+												{% if photo.res2.log_error in all_learn_errors %}
+													({% trans photo.res2.log_error %})
+												{% else %}
+													({% trans "Неизвестная ошибка" %})
+												{% endif %}
+												{% endif %}
+												{% endif %}
+												{% endif %}
+												{% endif %}
+                                                </span>
+                                            {% endif %}
+						</div>
+					{% else %}
+						<div class="result_learn_status"></div>
+						<div class="result_learn_text">{% trans "Успешно обучено" %}</div>
+					{% endif %}                   
+				</li>
+			{% endfor %}
+		</ul>
+		<div class="frm_block">
+			<input type="button" name="" value="{% trans "Завершить обучение" %}" class="inp_btn inp_btn170blue" onClick="javascript: document.location ='{% if status_true > 0 %}/photosperson/{{ person.id }}/?group={{ person.person.group.id }}{% else %}/autolist/?group=-2{% endif %}'"/>
+		</div>                    
+	</form>
+{% endblock %}

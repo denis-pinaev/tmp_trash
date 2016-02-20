@@ -1,0 +1,132 @@
+{% load i18n %}
+{% include "header.html" %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/learn.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<div style="display: block;" id="choose_person">
+					<h2>{% trans "Обучение базы персон" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Обучение_базы_персон" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+					{% include "current_time.html" %}
+					<div>{% trans "Вы можете загрузить" %}: 	
+						<ul class="list_formats">
+							<li>1. {% trans "файлы форматов" %} jpeg, png, bmp;</li>
+							<li>2. {% trans "видео формата" %} flv, avi, mp4;</li>
+						</ul>
+					</div>
+					<div class="err_mess_settings_person" id="err_mess">&nbsp;</div>
+	
+					<form method="post" action="" name="" class="dist_top" enctype="multipart/form-data">
+	
+						<div class="frm_person">						
+							<div class="frm_person_block">
+								<label for="pers_radio2"><input type="radio" id="pers_radio2" name="pers_radio" value="new" class="inp_check" onClick="javascript: initChoosePerson();" checked />
+									<b>{% trans "Создать персону" %}:</b>
+								</label>
+								<div class="frm_person_cont"><input type="text" name="name_ru" id="name_person" {% if person == "" %} value="{% trans "Введите имя персоны" %}" {% else %} value="{{ person }}"  {% endif %} class="inp_txt" id="name_person" onClick="javascript: choosePerson('pers_radio2');" onFocus="javascript: focusElem(this, true, '{% trans "Введите имя персоны" %}');" onBlur="javascript: focusElem(this, false, '{% trans "Введите имя персоны" %}');" /></div>
+							</div>
+	
+							<div class="frm_person_block">
+								<label for="pers_radio1"><input type="radio" id="pers_radio1" name="pers_radio" value="old" class="inp_check" onClick="javascript: initChoosePerson();" />
+									<b>{% trans "Выбрать персону из базы" %}:</b>
+								</label>
+								<div class="frm_person_cont">
+									<select name="comment" class="select" id="persid" onChange="javascript: choosePerson('pers_radio1');" onFocus="javascript: choosePerson('pers_radio1');">
+										<option value="0" checked>- {% trans "Выберите персону" %} -</option>
+										{% for person in allpersons %}
+											<option value="{{ person }}">{{ person }}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+
+						</div>
+	
+						<script type="text/javascript">
+							function flash_complete(){
+								//alert('Загрузка завершена')
+							}
+	
+							function addFlash(){
+								var name = getInfoPerson().name_person;
+								var lang = readCookie('django_language');
+								return '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab" id="flash-app" name="flash-app" width="500" height="380" data="/files/swf/upload/flash.swf" type="application/x-shockwave-flash">' +
+											'<param value="/files/swf/upload/flash.swf" name="movie">' +
+											'<param name="AllowScriptAccess" value="always">'+
+											'<param name="allowNetworking" value="all">' +
+											'<param name="allowFullScreen" value="true">' +
+											'<param name="quality" value="best" />'+
+											'<param name="bgcolor" value="#ffffff" />' +
+											'<param name="menu" value="false" />'+
+											'<param name="wmode" value="opaque" />'+
+											'<param name="FlashVars" value="postURL=%2Fupload%2F{{ user }}%2F'+encodeURIComponent(name)+'%2F&maxFileSize=100000000&maxFiles=100&fileExtensions=*.gif;*.jpg;*.jpeg;*.png;*.bmp;*.avi;*.flv;*.mp4;*.GIF;*.JPG;*.JPEG;*.PNG;*.BMP;*.AVI;*.FLV;*.MP4&otherExtensions=Image Files:*.gif;*.jpg;*.jpeg;*.png;*.bmp;*.GIF;*.JPG;*.JPEG;*.PNG;*.BMP,Video Files:*.avi;*.flv;*.mp4;*.AVI;*.FLV;*.MP4&locale='+lang+'" />'+										
+											'<embed src="/files/swf/upload/flash.swf" type="application/x-shockwave-flash" ' +
+												'quality="best" bgcolor="#ffffff" ' +
+												'width="500" height="380" name="flash-app" '+
+												'align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" '+ 
+												'menu="false" wmode="opaque" ' +
+												'FlashVars="postURL=%2Fupload%2F{{ user }}%2F'+encodeURIComponent(name)+'%2F&maxFileSize=100000000&maxFiles=100&fileExtensions=*.gif;*.jpg;*.jpeg;*.png;*.bmp;*.avi;*.flv;*.mp4;*.GIF;*.JPG;*.JPEG;*.PNG;*.BMP;*.AVI;*.FLV;*.MP4&otherExtensions=Image Files:*.gif;*.jpg;*.jpeg;*.png;*.bmp;*.GIF;*.JPG;*.JPEG;*.PNG;*.BMP,Video Files:*.avi;*.flv;*.mp4;*.AVI;*.FLV;*.MP4&locale='+lang+'" '+
+												'pluginspage="http://www.adobe.com/go/getflashplayer" />'+
+										'</object>';									
+							}
+							
+							/*
+							function addFlashLearn(){
+								var name = getInfoPerson().name_person;
+								var lang = readCookie('django_language');
+								return '<object id="flash-app" name="flash-app" width="980" height="628" data="/files/swf/learn/flash.swf" type="application/x-shockwave-flash">'+
+										'<param value="/files/swf/learn/flash.swf" name="movie">'+
+										'<param value="always" name="AllowScriptAccess">'+
+										'<param value="all" name="allowNetworking">'+
+										'<param value="true" name="allowFullScreen">'+
+										'<param name="quality" value="best" />'+
+										'<param name="bgcolor" value="#ffffff" />'+
+										'<param name="wmode" value="opaque" />'+
+										'<param name="FlashVars" value="person='+name+'&locale='+lang+'&server={{ server }}&port={{ port }}" />'+
+										'<embed src="/files/swf/learn/flash.swf" FlashVars="person='+name+'&locale='+lang+'&server={{ server }}&port={{ port }}" wmode="opaque" quality="best" bgcolor="#ffffff" width="980" height="628" name="flash-app" align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer" />'+
+										'</object>';									
+							}*/
+						</script>
+	
+						<div class="frm_person" style="margin-top: 15px;">
+							<div class="frm_btn"><input type="button" name="" value="{% trans "Загрузить файлы" %}" class="inp_btn inp_btn140" onClick="javascript: showFlash();" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></div>
+							<div class="frm_btn"><a href="javascript:void(0);" onClick="javascript: showListCamera(this, '/choose_camera/'+getInfoPerson().name_person+'/');" class="link_btn link_btn140" onMouseOver="javascript: linkStatus(this, 'over', 140);" onMouseOut="javascript: linkStatus(this, 'up', 140);" onMouseDown="javascript: linkStatus(this, 'down', 140);" onMouseUp="javascript: linkStatus(this, 'over', 140);">{% trans "Обучить с камеры" %}</a></div>
+						</div>	
+					</form>
+				</div>
+				
+				<div style="display: none;" id="upload_files">			
+					<h2><a href="#" onClick="javascript: showUploadBlock(false); return false;">{% trans "Обучение базы персон" %}</a> <span id="head_name"></span><input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+					<form method="" action="" name="">
+						<div class="frm_block">
+							<a href="/learn/" class="link_btn" onMouseOver="javascript: linkStatus(this, 'over', 90);" onMouseOut="javascript: linkStatus(this, 'up', 90);" onMouseDown="javascript: linkStatus(this, 'down', 90);" onMouseUp="javascript: linkStatus(this, 'over', 90);">{% trans "Назад" %}</a>
+						</div>
+						<div class="frm_block">
+							<div class="txt_upload">{% trans "Загрузите файлы" %}: </div>
+							<div class="block_flash" id="newFlash"></div>
+						</div>
+						<div class="frm_block">
+							<a href="/learn/" class="link_btn" onMouseOver="javascript: linkStatus(this, 'over', 90);" onMouseOut="javascript: linkStatus(this, 'up', 90);" onMouseDown="javascript: linkStatus(this, 'down', 90);" onMouseUp="javascript: linkStatus(this, 'over', 90);">{% trans "Назад" %}</a>
+						</div>
+					</form>
+				</div>			
+				
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% include "window_help.html" %}
+
+</body>
+</html>

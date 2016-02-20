@@ -1,0 +1,67 @@
+{% load i18n %}
+{% include "header.html" %}
+{% load templatetags %}
+
+<link rel="stylesheet" type="text/css" href="/files/css/map.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>{% trans "Карта" %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Карта" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				{% include "current_time.html" %}
+				<div class="block_map" style="height: 900px;">
+					{% for terminal in terminals %}
+						<div class="block_elem_map" style="top: {{ terminal.y|sub:21 }}px; left: {{ terminal.x|sub:25 }}px;">
+							<div class="terminal"></div>
+							{% for camera in terminal.cameras %}
+								<div class="
+								{% if camera.orient|lt:45 %}camera_right{% else%}
+								{% if camera.orient|lt:135 %}camera_top{% else%}
+								{% if camera.orient|lt:225 %}camera_left{% else%}
+								{% if camera.orient|lt:315 %}camera_bottom{% else%}
+								{% if camera.orient|lt:405 %}camera_right{% else%}
+								{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
+								" onMouseOver="javascript: infoCamera(this, {terminal_num: 5, terminal_type: 1, camera: 'САМ9 10.176.50.83'});" onMouseOut="javascript: closeChangeWindow('win_camera');"></div>
+							{% endfor %}
+							<!--
+							<div class="camera_left" onMouseOver="javascript: infoCamera(this, {terminal_num: 5, terminal_type: 1, camera: 'САМ9 10.176.50.83'});" onMouseOut="javascript: closeChangeWindow('win_camera');"></div>
+							<div class="camera_right" onMouseOver="javascript: infoCamera(this, {terminal_num: 5, terminal_type: 1, camera: 'САМ9 10.176.50.86'});" onMouseOut="javascript: closeChangeWindow('win_camera');"></div>
+							<div class="camera_top" onMouseOver="javascript: infoCamera(this, {terminal_num: 5, terminal_type: 1, camera: 'САМ9 10.176.50.84'});" onMouseOut="javascript: closeChangeWindow('win_camera');"></div>
+							<div class="camera_bottom" onMouseOver="javascript: infoCamera(this, {terminal_num: 5, terminal_type: 1, camera: 'САМ9 10.176.50.85'});" onMouseOut="javascript: closeChangeWindow('win_camera');"></div>
+							-->						
+						</div>
+					{% endfor %}
+					<!--
+					<div class="block_elem_map" style="top: 20px; left: 20px;">
+						<div class="terminal"></div>
+						<div class="camera_left" onMouseOver="javascript: infoCamera(this, {terminal_num: 5, terminal_type: 1, camera: 'САМ9 10.176.50.83'});" onMouseOut="javascript: closeChangeWindow('win_camera');"></div>
+						<div class="camera_right" onMouseOver="javascript: infoCamera(this, {terminal_num: 5, terminal_type: 1, camera: 'САМ9 10.176.50.86'});" onMouseOut="javascript: closeChangeWindow('win_camera');"></div>
+						<div class="camera_top" onMouseOver="javascript: infoCamera(this, {terminal_num: 5, terminal_type: 1, camera: 'САМ9 10.176.50.84'});" onMouseOut="javascript: closeChangeWindow('win_camera');"></div>
+						<div class="camera_bottom" onMouseOver="javascript: infoCamera(this, {terminal_num: 5, terminal_type: 1, camera: 'САМ9 10.176.50.85'});" onMouseOut="javascript: closeChangeWindow('win_camera');"></div>						
+					</div>
+					<div class="block_elem_map" style="top: 200px; left: 20px;">
+						<div class="terminal"></div>
+						<div class="camera_left" onMouseOver="javascript: infoCamera(this, {terminal_num: 5, terminal_type: 1, camera: 'САМ9 10.176.50.83'});" onMouseOut="javascript: closeChangeWindow('win_camera');"></div>
+						<div class="camera_right" onMouseOver="javascript: infoCamera(this, {terminal_num: 5, terminal_type: 1, camera: 'САМ9 10.176.50.86'});" onMouseOut="javascript: closeChangeWindow('win_camera');"></div>
+						<div class="camera_top" style="display: none;" onMouseOver="javascript: infoCamera(this, {terminal_num: 5, terminal_type: 1, camera: 'САМ9 10.176.50.84'});" onMouseOut="javascript: closeChangeWindow('win_camera');"></div>
+						<div class="camera_bottom" onMouseOver="javascript: infoCamera(this, {terminal_num: 5, terminal_type: 1, camera: 'САМ9 10.176.50.85'});" onMouseOut="javascript: closeChangeWindow('win_camera');"></div>						
+					</div>
+					-->				
+				</div>			
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% include "window_help.html" %}
+
+</body>
+</html>

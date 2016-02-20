@@ -1,0 +1,75 @@
+{% load i18n %}
+{% load templatetags %}
+{% include "po1header.html" %}
+<link rel="stylesheet" type="text/css" href="/files/css/po1/po1anketawanted.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_wanted">
+		<ul class="menu_vkl">
+			<li class="menu_vkl_act">
+				<div>
+					<div>
+						<a href="base">База разыскиваемых лиц</a>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div>
+					<div>
+						<a href="report">Отчёт за день</a>
+					</div>
+				</div>
+			</li>
+		</ul>
+		<div class="block_cont">
+			<div class="block_cont_top2">
+				<div class="block_cont_bottom min_height">
+					<h2><a href="base">База разыскиваемых лиц</a> - Иванов Иван Иванович<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+					<form method="post" action="" name="">
+						<div class="frm_block">
+							<div class="bl_photo_btn">
+								<div class="photo_user">
+									<a href="photos"><img src="/files/images/image_test3.jpg" width="120" height="120" alt="" /></a>
+									<div class="all_photo"><a href="photos">Все фотографии (3)</a></div>
+								</div>
+							</div>
+							<div class="bl_info_all">
+								<div class="bl_info">
+									<div class="bl_txt">ФИО:</div>
+									<input type="text" name="" value="Иванов Иван Иванович" class="inp_txt" />
+								</div>
+								<div class="bl_info">
+									<div class="bl_txt">Дата рождения:</div>
+									<input type="text" name="" value="12.12.1980" class="inp_txt" style="width: 90px;" /><input type="button" name="" value="" title="Выберите дату" class="btn_calend" />
+								</div>
+								<div class="bl_info">
+									<div class="bl_txt">Дополнительная информация:</div>
+									<textarea name="" class="textarea"></textarea>
+								</div>
+								<div class="bl_info">
+									<div class="bl_txt">Фотографии:</div>
+									<input type="button" name="" class="inp_btn inp_btn170" value="Добавить фотографии" />
+								</div>
+							</div>					
+						</div>
+						<div class="frm_block">
+							<input type="button" name="" value="Сохранить" class="inp_btn inp_btn90" />
+						</div>					
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po1footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+{% include "window_help.html" %}
+</body>
+</html>

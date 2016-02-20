@@ -1,0 +1,9 @@
+{% load i18n %}
+{% load a_templatetags %}
+<div class="info_upload">{% trans "Информация о видеоролике" %}: 
+	{% if dur %}<span title="{% trans "Продолжительность" %}">{{ dur }}</span>{% endif %}{% if width or height %}, 
+	<span title="{% trans "Разрешение" %}">{% if width %}{{ width }}{% endif %}{% if width and height %}x{% endif %}{% if height %}{{ height }}{% endif %}</span>{% endif %}{% if ext %}, 
+	<span title="{% trans "Формат" %}">{{ ext }}</span>{% endif %}{% if fps %}, 
+	<span title="{% trans "Частота кадров" %}">{{ fps }}{% trans "кадр/сек" %}</span>{% endif %}{% if codec %}, 
+	<span title="{% trans "Кодек" %}">{{ codec }}</span>{% endif %}
+</div>

@@ -1,0 +1,9 @@
+{% load i18n %}
+<div class="spinbox">
+	<input type="text" id="{{ id }}" name="{{ name }}" value="{{ value|default_if_none:'' }}" class="inp_txt" style="width: {{ width }}px;" onBlur="javascript: checkSpin(this, {{ value|default_if_none:'false' }}, {{ min }}, {{ max }});"{% if onclick != None %} onClick="{{ onclick }}"{% endif %}/>
+	<div class="spinbtns">
+		<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', {{ min }}, {{ max }}, {{ step }}, '{{ id }}');" onMouseUp="javascript: clearTimer();" />
+		<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', {{ min }}, {{ max }}, {{ step }}, '{{ id }}');" onMouseUp="javascript: clearTimer();" />
+	</div>
+	<script type="text/javascript">params['{{ id }}'] = '{{ value|default_if_none:'false' }}';</script>
+</div>

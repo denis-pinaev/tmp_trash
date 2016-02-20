@@ -1,0 +1,254 @@
+﻿.inp_btn140 {
+	width: 140px;
+	background: url('/files/images/button140x24_up.gif') top left no-repeat;
+}
+.inp_btn170 {
+	width: 170px;
+	background: url('/files/images/button170x24_up.gif') top left no-repeat;
+}
+.btn_reload {
+	position: absolute;
+	top: 39px;
+	*top: 37px;
+	right: 10px;			
+}
+.btn_restart {
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+	background: url("/files/images/restart.png");
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/restart.png', sizingMethod='crop');
+	float: right;
+}
+.list_balans a {
+	font-weight: bold;
+}
+.list_balans .name_balan {
+	margin-bottom: 15px;
+}
+.list_balans .name_balan.last {
+	margin-bottom: 0px;
+}
+.info_balan {
+	margin-left: 20px;
+}
+.head_dem {
+	margin-top: 10px;
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+.table_info_balan {
+	margin: 5px 0px 0px 0px;
+	padding: 0px;
+	border-top: 1px solid #6e7d98;
+}
+.table_info_balan tr.odd {
+	background-color: #DBE2F0;
+}
+.table_info_balan th {
+	vertical-align:top;
+	text-align: center;
+	border-right: 1px solid #6e7d98;
+	border-bottom: 1px solid #6e7d98;
+	background-color: #d9dee7;
+	padding: 0px 5px;
+	font-weight: normal;
+}
+.table_info_balan th.first {
+	border-left: 1px solid #6e7d98;
+}
+.table_info_balan td {
+	border-bottom: 1px solid #cccccc;
+	border-right: 1px solid #cccccc;
+	vertical-align: top;
+	padding: 3px 5px;
+	text-align: center;
+}
+.table_info_balan td.first {
+	border-left: 1px solid #cccccc;
+}
+.table_info_balan td.td_act {
+	width: 30px;
+	text-align: center;
+}
+.table_info_balan td.td_card {
+	width: 80px;
+}
+.table_info_balan td.td_memory {
+	width: 120px;
+}
+.table_info_balan td.td_memory_all {
+	width: 100px;
+}
+.table_info_balan td.type_demon{
+	font-weight: bold;
+	text-align: left;
+	oveflow: hidden;
+}
+.table_info_balan td.type_demon div {
+	margin-right: 21px;
+}
+.table_info_balan td.td_off_on {
+	width: 30px;
+	text-align: center;
+}
+.swithOn,
+.swithOff {
+	border: 0px;
+	margin: 0px;
+	padding: 0px;
+	background: url("/files/images/power_on.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/power_on.png', sizingMethod='crop');			
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+.swithOff {
+	background: url("/files/images/power_off.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/power_off.png', sizingMethod='crop');	
+}
+.table_info_balan tr.act {
+	cursor: default;
+}
+.table_info_balan tr.act td {
+	background-color: #849ac1;
+	color: #ffffff;
+}
+.table_info_balan tr.act td a {
+	color: #ffffff;
+}
+.act_demon {
+	background: url("/files/images/tick.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/tick.png', sizingMethod='crop');		
+	width: 16px;
+	height: 16px;
+	margin: 0px auto;
+}
+.noact_demon {
+	background: url("/files/images/exclamation.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/exclamation.png', sizingMethod='crop');		
+	width: 16px;
+	height: 16px;
+	margin: 0px auto;
+}
+.width_demon {
+	width: 100%;
+}
+.width_balan {
+	width: 240px;
+}
+.btn_balan_left {
+	background: url("/files/images/arrowB_left.gif") top left no-repeat;
+	width: 6px;
+	height: 9px;
+	cursor: pointer;
+	padding: 0px;
+	margin: 7px 3px 0px 0px;
+	border: 0px;
+}
+.btn_balan_bottom {
+	background: url("/files/images/arrowB_bottom.gif") top left no-repeat;
+	width: 9px;
+	height: 6px;
+	margin: 8px 3px 0px 0px;
+	border: 0px;
+	padding: 0px;
+	cursor: pointer;
+}
+.head_balan {
+	width: 100%;
+	overflow: hidden;
+}
+.head_balan a {
+	margin-left: 1px;			
+}
+.head_balan span {
+	float: left;
+	margin-top: 2px;
+}
+.head_balan div {
+	float: left;
+	width: 12px;
+	margin-left: 10px;
+}
+.head_graph {
+	text-align: center;
+	font-weight: bold;
+	margin-top: 5px;
+}
+.cont_graph {
+	position: relative;
+	width: 100%;
+}
+.legenda_graph {
+	width: 800px;
+	overflow: hidden;
+	position: absolute;
+	top: 5px;
+	right: 0px;
+	margin-right: 28px;
+}
+.legenda_graph .red,
+.legenda_graph .green {
+	height: 8px;
+	width: 50px;
+	background-color: #FF0000;
+	float: right;
+	margin-top: 6px;
+	margin-right: 5px;
+}
+.legenda_graph .red_txt {
+	float: right;
+}
+.legenda_graph .green {
+	background-color: #009900;
+	margin-left: 30px;	
+}
+.block_legenda {
+	width: 100%;
+	overflow: hidden;
+}
+.block_legenda .graph_color {
+	float: left;
+	height: 10px;
+	width: 45px;
+	margin-top: 5px;	
+}
+.block_legenda .graph_delim {
+	float: left;
+	padding: 0px 5px;
+}
+.block_legenda .graph_text {
+	/*float: left;
+	margin-right: 10px;*/
+	margin-left: 60px;
+}
+.block_graph {
+	height: 300px;
+	position: relative;
+	margin-top: 12px;
+}
+.block_graph .axisX {
+	position: absolute;
+	top: -12px;
+	left: 20px;
+	font-size: 85%;
+	line-height: 1;
+}
+.block_graph .axisY {
+	position: absolute;
+	bottom: 23px;
+	right: 5px;
+	font-size: 85%;
+	background-color: #ffffff;
+	line-height: 1;
+	padding: 0px 2px;		
+}

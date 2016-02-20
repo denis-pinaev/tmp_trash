@@ -1,0 +1,61 @@
+{% extends "base_archive_tab.html" %}
+{% load i18n a_templatetags %}
+{% block title %}{% trans 'Настройки интерфейса' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/interface.css?v=v{{ version }}" />
+<script type="text/javascript">
+$(function() {
+    $("input[name=resolution]").click(function() {
+        setResolutionInterface($(this).val());
+    })
+});                       
+function setResolutionInterface(value) {
+    $.ajax({
+        type: "POST",
+        url: "{{ root_path }}/command/set_rosolution_interface/",
+        data: {resol: value},
+        success: function(msg){
+            var obj = msg;
+            if (!obj || !obj.status) {
+                var txt = '{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}.';
+                changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+                return;
+            } else {
+                location.reload(true);
+            }
+        },
+        error: function() {
+            var txt = '{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}.';
+            changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});                                                            
+        }                                            
+    });                                  
+}
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu/menu_settings.html" %}{% endblock %}
+{% block subcontent %}
+<h2>{% trans "Настройки интерфейса" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Видеоархив Настройки_интерфейса' %}');" /></h2>
+{% include "current_time.html" %}    
+<form method="POST" action="" name="mainForm">
+	<div class="block dist_top">
+		<label for="resolution1">{% trans "Разрешение экрана" %}:</label>
+		<input type="radio" name="resolution" value="0" id="resolution1" class="inp_check dist_left"{% if res_interface == None or res_interface == "0" or res_interface == 0 %} checked="checked"{% endif %} /><label for="resolution1">1280x1024</label>
+		<input type="radio" name="resolution" value="1" id="resolution2" class="inp_check dist_left"{% if res_interface == "1" or res_interface == 1 %} checked="checked"{% endif %} /><label for="resolution2">1920x1080</label>
+	</div>
+</form>
+{% endblock %}
+{% block windows %}
+<div id="win_mess" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt" id="win_mess_headWF">{% trans "Предупреждение" %}</div>
+        </div>
+        <div class="contWF" id="win_mess_contWF"></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />    
+        </div>
+    </div>
+</div>
+{% endblock %}

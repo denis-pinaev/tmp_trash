@@ -1,0 +1,96 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Журнал изменений' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/journal_new.css?v=v{{ version }}" />
+<script type="text/javascript">
+$(function() {
+	checkForm();
+	initTooltip();
+});	
+function checkForm() {
+	$.validator.addMethod("checkDateReq", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) return true;
+		return false;
+	}, "{% trans 'Введите дату' %}" );
+	$.validator.addMethod("checkDateFormat", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			var regexp = /^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})$/;
+			if (regexp.test(val)) return true;
+			return false
+		}
+		return true;
+	}, "{% trans 'Некорректный формат даты (ДД.ММ.ГГГГ)' %}" );		
+	$.validator.addMethod("checkDate", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			if (checkDateValidator(val)) return true;
+			return false;
+		}
+		return true;
+	}, "{% trans 'Некорректное значение даты' %}" );
+	$.validator.addMethod("checkDateRangeReq", function(value, element) {
+		if (!$("#dateBegin").val() && !$("#dateEnd").val()) return false;
+		return true;
+	}, "{% trans 'Введите период' %}" );		
+	$.validator.addMethod("checkDateRange", function(value, element) {
+		var date1 = $("#dateBegin").val();
+		var date2 = $("#dateEnd").val();
+		if (date1 && (date1 != "") && date2 && (date2 != "")) {
+			if (checkDateValidator(date1) && checkDateValidator(date2)) { 
+				var dates = checkDateRangeValidator('dateBegin', 'dateEnd');
+				if (dates[0] <= dates[1]) return true;
+				return false;
+			}
+			return true;
+		}
+		return true;
+	}, "{% trans 'Дата окончания меньше даты начала' %}" );
+	var validator = $("#mainForm").validate({
+		rules: {
+			dateBegin: {
+				checkDateRangeReq: true,
+				checkDateReq: true,
+				checkDateFormat: true,
+				checkDate: true
+			},
+			dateEnd: {
+				checkDateRangeReq: true,
+				checkDateReq: true,
+				checkDateFormat: true,
+				checkDate: true,
+				checkDateRange: true
+			}
+		},
+		messages: {
+			dateBegin: {
+				checkDateRangeReq: "{% trans 'Укажите период' %}",
+				checkDateReq: "{% trans 'Введите дату начала' %}",
+				checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+				checkDate: "{% trans 'Введено некорректное значение' %}"
+			},
+			dateEnd: {
+				checkDateRangeReq: "{% trans 'Укажите период' %}",
+				checkDateReq: "{% trans 'Введите дату окончания' %}",	
+				checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+				checkDate: "{% trans 'Введено некорректное значение' %}",
+				checkDateRange: "{% trans 'Указан некорректный период дат' %}"
+			}			
+		},		
+		errorPlacement: function(error, element) {
+			var block_error = element.parent().prev();
+			block_error.html("");
+			error.appendTo( block_error ); 
+		},	
+		submitHandler: function() {		
+			document.getElementById("mainForm").submit();
+		}
+	});
+}
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_journal.html" %}{% endblock %}
+{% block subcontent %}{% include "content/historychange_content.html" %}{% endblock %}

@@ -1,0 +1,39 @@
+﻿.block_result {
+	width: 400px;
+	padding: 10px;
+	border: 1px solid #aaaaaa;
+	margin: 0px auto;
+}
+.block_photo {
+	width: 120px;
+	height: 120px;
+	margin: 0px auto;
+}
+.block_info {
+	width: 100%;
+	overflow: hidden;
+	margin-bottom: 5px;
+}
+.block_info.first {
+	margin-top: 20px;
+}
+.block_info.last {
+	margin-bottom: 0px;
+}
+.block_info .bl_txt {
+	float: left;
+	width: 160px;
+}
+.block_btn {
+	margin-top: 20px;
+	text-align: center	
+}
+.block_btn .inp_btn {
+	margin-right: 5px;
+}
+.block_head {
+	text-align: center;
+	font-weight: bold;
+	color: #0088CC;
+	margin-bottom: 10px;
+}

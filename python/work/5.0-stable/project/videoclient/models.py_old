@@ -1,0 +1,64 @@
+# coding=utf-8
+
+from django.db import models
+from django.utils import translation
+from videoclient.settings import *
+ 
+class Language(models.Model):
+    name = models.CharField( max_length=8, unique=True, verbose_name=u'Имя', help_text=u'Короткое имя языка. Например: Russian(Русский) - ru')
+    title = models.CharField( max_length=32, unique=True, verbose_name=u'Полное имя', help_text=u'Полное имя языка. Например: Russian')
+    def __unicode__(self):
+        return "%s:%s" %(self.name, self.title)
+    class Meta:
+        verbose_name_plural="Языки"
+    
+class Group(models.Model):
+    title = models.CharField( max_length=32, unique = True, null=False, verbose_name=u'Имя группы', help_text=u'Название группы')
+    def __unicode__(self):
+        return "%s" % self.title
+    class Meta:
+        verbose_name_plural="Группы переводов"        
+    
+class Translation(models.Model):
+    group = models.ForeignKey( Group, null=False, verbose_name=u'Группа', help_text=u'Группа переводимой фразы')
+    phrase = models.CharField(max_length=4096, null=False, verbose_name=u'Фраза', help_text=u'переводимая фраза')
+    language = models.ForeignKey( Language, null=False, verbose_name=u'Язык', help_text=u'На кокой язык будет переведена фраза')
+    translate = models.CharField(max_length=4096, default="", verbose_name=u'Перевод', help_text=u'Перевод фразы')
+    active = models.BooleanField(default = False, verbose_name=u'Активность', help_text=u'В активном состоянии фраза участвует в переводе')
+    def __unicode__(self):
+        if self.active:
+            return "V %s:%s -%s-> %s" %(self.group, self.phrase, self.language, self.translate)
+        else:
+            return "X %s:%s -%s-> %s" %(self.group, self.phrase, self.language, self.translate)
+    class Meta:
+        verbose_name_plural="Переводы"
+        
+class Communicator(models.Model):
+    host = models.CharField( max_length = 32, null=False, verbose_name=u'Хост')
+    port = models.IntegerField(null=False, verbose_name=u'Порт')
+    active = models.BooleanField(default = True, verbose_name=u'Активность')
+    def __unicode__(self):
+        return "%s:%s" %(self.host, self.port)
+    class Meta:
+        verbose_name_plural="Коммуникаторы"
+        
+class Balancer(models.Model):
+    host = models.CharField( max_length = 32, null=False, verbose_name=u'Хост')
+    port = models.IntegerField(null=False, verbose_name=u'Порт')
+    login = models.CharField( max_length = 32, verbose_name = u'Логин')
+    passwd = models.CharField( max_length = 32, verbose_name = u'Пароль')
+    user = models.CharField( max_length = 32, verbose_name = u'Пользователь')
+    active = models.BooleanField(default = True, verbose_name=u'Активность')
+    
+    def __unicode__(self):
+        return "%s:%s %s %s %s" %(self.host, self.port, self.login, self.passwd, self.user)
+    class Meta:
+        verbose_name_plural="Баллансировщики"
+        
+        
+class Persons(models.Model):
+    first_name = models.CharField( max_length = 32, null=False, verbose_name=u'Фамилия')
+    last_name = models.CharField( max_length = 32, null=False, verbose_name=u'Имя')
+    middle_name = models.CharField( max_length = 32, null=True, verbose_name=u'Отчество', default='')
+    birthday = models.DateField()
+           

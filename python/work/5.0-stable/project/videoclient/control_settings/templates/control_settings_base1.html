@@ -1,0 +1,65 @@
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>{% block page_title %}{% endblock %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<link rel="stylesheet" type="text/css" href="/smedia/css/main.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/smedia/css/windows.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/smedia/css/navigation.css?v=v{{ version }}" />
+<script type="text/javascript" src="/smedia/js/funcs.js?v=v{{ version }}"></script>
+</head>
+<body>
+<div class="body1">
+<!-- BEGIN: header -->
+<div class="header">
+	<div class="block_tm">
+		<div class="block_rtm"></div>
+		<div class="block_ltm"></div>
+		<div class="logo"><a href="#"><img src="/files/control_settings/images/logo.png" alt="" /></a></div>
+		<!--<div class="lang" onClick="javascript: chooseLang(this);" title="Выбор языка">RU</div>-->
+		<ul class="right_menu">
+			<li><a href="/accounts/logout/">Выход</a></li>	
+			<li><span class="user">{{user.username}}</span></li>
+		</ul>
+		<ul class="top_menu">
+			<li class="tm_block"><a href="/users/" class="first tm_link{% ifequal page "user" %} tm_active{% endifequal %}">Пользователи</a></li>
+			<li class="tm_block" id="settings" onMouseOver="javascript: showInnerMenu(this);" onMouseOut="javascript: hideInnerMenu(this);">
+				<a href="/settings/" class="tm_link{% ifequal page "settings" %} tm_active{% endifequal %}" id="settings_link">Настройки</a>
+				<ul class="inner_menu" style="display: none;" id="settings_inner">
+					<li><a href="/settings/">Общие настройки</a></li>
+					<li><a href="/default/">Настройки по умолчанию</a></li>
+				</ul>			
+			</li>
+		</ul>
+	</div>
+</div>
+<!-- END: header -->
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="content_add">
+		{% block page_content %} {% endblock page_content %}
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+<!-- BEGIN: footer -->
+<div class="footer">
+	<div class="contacts">
+		<div class="block_contacts">
+			<span class="name_contacts">Контакты:</span>
+			<ul class="list_contacts">
+				<li>информация: <a href="mailto:info@smilart.com">info@smilart.com</a></li> 
+				<li>техподдержка: <a href="mailto:support@smilart.com">support@smilart.com</a></li>
+			</ul>
+		</div>
+	</div>	
+</div>
+<!-- END: footer -->
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% block window %}{% endblock window %}
+</body>
+</html>

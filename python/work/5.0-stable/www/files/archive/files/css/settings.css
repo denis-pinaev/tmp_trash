@@ -1,0 +1,50 @@
+﻿.req {
+	font-weight: bold;
+	color: #ff0000;
+}
+.error {
+	color: #ff0000;
+}
+.delim_block {
+	border-top: 1px dotted #cccccc;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	height: 1%;
+	line-height: 0;
+}
+.bl_head {
+	font-weight: bold;
+	line-height: 1;
+}
+.bl_param {
+	margin-top: 10px;
+}
+.bl_param .bl_txt {
+	float: left;
+	width: 260px;
+}
+.bl_param .bl_enter {
+	margin-left: 270px;
+}
+.bl_param .btn_save {
+	color: #ffffff;
+	background: url('/files/images/btn_blue_90.png') top left no-repeat;
+	width: 90px;
+}
+.bl_param .btn_cancel {
+	background: url('/files/images/button90x24_up.gif') top left no-repeat;
+	width: 90px;
+}
+.frm_add .bl_param .bl_txt {
+	width: 40px;
+}
+.frm_add .bl_param .inp_txt {
+	width: 250px;
+}
+.frm_add .bl_error {
+	color: #ff0000;
+	margin-left: 40px;
+}
+.inp_txt.err_forms {
+	border-color: #ff0000;
+}

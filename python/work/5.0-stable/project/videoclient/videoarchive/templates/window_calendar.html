@@ -1,0 +1,32 @@
+{% load i18n %}
+{% load a_templatetags %}
+<div class="tooltip" id="win_infoDay"></div>
+<div id="win_mess" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Предупреждение" %}</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add" id="win_mess_contWF"></div></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />    
+        </div>
+    </div>
+</div>
+<div id="win_delroller" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_delroller');" title="{% trans 'Закрыть окно' %}" /></div>
+			<div class="headWF_txt">{% trans "Удаление видеороликов" %}</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_delroller_contWF">{% trans "Удалить видеоролики за период с" %} <span id="win_datebegin"></span> {% trans "по" %} <span id="win_dateend"></span><span id="win_sources"> {% trans "с источника" %} <span id="win_delsource"></span></span>?</div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Удалить" %}" class="btn_wf_blue" onClick="javascript: deletePeriodRoller();" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_delroller');" />
+		</div>
+	</div>
+</div>
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>

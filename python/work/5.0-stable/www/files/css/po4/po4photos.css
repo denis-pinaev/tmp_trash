@@ -1,0 +1,210 @@
+﻿.err_mess_settings {
+	color: #FF6600;
+	text-align: center;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.frm_block .inp_check {
+	margin-right: 5px;
+}
+.inp_btn26 {
+	width: 26px;
+	background: url('/files/images/button26x24_up.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/button26x24_up.png', sizingMethod='crop');		
+}
+.inp_btn120 {
+	width: 120px;
+	background: url('/files/images/button120x24_up.gif') top left no-repeat;
+	padding-left: 15px;
+}
+.inp_btn170blue {
+	width: 170px;
+	background: url('/files/images/btn_blue_170.png') top left no-repeat;
+	-background: none;
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_170.png', sizingMethod='scale');
+	color: #ffffff;
+	float: left;
+	margin-right: 10px;
+}
+.bl_btn_check {
+	width: 120px; 
+	height: 24px; 
+	text-align: left; 
+	background: url('/files/images/button120x24_up.gif') top left no-repeat;
+	float: left;
+	margin-right: 30px;
+	position: relative;	
+}
+.bl_btn_check div {
+	display: table-cell; 
+	vertical-align: middle; 
+	width: 120px;
+	height: 24px;
+	cursor: pointer; 
+}
+.bl_btn_check div .inp_check {
+	margin-left: 5px;
+	margin-right: 5px;
+	vertical-align: middle;
+}
+.bl_btn_check div label {
+	vertical-align: middle; 
+	line-height: 24px;
+	cursor: pointer;
+}
+.inp_btn90 {
+	width: 90px;
+	background: url('/files/images/button90x24_up.gif') top left no-repeat;
+}
+.inp_btn140 {
+	width: 140px;
+	background: url('/files/images/button140x24_up.gif') top left no-repeat;
+}
+.inp_btn170 {
+	width: 170px;
+	background: url('/files/images/button170x24_up.gif') top left no-repeat;
+}
+.dist_link {
+	margin-top: 7px;
+}
+.block_eye {
+	float: right;
+	margin-top: 3px;
+}
+/* список персон */
+.list_photos {
+	margin-top: 5px;
+	margin-bottom: -5px;
+}
+.list_photos li {
+	padding: 5px; 
+	margin: 0px 5px 5px 0px; 
+	border: 1px solid #cccccc; 
+	float: left;
+	background-color: #f2f2f2;
+	position: relative;
+	width: 158px;
+	border-radius: 3px;
+	moz-border-radius: 3px;
+}
+.list_photos .block_photo {
+	text-align: center;
+	height: 120px;	
+	width: 120px;
+	margin: 0px auto 5px auto;
+	background: url("/files/images/loader20x20.gif") center center no-repeat #dddddd;
+}
+.list_photos .block_photo img {
+	max-width: 120px;
+	max-height: 120px;	
+}
+.list_photos .inp_check {
+	position: absolute;
+	top: 5px;
+	right: 6px;
+	-top: 1px;
+	-right: 3px;	
+}
+.list_photos li.lp_act {
+	border: 1px solid #6E7D98;
+	background-color: #DBE2F0;
+	box-shadow: 1px 1px 2px rgba(122,122,122,0.5);
+}
+.list_photos .inp_check {
+	margin-right: 0px;
+	position: absolute;
+	top: 5px;
+	right: 6px;
+	-top: 1px;
+	-right: 3px;	
+}
+.photo_info {
+    width: 100%;
+    overflow: hidden;
+}
+.photo_info .photo_param {
+    float: left;
+    margin-right: 10px;
+}
+.photo_info .photo_param.eyes {
+    background: url("/files/images/eye.png") left center no-repeat;
+    padding-left: 18px;
+}
+.linkArchive {
+	text-align: center;
+}
+.linkArchive a {
+	text-decoration: underline;
+	font-weight: bold;
+}
+.btn_loupe {
+	display: block;
+	position: absolute;
+	top: 108px;
+	right: 20px;
+	width: 24px;
+	height: 24px;
+	cursor: pointer;
+	background: url('/files/images/zoom.png') bottom right no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/zoom.png', sizingMethod='crop');	
+	text-decoration: none;
+}
+.btn_loupe span {
+	display: block;
+	width: 100%;
+	height: 100%;				
+}
+.btn_metadata {
+	width: 16px;
+	height: 16px;
+	border: none;
+	padding: 0px;
+	margin: 0px;
+	position: absolute;
+	right: 5px;
+	top: 25px;
+	cursor: pointer;
+	background: url('/files/images/icons.png') 0px -114px no-repeat;	
+}
+.photometa_info {
+	display: block;
+	width: 385px;
+	height: 320px;
+	overflow: auto;
+	margin-left: 3px;
+}
+.message_action_txt {
+	float: left;
+}
+/* menu */
+.menu_cutfaces {
+	float: right;
+}
+.menu_cutfaces li {
+	float: left;
+}
+.menu_cutfaces li.mcf_first {
+	margin-right: 5px;
+}
+.menu_cutfaces li a {
+	padding: 1px 12px;
+	display: block;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+}
+.menu_cutfaces li a:hover {
+	text-decoration: none;
+}
+.menu_cutfaces li.mcf_act a {
+	background-color: #777777;
+	color: #ffffff;
+}
+.menu_cutfaces li.mcf_dis a {
+	cursor: default;
+	color: #868686;
+}

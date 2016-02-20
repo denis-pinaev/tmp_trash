@@ -1,0 +1,116 @@
+{% load i18n %}
+{% load templatetags %}
+{% include "po4header.html" %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4ident.css?v=v{{ version }}" />
+{% include "js/js_ident.html" %}
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>{% trans "Просмотр" %}<span id="act_communicator"{% if not communicators or communicators|length <= 1 %} style="display: none;"{% endif %}></span><span id="act_camera"{% if not cameras or cameras|length <= 1 %} style="display: none;"{% endif %}></span><input id="img_1" type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Просмотр" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				<form method="POST" action="" name="frm_learn">
+					<div class="frm_block">
+						<div class="frm_block_txt"{% if not communicators or communicators|length <= 1 %} style="display: none;"{% endif %}>{% trans "Выберите коммуникатор" %}:</div>
+						<div class="list_com"{% if not communicators or communicators|length <= 1 %} style="display: none;"{% endif %}>
+								<input id="communicator" type="hidden" name="communucator" value="{{ index }}" >
+								<select id="select" name="index" class="select" onChange="location.replace('/po4/ident/?index='+document.getElementById('select').selectedIndex)">
+									{% for com in communicators %}
+										{% if forloop.counter0 == index %}
+											<option value="{{ forloop.counter0 }}" selected>{{ com.host }}:{{ com.port }}</option>
+										{% else %}
+											<option value="{{ forloop.counter0 }}">{{ com.host }}:{{ com.port }}</option>
+										{% endif %}
+									{% endfor %}
+								</select>
+						</div>
+						{% if error %}
+							<div class="block_error info_important">
+								{% trans "Ошибка подключения!" %} {% trans "Коммуникатор" %} <b>{{ name }}</b> {% trans "недоступен" %}. {% trans "Пожалуйста, попробуйте подключиться позднее" %}.
+								<input type="button" class="inp_btn inp_btn140 dist_left" name="" onClick="javascript: location.reload(true);" value='{% trans "Подключиться" %}' onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+							</div>
+						{% else %}
+							<div class="block_cameras"{% if not cameras or cameras|length <= 1 %} style="display: none;"{% endif %}>
+								<div id="cameras" class="list_cameras">
+									{% for camera in cameras %}
+										{% if forloop.counter <= limit_cameras %}
+											{% if camera.active  == '1'%}
+												<div id="numcamera_{{ camera.numcamera }}" class="camera">
+											{% else %}
+												<div id="numcamera_{{ camera.numcamera }}" class="camera noact">
+											{% endif %}
+												<div class="head_setting">
+													<span class="num">{{ camera.numcamera|add:1 }}.</span>																															
+													<a href="#" id="link_{{ camera.numcamera }}"{% if camera.active  == '1'%} onClick="javascript: showCameraIdent(this, '{{ camera.info }}', {{ camera.numcamera }}); return false;"{% else %} onClick="javascript: return false;"{% endif %}>{{ camera.info }}</a>
+												</div>
+											</div>
+										{% endif %}
+									{% endfor %}
+									
+									{% if cameras|length > limit_cameras %}
+										<div style="display: none;" id="all_cameras">
+										{% for camera in cameras %}
+											{% if forloop.counter > limit_cameras %}
+												{% if camera.active  == '1'%}
+													<div id="numcamera_{{ camera.numcamera }}" class="camera">
+												{% else %}
+													<div id="numcamera_{{ camera.numcamera }}" class="camera noact">
+												{% endif %}
+													<div class="head_setting">
+														<span class="num">{{ camera.numcamera|add:1 }}.</span>																															
+														<a href="#" id="link_{{ camera.numcamera }}"{% if camera.active  == '1'%} onClick="javascript: showCameraIdent(this, '{{ camera.info }}', {{ camera.numcamera }}); return false;"{% else %} onClick="javascript: return false;"{% endif %}>{{ camera.info }}</a>
+													</div>
+												</div>
+											{% endif %}
+										{% endfor %}										
+										</div>
+									{% endif %}
+								</div>
+							</div>
+							{% if cameras|length > limit_cameras %}
+								<div class="view_all">
+									<div class="btn_set"><input type="button" name="" value="" class="btn_set_left" id="btn_all" /></div><a href="#" id="link_all" onClick="showListCameras(this);return false;">{% trans "Показать всё" %}</a>
+								</div>								
+							{% endif %}													
+						{% endif %}					
+					</div>
+					{% if not error %}
+					<div class="frm_block">
+						<script type="text/javascript">
+							function addFlash(numcamera, host, port) {
+								var lang = readCookie('django_language');
+								return '<object id="flash-app" name="flash-app" width="980" height="628" data="/files/swf/ident/flash.swf" type="application/x-shockwave-flash">'+
+										'<param value="/files/swf/ident/flash.swf" name="movie">'+
+										'<param value="always" name="AllowScriptAccess">'+
+										'<param value="all" name="allowNetworking">'+
+										'<param value="true" name="allowFullScreen">'+
+										'<param name="quality" value="high" />'+
+										'<param name="bgcolor" value="#ffffff" />'+
+										'<param name="wmode" value="opaque" />'+
+										'<param name="FlashVars" value="server='+host+'&port='+port+'&camera='+numcamera+'&locale='+lang+'&control_server={{ bal.host }}&control_port={{ bal.port }}&control_user={{ bal.user }}&control_password={{ bal.passwd }}&control_login={{ bal.login}}" />'+
+										'<embed src="/files/swf/ident/flash.swf" wmode="opaque" FlashVars="server='+host+'&port='+port+'&camera='+numcamera+'&locale='+lang+'&control_server={{ bal.host }}&control_port={{ bal.port }}&control_user={{ bal.user }}&control_password={{ bal.passwd }}&control_login={{ bal.login}}" quality="high" bgcolor="#ffffff"  width="980" height="628" name="flash-app" align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer" />'+
+									'</object>';																			
+							}
+						</script>
+						<div class="big_camera">
+							<div class="info" id="big_camera_info">{% trans "Камера выключена или недоступна" %}.</div>
+							<div id="big_camera" style="display: none;"></div>
+						</div>						
+					</div>
+					<script type="text/javascript">showChooseCameraIdent();</script>
+					{% endif %}
+				</form>			
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>			
+
+{% include "po4footer.html" %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+</body>
+</html>

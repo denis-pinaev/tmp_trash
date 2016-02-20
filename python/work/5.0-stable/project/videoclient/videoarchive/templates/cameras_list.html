@@ -1,0 +1,47 @@
+{% load i18n %}
+{% load a_templatetags %}
+                    <div>{% trans "Общее количество камер" %}: <span class="info_important">{{ all_cameras }}</span></div>
+                    {% if all_cameras > 0 %}
+                    <div class="frm_block">
+                        <div class="bl_btn_check2 short_descr" title="{% trans 'Выделить все записи на данной странице' %}">
+						    <div><input type="checkbox" name="" value="" class="inp_check choose_all" id="choose_all" /><label for="choose_all">{% trans "Выделить всё" %}</label></div>
+						</div>					
+                        <input type="button" name="" class="inp_btn btn_add" value="{% trans "Добавить камеры" %}" onClick="javascript: refreshCameras();" />
+                        <input type="button" name="" class="inp_btn inp_btn170" value="{% trans 'Удалить выделенные' %}" onClick="javascript: deleteCameras();" />
+                    </div>                    
+                    <form method="get" action="" id="main_form">
+                        <input type="hidden" name="sort" value="{{ sort|default:0 }}" id="id_sort">
+                        <input type="hidden" name="order" value="{{ order|default:0 }}" id="id_order">
+        				<table cellpadding="0px" cellspacing="0px" border="0px" class="table dist_top" id="list_cameras">
+        					<tr>
+        						<th class="th_first">№</th>
+        						<th class="th_info"><a href="#" onclick="sort_journal(1, {% if sort == 1 %}{{ order }}{% else %}0{% endif %});" {% if sort == 1 and order == 1%}class="btn_arrow up"{% endif %}>IP-адрес</a></th>
+        						<th class="th_info"><a href="#" onclick="sort_journal(2, {% if sort == 2 %}{{ order }}{% else %}0{% endif %});" {% if sort == 2 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Тип" %}</a></th>
+        						<th><a href="#" onclick="sort_journal(3, {% if sort == 3 %}{{ order }}{% else %}0{% endif %});" {% if sort == 3 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Название" %}</a></th>
+        						<th><a href="#" onclick="sort_journal(4, {% if sort == 4 %}{{ order }}{% else %}0{% endif %});" {% if sort == 4 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Коммуникатор" %}</a></th>
+        					</tr>
+        					{% for comm in cameras %}
+        					    {% with comm.id_camera as camera %}
+        						<tr class="{% cycle "" "odd" %}" onMouseOver="javascript: overElem(this, 'act');" onMouseOut="javascript: outElem(this, 'act');">
+        							<td class="td_first td_check"><input type="checkbox" name="" value="{{ camera.id }}" class="inp_check" id="camera{{ forloop.counter }}" />{{ forloop.counter }}.</td>
+        							<td>{{ camera.ip|default:'&nbsp;' }}</td>
+        							<td>{{ camera.type|default:'&nbsp;' }}</td>
+        							<td class="td_camera" id="object{{ camera.id }}"><input type="button" class="inp_edit" name="" value="" title="{% trans "Редактировать название камеры " %}" onClick="javascript: editName('object_name{{ camera.id }}', {{ camera.id }});" /><span id="object_name{{ camera.id }}" onClick="javascript: editName(this, {{ camera.id }});">{{ camera.name }}</span></td>					
+        							<td class="td_camera">{% if comm.id_communicator %}<span>{{ comm.id_communicator.host }}:{{ comm.id_communicator.port }}</span>{% endif %}</td>
+        						</tr>
+        						{% endwith %}
+        					{% endfor %}
+        				</table>
+                    </form>              
+                    <div class="dist_top">
+                        <div class="bl_btn_check2 short_descr" title="{% trans 'Выделить все записи на данной странице' %}">
+							<div><input type="checkbox" name="" value="" class="inp_check choose_all" id="choose_all2" /><label for="choose_all2">{% trans "Выделить всё" %}</label></div>
+						</div>					
+                        <input type="button" name="" class="inp_btn btn_add" value="{% trans "Добавить камеры" %}" onClick="javascript: refreshCameras();" />
+                        <input type="button" name="" class="inp_btn inp_btn170" value="{% trans 'Удалить выделенные' %}" onClick="javascript: deleteCameras();" />
+                    </div>
+                    {% else %}
+                        <div class="dist_top">
+                            <input type="button" name="" class="inp_btn btn_add" value="{% trans "Добавить камеры" %}" onClick="javascript: refreshCameras();" />
+                        </div>                  
+                    {% endif %}         				               

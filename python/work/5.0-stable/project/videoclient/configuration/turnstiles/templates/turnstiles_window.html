@@ -1,0 +1,63 @@
+﻿{% load i18n %}
+{% load templatetags %}
+<div id="easyTooltip_camera" class="video" style="display: none;">
+	<div class="indicator_camera" style="display: none;"><div>{% trans "Идёт загрузка данных." %}<br />{% trans "Пожалуйста, подождите..." %}</div></div>
+	<div class="camera" style="display: block;">
+		<div id="camera_name"></div>
+		<div id="camera_frame"><img src="" width="200px" alt="" /></div>
+	</div>
+</div>
+<div id="easyTooltip_turnstile" class="tooltip2" style="display: none;"></div>
+<div id="win_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF" id="win_mess_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />    
+		</div>
+	</div>
+</div>
+<div id="win_del" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_del');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Удаление турникетов" %}</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_del_contWF"></div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Удалить" %}" class="btn_wf_blue" onClick="javascript: deleteSelectedTurns();" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_del');" />
+		</div>
+	</div>
+</div>
+<div id="win_search" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_search');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Добавление турникетов" %}</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_search_contWF">
+			<div class="block">
+				<div class="bl_btn_check search short_descr" title="{% trans 'Выделить все записи на данной странице' %}"><div><input type="checkbox" name="" value="" class="inp_check" id="choose_all_search" onClick="javascript: selectedAllRowSearch($(this));" /><label for="choose_all_search">{% trans 'Выделить всё' %}</label></div></div>
+				<div class="block_results">{% trans "Найдено турникетов" %}: <strong id="count_search">{{new_turns|length}}</strong></div>
+			</div>
+			<div class="error" id="error_add_turns"></div>
+			<ul class="list_turnstiles" id="list_search_turnstiles">
+				{% for turn in new_turns %}
+					<li {% cycle '' 'class="odd"'%}><input type="checkbox" value="" name="" class="inp_check" id="search_turnstile{{turn.id}}" onClick="javascript: selectedRowSearch($(this));" /><label for="search_turnstile{{turn.id}}">{{turn.address}}</label></li>
+				{% endfor %}
+			</ul>			
+		</div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Добавить" %}" class="btn_wf_blue" onClick="javascript: addTurns();" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_search');" />
+		</div>
+	</div>
+</div>
+<div class="indicator" id="indicator" style="display: none;">                                                                                                                                                
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />                                                                                                                                          
+    <div>{% trans "Пожалуйста, подождите" %}...</div>                                                                                                                                                                       
+</div>

@@ -1,0 +1,47 @@
+{% load i18n %}
+{% load templatetags %}
+{% include "po1header.html" %}
+<link rel="stylesheet" type="text/css" href="/files/css/po1/po1signal.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2><a href="/po1/signal/">Сигналы</a> - Сбой системы (2)<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				<table cellspacing="0" cellpadding="0" class="list_signals_head">
+					<th class="th_num">№</th>
+					<th class="th_error">Сбой</th>
+					<th class="th_time">Время</th>
+					<th>Причина</th>
+				</table>
+				<table cellspacing="0" cellpadding="0" class="list_signals">
+					<tr>
+						<td class="td_num">1</td>
+						<td class="td_error">Сбой системы</td>
+						<td class="td_time">19.00</td>
+						<td>Причина сбоя системы</td>
+					</tr>
+					<tr class="odd">
+						<td class="td_num">2</td>
+						<td class="td_error">Сбой системы</td>
+						<td class="td_time">19.00</td>
+						<td>Причина сбоя системы</td>
+					</tr>											
+				</table>				
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po1footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+{% include "window_help.html" %}
+
+</body>
+</html>

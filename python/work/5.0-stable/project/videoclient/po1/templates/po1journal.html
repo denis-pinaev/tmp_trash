@@ -1,0 +1,76 @@
+{% load i18n %}
+{% load templatetags %}
+{% include "po1header.html" %}
+<link rel="stylesheet" type="text/css" href="/files/css/po1/po1journal.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>Журнал<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Журнал" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				<div class="block_date">Дата <b>12.06.2010</b> <input type="button" name="" value="" class="btn_calend" title="Выбрать дату" /></div>
+				<form method="post" action="" name="">
+					<div class="frm_block">
+						<div class="search">
+							<span class="left"></span>
+							<span class="center"><input type="text" name="filter" value="Введите имя" value="" class="txt_search" /></span>
+							<input type="submit" name="" value="" class="btn_search" title="Найти" />
+						</div>
+						<div>Всего записей в журнале: <span class="info_important">3</span></div>
+					</div>				
+					<div class="frm_block">
+						<table cellspacing="0" cellpadding="0" class="list_journal_head">
+							<tr>
+								<th class="th_time"><input type="button" class="btn_arrow" value="" name="">Время</th>
+								<th class="th_event"><input type="button" class="btn_arrow" value="" name="">Событие</th>
+								<th class="th_kpp"><input type="button" class="btn_arrow" value="" name="">КПП</th>
+								<th class="th_name"><input type="button" class="btn_arrow" value="" name="">ФИО</th>
+								<th>Должность<span></span></th>
+								<th class="th_name"><input type="button" class="btn_arrow" value="" name="">Оператор</th>
+							</tr>
+						</table>					
+						<table cellspacing="0" cellpadding="0" class="list_users">
+							<tr>
+								<td class="td_time">08.05</td>
+								<td class="td_event">Вход</td>
+								<td class="td_kpp">КПП №1</td>
+								<td class="td_name">Сидорова Елена Владимировна</td>
+								<td>Секретарь</td>
+								<td class="td_name">Петров Пётр Петрович</td>
+							</tr>						
+							<tr class="odd">
+								<td class="td_time">08.30</td>
+								<td class="td_event">Вход</td>
+								<td class="td_kpp">КПП №1</td>
+								<td class="td_name">Иванов Иван Иванович</td>
+								<td>Зам. директора</td>
+								<td class="td_name">Петров Пётр Петрович</td>
+							</tr>
+							<tr>
+								<td class="td_time">09.00</td>
+								<td class="td_event">Вход</td>
+								<td class="td_kpp">КПП №1</td>
+								<td class="td_name">Петров Пётр Петрович</td>
+								<td>Оператор</td>
+								<td class="td_name">Петров Пётр Петрович</td>
+							</tr>
+						</table>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po1footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+{% include "window_help.html" %}
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+{% load i18n %}
+{% load a_templatetags %}
+				<div class="block_diagram" id="diagram{{forloop.counter}}" style="display: none;">
+					<div class="legenda">
+						{% for s in signal %}
+							<div class="legenda_value{% if forloop.first %} first{% endif %}"><div class="signal{% if s.id <= 6 %}{{ s.id }}{% else %}6{% endif %}"></div> - <span>{{s.id}}</span> - {{s.name}}</div>
+						{% endfor %}
+					</div>
+<div id="source{{forloop.counter}}"></div>
+<script type="text/javascript">showTable('source{{forloop.counter}}', {{ camera.count }}, {{ camera.id }});</script>
+{% comment %}					
+					<table cellpadding="0px" cellspacing="0px" border="0px" class="scale_signal">
+						{% for sig in camera.info %}
+							<tr><td>{{sig.id}}</td></tr>
+						{% endfor %}
+					</table>
+					<table cellpadding="0px" cellspacing="0px" border="0px" class="diagram">
+						{% for sig in camera.info %}
+						<tr>
+							{% for h in hour_range %}
+								<td>
+									<div class="cont_reel">
+									{% for info in sig.info %}
+										{% if info.hour == h %}
+											<div class="reel signal{% if sig.id <= 5 %}{{ sig.id }}{% else %}5{% endif %}" style="width: {% if info.delta|mul:k|toint == 0 %}1{% else %}{{info.delta|mul:k|toint }}{% endif %}px; left:{{info.minute|mul:k|toint}}px;"  onMouseOver="javascript: showTitleVideo(this, {format: '{{ info.fmt|default_if_none:"" }}', size: '{{ info.sz|default_if_none:0 }} Mб', signal: '{{sig.sig_name}}', fps: '{{ info.fps|default_if_none:0 }} кадр/сек', faces: '{{info.count_face|default_if_none:''}}', persons: '{{info.count_people|default_if_none:''}}'});" onMouseOut="javascript: closeTitle('win_video');" onClick="javascript: showMenuVideo(this, '{{info.count_face|default_if_none:''}}', '{{info.count_people|default_if_none:''}}', '{{info.id_roller}}', '{{ info.count }}');"></div>
+										{% endif %}
+									{% endfor %}
+									</div>
+								</td>
+							{% endfor %}
+						</tr>
+						{% endfor %}
+					</table>
+
+					<table cellpadding="0px" cellspacing="0px" border="0px" class="scale_time">
+						<tr>
+							<td>00</td>
+							<td>01</td>
+							<td>02</td>
+							<td>03</td>
+							<td>04</td>
+							<td>05</td>
+							<td>06</td>
+							<td>07</td>
+							<td>08</td>
+							<td>09</td>
+							<td>10</td>
+							<td>11</td>
+							<td>12</td>
+							<td>13</td>
+							<td>14</td>
+							<td>15</td>
+							<td>16</td>
+							<td>17</td>
+							<td>18</td>
+							<td>19</td>
+							<td>20</td>
+							<td>21</td>
+							<td>22</td>
+							<td>23</td>
+							<td>24</td>
+						</tr>
+					</table>
+{% endcomment %}					
+</div>

@@ -1,0 +1,102 @@
+﻿.head {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+.frm .field {
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+.frm .field .label_txt {
+    float: left;
+    margin-right: 10px;
+}
+.frm .field .enter {
+    float: left;
+}
+/* list settings */
+.btn_blue {
+    width: 90px;
+    background: url('/files/images/btn_blue_90.png') top left no-repeat;
+    -background: none;
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_90.png', sizingMethod='scale');
+    color: #ffffff;
+}
+.btn_help {
+    width: 16px;
+    height: 16px;
+    border: 0px;
+    margin: 2px 0px 0px 5px;
+    padding: 0px;
+    background: url("/files/images/help4.png") left top no-repeat;
+    -background: none;  
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/help4.png', sizingMethod='crop');        
+    float: left;
+    cursor: pointer;
+}
+.list_settings li {
+    margin-top: 2px;
+}
+.list_settings li.out {
+    margin-top: 10px;
+}
+.list_settings li label {
+    cursor: pointer;
+}
+.list_settings .name a,
+.list_settings .name a.arrow_left {
+    background: url("/files/control_settings/images/arrowB_bottom.gif") left 50% no-repeat;
+    padding-left: 15px;
+}
+.list_settings .name a.arrow_left{
+    background: url("/files/control_settings/images/arrowB_left.gif") left 50% no-repeat;
+}
+.list_settings .name span {
+    margin-right: 10px;
+}
+.list_settings ul .list_block .txt_param {
+    margin-left: 20px;
+}
+.list_settings .current_block {
+    margin-left: 20px;
+}
+.list_settings ul li .name {
+    padding-top: 3px;
+}
+.list_settings ul .list_block .txt_param {
+    margin-left: 0px;
+}
+.list_block {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 2px;
+    padding: 3px 0px;
+}
+.list_block span {
+    margin-left: 20px;
+    margin-right: 10px;
+}
+.list_block .txt_param {
+    float: left;
+    margin-right: 10px;
+    margin-left: 20px;
+    -margin-left: 10px;
+    width: 400px;
+}
+.list_block .enter_param {
+    float: left;
+}
+.list_block.act_set {
+    background-color: #849ac1;
+    color: #ffffff;
+}
+.list_block.act_set a {
+    color: #ffffff;
+}
+.list_block .inp_check {
+    margin-right: 5px;
+}
+.block_btn {
+    margin-top: 2px;
+    margin-left: 20px;
+}

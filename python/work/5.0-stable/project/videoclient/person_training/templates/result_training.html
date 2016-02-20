@@ -1,0 +1,83 @@
+ {% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans "Результат обучения из журнала" %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/photos.css?v=v{{ version }}" />
+{% if res_interface == "1" %}<style type="text/css">.list_result_learn li { width: 294px; }</style>{% endif %}
+<script type="text/javascript" src="/files/js/upload_multipe.js?v=v{{ version }}"></script>
+<script src="/files/js-global/FancyZoom.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js-global/FancyZoomHTML.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript">
+//person urls help array
+var urls_arr = [];
+{% for key,value in urls_arr.items %}
+urls_arr[{{ key }}] = '{{ value }}';
+{% endfor %}
+function personLink(){
+	location.href = urls_arr[{{ person.group.pk }}] + "{{ person.pk }}/?group={{ person.group.pk }}";
+}
+$(function() {
+	initResultLearn();
+});
+
+</script>
+{% endblock %}
+{% block language %}<input type="button" class="language {{ LANGUAGE_CODE }}" name="" id="change_language" value="{{ LANGUAGE_CODE|upper }}" onClick="javascript: showMessage('<span class=\'error\'>{% trans 'Внимание!' %}</span> {% trans 'Невозможно сменить язык на этой странице' %}.');" />{% endblock %}
+{% block submenu %}{% include "menu_journal.html" %}{% endblock %}
+{% block subcontent %}
+<h2><a href="{% url ident-journal %}">{% trans "Журнал идентификаций" %}</a> - {% trans "Результат обучения" %}: {{ person }}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" /></h2>
+{% include "current_time.html" %}
+	<div class="message_action"><strong>{% trans "Шаг 3 из 3" %}.</strong>
+		<div>{% trans "После просмотра результата нажмите на кнопку" %} <strong>{% trans "Завершить обучение" %}</strong>.</div>
+	</div>   
+	{% if status_all > 0 %}
+		<div class="frm_block">
+			<ul class="menu_cutfaces" id="menu_cutfaces">
+				<li class="mcf_first mcf_act"><a href="#" id="link_all">{% trans "Все" %} (<span id="count_all">{{ status_all }}</span>)</a></li>
+				<li><a href="#" id="link_learn">{% trans "Обученные" %} (<span id="count_learn">{{ status_true }}</span>)</a></li>
+				<li><a href="#" id="link_nolearn">{% trans "Необученные" %} (<span id="count_nolearn">{{ status_false }}</span>)</a></li>
+			</ul>                    
+			<div class="block_results">{% trans "Всего лиц" %}: <strong id="count_cur">{{ status_all }}</strong></div>
+		</div>
+		<ul class="list_result_learn" id="list_learn" style="display: none;"></ul>
+		<ul class="list_result_learn" id="list_nolearn" style="display: none;"></ul>                    
+		<ul class="list_result_learn" id="list_all">
+			{% for face in faces %}
+				{% if face.status != None %}
+					<li {% if not face.status %}class="lrl_error"{% else %}class="lrl_success"{% endif %}>
+						<div class="block_photo_cont">
+							<div class="block_photo"><a href="{{ face.get_original_image_url }}?big={{ forloop.counter }}.jpg" target="_blank"><img src="data:image/gif;base64,{{ face.get_original_photo_120x120 }}" alt="" /></a><a href="{{ face.get_original_image_url }}?big={{ forloop.counter }}.jpg" target="_blank" class="btn_loupe short_descr"><span title="{% trans 'Увеличить изображение' %}"></span></a></div>
+							<div class="photo_info2"><span class="eyes short_descr" title="{% trans 'Расстояние между глазами' %}: {{ face.get_distance|floatformat:"-2" }}">{{ face.get_distance|floatformat:"-2" }}</span><span class="short_descr" title="{% trans 'Разрешение' %}{% if face.get_original_info %}: {{ face.get_original_info.resol }}{% endif %}">{% if face.get_original_info %}{{ face.get_original_info.resol }}{% endif %}</span></div>
+						</div>
+						{% if not face.status %}
+							<div class="result_learn_status error"></div>
+							<div class="result_learn_text">{% trans "Не обучено" %}
+									{% if face.res2.cause or face.res2.log_error %}
+										<span class="error_learn short_descr" title="{% if face.res2.log_error %}{% trans face.res2.log_error|truncchar:60 %}{% endif %}{% if face.res2.cause  and face.res2.cause != face.res2.log_error %}{% if photo.res2.log_error %} {% endif %}{% trans face.res2.cause %}{% endif %}">
+											{% if face.res2.log_error == face.res2.cause %}
+												({% if face.res2.log_error %}{% trans face.res2.log_error|truncchar:60 %}{% endif %})
+											{% else %}
+												({% if face.res2.log_error %}{% trans face.res2.log_error|truncchar:30 %}{% endif %}{% if face.res2.cause  and face.res2.cause != face.res2.log_error %}{% if photo.res2.log_error %} {% endif %}{% trans face.res2.cause|truncchar:30 %}{% endif %})
+											{% endif %}								
+										</span>
+									{% endif %}
+							</div>
+						{% else %}
+							<div class="result_learn_status"></div>
+							<div class="result_learn_text">{% trans "Успешно обучено" %}</div>
+						{% endif %}                   
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	{% else %}
+		<div class="dist_top">
+			{% trans "На выбранных изображениях лица не обнаружены" %}.
+		</div>	
+	{% endif %}
+	<div class="frm_block">
+		<input type="button" name="" value="{% trans "Завершить обучение" %}" class="inp_btn inp_btn170blue" onClick="javascript: personLink();"/>
+	</div>          
+{% endblock %}
+ 

@@ -1,0 +1,88 @@
+import os;
+
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+ADMINS = (
+    # ('Your Name', 'your_email@domain.com'),
+)
+
+MANAGERS = ADMINS
+
+DATABASE_ENGINE = 'mysql'      # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+DATABASE_NAME = 'like_gale_ru'   # Or path to database file if using sqlite3.
+DATABASE_USER = 'like_gale_ru'   # Not used with sqlite3.
+DATABASE_PASSWORD = 'like_gale_ru'         # Not used with sqlite3.
+DATABASE_HOST = '' # Set to empty string for localhost. Not used with sqlite3.
+DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+
+
+#sys.path.append('/srv/www/vhosts/like.gale.ru/project/')
+
+
+TIME_ZONE = 'Europe/Moscow'
+LANGUAGE_CODE = 'en-en'
+
+USE_I18N = True
+
+PROJECT_ROOT = "/srv/www/vhosts/like.gale.ru/"
+WWW_ROOT = PROJECT_ROOT + 'www/'
+
+HTTP_HOST = 'http://like.gale.ru/'
+MEDIA_ROOT = WWW_ROOT + 'files/media/'
+
+MEDIA_URL = 'files/media/'
+
+ADMIN_MEDIA_PREFIX = '/admin/media/'
+SECRET_KEY = 'u3h92fgh&nme)y)%o16o=y1-z526i6ht(=vt7!furxr=p8-guw7!'
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.load_template_source',
+    'django.template.loaders.app_directories.load_template_source',
+#     'django.template.loaders.eggs.load_template_source',
+)
+
+MIDDLEWARE_CLASSES = (
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+)
+
+ROOT_URLCONF = 'sim.urls'
+
+TEMPLATE_DIRS = (
+    os.path.join(os.path.dirname(__file__), 'templates'),
+    '/srv/www/vhosts/like.gale.ru/project/sim/fb/templates/',
+#    "/usr/local/lib64/python2.6/site-packages/django/contrib/admin/templates/"
+)
+
+INSTALLED_APPS = (
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.admin',
+#    'registration',
+    'vkontakte',
+    'sim.vk',
+    'sim',
+)
+
+DEFAULT_FROM_EMAIL = 'hjtgdrfyt@gmail.com'
+ACCOUNT_ACTIVATION_DAYS = 2
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'hjtgdrfyt@gmail.com'
+EMAIL_HOST_PASSWORD = 'django registration'
+EMAIL_USE_TLS = True
+
+LOGIN_REDIRECT_URL = '/'
+
+FILE_UPLOAD_PERMISSIONS=0644
+
+import logging
+logger = logging.getLogger('like')
+hdlr = logging.FileHandler('/var/tmp/like.log')
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr) 
+logger.setLevel(logging.WARNING)

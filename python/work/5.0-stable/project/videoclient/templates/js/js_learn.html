@@ -1,0 +1,522 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+var params = new Array(); // for spinbox
+var modelsParams = new Array(); // for models
+// value default 
+var default_v = "0";
+var default_i = "0";
+var default_x = "0.5";
+var default_y = "0.5";
+var default_name = "--- {% trans "По умолчанию" %} ---";
+var default_count = "3";
+var state_choose_model = 1;
+var state_param_distr = 3;
+var countDistr = 3;
+
+function initFunctionElements() {
+    initModel();
+    $("#model").change(function() {
+        showModelParam();
+    });        
+    $("#distr1").click(function() {
+        methodsSetDistr("set_value");
+    });
+    $("#distr2").click(function() {
+        methodsSetDistr("set_value");
+    });
+    $("#distr3").click(function() {
+        methodsSetDistr("set_value");
+    });
+    $("#distr4").click(function() {
+        methodsSetDistr("set_value");
+    });
+    $("input[name=param_distr]").click(function() {
+        blockParamDistr4();
+    });
+    $("#param_distr3").click(function() {
+        methodsSetDistr("set_value");
+    });
+    $("#param_distr4").click(function() {
+        methodsSetDistr("set_value");
+    });
+    $("#distr1").keyup(function() {
+        checkParamDistr();
+    });                                
+    $("#distr2").keyup(function() {
+        checkParamDistr();
+    });                                
+    $("#distr3").keyup(function() {
+        checkParamDistr();
+    });
+    $("#distr4").keyup(function() {
+        checkParamDistr();
+    });
+    $("input.btnSpUp").click(function() {
+        methodsSetDistr("set_value");
+        checkParamDistr();
+    });
+    $("input.btnSpDown").click(function() {
+        methodsSetDistr("set_value");
+        checkParamDistr();
+    });
+    $("#set_value").click(function() {
+        checkParamDistr();
+    });
+    $("#choose_model").click(function() {
+        checkParamDistr();
+    });
+    $("#new_model").keypress(function(e) {
+        if (e.which == 13) {
+             saveDistortion(); 
+             closeChangeWindow('win_add');
+        }
+    });
+}
+// заблокировать - разблокировать параметр
+function blockParamDistr4() {
+    var type_distr = $("input[name=param_distr]").filter(":checked");
+    if (type_distr.attr("id") == "param_distr3") {
+        $("#distr4_param .spinbox input[type=button]").attr("disabled", "disabled");
+    } else {
+        $("#distr4_param .spinbox input[type=button]").attr("disabled", false);
+    }    
+}
+// функции для выбора модели объектива
+// инициализация списка моделей
+function initModel() {
+    if ($("#model option").length == 1) {
+        $("input.btn_delete").hide();
+    }
+}
+function showModelParam() {
+    checkParamDistr();
+    methodsSetDistr("choose_model");
+    var model = $("#model option:selected").val();
+    if (model != 0) {
+        showModelInfo(modelsParams[model]["v"], modelsParams[model]["i"], modelsParams[model]["x"], modelsParams[model]["y"], modelsParams[model]["count"]);
+		setValuesParamsByHand(modelsParams[model]["v"], modelsParams[model]["i"], modelsParams[model]["x"], modelsParams[model]["y"], modelsParams[model]["count"]);
+    } else {        
+        showModelInfo(default_v, default_i, default_x, default_y, default_count);
+		setValuesParamsByHand(default_v, default_i, default_x, default_y, default_count);
+    }
+    setDistortion();
+}
+// установить значения параметров, введённых вручную, при изменении модели объектива
+function setValuesParamsByHand(v, i, x, y, count) {
+	$("#distr1").val(v.replace(/,/g,'.'));
+	$("#distr4").val(i.replace(/,/g,'.'));
+	$("#distr2").val(x.replace(/,/g,'.'));
+	$("#distr3").val(y.replace(/,/g,'.'));
+	
+	$("#param_distr" + count).attr("checked", "checked");
+}
+function checkParamDistr() {
+    if ($("input[name=choose_correct_distr]:radio").filter(":checked").val() == "set_value") {
+        state_choose_model = 2;
+        if ($('input[name=param_distr]:radio').filter(":checked").val() == "param_distr3") {
+            state_param_distr = 3;
+            if ((params["distr1"] != $("#distr1").val()) || (params["distr2"] != $("#distr2").val()) || (params["distr3"] != $("#distr3").val())) {
+                stateButtonApply("inp_btn90 dis", "btn_blue");
+            } else {
+                stateButtonApply("btn_blue", "inp_btn90 dis");
+            }
+        } else {
+            state_param_distr = 4;
+            if ((params["distr1"] != $("#distr1").val()) || (params["distr2"] != $("#distr2").val()) || (params["distr3"] != $("#distr3").val()) || (params["distr4"] != $("#distr4").val())) {
+                stateButtonApply("inp_btn90 dis", "btn_blue");
+            } else {
+                stateButtonApply("btn_blue", "inp_btn90 dis");
+            }                                
+        }
+    } else if ($("input[name=choose_correct_distr]:radio").filter(":checked").val() == "choose_model") {
+        state_choose_model = 1;
+        if ($("#model option:selected").val() != params['select_distr_id']) {
+            stateButtonApply("inp_btn90 dis", "btn_blue");
+        } else {
+            stateButtonApply("btn_blue", "inp_btn90 dis");
+        }
+    }
+    if (params['state_choose_model'] != state_choose_model) {
+        stateButtonApply("inp_btn90 dis", "btn_blue");
+    }
+    if (params['state_param_distr'] != state_param_distr) {
+        stateButtonApply("inp_btn90 dis", "btn_blue");
+    }
+}
+function init() {
+    modelsParams["0"] = {"name": default_name, "v": default_v, "i": default_i, "x": default_x, "y": default_y, "count": default_count}; // значения по умолчанию
+    // обработка списка моделей объектива
+    showModelInfo(default_v, default_i, default_x, default_y, default_count);
+    var select_distr_id = readCookie('select_distr_id');
+    if (!select_distr_id) {
+        select_distr_id = 0;
+    }
+    params['select_distr_id'] = select_distr_id;
+    $("#model").val(select_distr_id).attr("selected", "selected");
+    var model = $("#model option:selected").val();
+    if (model != 0) {
+        showModelInfo(modelsParams[model]["v"], modelsParams[model]["i"], modelsParams[model]["x"], modelsParams[model]["y"], modelsParams[model]["count"]);
+    } else {
+        showModelInfo(default_v, default_i, default_x, default_y, default_count);
+    }
+    // обработка параметров дисторсии, заданных вручную
+    var distr1 = readCookie('distr1');
+    if (!distr1) {
+        distr1 = 0;
+    }
+    $("#distr1").val(distr1);
+    params["distr1"] = distr1;    
+    var distr2 = readCookie('distr2');
+    if (!distr2) {
+        distr2 = 0.5;
+    }
+    $("#distr2").val(distr2);
+    params["distr2"] = distr2;
+    var distr3 = readCookie('distr3');
+    if (!distr3) {
+        distr3 = 0.5;
+    }
+    $("#distr3").val(distr3);
+    params["distr3"] = distr3;
+    var distr4 = readCookie('distr4');
+    if (!distr4) {
+        distr4 = 0;
+    }
+    $("#distr4").val(distr4);
+    params["distr4"] = distr4;
+    var count_distr = readCookie('count_distr');
+    if (!count_distr) {
+        count_distr = 3;
+    }
+    if (count_distr == 3) {
+        $("#param_distr3").attr("checked", "checked")
+    } else {
+        $("#param_distr4").attr("checked", "checked")
+    }
+    // обработка радиобаттонов
+    var is_distr = readCookie('is_distr');
+    if (!is_distr) {
+        is_distr = 0;
+    }
+    if (is_distr == 0) {
+        $("#distortion").attr("checked", false);
+        $("#param_distortion").hide();    
+        $("#txt_distortion").hide();
+    } else {
+        $("#distortion").attr("checked", true);
+        $("#param_distortion").show();
+        showMessageDistortion(true);
+    }
+    var choose_model = readCookie('choose_model');
+    if (!choose_model) {
+        choose_model = 1;
+    }
+    if (choose_model == 1) {
+        $("#choose_model").attr("checked", "checked");
+        state_choose_model = 1;
+    } else {
+        $("#set_value").attr("checked", "checked");
+        state_choose_model = 2;
+    }
+    params["state_choose_model"] = state_choose_model;
+    var param_distr = readCookie('param_distr');
+    if (!param_distr) {
+        param_distr = 3;
+    }
+    if (param_distr == 3) {
+        $("#param_distr3").attr("checked", "checked");
+        state_param_distr = 3;
+    } else {
+        $("#param_distr4").attr("checked", "checked");
+        state_param_distr = 4;
+    }
+    params["state_param_distr"] = state_param_distr;
+    if ($('input[name=param_distr]:radio').filter(":checked").val() == "param_distr3") {
+        $("#distr4").attr("disabled", "disabled");
+        $("#distr4_param").addClass("param_dis");
+    }
+    setDistortion(); 
+    blockParamDistr4();           
+}
+// проверка - включена ли дисторсия
+function checkSelectDistortion() {
+    var check = $("#distortion");
+    var block = $("#txt_distortion");
+    if (check.attr("checked")) {
+        block.show();
+    } else {
+        block.hide();
+    }
+}
+function addModel(id_model, name_model, v, i, x, y, count) {
+    modelsParams[id_model] = {"name": name_model, "v": v, "i": i, "x": x, "y": y, "count": count};
+    $('#model').append(
+        $('<option></option>').val(id_model).html(name_model).attr("selected", "selected")
+    );
+    showModelInfo(v, i, x, y, count);
+    $("#choose_model").attr("checked", "checked");
+    $("input.btn_delete").show();
+}
+function deleteModel() {
+    var id = $("#model option:selected").val();
+    var text = $("#model option:selected").text();
+    if (id == 0) {
+        var txt = '{% trans "Выберите, пожалуйста, модель объектива" %}.';
+        changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});                                
+    } else {
+        var txt = '{% trans "Вы действительно хотите удалить модель объектива " %} <strong>"' + text + '"</strong>?';
+        changeWindow({id: 'win_del', css: {width: '300px', height: '200px'}, txt: txt});
+    }
+}
+function chooseSetValue() {
+    $("#set_value").attr("checked", "checked");
+}
+function chooseModel() {
+    $("#choose_model").attr("checked", "checked");
+}
+function methodsSetDistr(id) {
+    $("#"+id+"").attr("checked", "checked");
+}
+function stateButtonApply(removeClass, addClass) {
+    $("#btn_set_param").removeClass(removeClass);
+    $("#btn_set_param").addClass(addClass);
+}
+function paramDistortion(count) {
+    var param4 = $("#distr4_param");
+    var value4 = $("#distr4");
+    if (count == 3) {
+        param4.addClass("param_dis");
+        value4.attr("disabled", "disabled");
+    } else {
+        param4.removeClass("param_dis");
+        value4.attr("disabled", false);
+    }
+    countDistr = count;
+    checkParamDistr();
+}
+function deleteDistortion() {
+	showIndicator(true);
+    var id = $("#model option:selected").val();
+    $.ajax({
+        type: "POST",
+        url: "/delete_distortion/",
+        data: {id: id},
+        success: function(msg){
+			showIndicator(false);
+            obj = msg;
+            if (obj && obj.status ) {
+                delete modelsParams[id];
+                $("#model option:selected").remove();
+                $("#model option[value=0]").attr("selected", "selected");
+                //$("#model_distr").hide();
+                showModelInfo(default_v, default_i, default_x, default_y, default_count);
+                showMessage('{% trans "Модель объектива успешно удалена." %}');
+            } else {
+                showMessage('{% trans "Ошибка удаления модели объектива" %}');
+            }
+        }, 
+        error: function(msg) {
+			showIndicator(false);
+            showMessage('{% trans "Ошибка удаления модели объектива" %}');
+        }
+    });
+}
+function saveParamsDistr() {
+    methodsSetDistr("set_value");
+    changeWindow({id: 'win_add', css: {width: '380px', height: '200px'}});
+}
+function showDistortionInfo(v, i, x, y, count) {
+    v = (''+v).replace(/,/g,'.');
+    i = (''+i).replace(/,/g,'.');
+    x = (''+x).replace(/,/g,'.');
+    y = (''+y).replace(/,/g,'.');    
+    var param4 = "<span><span>{% trans "интенсивность" %}:</span> "+i+",</span> ";
+    if (count == 3) {
+        param4 = "";
+    }
+    var info = "(<span><span>{% trans "выпуклость" %}:</span> "+v+"</span>, "+param4+"<span><span>{% trans "смещение по горизонтали" %}:</span> "+x+"</span>, <span><span>{% trans "смещение по вертикали" %}:</span> "+y+"</span></span>)";
+    return info;
+}
+function showModelInfo(v, i, x, y, count) {
+    var info = showDistortionInfo(v, i, x, y, count);
+    $("#model_distr").html(info);
+    $("#model_distr").show();
+}
+function showParamDistortion(inp, id) {
+    if (inp.checked) {
+        $("#" + id).slideDown("fast");
+        setCookie('is_distr', 1);
+        showMessageDistortion(true);
+    } else {
+        $("#" + id).slideUp("fast");
+        setCookie('is_distr', 0);
+        showMessageDistortion(false);
+    }
+}
+function setCookieDistortion() {
+    setCookie('select_distr_id', $("#model option:selected").val());
+    setCookie('is_distr', 1);
+    var count = 3;
+    if ($("input[name=choose_correct_distr]:radio").filter(":checked").val() == "set_value") {
+        setCookie('choose_model', 2);
+        state_choose_model = 2;
+        state_param_distr = 3;
+        if ($('input[name=param_distr]:radio').filter(":checked").val() == "param_distr4") {
+            count = 4;
+            state_param_distr = 4;
+        }
+    } else {
+        setCookie('choose_model', 1);
+        state_choose_model = 1;        
+        var model = $("#model option:selected").val();
+        state_param_distr = count = modelsParams[model]["count"];
+    }
+    setCookie('param_distr', count);
+    setCookie('distr1', $("#distr1").val());
+    setCookie('distr2', $("#distr2").val());
+    setCookie('distr3', $("#distr3").val());    
+    setCookie('distr4', $("#distr4").val());
+}
+function setParamDistortion() {
+    params['distr1'] = $("#distr1").val();
+    params['distr2'] = $("#distr2").val();
+    params['distr3'] = $("#distr3").val();
+    params['distr4'] = $("#distr4").val();
+    params['select_distr_id'] = $("#model option:selected").val();
+    params["state_choose_model"] = state_choose_model;
+    params["state_param_distr"] = state_param_distr;
+}
+function currentParamsDistortion() {
+    var distortion = "";
+    var count = 0;
+    var info = "";
+    if ($("#distortion").attr("checked")) {
+        if ($("input[name=choose_correct_distr]:radio").filter(":checked").val() == "set_value") {
+            var distr1 = (''+$("#distr1").val()).replace(/,/g,'.');
+            var distr2 = (''+$("#distr2").val()).replace(/,/g,'.');
+            var distr3 = (''+$("#distr3").val()).replace(/,/g,'.');
+            var distr4 = (''+$("#distr4").val()).replace(/,/g,'.');
+
+            if ($('input[name=param_distr]:radio').filter(":checked").val() == "param_distr4") {
+
+                distortion = distr1 + ',' + distr4 + ',' + distr2 + ',' + distr3;
+                count = 4;
+            } else {
+                distortion = distr1 + ',' + distr2 + ',' + distr3;
+                count = 3;
+            }
+            info = showDistortionInfo(distr1, distr4,  distr2, distr3, count);    
+        } else {
+            var model = $("#model option:selected").val();
+            var distr1 = (''+modelsParams[model]["v"]).replace(/,/g,'.');
+            var distr2 = (''+modelsParams[model]["x"]).replace(/,/g,'.');
+            var distr3 = (''+modelsParams[model]["y"]).replace(/,/g,'.');
+            var distr4 = (''+modelsParams[model]["i"]).replace(/,/g,'.');
+            if ( modelsParams[model]["count"] == 3) {
+                distortion = distr1 + ',' + distr2 + ',' + distr3;
+                count = 3;
+            } else {
+                distortion = distr1 + ',' + distr4 + ',' + distr2 + ',' + distr3;
+                count = 4;
+            }
+            info = showDistortionInfo(distr1, distr4,  distr2, distr3, count);
+        }
+    }
+    return {"distortion": distortion, "info": info};
+}
+function showMessageDistortion(show) {
+    if (show) {
+        var info = currentParamsDistortion().info;
+        $("#txt_distortion").html('{% trans "Загружаемые файлы будут добавляться с учётом дисторсии" %} ' + info + '.');
+        $("#txt_distortion").show();
+    } else {
+        $("#txt_distortion").hide();
+    }
+}
+function setDistortion() {
+    setCookieDistortion();
+    setParamDistortion();
+    stateButtonApply("btn_blue", "inp_btn90 dis");
+    showMessageDistortion(true);
+}
+// add flash distortion
+function distortion_change(distortion){
+
+    var distr = distortion.split(',');
+    setCookie('choose_model', 2);
+    setCookie('param_distr', distr.length);
+
+    if (distr.length == 3) {
+        setCookie('distr1', distr[0]);
+        setCookie('distr2', distr[1]);
+        setCookie('distr3', distr[2]);
+    } else {
+        setCookie('distr1', distr[0]);
+        setCookie('distr2', distr[2]);
+        setCookie('distr3', distr[3]);
+        setCookie('distr4', distr[1]);
+    }
+}
+function readDistortion() {
+    count = readCookie('param_distr');
+    var distortion = "";   
+    if ($("#distortion").attr("checked")) {
+        distr1 = readCookie('distr1');
+        if (!distr1) {
+            distr1= 0;
+        }
+        distr2 = readCookie('distr2');
+        if (!distr2) {
+            distr2= 0.5;
+        }
+        distr3 = readCookie('distr3');
+        if (!distr3) {
+            distr3= 0.5;
+        }
+        distr4 = readCookie('distr4');
+        if (!distr4) {
+            distr4= 0;
+        }    
+        if (count && count == 4) {
+            distortion = ''+distr1+','+distr4+','+distr2+','+distr3;
+        } else {
+            distortion = ''+distr1+','+distr2+','+distr3;
+        }
+        return distortion;                                           
+    }
+    return '0,0,0.5,0.5';
+}
+function saveDistortion() {
+    var name = document.getElementById('new_model').value;
+    var count = 3;
+    if (document.getElementById('param_distr4').checked) {
+        count = 4;
+    } 
+    v = document.getElementById('distr1').value;
+    i = document.getElementById('distr4').value;
+    x = document.getElementById('distr2').value;
+    y = document.getElementById('distr3').value;
+    $.ajax({
+        type: "POST",
+        url: "/save_distortion/",
+        data: {name: name, count: count, v: v, i: i, x:x, y:y},
+        success: function(msg){
+            obj = msg;
+            if (obj && obj.status ) {
+                showMessage('{% trans "Дисторсия успешно сохранена." %}');
+                // obj.id - id новой дисторсии
+                addModel(obj.id, name, v, i, x, y, count);
+                setDistortion();
+            } else {
+                showMessage('{% trans "Ошибка сохранения дисторсии" %}');
+            }
+
+        }, 
+        error: function(msg) {
+            showMessage('{% trans "Ошибка сохранения дисторсии" %}');
+        }
+    });
+    // Добавить в список профилей новый профиль дисторсии. 
+}
+</script>

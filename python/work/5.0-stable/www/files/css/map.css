@@ -1,0 +1,66 @@
+﻿.block_map {
+	position: relative;
+	width: 100%;
+	height: 400px;
+	background-color: #f2f2f2;
+}
+.block_elem_map {
+	position: absolute;
+	height: 50px;
+	width: 42px;
+}
+.terminal {
+	background: url("../images/terminal.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/terminal.png', sizingMethod='crop');	
+	width: 20px;
+	height: 28px;
+	position: absolute;
+	top: 11px;
+	left: 11px;
+}
+.camera_left,
+.camera_right,
+.camera_top,
+.camera_bottom {	
+	position: absolute;
+	cursor: pointer;
+	
+}
+.camera_left,
+.camera_right {
+	top: 17px;
+	width: 11px;
+	height: 16px;	
+}
+.camera_left {
+	left: 0px;
+	background: url("../images/camera_left.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/camera_left.png', sizingMethod='crop');		
+}
+.camera_right {
+	right: 0px;
+	background: url("../images/camera_right.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/camera_right.png', sizingMethod='crop');	
+}
+.camera_top,
+.camera_bottom {
+	left: 13px;
+	width: 16px;
+	height: 11px;	
+}
+.camera_top {
+	top: 0px;
+	background: url("../images/camera_top.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/camera_top.png', sizingMethod='crop');	
+}
+.camera_bottom {
+	background: url("../images/camera_bottom.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/camera_bottom.png', sizingMethod='crop');
+	bottom: 0px;
+	-bottom: -5px;
+}

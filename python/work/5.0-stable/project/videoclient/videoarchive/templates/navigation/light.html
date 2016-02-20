@@ -1,0 +1,12 @@
+{% load i18n templatetags %}   
+<div class="count_elem">{% if navigation_title %}{% trans navigation_title %}{% else %}{% trans "Количество строк в таблице" %}{% endif %}:
+	<select name="per_page" class="select" onChange="javascript: document.getElementById('main_form').submit();">
+		{% if per_page and not per_page in limits %}
+			<option value="{{ per_page }}" selected="selected">{{ per_page }}</option>
+		{% endif %}
+		{% for limit in limits %}
+			<option value="{{ limit }}"{% if per_page == limit %} selected="selected"{% endif %}>{{ limit }}</option>
+		{% endfor %} 
+	</select>
+</div>
+									

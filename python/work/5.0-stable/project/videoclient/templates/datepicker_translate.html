@@ -1,0 +1,13 @@
+{% load i18n %}
+<script type="text/javascript">
+//this variable "dayArrayShort" is from datePick.js file. We can overwrite it with translation tags
+dayArrayShort = new Array('{% trans "Вс" %}', '{% trans "Пн" %}', '{% trans "Вт" %}', '{% trans "Ср" %}', '{% trans "Чт" %}', '{% trans "Пт" %}', '{% trans "Сб" %}');
+dayArrayMed = new Array('{% trans "Вос" %}', '{% trans "Пон" %}', '{% trans "Втр" %}', '{% trans "Срд" %}', '{% trans "Чет" %}', '{% trans "Пят" %}', '{% trans "Суб" %}');
+dayArrayLong = new Array('{% trans "Воскресенье" %}', '{% trans "Понедельник" %}', '{% trans "Вторник" %}', '{% trans "Среда" %}', '{% trans "Четверг" %}', '{% trans "Пятница" %}', '{% trans "Суббота" %}');
+
+monthArrayShort = new Array('{% trans "Янв" %}', '{% trans "Фев" %}', '{% trans "Март" %}', '{% trans "Апр" %}', '{% trans "Май" %}', '{% trans "Июнь" %}', '{% trans "Июль" %}', '{% trans "Авг" %}', '{% trans "Сент" %}', '{% trans "Окт" %}', '{% trans "Нояб" %}', '{% trans "Дек" %}');
+monthArrayMed = new Array('{% trans "Янв" %}', '{% trans "Фев" %}', '{% trans "Март" %}', '{% trans "Апр" %}', '{% trans "Май" %}', '{% trans "Июнь" %}', '{% trans "Июль" %}', '{% trans "Авг" %}', '{% trans "Сент" %}', '{% trans "Окт" %}', '{% trans "Нояб" %}', '{% trans "Дек" %}');
+monthArrayLong = new Array('{% trans "Январь" %}', '{% trans "Февраль" %}', '{% trans "Март" %}', '{% trans "Апрель" %}', '{% trans "Май" %}', '{% trans "Июнь" %}', '{% trans "Июль" %}', '{% trans "Август" %}', '{% trans "Сентябрь" %}', '{% trans "Октябрь" %}', '{% trans "Ноябрь" %}', '{% trans "Декабрь" %}');
+
+closeBtnString = "{% trans 'Закрыть' %}";
+</script>

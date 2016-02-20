@@ -1,0 +1,134 @@
+{% load i18n %}
+{% load templatetags %}
+<h2>
+	{% if select_page == "anketastaff" or select_sub_page == "anketastaff" %}
+		<a href="/lists/">{% trans "Списки" %}</a> - <a href="{{ project_url }}/stafflist/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a>{% if not id %} - {% trans "Добавление сотрудника" %}{% endif %}
+	{% endif %}
+	{% if select_page == "historychange" or select_sub_page == "historychange" %}
+		<a href="{{ project_url }}/historychange/">{% trans "Журнал изменений" %}</a>
+	{% endif %}
+	{% if id %} - {{ user.first_name }} {{ user.last_name }} {{ user.middle_name }} {% endif %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Анкета сотрудника" %}');" />{% if save %} <b style="color:#0088CC; margin-left:5px;">{% trans "Изменения сохранены" %}</b>{% endif %}<span id="saveData" style="display:none"><b style="color:#0088CC; margin-left:5px;">{% trans "Изменения сохранены" %}</b></span></h2>
+{% include "current_time.html" %}					
+<form method="post" action="" name="" id="formAnketaStaff">
+	<div class="block_req">{% trans "Поля, отмеченные звёздочкой" %} (<span>*</span>), {% trans "являются обязательными для заполнения." %}</div>
+	<div class="frm_block">
+		<div class="bl_photo_btn">
+			<div class="photo_user">
+				{% if user.id_person %}<div class="user_id">ID: {{ user.id_person }}</div>{% endif %}
+				{% if photoid == -1 %}<img src="/files/images/no_photo120x120.gif" alt="" />
+				{% else %}									
+					<a href="{{ project_url }}/photosperson/{{ user.id_person }}/{% if group %}?group={{ group }}{% endif %}"><img src="/image/?id={{ photoid }}&photo={{ photoname }}" alt="" /></a>
+				{% endif %}		
+			</div>	
+			
+			<ul class="menu_anketa">
+				<li>{% if user.id_person %}<a href="#" id="link_add_photos" {% if user2.action == 3 %} class="blue link_add_photos dis" onClick="javascript: return false;"{% else %} class="blue link_add_photos"{% endif %}>{% trans "Добавить фотографии" %}</a>
+					<ul class="menu_add_photos" style="display: none;">
+						<li><a href="{{ project_url }}/addphotoperson/staff/{{ user.id_person }}/{% if group %}?group={{ group }}{% endif %}" class="blue">{% trans 'С компьютера' %}</a></li>
+						{% if use_js == '1' %}
+							<li><a href="{% url person_training user.id_person %}" class="blue">{% trans 'Обучение с камеры' %}</a></li>
+						{% else %}
+							<li><a href="{{ project_url }}/addphotoperson/staff/{{ user.id_person }}/?training_camera=True{% if group %}&group={{ group }}{% endif %}" class="blue">{% trans 'Обучение с камеры' %}</a></li>
+						{% endif %}
+					</ul>
+				{% else %}<a href="#" id="link_add_photos" class="blue link_add_photos dis" onClick="javascript: return false;">{% trans "Добавить фотографии" %}</a>{% endif %}
+				</li>
+				<li><a href="{{ project_url }}/photosperson/{{ user.id_person }}/{% if group %}?group={{ group }}{% endif %}"{% if photoid == -1 %} class="blue dis" onClick="javascript: return false;"{% else %} class="blue"{% endif %}>{% trans "Просмотреть фотографии" %} ({% if photocount > 0 %}{{ photocount }}{% else %}0{% endif %})</a></li>
+				<li class="li_ident">{% if user.id_person %}<a href="/journal/?no_date=true&id_person={{ user.id_person }}" class="blue" target="_blank">{% trans "Просмотреть идентификации" %}</a>
+				{% else %}<a href="#" class="blue dis" onClick="javascript: return false;">{% trans "Просмотреть идентификации" %}</a>{% endif %}
+				</li>
+			</ul>
+			
+		</div>
+		<div class="bl_info_all">
+			<div class="head_info">{% trans "Информация" %}</div>
+			<div class="bl_info">
+				<div class="block_error" id="error_fio">{% if errors.first_name %}{{ errors.first_name }}{% endif %}</div>
+				<div class="block">
+					<label for="first_name" class="bl_txt">{% trans "Фамилия" %}:</label>
+					<div class="bl_enter">
+						<input type="text" name="first_name" id="first_name" value="{{ user.first_name }}" class="inp_txt{%if user2.first_name != user.first_name or errors.first_name %} error_border{% endif %}" maxlength="30" /><span class="block_warning"></span>
+					</div>
+				</div>
+			</div>
+			<div class="bl_info">
+				<div class="block_error">{% if errors.last_name %}{{ errors.last_name }}{% endif %}</div>
+				<div class="block">
+					<label for="last_name" class="bl_txt">{% trans "Имя" %}:</label>
+					<div class="bl_enter">
+						<input type="text" name="last_name" id="last_name" value="{{ user.last_name }}" class="inp_txt{%if user2.last_name != user.last_name or errors.last_name%} error_border{% endif %}" maxlength="30" /><span class="block_warning"></span>
+					</div>
+				</div>
+			</div>
+			<div class="bl_info">
+				<div class="block_error">{% if errors.middle_name %}{{ errors.middle_name }}{% endif %}</div>
+				<div class="block">
+					<label for="middle_name" class="bl_txt">{% trans "Отчество" %}:</label>
+					<div class="bl_enter">
+						<input type="text" name="middle_name" id="middle_name" value="{{ user.middle_name }}" class="inp_txt{%if user2.middle_name != user.middle_name or errors.middle_name %} error_border{% endif %}" maxlength="30" /><span class="block_warning"></span>
+					</div>
+				</div>
+			</div>
+			{% comment %}
+			<div class="bl_info">
+				<div class="block_error">{% if errors.status %}{{ errors.status }}{% endif %}</div>
+				<div class="block">
+					<label for="status" class="bl_txt">{% trans "Должность" %}:</label>
+					<div class="bl_enter">
+						<select name="status" id="status" class="select{%if user2.status != user.status or errors.status %} error_border{% endif %}">
+							{% for status in allstatus %}
+								<option value="{{ status.id }}"{% if status.name == user.status %} selected="selected"{% endif %}>{% trans status.name %}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+			</div>
+			{% endcomment %}
+			<div class="bl_info">
+				<div class="bl_txt">{% trans "Телефон" %}:</div>
+				<div class="bl_enter">
+					<div class="block_ie">
+						<div class="block_error_phone">{% if errors.phone_work %}{{ errors.phone_work }}{% endif %}</div>
+						<div class="block bl_phone">
+							<label class="bl_txt" for="phone_work">{% trans "Служебный" %}:</label>
+							<div class="bl_enter">
+								<input type="text" name="phone_work" id="phone_work" maxlength="20" value="{{ user.phone_work }}" class="inp_txt{%if user2.phone_work != user.phone_work %} error_border{% endif %}" />							
+							</div>
+						</div>
+						<div class="block_error_phone">{% if errors.phone_home %}{{ errors.phone_home }}{% endif %}</div>
+						<div class="block bl_phone">
+							<label for="phone_home" class="bl_txt">{% trans "Домашний" %}:</label>
+							<div class="bl_enter">
+								<input type="text" name="phone_home" id="phone_home" maxlength="20" value="{{ user.phone_home }}" class="inp_txt{%if user2.phone_home != user.phone_home %} error_border{% endif %}" />
+							</div>
+						</div>
+						<div class="block_error_phone">{% if errors.phone_mobile %}{{ errors.phone_mobile }}{% endif %}</div>
+						<div class="block bl_phone last">
+							<label for="phone_mobile" class="bl_txt">{% trans "Мобильный" %}:</label>
+							<div class="bl_enter">
+								<input type="text" name="phone_mobile" id="phone_mobile" maxlength="20" value="{{ user.phone_mobile }}" class="inp_txt{%if user2.phone_mobile != user.phone_mobile %} error_border{% endif %}" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>						
+		</div>
+	</div>
+	<div class="frm_block">
+		<input type="hidden" name="id" value="{{ user.id }}"/>
+		{% if group or user.group.id %}<input type="hidden" name="group" value="{% if user.group.id %}{{ user.group.id }}{% else %}{{ group }}{% endif %}"/>{% endif %}
+		<input type="hidden" name="user" value="{{ user.user }}"/>
+		<input type="hidden" name="id_person" value="{{ user.id_person }}"/>
+		<input type="hidden" name="division" value="{{ user.division }}"/>
+		<input type="hidden" name="{{ action }}" value=""/>
+		{% if user2 %}
+			{% if user2.action == 3 %}
+		<input type="submit" name="{{ action }}" value="{% trans "Сохранить" %}" class="inp_btn inp_btn90 dis" disabled="disabled" style="float: left;" />
+			{% else %}
+		<input type="submit" name="{{ action }}" value="{% trans "Сохранить" %}" class="inp_btn btn_blue" style="float: left;" />
+			{% endif %}
+		{% endif %}
+		<a href="{{ project_url }}/stafflist/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel dist_left"><span>{% trans "Отменить" %}</span></a>
+	</div>
+	{% if journal_ids %}<input type="hidden" name="journal_ids" value="{{ journal_ids }}" />{% endif %}			
+</form>

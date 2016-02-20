@@ -1,0 +1,39 @@
+﻿.spinbox {
+	float: left;
+}
+.spinbtns {
+	float: left;
+	width: 15px;
+	margin-left: -1px;
+}
+
+.spinbox .inp_txt {
+	float: left;
+}
+.btnSpUp,
+.btnSpDown {
+	padding: 0px 0px 2px 0px;
+	margin: 0px 0px 0px 0px;
+	border: none;
+	height: 11px;
+	width: 15px;
+	color: #505050;
+	cursor: pointer;
+	font-size: 13px;
+	font-family: arial,helvetica,sans-serif;
+	float: left;
+}
+.btnSpUp.upU {
+	background: url('/files/images/spinboxUp_up.gif') top left no-repeat;
+}
+.btnSpDown.upD {
+	background: url('/files/images/spinboxDown_up.gif') top left no-repeat;
+}
+.btnSpUp.disU {
+	background: url('/files/images/spinboxUp_dis.gif') top left no-repeat;
+	cursor: default;
+}
+.btnSpDown.disD {
+	background: url('/files/images/spinboxDown_dis.gif') top left no-repeat;
+	cursor: default;
+}

@@ -1,0 +1,142 @@
+﻿.err_mess_settings {
+	color: #FF6600;
+	text-align: center;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.frm_block .inp_check {
+	margin-right: 5px;
+}
+.inp_btn90 {
+	width: 90px;
+	background: url('/files/images/button90x24_up.gif') top left no-repeat;
+}
+.inp_btn140 {
+	width: 140px;
+	background: url('/files/images/button140x24_up.gif') top left no-repeat;
+}
+.inp_btn170 {
+	width: 170px;
+	background: url('/files/images/button170x24_up.gif') top left no-repeat;
+}
+.dist_link {
+	margin-top: 7px;
+}
+/* навигация */
+.block_navigation {
+	margin-top: 10px;
+	width: 100%;
+	overflow: hidden;
+}
+.block_navigation .page {
+	float: left;
+	margin-right: 0.3em;
+	padding: 0.2em 0.5em;
+	border: 1px solid #EAEAEA;
+	background-color: #F9F9F9;
+	cursor: pointer;
+}
+.block_navigation a:hover{
+	border: 1px solid #bbbaba;
+	text-decoration: none;
+}
+.block_navigation .active {
+	border: 1px solid #ff6600;
+	cursor: default;
+}
+/* список персон */
+.list_photos {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 5px;
+}
+.list_photos li {
+	padding: 5px; 
+	margin: 5px 5px 0px 0px; 
+	border: 1px solid #e5e5e5; 
+	float: left;
+	background-color: #f9f9f9;
+	position: relative;
+}
+.list_photos li.act {
+	border: 1px solid #aaaaaa;
+}
+.list_photos .block_photo {
+	width: 178px;
+	text-align: center;
+	min-height: 120px;
+	height: auto !important;
+	height: 120px;	
+	margin-bottom: 5px;
+}
+.list_photos .block_info {
+	color: #666666;
+}
+.list_photos .block_info span {
+	color: #000000;
+}
+.list_photos li a {
+	text-decoration: underline;
+	color: #0088cc;
+}
+.list_photos li a:hover {
+	text-decoration: none;
+}
+.list_photos .inp_check {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	-top: 1px;
+	-right: 2px;
+}
+/* menu */
+.block_wanted {
+	padding-top: 28px;
+	position: relative;
+}
+.menu_vkl{
+	width: 1000px;
+	overflow: hidden;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+.menu_vkl li{
+	float: left;
+	height: 29px;
+	margin-right: 2px;	
+	background: url('/files/images/mv_m.gif') top left repeat-x;
+}
+.menu_vkl li div{
+	background: url('/files/images/mv_l.gif') top left no-repeat;
+}
+.menu_vkl li div div{
+	background: url('/files/images/mv_r.gif') top right no-repeat;
+	padding: 5px 12px 5px 12px;
+}
+.menu_vkl li a{
+	font-weight: bold;
+}
+.menu_vkl li a:hover {
+	text-decoration: none;
+}
+.menu_vkl .menu_vkl_act{
+	background: url('/files/images/mv_act_m.gif') top left repeat-x;
+}
+.menu_vkl .menu_vkl_act div{
+	background: url('/files/images/mv_act_l.gif') top left no-repeat;
+}
+.menu_vkl .menu_vkl_act div div{
+	background: url('/files/images/mv_act_r.gif') top right no-repeat;
+	padding: 5px 12px 5px 12px;
+}
+.menu_vkl .menu_vkl_act div div a{
+	color: #107cb5;
+}
+.menu_vkl .menu_vkl_act a:hover {
+	text-decoration: none;
+	cursor: default;
+}

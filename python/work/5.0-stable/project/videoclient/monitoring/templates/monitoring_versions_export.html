@@ -1,0 +1,36 @@
+{% load i18n %}
+{% load templatetags %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="content-language" content="ru" />
+	<title>{% trans "Журнал версий компонентов" %}</title>
+	{% include "monitoring_export_styles.html" %}		
+</head>
+<body>
+<div class="body1">
+	<div class="content">
+		<div class="content_add">
+			<table cellpadding="0px" cellspacing="0px" class="table" style="margin-top: 0px;">
+				<tr>
+					<th class="first">{% trans "Название" %}</th>
+					<th>{% trans "IP-адрес:Порт" %}</th>
+					<th>{% trans "Версия" %}</th>
+					<th>{% trans "Окончание лицензии" %}</th>
+				</tr> 			
+				{% include "monitoring_versions_data.html" %}
+			</table>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="footer">
+	<div class="version">{% trans "Версия" %}: {{ version }}</div>
+	<div class="block_contacts">
+		<span>{% trans "Контакты" %}:</span><ul class="list_contacts"><li>{% trans "информация" %}: <a href="mailto:info@smilart.com">info@smilart.com</a></li><li>{% trans "техподдержка" %}: <a href="mailto:support@smilart.com">support@smilart.com</a></li></ul>
+		<div class="copyright">Copyright &#169; 2012 "{% trans "Простые решения" %}". {% trans "Все права защищены" %}. <a href="http://www.smilart.com/" target="_blank">http://www.smilart.com/</a></div>
+	</div>
+</div>
+</body>
+</html>

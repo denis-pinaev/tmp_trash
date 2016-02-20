@@ -1,0 +1,150 @@
+{% load i18n %}
+{% load templatetags %}
+<!-- BEGIN: content-->
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/file.js?v=v{{ version }}" type="text/javascript"></script>
+{% include "js/js_learn.html" %}
+<script type="text/javascript">
+$(function() {
+	initFunctionElements();
+	init();
+	checkSelectDistortion();
+	showBlockFileUpload();  
+	initTooltip();
+});
+</script>
+
+<h2><a href="/lists/">{% trans "Списки" %}</a> - 
+	{% if select_page == "persons" or select_sub_page == "persons" %}
+		<a href="{{ project_url }}/persons/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketaperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> - {% trans 'Загрузка файлов с компьютера' %}
+	{% endif %}
+
+	{% if select_page == "visitors" or select_sub_page == "visitors" %}
+		<a href="{{ project_url }}/visitorslist/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketavisitor/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> - {% trans 'Загрузка файлов с компьютера' %}
+	{% endif %}
+
+	{% if select_page == "staff" or select_sub_page == "staff" %}
+		<a href="{{ project_url }}/stafflist/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketastaff/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> - {% trans 'Загрузка файлов с компьютера' %}
+	{% endif %}
+
+	{% if select_page == "auto" or select_sub_page == "auto" %}
+		<a href="{{ project_url }}/autolist/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketaauto/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> - {% trans 'Загрузка файлов с компьютера' %}
+	{% endif %}
+	<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" />
+</h2>	
+{% include "current_time.html" %}
+
+<div id="check_upload_computer_block" style="display: block;">
+	<div class="frm_block">
+		<input type="checkbox" name="" value="" class="inp_check" id="distortion" onClick="javascript: showParamDistortion(this, 'param_distortion');" /><label for="distortion">{% trans "Исправить дисторсию" %}</label>
+		<div class="block_correct" style="display: none;" id="param_distortion">
+			<div class="inner_block"><input type="radio" name="choose_correct_distr" value="choose_model" id="choose_model" class="inp_check" checked="checked" onClick="javascript: setDistortion();" /><label for="choose_model">{% trans "Настроить по шаблону" %}</label>
+				<div class="inner_block"><label for="model" class="txt_lab" style="margin-left: 36px;">{% trans "Модель объектива" %}:</label>
+				<div class="model"><select name="" class="select" id="model">
+					<option value="0">--- {% trans "По умолчанию" %} ---</option>
+					{% for distortion in distortions %}
+						<option value="{{ distortion.id }}">{{ distortion.name }}</option>
+					{% endfor %}
+				</select><input type="button" name="" value="" class="inp_btn btn_delete short_descr" onClick="javascript: deleteModel();" title="{% trans "Удалить выбранную модель объектива" %}" />
+				<span class="model_distr" id="model_distr"></span></div></div>
+				<script type="text/javascript">
+				{% for distortion in distortions %}
+					modelsParams['{{ distortion.id }}'] = {"name": "{{ distortion.name }}", "v": "{{ distortion.v }}", "i": "{{ distortion.i }}", "x": "{{ distortion.x }}", "y": "{{ distortion.y }}", "count": "{{ distortion.count }}"};
+				{% endfor %}
+				</script>
+			</div>
+			<div class="frm_block"><input type="radio" name="choose_correct_distr" value="set_value" id="set_value" class="inp_check" onClick="javascript: setDistortion();"/><label for="set_value">{% trans "Настроить вручную" %}</label>
+				<div class="block_correct2"><input type="radio" name="param_distr" id="param_distr3" value="param_distr3" class="inp_check" onClick="javascript: paramDistortion(3);" /><label for="param_distr3">{% trans "Модель дисторсии третьей степени" %}</label>
+					<input type="radio" name="param_distr" id="param_distr4" value="param_distr4" class="inp_check dist_left" onClick="javascript: paramDistortion(4);" /><label for="param_distr4">{% trans "Модель дисторсии пятой степени" %}</label>									
+					<div class="inner_block">
+						<label for="distr1" class="txt_lab">{% trans "Выпуклость" %} (-50..50):</label>
+						{% spinbox "distr1" "distr1" d1 "60" "-50" "50" "0.1" %}										
+					</div>
+					<div class="inner_block" id="distr4_param">
+						<label for="distr4" class="txt_lab">{% trans "Интенсивность" %} (-50..50):</label>
+						{% spinbox "distr4" "distr4" d4 "60" "-50" "50" "0.1" %}							
+					</div>
+					<div class="inner_block">
+						<label for="distr2" class="txt_lab">{% trans "Смещение по горизонтали" %} (0..1.2):</label>
+						{% spinbox "distr2" "distr2" d2 "60" "0" "1.2" "0.1" %}										
+					</div>
+					<div class="inner_block">
+						<label for="distr3" class="txt_lab">{% trans "Смещение по вертикали" %} (0..1.2):</label>
+						{% spinbox "distr3" "distr3" d3 "60" "0" "1.2" "0.1" %}										
+					</div>
+					{% if perms.user_perms.perm_distortion %}
+						<div class="inner_block">
+							{% if use_js == '1' %}
+							<input type="button" name="" value="{% trans "Настроить по изображению" %}" class="inp_btn inp_btn200 short_descr" style="margin-left: 18px;" title="{% trans "Настроить дисторсию по изображению" %}" onClick="javascript: location.replace('{% url distortion-camera2 0 addperson %}');"/>
+							{% else %}
+							<input type="button" name="" value="{% trans "Настроить по изображению" %}" class="inp_btn inp_btn200 short_descr" style="margin-left: 18px;" title="{% trans "Настроить дисторсию по изображению" %}" onClick="javascript: location.replace('/addphotoperson/{% if select_page == "lists" %}{{ select_sub_page }}{% else %}{{ select_page }}{% endif %}/{{ id }}/distortion/{% if group %}?group={{ group }}{% endif %}');"/>{% endif %}
+							<input type="button" name="" value="{% trans "Сохранить" %}" id="btn_save_param" class="inp_btn inp_btn90 dist_left short_descr" title="{% trans "Сохранить заданные настройки для модели объектива" %}" onClick="javascript: saveParamsDistr();" />
+						</div>
+					{% endif %}
+				</div>									
+			</div>
+			<div class="frm_block"><input type="button" name="" value="{% trans "Применить" %}" id="btn_set_param" class="inp_btn inp_btn90 dis" onClick="javascript: setDistortion();" /></div>
+		</div>
+	</div>
+	<div class="dist_top message_action" style="display: none;" id="txt_distortion"></div>
+	<form method="POST" action="{% url upload_multiple select_sub_page id %}{% if group %}?group={{ group }}{% endif %}" id="formUploadFile" class="form" enctype="multipart/form-data">					
+		<div id="upload_single_file" style="display: none;">
+			<div class="block_req">{% trans 'Поля, отмеченные звёздочкой (<span class="req">*</span>), являются обязательными для заполнения' %}.</div>
+			<div id="content_file">
+				<div class="form_block">
+					<div class="error_field"></div>
+					<div class="fb_content">						
+						<label for="file0" class="fbc_text"><span class="req">*</span>{% trans "Выберите файлы" %} (<strong id="current_count_file">0</strong> {% trans "из" %} <strong>20</strong>):</label>
+						<div class="fb_enter">
+							<input type="file" value="" id="file0" name="file" accept="image/*"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form_block">
+				<input type="submit" name="" id="btn_single_file" value="{% trans "Загрузить" %}" class="inp_btn inp_btn_blue120 btn_single_file noact_btn" disabled="disabled" />
+				<a class="link_btn_cancel"
+				{% if select_page == "persons" or select_sub_page == "persons" %}
+					href="{{ project_url }}/anketaperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}"
+				{% endif %}
+				{% if select_page == "visitors" or select_sub_page == "visitors" %}						
+					href="{{ project_url }}/anketavisitor/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}"
+				{% endif %}
+				{% if select_page == "staff" or select_sub_page == "staff" %}						
+					href="{{ project_url }}/anketastaff/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}"
+				{% endif %}
+				{% if select_page == "auto" or select_sub_page == "auto" %}						
+					href="{{ project_url }}/anketaauto/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}"
+				{% endif %}><span>{% trans "Отменить" %}</span></a>				
+			</div>
+		</div>
+		<div class="block" id="upload_multiple_file" style="display: none;">
+			<div class="upload_multiple_file">
+				<div class="block_multiple">
+					<div class="block_multiple_txt">{% trans "Загрузить файлы" %}</div>
+					<input type="hidden" name="distortion" value="" id="multiple_file_distortion"/>
+					<input type="file" name="files" value="" multiple="" id="multiple_file" />
+				</div>
+			</div>
+			<a class="link_btn_cancel"
+			{% if select_page == "persons" or select_sub_page == "persons" %}						
+				href="{{ project_url }}/anketaperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}"
+			{% endif %}
+			{% if select_page == "visitors" or select_sub_page == "visitors" %}						
+				href="{{ project_url }}/anketavisitor/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}"
+			{% endif %}
+			{% if select_page == "staff" or select_sub_page == "staff" %}						
+				href="{{ project_url }}/anketastaff/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}"
+			{% endif %}
+			{% if select_page == "auto" or select_sub_page == "auto" %}						
+				href="{{ project_url }}/anketaauto/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}"
+			{% endif %}><span>{% trans "Отменить" %}</span></a>
+		</div>
+	</form>	
+</div>	
+<div class="block_loader" id="block_loader" style="display: none;">
+	<img src="/files/images/loader.gif" alt="" />
+	<div class="dist_top">{% trans "Идёт процесс обработки данных." %}</div>
+	<div>{% trans "Пожалуйста, подождите." %}</div>						
+</div>
+<!-- END: content -->

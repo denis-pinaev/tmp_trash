@@ -1,0 +1,22 @@
+{% load i18n %}
+{% load templatetags %}
+<div class="block_table">
+<table cellpadding="0px" cellspacing="0px" class="table">
+    <tr>
+        <th class="th_first"><a href="#" {% if sorto == 1 and up == 1 %}class="sort_up"{% endif %}{% if sorto == 1 and up == 0 %} class="sort_down"{% endif %} onClick="javascript: getTableStatistic(1,{% if sorto == 1 and up == 1 %}0{% else %}1{% endif %});">{% trans "IP-адрес" %}</a></th>
+        <th><a href="#" {% if sorto == 2 and up == 1 %}class="sort_up"{% endif %}{% if sorto == 2 and up == 0 %} class="sort_down"{% endif %} onClick="javascript: getTableStatistic(2,{% if sorto == 2 and up == 1 %}0{% else %}1{% endif %});">{% trans "Распознавание лиц" %} ({{total.detect}}) </a></th>
+        <th><a href="#" {% if sorto == 3 and up == 1 %}class="sort_up"{% endif %}{% if sorto == 3 and up == 0 %} class="sort_down"{% endif %} onClick="javascript: getTableStatistic(3,{% if sorto == 3 and up == 1 %}0{% else %}1{% endif %});">{% trans "Идентификация лиц" %} ({{total.detect_and_identification}})</a></th>
+        <th><a href="#" {% if sorto == 4 and up == 1 %}class="sort_up"{% endif %}{% if sorto == 4 and up == 0 %} class="sort_down"{% endif %} onClick="javascript: getTableStatistic(4,{% if sorto == 4 and up == 1 %}0{% else %}1{% endif %});">{% trans "Фоторедактор" %} ({{ total.fanstudio }})</a></th>
+        <th><a href="#" {% if sorto == 5 and up == 1 %}class="sort_up"{% endif %}{% if sorto == 5 and up == 0 %} class="sort_down"{% endif %} onClick="javascript: getTableStatistic(5,{% if sorto == 5 and up == 1 %}0{% else %}1{% endif %});">{% trans "Всего" %} ({{ total.total }})</a></th>
+    </tr>
+    {% for host in table %}
+    <tr {% cycle '' 'class="odd"' %}>
+        <td class="td_first">{{ host.ip }}</td>
+        <td>{{ host.detect }}</td>
+        <td>{{ host.detect_and_identification }}</td>
+        <td>{{ host.fanstudio }}</td>
+        <td>{{ host.total }}</td>
+    </tr>
+    {% endfor %}
+</table>
+</div>

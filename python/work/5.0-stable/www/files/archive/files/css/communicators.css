@@ -1,0 +1,118 @@
+﻿.btn_add {
+    background: url("../images/button170x24_up.gif") no-repeat left top;
+    width: 170px;
+}
+.inp_edit {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    width: 16px;
+    height: 16px;
+    background: url("../images/edit2.png") no-repeat left top;
+    -background: none;  
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/edit2.png', sizingMethod='crop');        
+    margin-top: 2px;
+    float: left;
+}
+.inp_btn120 {
+    background: url("../images/button120x24_up.gif") no-repeat left top;
+    padding-left: 15px;
+    width: 120px;
+}
+.frm_block {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 10px;
+}
+.block_error_add {
+    color: #FF6600;
+    text-align: center;
+    margin-top: 5px;
+}
+/* таблица */
+.table {
+    margin: 10px 0px 0px 0px;
+    padding: 0px;
+    border: 0px;
+    width: 100%;
+    border-top: 1px solid #6e7d98;
+}
+.table tr.odd {
+    background-color: #DBE2F0;
+}
+.table th {
+    vertical-align:top;
+    text-align: center;
+    border-right: 1px solid #6e7d98;
+    border-bottom: 1px solid #6e7d98;
+    background-color: #d9dee7;
+    padding: 5px 5px;
+    font-weight: normal;
+}
+.table th.first {
+    border-left: 1px solid #6e7d98;
+}
+.table th a {
+    color: #333333;
+    display: block;
+    background: url('../images/arrow_down.gif') 100% 6px no-repeat;
+    padding-right: 15px;
+}
+.table th.th_info  {
+    width: 120px;
+}
+.table th.th_check  {
+    width: 52px;
+}
+.table td {
+    border-bottom: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;
+    vertical-align: top;
+    padding: 3px 5px;    
+}
+.table td.first {
+    border-left: 1px solid #cccccc;
+}
+.table .td_camera span,
+.table .td_camera .inp_txt {
+    margin-left: 5px;
+}
+
+.table tr.act {
+    cursor: default;
+}
+.table tr.act td {
+    background-color: #849ac1;
+    color: #ffffff;
+}
+.table tr.act td a {
+    color: #ffffff;
+    text-decoration: underline;
+}
+/* form */
+.frm_field {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 10px;
+}
+.frm_field label {
+    float: left;
+    width: 75px;
+}
+.frm_field .inp_txt {
+    float: left;
+    width: 130px;
+}
+.star_red {
+    color: #FF6600;
+    font-weight: bold;
+}
+.frm_field .error {
+    color: #FF6600;
+    margin-left: 215px;
+    line-height: 1;
+    margin-top: 3px;
+}
+.frm_field .border_error {
+    border: 1px solid #FF6600;
+}

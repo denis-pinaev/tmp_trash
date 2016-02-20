@@ -1,0 +1,108 @@
+{% load i18n %}
+{% load templatetags %}
+<div id="win_ident" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Идентификации за период" %} <span id="idents_window_time_interval"></span> ({% trans "отображены последние" %}: <span id="idents_window_count">0</span>)</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add">
+            <ul class="block list list_ident2" id="block_list_idents"></ul>
+        </div></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue close" />    
+        </div>
+    </div>
+</div>
+<div id="win_faces" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" title="{% trans 'Закрыть окно' %}" /></div>
+            <div class="headWF_txt">{% trans "Лица за период" %} <span id="detects_window_time_interval"></span> ({% trans "отображены последние" %}: <span id="detects_window_count">0</span>)</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add">
+            <ul class="block list list_faces2" id="block_list_faces2"></ul>
+        </div></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue close" />    
+        </div>
+    </div>
+</div>
+<div id="win_things" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Детекторы. Обнаружено объектов" %}: <span id="total_objects_window"></span>, {% trans "период" %}: <span id="objects_window_time_interval"></span></div>
+        </div>
+        <div class="contWF1"><div class="contWF_add">
+            <div>
+                <label for="win_detectors">{% trans "Детекторы" %}:</label>
+                <select name="" class="select dist_left" id="win_detectors" onchange="objectsFilter();">
+                    <option value="0" selected="selected">{% trans "Все" %}</option>
+                    <option value="1">{% trans "Детектор оставленных вещей" %}</option>
+                    <!--<option value="2">{% trans "Детектор отделения объектов от фона" %}</option>-->
+                    <option value="3">{% trans "Детектор огня" %}</option>
+                    <option value="4">{% trans "Детектор дыма" %}</option>
+                    <option value="5">{% trans "Детектор вспышки" %}</option>
+                    <option value="6">{% trans "Детектор скопления людей" %}</option>
+                </select>
+                <span class="dist_left">{% trans "всего объектов" %}: <span id="total_obj_window">0</span></span>
+            </div>
+            <ul class="list list_things2" id="block_list_objects"></ul>            
+        </div></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue close" />    
+        </div>
+    </div>
+</div>
+<div class="window_message_warning message_important" id="window_message_warning">
+    <div class="window_message_warning_cont">
+        <div class="block">
+            <div class="window_message_warning_img"></div>
+            <div class="window_message_warning_info"></div>
+        </div>
+        <div class="window_message_warning_close"><a href="#">{% trans "закрыть" %}</a></div>
+    </div>
+</div>
+<div id="win_detector" style="display: none;" class="winFloating winDetector">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close short_descr" title="{% trans 'Закрыть окно' %}" /></div>
+            <div class="headWF_txt" style="color: #cc00cc;"></div>
+        </div>
+        <div class="contWF1"><div class="contWF_add">
+            <div class="block">
+                <div class="winDetector_img">
+					<span class="preview_camera_ip short_descr"></span>
+                    <div class="winDetector_img_block">
+                        <a href="#" title="" class="winDetector_img_link short_descr" style="cursor: default;"><img src="" class="preview_image" alt="" /></a>
+                        <span class="koeff_time"></span>
+                    </div>
+                </div>
+                <div class="winDetector_ident" style="display: none;">
+					<div class="preview_camera_ip short_descr"></div>
+                    <div class="winDetector_photos">
+						<div class="block">
+							<div class="photo camera">
+								<div class="sign_photo">{% trans "Фото с камеры" %}</div>
+								<div class="photo_img photo_ident_from_camera"><a href="#" target="_blank photo_ident_from_camera_a"><img class="preview_camera_ident" src="/files/images/no_photo120x120.gif" alt="" /></a></div>
+								<span class="param short_descr photo_coeff" title="{% trans 'Коэффициент похожести' %}">C<sub>sm</sub></span>
+							</div>
+							<div class="photo">
+								<div class="sign_photo">{% trans "Фото из базы" %}</div>
+								<div class="photo_img photo_ident_from_base"><a href="#" target="_blank photo_ident_from_base_a"><img class="preview_base_ident" src="/files/images/no_photo120x120.gif" alt="" /></a></div>
+								<span class="param koeff_time"></span>
+							</div>
+						</div>	
+                    </div>
+                    <div class="fio"><a href="#" target="_blank" class="blue"></a></div>
+                </div>
+				<div class="count"></div>
+            </div>
+        </div></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue close" />
+            <input type="button" name="" value="{% trans "Закрыть всё" %}" class="btn_wf short_descr" title="{% trans "Закрыть все окна" %}" onClick="javascript: deleteAllWindowDetector();" />  
+        </div>
+    </div>
+</div>

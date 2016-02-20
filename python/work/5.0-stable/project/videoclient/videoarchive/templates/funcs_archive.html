@@ -1,0 +1,532 @@
+{% load i18n %}
+{% load a_templatetags %}
+<script type="text/javascript">
+/*** util ***/
+function browser() {
+	var browserType = navigator.userAgent.toLowerCase();
+	if (browserType.indexOf('msie') >= 0) {
+		if (browserType.indexOf('msie 8.0') > -1) {
+			return 'ie8';
+		}
+		if (browserType.indexOf('msie 7.0') > -1) {
+			return 'ie7';
+		}			
+		if (browserType.indexOf('msie 6.0') > -1) {
+			return 'ie6';
+		}		
+		return 'ie';
+	}
+	if (browserType.indexOf('firefox') >= 0) {
+		return 'firefox';
+	}
+	if (browserType.indexOf('opera') >= 0) {
+		return 'opera';
+	}	
+	if (browserType.indexOf('chrome') >= 0) {
+		return 'chrome';
+	}
+	if (browserType.indexOf('safari') >= 0) {
+		return 'safari';
+	}			
+	return 'other';
+}
+function nextNode(id, typeNode) {
+	var node = byId( id );
+	do node = node.nextSibling
+	while(node && node.nodeType == typeNode);
+	return node;
+}
+function foundParent(elem) {            
+	var parentObj = elem;
+	while (true && parentObj) {		
+		parentCls = parentObj.className;
+		if (parentCls && (parentCls.indexOf('info_camera') != -1)) {
+			return parentObj;
+		}
+		if (parentObj == document.body) {
+				return null;
+		}                           
+		parentObj = parentObj.parentNode;			
+	}            
+}
+function mousePageXY(e) {
+  var x = 0, y = 0;
+  if (!e) e = window.event;
+  if (e.pageX || e.pageY) {
+	x = e.pageX;
+	y = e.pageY;
+  }
+  else if (e.clientX || e.clientY) {
+	x = e.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft) - document.documentElement.clientLeft;
+	y = e.clientY + (document.documentElement.scrollTop || document.body.scrollTop) - document.documentElement.clientTop;
+  }
+  return {"x":x, "y":y};
+}
+/*** выбор языка ***/
+function chooseLang(id) {
+	var lang = readCookie('django_language');
+	var elem = byId(id);
+	if (lang == 'ru'){
+		elem.innerHTML = 'RU';
+		elem.style.backgroundImage = "url('/files/images/lang_ru.gif')";
+		elem.style.backgroundPosition = "0px 5px";
+	} else if (lang == 'en'){
+		elem.innerHTML = 'EN';
+		elem.style.backgroundImage = "url('/files/images/lang_en2.gif')";
+		elem.style.backgroundPosition = "0px 4px";
+	}	
+}
+function changeLang() {
+	var lang = readCookie('django_language');
+	if (lang == 'ru'){
+		setCookie('django_language', 'en');
+	} else if (lang == 'en'){
+		setCookie('django_language', 'ru');
+	} else {
+		setCookie('django_language', 'en');
+	}
+}
+function setCookie(name,value,days) {
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime()+(days*24*60*60*1000));
+		var expires = "; expires="+date.toGMTString();
+	}
+	else var expires = "";
+	document.cookie = name+"="+value+expires+"; path=/";
+}
+function readCookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0;i < ca.length;i++) {
+	var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
+}
+/*** версия флеш-плеера ***/
+function getFlashVersion(){
+  // ie
+  try {
+	try {
+	  // avoid fp6 minor version lookup issues
+	  // see: http://blog.deconcept.com/2006/01/11/getvariable-setvariable-crash-internet-explorer-flash-6/
+	  var axo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash.6');
+	  try { axo.AllowScriptAccess = 'always'; }
+	  catch(e) { return '6,0,0'; }
+	} catch(e) {}
+	return new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version').replace(/\D+/g, ',').match(/^,?(.+),?$/)[1];
+  // other browsers
+  } catch(e) {
+	try {
+	  if(navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin){
+		return (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]).description.replace(/\D+/g, ",").match(/^,?(.+),?$/)[1];
+	  }
+	} catch(e) {}
+  }
+  return '0,0,0';
+}
+function flashVersion() {
+   var version = getFlashVersion().split(',').shift();
+   if (version >= 10) { return true; } 
+   else { return false; }
+}
+/*** выделение элемента при наведении ***/
+function replace_string(txt, cut_str, paste_str) { 
+	var f = 0;
+	var ht = '';
+	ht = ht + txt;
+	f = ht.indexOf(cut_str);
+	if (f > -1) {
+		ht = ht.substr(0,f) + paste_str + ht.substr(f + cut_str.length);
+	}
+	return ht.replace(cut_str, paste_str)
+}
+function overElem(elem, over_class) {
+	var cur_class = "";
+	if (elem.className) cur_class = rtrim(elem.className);
+	if (over_class)	elem.className = cur_class + " " + over_class;
+	else elem.className = cur_class + " act";	
+}
+function outElem(elem, over_class) {
+	var cur_class = elem.className;
+	if (cur_class) {
+		if (cur_class.indexOf(over_class) > -1) elem.className = replace_string(elem.className, over_class, '');
+	}
+}
+/*** информация о видеоролике ***/
+/*function showTitleVideo(elem, param) {
+	var content = '<div><span>{% trans "Формат" %}:</span> '+param.format+'</div>';
+	content += '<div><span>{% trans "Размер" %}:</span> '+param.size+'</div>';
+	content += '<div><span>{% trans "Запуск задачи" %}:</span> '+param.signal+'</div>';
+	content += '<div><span>{% trans "Частота кадров" %}:</span> '+param.fps+'</div>';
+	content += '<div><span>{% trans "Найдено лиц" %}:</span> '+param.faces+'</div>';
+	content += '<div><span>{% trans "Найдено людей" %}:</span> '+param.persons+'</div>';
+	createTitleWindow({distX: 5, width: 230, elem: elem, id: 'win_video', txt: content});
+}
+function showMenuVideo(elem, face, people, id_roller) {
+	document.getElementById('sourseid').innerHTML = id_roller;
+	var content = '<ul><li><a href="{% url archive_page "view_video" %}/'+id_roller+'/">{% trans "Просмотр" %}</a></li>';
+	content += '<li><a href="page_video_faces.html">{% trans "Найденные лица" %} ('+face+')</a></li>';
+	content += '<li><a href="page_video_persons.html">{% trans "Найденные люди" %} ('+people+')</a></li></ul>';
+	createInfoWindow({distX: 5, width: 250, height: 150, elem: elem, id: 'win_videoMenu', txt: content});
+}*/
+
+/*** информация за день ***/
+function showTitleInfoDay(elem, param) {
+	var content = '<div><span>{% trans "Всего источников" %}:</span> '+param.source+'</div>';
+	content += '<div><span>{% trans "Всего видеороликов" %}:</span> '+param.video+'</div>';
+	//content += '<div><span>{% trans "Найдено лиц" %}:</span>'+param.faces+'</div>';
+	//content += '<div><span>{% trans "Найдено людей" %}:</span>'+param.persons+'</div>';
+	createTitleWindow({distX: 5, width: 180, elem: elem, id: 'win_infoDay', txt: content});
+}
+/*** выделить все элементы на странице ***/
+function checkAllRow(id, count, btn) {
+	var inp = byId(id);
+	if (btn) {
+		inp.checked =  (inp.checked == false) ? 'checked' : false;
+	}	
+	if (inp.id == 'choose_all') {
+		byId('choose_all2').checked = inp.checked;
+	} else {
+		byId('choose_all').checked = inp.checked;
+	}
+	var check;
+	for (var i = 1; i <= count; i++) {
+		check = byId('check'+i);
+		if (inp.checked) {		
+			check.checked = true;
+		} else {		
+			check.checked = false;
+		}
+	}
+}
+function checkAll(elem, count, button) {
+	var inp = byId(elem);
+	if (button) {
+		inp.checked =  (inp.checked == false) ? 'checked' : false;
+	}
+	if (inp.id == 'choose_all') {
+		if (byId('choose_all2')) {
+			byId('choose_all2').checked = inp.checked;
+		}
+	} else {
+		byId('choose_all').checked = inp.checked;
+	}
+	var check;
+	var li;
+	for (var i = 1; i <= count; i++) {
+		check = byId('check'+i);
+		li = searchElem(check, 'LI');		
+		if (inp.checked) {		
+			check.checked = 'checked';
+			overElem(li, 'act');
+		} else {		
+			check.checked = false;
+			outElem(li, 'act');
+		}
+	}
+}
+function searchElem(el, nameNode) {
+	var parentObj = el;
+	var parentName = parentObj.nodeName;
+	while (parentName != nameNode) {
+		parentObj = parentObj.parentNode;
+		parentName = parentObj.nodeName;
+	}	
+	return parentObj;
+}
+function isChecked(count) {
+	var c = 0;
+	if (count > 0) {
+		while (count > 0) {
+			if (byId("check"+count)) {
+				if (byId("check"+count).checked) {
+					c++;
+				}
+			}
+			count--;
+		}
+	}
+	return c;
+}
+/*** удаление, обучение, экспорт фотографий ***/
+function createTextMessage(param) {
+	switch (param.name_block) {
+		case "persons": 
+			return "{% trans 'Выберите, пожалуйста, хотя бы одну персону.' %}";
+			break;
+		case "person": 
+			return "{% trans 'Выберите, пожалуйста, хотя бы одну фотографию персоны.' %}";
+			break;
+		case "visitors": 
+			return "{% trans 'Выберите, пожалуйста, хотя бы одного посетителя.' %}";
+			break;
+		case "staffs": 
+			return "{% trans 'Выберите, пожалуйста, хотя бы одного сотрудника.' %}";
+			break;
+		case "photos": 
+			return "{% trans 'Выберите, пожалуйста, хотя бы одну фотографию.' %}";
+			break;
+		case "users": 
+			return "{% trans 'Выберите, пожалуйста, хотя бы одного пользователя.' %}";
+			break;
+		case "visitingcards": 
+			return "{% trans 'Выберите, пожалуйста, хотя бы одну карточку.' %}";
+			break;											
+		case "operators": 
+			return "{% trans 'Выберите, пожалуйста, хотя бы одного оператора.' %}";
+			break;											
+		case "video": 
+			return "{% trans 'Выберите, пожалуйста, хотя бы один видеоролик.' %}";
+			break;
+		case "tasks": 
+			return "{% trans 'Выберите, пожалуйста, хотя бы одну задачу.' %}";
+			break;												
+		case "persons_del": 
+			return "{% trans 'Вы действительно хотите удалить выбранных персон (' %}"+param.count+" {% trans 'шт.' %})?";
+			break;
+		case "person_del": 
+			return "{% trans 'Вы действительно хотите удалить выбранные фотографии (' %}"+param.count+" {% trans 'шт.' %})?";
+			break;
+		case "photos_del": 
+			return "{% trans 'Вы действительно хотите удалить выбранные фотографии (' %}"+param.count+" {% trans 'шт.' %})?";
+			break;
+		case "operators_del": 
+			return "{% trans 'Вы действительно хотите удалить выбранныx операторов (' %}"+param.count+" {% trans 'шт.' %})?";
+			break;
+		case "video_del": 
+			return "{% trans 'Вы действительно хотите удалить выбранное видео (' %}"+param.count+" {% trans 'шт.' %})?";
+			break;
+		case "tasks_del": 
+			return "{% trans 'Вы действительно хотите удалить выбранные задачи (' %}"+param.count+" {% trans 'шт.' %})?";
+			break;		
+		case "photos_export": 
+			return "{% trans 'Сохранить выделенные фотографии (' %}"+param.count+" {% trans 'шт.' %})?";
+			break;
+		case "video_export": 
+			return "{% trans 'Сохранить выделенное видео (' %}"+param.count+" {% trans 'шт.' %})?";
+			break;
+		case "photos_learn": 
+			return "{% trans 'Обучить выделенными фотографиями (' %}"+param.count+" {% trans 'шт.' %})?";
+			break;						
+		case "visitors_del": 
+			return "{% trans 'Вы действительно хотите удалить выбранных посетителей (' %}"+param.count+" {% trans 'шт.' %})?";
+			break;
+		case "staffs_del": 
+			return "{% trans 'Вы действительно хотите удалить выбранных сотрудников (' %}"+param.count+" {% trans 'шт.' %})?";
+			break;
+		case "users_del": 
+			return "{% trans 'Вы действительно хотите удалить выбранных пользователей (' %}"+param.count+" {% trans 'шт.' %})?";
+			break;
+		case "visitingcards_del": 
+			return "{% trans 'Вы действительно хотите удалить выбранные карточки (' %}"+param.count+" {% trans 'шт.' %})?";
+			break;										
+		case "persons_zeroing": 
+			return "{% trans 'Вы действительно хотите удалить базу персон?' %}";
+			break;
+		case "restart": 
+			return "{% trans 'Вы действительно хотите перезапустить систему?' %}";
+			break;
+		case "reboot": 
+			return "{% trans 'Вы действительно хотите перезагрузить компьютер?' %}";
+			break;
+		case "addcameras": 
+			return "{% trans 'Камеры успешно добавлены' %} ("+param.count+" {% trans 'шт' %}.).";
+			break;
+                case "notaddcameras": 
+			return "{% trans 'Камеры не добавлены' %}.";
+			break;			
+		case "arch_set_success": 
+			return "{% trans 'Настройки успешно сохранены' %}.";
+			break;
+		case "arch_set_failed": 
+			return "{% trans 'Настройки не сохранены' %}.";
+			break;
+		case "video_save": 
+			return "{% trans 'Сохранить оригиналы выделенных видеороликов' %} ("+param.count+" {% trans 'шт.' %})?";
+			break;		
+		default: 
+			return "{% trans 'Выберите, пожалуйста, хотя бы одно изображение.' %}";
+			break;
+	}
+}
+function showMessageDelete(count, name_block) {
+	var txt;
+	var head;
+	var check = isChecked(count);
+	if (check) {
+		txt = createTextMessage({name_block: name_block+"_del", count: check});
+		changeWindow({id: 'win_del', css: {width: '300px', height: '200px'}, txt: txt});
+	} else {
+		txt = createTextMessage({name_block: name_block});
+		changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+	}
+}
+function showMessageAllDelete(txt) {
+	changeWindow({id: 'win_all_del', css: {width: '300px', height: '200px'}, txt: txt});
+}
+function showMessageLearn(count, name_block) {
+	var txt;
+	var head;
+	var check = isChecked(count);
+	if (check) {
+		txt = createTextMessage({name_block: name_block+"_learn", count: check});
+		changeWindow({id: 'win_learn', css: {width: '300px', height: '200px'}, txt: txt});
+	} else {
+		txt = createTextMessage({name_block: name_block});
+		changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+	}
+}
+function showMessageExport(count, name_block) {
+	var txt;
+	var head;
+	var check = isChecked(count);
+	if (check) {
+		txt = createTextMessage({name_block: name_block+"_export", count: check});
+		changeWindow({id: 'win_export', css: {width: '300px', height: '200px'}, txt: txt});
+	} else {
+		txt = createTextMessage({name_block: name_block});
+		changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+	}
+}
+function saveArchive(ok, desc) {
+	closeChangeWindow('win_export');
+	var txt_beg = "{% trans 'Скачать архив с фотографиями' %}";
+	var head = "{% trans 'Экспорт фотографий' %}";
+	if (desc) {
+		txt_beg="{% trans 'Скачать архив с видеороликами' %}";
+		head = "{% trans 'Экспорт видеороликов' %}";
+	} 
+	var txt=txt_beg+" {% trans 'вы можете' %} <div class=\"linkArchive\"><a href=\"#\">{% trans 'здесь' %}</a></div>";
+	if (ok) {
+		changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt, head: head});
+	}
+}
+function showTimeLine() {
+	closeChangeWindow('win_export');
+	changeWindow({id: 'win_progressbar', css: {width: '300px', height: '200px'}});
+	runit();
+}
+/*** всплывающие подсказки ***/
+function getTextTitle(id) {
+	switch (id) {
+		case "title_time_source": 
+			return "{% trans 'Формат времени' %}:<div>{% trans 'часы : минуты : секунды' %}</div>";
+			break;
+		default: 
+			return "{% trans 'Всплывающая подсказка' %}";
+			break;				
+	}
+}
+function showTitleForm(elem) {
+	var content = getTextTitle(elem.id);
+	createTitleWindow({distX: 5, width: 230, elem: elem, id: 'title', txt: content});
+}
+/*** общие функции ***/
+function setCaretTo(obj, pos) { 
+	if(obj.createTextRange) { 
+		var range = obj.createTextRange(); 
+		range.move("character", pos); 
+		range.select(); 
+	} else if(obj.selectionStart || obj.selectionStart == '0') { 
+		obj.focus(); 
+		obj.setSelectionRange(pos, pos); 
+	}
+}
+function addEvent(el, evType, handle) {
+	if (el.addEventListener) {
+		el.addEventListener(evType, handle, false);
+	}
+	else if (el.attachEvent) {
+	// for ie
+		el["e" + evType + handle] = handle;
+		el[evType + handle] = function() {
+			el["e" + evType + handle](window.event)
+		}
+		el.attachEvent("on" + evType, el[evType + handle]);
+	}
+}
+function getObject(e) {
+	var browserType = navigator.userAgent.toLowerCase();
+	if (browserType.indexOf('msie') >= 0) {
+		return e.srcElement;
+	} else {
+		return e.target;
+	}
+}
+function createElem(el, atr, parentId) {
+	var newElem = document.createElement(el);
+	for (var i in atr) {
+		if (i == '_class') {
+			var attributte = document.createAttribute('class');
+			attributte.nodeValue = atr[i];
+		} else {
+			var attributte = document.createAttribute(i);		
+			attributte.nodeValue = atr[i];		
+		}					
+		newElem.setAttributeNode(attributte);
+	}
+	byId(parentId).appendChild(newElem);
+	return newElem;
+}
+function searchChild(elem, nameNode, attrType) {
+	var parent = byId(elem);
+	var parent_childs = parent.childNodes;
+	for (var i = 0; i < parent_childs.length; i++) {
+		if (parent_childs[i].nodeName == nameNode) {
+			if (attrType) {
+				if (parent_childs[i].getAttribute('TYPE') == attrType) {
+					return parent_childs[i];
+				}
+			} else {
+				return parent_childs[i];
+			}
+		}
+	}
+	return false;
+}
+/* menu */
+function showInnerMenu(elem) {
+	var id = elem.id;
+	if (byId(id + '_link').className.indexOf('tm_active') <= -1) {
+		overElem(byId(id + '_link'), 'tm_link_act');
+	} 
+	byId(id + '_inner').style.display = 'block';
+}
+function hideInnerMenu(elem) {
+	var id = elem.id;
+	outElem(byId(id + '_link'), 'tm_link_act');
+	byId(id + '_inner').style.display = 'none';
+}
+// current time
+function getCurrentTime(time1, time2) {
+	var date = new Date();
+	var hour = date.getHours()
+	var minute = date.getMinutes();
+	byId(time1["hour1"]).value = hour;	
+	byId(time1["minute1"]).value = minute;	
+	byId(time1["second1"]).value = '00';
+	if (time2) {
+		if (hour == 23) byId(time2["hour2"]).value = '00'; 
+		else byId(time2["hour2"]).value = hour + 1;
+		byId(time2["minute2"]).value = minute;
+		byId(time2["second2"]).value = '00';
+	}
+}
+// current date
+function getCurrentDate(delim, id_beg, id_end) {
+	var date = new Date();
+	var day = ((String(date.getDate()).length == '1')) ? "0" + date.getDate() : date.getDate();
+	var month = ((String(date.getMonth() + 1).length == '1')) ? "0" + (date.getMonth() + 1) : (date.getMonth() + 1);
+	var year = date.getFullYear();
+	byId(id_beg).value = day + delim + month + delim + year;
+	if (byId(id_end)) byId(id_end).value = byId(id_beg).value;
+}
+// set dafault value select
+function setValueDefaultSelect(id) {
+	var select = byId(id);
+	select.selectedIndex = 0;
+}
+</script>

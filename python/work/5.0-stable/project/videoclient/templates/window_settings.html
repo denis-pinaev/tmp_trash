@@ -1,0 +1,256 @@
+{% load i18n %}
+{% load templatetags %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+<div id="win_update" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_update');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Автоматический поиск камер" %}</div>
+		</div>
+		<form method="post" action="" id="frm_update">
+			<div class="contWF" id="win_update_contWF">
+				<div class="bl_update">{% trans "Введите максимальное количество камер, которое должен найти коммуникатор." %}</div>
+				<div class="error"></div>
+				<div class="bl_update_inp">
+					<input type="text" name="countcameras" id="countcameras" value="" class="inp_txt" maxlength="2" />
+				</div>
+				<div class="block_note"><strong class="req">*</strong> {% trans "Поиск осуществляется только по камерам модели" %} "Arecont".</div>
+			</div>
+			<div class="footerWF">
+				<input type="submit" name="" value="{% trans "Найти" %}" class="btn_wf_blue" />					
+				<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_update');" />	
+			</div>
+		</form>
+	</div>
+</div>
+<div id="win_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF" id="win_mess_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />	
+		</div>
+	</div>
+</div>
+<div id="win_add" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_add');" /></div>
+			<div class="headWF_txt">{% trans "Добавление камеры" %}</div>
+		</div>
+		<form method="" action="" id="add_camera_form" name="" class="frm_add_cam">
+			<div class="contWF" id="win_add_contWF">
+				<div class="bl_cam_add">
+					<label for="communicators-select" class="cam_txt">{% trans "Коммуникатор" %}: </label>
+					<select id="communicators-select" name="communicators-select" class="select">
+						{% for com in communicators %}
+						<option value="{{ com.id }}" >{{ com.host }}:{{ com.port }}</option>
+						{% endfor %}
+					</select>
+				</div>			
+				<div class="bl_cam_add">
+					<label for="types_cameras" class="cam_txt">{% trans "Модель камеры" %}: </label>
+					<select id="types_cameras" name="atype" class="select" onChange="javascript: selectTypesCamera(this);">
+						<!-- TODO убарть от сюда т.к в 5.0 это перенесено в window_settings_camera.html -->
+						<option value="AV2000" selected="selected">Arecont Vision</option>
+						<option value="AXIS">AXIS</option>
+						<option value="BEWARD">BEWARD</option>
+						<option value="GOAL">GOAL</option>
+						<option value="WEB">WEB</option>
+						<option value="URL">URL</option>
+						<option value="SONY">SONY</option>
+						<option value="MOBOTIX">MOBOTIX</option>
+						<option value="PANASONIC">PANASONIC</option>
+						<option value="JVC">JVC</option>
+						<option value="DALLMEIER">DALLMEIER</option>
+					</select>
+				</div>
+				<div class="bl_cam_add" id="bl_aip">
+					<label for="aip" class="cam_txt">IP-{% trans "адрес" %}: </label>
+					<input type="text" name="aip" id="aip" value="192.168.0.15" class="inp_txt" />
+				</div>
+				<div class="bl_cam_add" id="bl_abitrate">
+					<div class="cam_txt">Bitrate: </div>
+					<input type="text" name="abitrate" id="abitrate" value="" class="inp_txt" />
+				</div>
+				<div class="bl_cam_add" id="bl_afps">
+					<div class="cam_txt">Fps: </div>
+					<input type="text" name="afps" id="afps" value="" class="inp_txt" />
+				</div>
+				<div class="bl_cam_add" id="bl_aurl">
+					<label for="aurl" class="cam_txt">URL: </label>
+					<input type="text" name="aurl" id="aurl" value="http://" class="inp_txt" />
+				</div>
+				<div class="bl_cam_add" id="bl_amac" style="display: block;">
+					<label for="amac" class="cam_txt">MAC-{% trans "адрес" %}: </label>
+					<input type="text" name="amac" id="amac" value="000000000000" class="inp_txt" />
+				</div>
+				<div class="bl_cam_add" id="bl_aport" style="display: none;">
+					<label for="aport" class="cam_txt">{% trans "Порт" %}: </label>
+					<input type="text" name="aport" id="aport" value="80" class="inp_txt inp_port" maxlength="4" />
+				</div>
+				<div class="bl_cam_add" id="bl_anum" style="display: none;">
+					<label for="anum" class="cam_txt">{% trans "Номер камеры" %}: </label>
+					<input type="text" name="anum" id="anum" value="" class="inp_txt" />
+				</div>
+				<div class="bl_cam_add" id="bl_ause_r" style="display: none;">
+					<label for="ause_r" class="cam_txt">{% trans "Пользователь" %}: </label>
+					<input type="text" name="ause_r" id="ause_r" value="" class="inp_txt" />
+				</div>
+				<div class="bl_cam_add" id="bl_apas_s" style="display: none;">
+					<label for="apas_s" class="cam_txt">{% trans "Пароль" %}: </label>
+					<input type="text" name="apas_s" id="apas_s" value="" class="inp_txt" />
+				</div>			
+			</div>
+		</form>			
+		<div class="footerWF">	
+			<input type="button" name="" value='{% trans "Добавить" %}' class="btn_wf_blue" onClick="javascript: checkAddCamera();" />
+			<input type="button" name="" value='{% trans "Отмена" %}' class="btn_wf" onClick="javascript: closeChangeWindow('win_add');" />	
+		</div>
+	</div>
+</div>
+<div id="win_del" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_del');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Удаление камеры" %}</div>
+		</div>
+		<div class="contWF" id="win_del_contWF">&nbsp;</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Удалить" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_del'); okCameradelete();" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_del');" />			
+		</div>
+	</div>
+</div>
+
+<div id="win_crowd" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_crowd');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Детектор скопления людей" %}</div>
+		</div>
+		<div class="contWF" id="win_crowd_contWF">&nbsp;</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "OK" %}" class="btn_wf_blue" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_crowd');" />			
+		</div>
+	</div>
+</div>
+
+<div id="win_save_profile" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_save_profile');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Сохранение настроек камер" %}</div>
+		</div>
+		<div class="contWF" id="win_save_profile_contWF">&nbsp;</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Сохранить" %}" class="btn_wf_blue" onClick="javascript: saveProfileOK();" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_save_profile');" />			
+		</div>
+	</div>
+</div>
+<div id="win_upload_profile" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_upload_profile');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Загрузка настроек камер" %}</div>
+		</div>
+		<div class="contWF" id="win_upload_profile_contWF">&nbsp;</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Загрузить" %}" class="btn_wf_blue" onClick="javascript: uploadProfileOK();" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_upload_profile');" />			
+		</div>
+	</div>
+</div>
+<div id="win_profile" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_profile');" /></div>
+			<div class="headWF_txt">{% trans "Описание профиля" %}</div>
+		</div>
+		<div class="contWF" id="win_profile_contWF">
+			<form method="post" action="" class="frm_upload">
+				<div>{% trans "Описание профиля" %}: <strong id="profile_name"></strong></div>
+				<div class="cont_table dist_top">
+					<table cellpadding="0px" cellspacing="0px" border="0px" class="table">
+						<tr>
+							<th class="first"><a href="#">№</a></th>
+							<th><a href="#">{% trans "Камера" %}</a></th>
+							<th><a href="#">{% trans "Автообучение" %}</a></th>
+							<th><a href="#">{% trans "Режим сервера" %}</a></th>
+						</tr>
+						<tr>
+							<td class="first">1.</td>
+							<td>192.168.0.15 AV2100</td>
+							<td>{% trans "Да" %}</td>
+							<td>{% trans "Видео режим" %}</td>
+						</tr>
+						<tr class="odd">
+							<td class="first">2.</td>
+							<td>192.168.0.15 AV2100</td>
+							<td>{% trans "Да" %}</td>
+							<td>{% trans "Детектирование лиц" %}</td>
+						</tr>
+						<tr>
+							<td class="first">3.</td>
+							<td>192.168.0.15 AV2100</td>
+							<td>{% trans "Да" %}</td>
+							<td>{% trans "Идентификация лиц" %}</td>
+						</tr>
+						<tr class="odd">
+							<td class="first">4.</td>
+							<td>192.168.0.15 AV2100</td>
+							<td>{% trans "Да" %}</td>
+							<td>Камера выключена</td>
+						</tr>
+						<tr>
+							<td class="first">5.</td>
+							<td>192.168.0.15 AV2100</td>
+							<td>{% trans "Да" %}</td>
+							<td>{% trans "Камера выключена" %}</td>
+						</tr>
+					</table>
+				</div>
+			</form>
+		</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "OK" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_profile');" />
+		</div>
+	</div>
+</div>
+<div id="win_alias" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_alias');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Добавление псевдонима" %}</div>
+		</div>
+		<div class="contWF" id="win_alias_contWF">
+				<div class="dist_bottom">{% trans "Камера" %} <span id="alias"></span>.</div>
+				<div class="block_error" style="margin-left: 148px;" style="display: none;"></div>
+				<div>{% trans "Псевдоним" %}: <input type="text" name="" value="" class="inp_txt dist_left" style="width: 200px;" id="alias_cinp" onKeyPress="javascript: sendEnter(event)" maxlength="128" />
+					 <input type="hidden" id="alias_cid" value="0" />
+				</div>
+		</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Добавить" %}" class="btn_wf_blue" onClick="javascript: addAliasToCamera(); closeChangeWindow('win_alias');" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_alias');" />			
+		</div>
+	</div>
+</div>
+<div id="win_add_message" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_add_message');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Подтверждение добавления камеры" %}</div>
+		</div>
+		<div class="contWF" id="win_add_message_contWF">&nbsp;</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Добавить" %}" class="btn_wf_blue" onClick="javascript: addCameraOK();" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_add_message');" />			
+		</div>
+	</div>
+</div>

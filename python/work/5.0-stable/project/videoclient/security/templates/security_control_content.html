@@ -1,0 +1,191 @@
+{% load i18n %}
+{% load templatetags %}
+<div class="block_result
+	{% if show_buttons_for_security == '1' %}
+		{% if journal %}
+			{% if journal.finded %}
+				{% if not journal.person %}
+					unknow
+				{% endif %}
+			{% else %}
+				noactive
+			{% endif %}
+		{% else %}
+			noactive
+		{% endif %}
+	{% else %}
+		{% if not journal or not journal.finded %}
+			noactive
+		{% endif %}
+	{% endif %}">
+
+	<div class="block_photos">
+		<div class="photo camera"><div class="image"><img src="{% if not journal.original %}/files/images/security/no_photo.jpg{% else %}{% url get-journal-photo journal.pk 'original' %}{% endif %}" alt="{% trans 'Лицо с камеры' %}" /></div>{% if journal.original %}<div class="label_camera" title="{% trans 'Лицо с камеры' %}"></div>{% endif %}</div>
+		<div class="photo dist_photo"><div class="image"><img src="{% if journal %}
+																		{% if journal.finded %}
+																			{% if journal.person %}
+																				{% url get-journal-photo journal.pk 'detected' %}
+																			{% else %}
+																				/files/images/security/photo_unknow.png
+																			{% endif %}
+																		{% else %}
+																			/files/images/security/no_photo.jpg
+																		{% endif %}
+																	{% else %}
+																		/files/images/security/no_photo.jpg
+																	{% endif %}" alt="{% trans 'Лицо из базы' %}" /></div></div>
+
+	</div>
+
+	<div class="block_card">
+		{% if journal %}
+			{% if journal.finded %}
+				{% if journal.person %}
+					<div class="fio"><div class="fon_fio"><div class="txt_fio">{{ journal.person.person.get_fio }}</div></div></div>
+				{% else %}
+					<div class="fio unknow"><div class="fon_fio"><div class="txt_fio">{% trans "Неизвестный" %}</div></div></div>
+				{% endif %}
+				{% comment %}
+				<div class="block_info dist_info1">
+					<div class="block">
+						<div class="field_name"><div>{% trans "Категория" %}</div></div>
+						{% if journal.person %}
+							<div class="field_answer">{% if journal.person.person.category.name %}{{ journal.person.person.category.name }}{% else %}-{% endif %}</div>					
+						{% else %}
+							<div class="field_answer unknow">{% trans "Неопределена" %}</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="block_info">
+					<div class="block">
+						<div class="field_name"><div>{% trans "Статус" %}</div></div>
+						{% if journal.person %}
+							<div class="field_answer">{% if journal.person.person.status %}{{ journal.person.person.status }}{% else %}-{% endif %}</div>
+						{% else %}
+							<div class="field_answer unknow">{% trans "Неопределён" %}</div>
+						{% endif %}
+					</div>
+				</div>
+				{% endcomment %}
+				{% comment %}
+				<div class="block_info">
+					<div class="block">
+						<div class="field_name"><div>Номер пропуска</div></div>
+						<div class="field_answer">000206</div>								
+					</div>
+				</div>
+				{% endcomment %}
+				<div class="block_info">
+					<div class="block">
+						<div class="field_name"><div>{% trans "Дата рождения" %}</div></div>
+						{% if journal.person %}
+							<div class="field_answer">{% if journal.person.person.birthday %}{{ journal.person.person.birthday|date:"d.m.Y" }}{% else %}-{% endif %}</div>
+						{% else %}
+							<div class="field_answer unknow">{% trans "Неопределена" %}</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="block_info dist_info2">
+					<div class="block">
+						<div class="field_name"><div>{% trans "Разрешённое время" %}</div></div>
+						{% if journal.person %}
+							<div class="field_answer">{% if vc %}{{ vc.dt_enter|date:"d.m.Y" }} {{ vc.dt_enter|date:"H:i:s" }} - {{ vc.dt_exit|date:"d.m.Y" }} {{ vc.dt_exit|date:"H:i:s" }}{% else %}{% trans "Не задано" %}{% endif %}</div>
+						{% else %}
+							<div class="field_answer unknow">{% trans "Неопределено" %}</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="block_info">
+					<div class="block">
+						<div class="field_name"><div>{% trans "Время" %}</div></div>
+						<div class="field_answer{% if journal.person %} time{% else %} unknow{% endif %}">{{ journal.dt_last_fixed|date:"H:i:s" }}</div>
+					</div>
+				</div>
+			{% else %}
+				<div class="fio"><div class="fon_fio"><div class="txt_fio">{% trans "Нет идентификаций" %}</div></div></div>
+			{% endif %}		
+		{% else %}
+			<div class="fio"><div class="fon_fio"><div class="txt_fio">{% trans "Нет идентификаций" %}</div></div></div>
+		{% endif %}
+	</div>
+	
+</div>
+<div class="block_buttons">
+	
+	<ul class="menu_action" id="menu_action">
+		{% if show_buttons_for_security == '1' %}
+			<li><button name="" type="button" value="" class="button pass{% if not journal.person %} noactive{% endif %}"{% if journal.person %} onClick="javascript: updateData({% if journalid %}{{journalid}},'solve'{% endif %});"{% else %} disabled="disabled"{% endif %}><span class="txt"><span>{% trans "Пропустить" %}</span></span></button></li>
+			{% comment %}<li><button name="" type="button" value="" class="button solve{% if not journal.person %} noactive{% endif %}"{% if journal.person %} onClick="javascript: resetData();"{% else %} disabled="disabled"{% endif %}><span class="txt"><span>{% trans "Разобраться" %}</span></span></button></li>{% endcomment %}
+			<li><button name="" type="button" value="" class="button solve{% if not journal.person %} noactive{% endif %}"{% if journal.person %} onClick="javascript: resetData();"{% else %} disabled="disabled"{% endif %}><span class="txt"><span>{% trans "Сброс" %}</span></span></button></li>
+			<li class="dist_danger"><button name="" type="button" value="" class="button danger{% if not journal.person %} noactive{% endif %}"{% if journal.person %} onClick="javascript: updateData({% if journalid %}{{journalid}},'ban'{% endif %});"{% else %} disabled="disabled"{% endif %}><span class="txt"><span>{% trans "Тревога" %}</span></span></button></li>
+		{% else %}
+			<li><button name="" type="button" value="" class="button pass{% if not journal.person %} noactive{% endif %}"{% if journal.person %} onClick="javascript: resetData();"{% else %} disabled="disabled"{% endif %}><span class="txt"><span>{% trans "Сброс" %}</span></span></button></li>
+		{% endif %}
+	</ul>
+	
+	{% comment %}
+		<ul class="list_cameras{% if show_buttons_for_security == '0' %} dist_top{% endif %}">
+			<li>
+				<div class="camera"><img src="/files/images/security/camera1.jpg" alt="" /></div>
+				<div class="frame"></div>
+				<div class="frame_active"></div>
+				<div class="number">1</div>
+			</li>
+			<li>
+				<div class="camera"><img src="/files/images/security/camera2.jpg" alt="" /></div>
+				<div class="frame"></div>
+				<div class="frame_active"></div>
+				<div class="number">2</div>
+			</li>
+			<li class="last_in_row">
+				<div class="camera"><img src="/files/images/security/camera3.jpg" alt="" /></div>
+				<div class="frame"></div>
+				<div class="frame_active"></div>
+				<div class="number">3</div>
+			</li>
+			<li>
+				<div class="camera"><img src="/files/images/security/camera4.jpg" alt="" /></div>
+				<div class="frame"></div>
+				<div class="frame_active"></div>
+				<div class="number">4</div>
+			</li>
+			<li class="active">
+				<div class="camera"><img src="/files/images/security/camera_active.jpg" alt="" /></div>
+				<div class="frame"></div>
+				<div class="frame_active"></div>
+				<div class="number">5</div>
+			</li>
+			<li class="last_in_row">
+				<div class="camera"><img src="/files/images/security/camera5.jpg" alt="" /></div>
+				<div class="frame"></div>
+				<div class="frame_active"></div>
+				<div class="number">6</div>
+			</li>
+			<li>
+				<div class="camera"><img src="/files/images/security/camera1.jpg" alt="" /></div>
+				<div class="frame"></div>
+				<div class="frame_active"></div>
+				<div class="number">7</div>
+			</li>
+			<li>
+				<div class="camera"><img src="/files/images/security/camera2.jpg" alt="" /></div>
+				<div class="frame"></div>
+				<div class="frame_active"></div>
+				<div class="number">8</div>
+			</li>
+			<li class="last_in_row">
+				<div class="camera"><img src="/files/images/security/camera3.jpg" alt="" /></div>
+				<div class="frame"></div>
+				<div class="frame_active"></div>
+				<div class="number">9</div>
+			</li>							
+		</ul>
+	{% endcomment %}
+	
+</div>
+
+<form action="" method="POST" id="FormIds">
+    <input type="hidden" name="id_person" id="id_current_person" value="{% if id_curr_person %}{{ id_curr_person }}{% else %}0{% endif %}" />
+    <input type="hidden" name="id" id="id_journal" value="{% if journalid %}{{ journalid }}{% else %}0{% endif %}" />
+    <input type="hidden" name="agregate_id" id="id_agregate" value="{% if agregate_id %}{{ agregate_id }}{% else %}0{% endif %}" />
+</form>

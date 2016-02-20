@@ -1,0 +1,87 @@
+{% load i18n %}
+{% include "header.html" %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/settings_journal.css?v=v{{ version }}" />
+<script src="/files/js/lib/additional-methods.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript" src="/files/js/lib/tooltip/easyTooltip.js?v=v{{ version }}"></script>
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript" src="/files/js/settings/journal.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+var ERROR_DATE = "{% trans "Некорректное значение" %}.";
+$(function() {
+    init();
+});
+</script>
+<!-- BEGIN: content-->
+<div class="content" id="content">
+    <div class="block_settings">
+    {% include "menu_insert.html" %}
+    <div class="block_cont">
+        <div class="block_cont_top2">
+            <div class="block_cont_bottom min_height">
+                <h2>{% trans "Журнал идентификаций" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Настройки Журнал идентификаций" %}');" /></h2>
+                {% include "current_time.html" %}
+                <form method="post" action="" id="frm_journal">
+                    <div class="bl_param">
+                        <div class="block">
+                            <label for="size_journal" class="bl_txt">{% trans "Объём журнала" %}:</label>
+                            <div class="bl_enter">
+                                <div class="block_ie">
+                                    <div class="block">{% spinbox "size_journal" "size_journal" 1000000 "55" "1000" "2000000" "1000" %}</div>
+                                </div>                                        
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bl_param">
+                        <div class="block">
+                            <label for="size_table_journal" class="bl_txt">{% trans "Объём таблицы журнала" %}:</label>
+                            <div class="bl_enter">
+                                <div class="block_ie">
+                                    <div class="block">{% spinbox "size_table_journal" "size_table_journal" 1000000 "55" "1000" "2000000" "1000" %}</div>
+                                </div>                                                            
+                            </div>
+                        </div>
+                    </div>                                                                          
+                    <div class="bl_param">
+                        <div class="bl_error"></div>
+                        <div class="block">
+                            <label for="periods" class="bl_txt">{% trans "Удаление данных" %}:</label>
+                            <div class="bl_enter">
+                                <select name="" id="periods" class="select">
+                                    <option value="0" selected="selected">{% trans "Старше одной недели" %}</option>
+                                    <option value="1">{% trans "Старше одного месяца" %}</option>
+                                    <option value="2">{% trans "Старше трёх месяцев" %}</option>
+                                    <option value="3">{% trans "Старше указанной даты" %}</option>
+                                </select><span class="dist_left" style="visibility: hidden;" id="otherPeriod"><input name="dataClear" id="dataClear" type="text" value="" class="inp_txt" maxlength="10" /><input type="button" value="" name="" class="btn_calend" title="{% trans "Выбрать дату" %}" onClick="javascript: displayDatePicker('dataClear', false, 'dmy', '.');" /></span>
+                            </div>
+                        </div>
+                    </div>                    
+                    <div class="bl_param">
+                        <div class="block">
+                            <label for="time_check" class="bl_txt">{% trans "Периодичность проверки" %}:</label>
+                            <div class="bl_enter">
+                                <div class="block_ie">
+                                    <div class="block">{% spinbox "time_check" "time_check" 60 "55" "5" "1440" "1000" %}
+                                        <span class="unit">({% trans "в минутах" %})</span>
+                                    </div>
+                                </div>                                        
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dist_top">
+                        <input type="submit" name="" value="{% trans "Сохранить" %}" class="inp_btn btn_blue" />
+                    </div>                                                          
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+{% include "footer.html" %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+</body>
+</html>

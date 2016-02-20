@@ -1,0 +1,114 @@
+{% load i18n %}
+{% include "po4header.html" %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4anketauser.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	{% if select_page == 'anketauser' %}
+	<div class="block_settings">
+		{% include "po4menu_insert.html" %}
+		<div class="block_cont">
+			<div class="block_cont_top2">
+	{% else %}
+		<div class="block_cont">
+			<div class="block_cont_top">	
+	{% endif %}
+				<div class="block_cont_bottom min_height">
+					<h2>
+						{% if select_page == "anketauser" %}
+							<a href="{% url settings_user %}">{% trans "Список пользователей" %}</a>
+						{% endif %}
+						{% if select_page == "kpp" %}
+							<a href="/po4/kpp/">{% trans "КПП" %}</a>
+						{% endif %}
+						{% if select_page == "historychange" %}
+							<a href="/po4/historychange/">{% trans "История" %}</a>
+						{% endif %}
+						{% if user.id != None %} - {{ user.staff.person.first_name }} {{ user.staff.person.last_name }} {{ user.staff.person.middle_name }} {% endif %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Анкета персоны" %}');" />{% if save %} <b style="color:#0088CC; margin-left:5px;">{% trans "Изменения сохранены" %}</b>{% endif %}</h2>
+					<form method="post" action="" name="">
+						<div class="frm_block">
+							<div class="bl_photo_btn">
+								{% if photoid == -1 or photoid == None %}
+									<div class="no_photo_user">
+										<div>{% trans "Фотография пользователя" %}</div>
+									</div>
+								{% else %}
+									<div class="all_photo"><a href="/po4/photosperson/{{ user.staff.id }}/">{% trans "Фотографии" %} ({{ photocount }})</a></div>			
+									<div class="photo_user">
+										<a href="/po4/photosperson/{{ user.staff.id }}/"><img src="/image/?id={{ photoid }}&photo={{ photoname }}" alt="" /></a>
+									</div>
+								{% endif %}					
+								<div class="btn_photos">								
+									<!--<input type="submit" name="{{ addphoto }}" value="{% trans "Добавить" %}" {% if photoid == -1 or photoid == None %} disabled="disabled" class="inp_btn inp_btn90 dis" {% else %} class="inp_btn inp_btn90" {% endif %}/>-->
+									<a href="/po4/photosperson/{{ user.staff.id }}/"{% if photoid == -1 or photoid == None %} class="link_btn dis" onClick="return false"{% else %} class="link_btn"{% endif %}>{% trans "Посмотреть" %}</a>
+								</div>
+							</div>
+							<div class="bl_info_all">
+								<div class="head_info">{% trans "Информация" %}</div>
+								<div class="bl_info">							
+									{% if errors.staff %}<div class="block_error">{{ errors.staff }}</div>{% endif %}
+									<div class="bl_txt">{% trans "Сотрудник" %}:</div>
+									<select name="staff" class="select{% if errors.staff %} error_border{% endif %}">									
+										{% for staff in allstaff %}
+											<option value="{{ staff.id }}" {% if staff.id == user.staff.id %}selected="selected"{% endif %}>{{ staff.person.first_name }} {{ staff.person.last_name }} {{ staff.person.middle_name }} {% if not staff.active %}({% trans "удалено" %}){% endif %}</option>
+										{% endfor %}
+									</select>
+								</div>
+								<div class="bl_info">
+									<div class="bl_txt">{% trans "Статус" %}:</div>
+									<select name="status" class="select">
+										{% for status in allstatus %}
+											<option value="{{ status.id }}"{% if status.name == user.status %} selected="selected"{% endif %}>{{ status.name }}</option>
+										{% endfor %}
+									</select>
+								</div>
+								<div class="bl_info">
+									<div class="bl_txt">{% trans "КПП" %}:</div>
+									<select name="kpp" class="select">
+										{% for kpp in allkpp %}
+											<option value="{{ kpp.id }}"{% if kpp.name == user.kpp %} selected="selected"{% endif %}>{{ kpp.name }}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+							<div class="bl_access">
+								<div class="head_info">{% trans "Доступ" %}</div>
+								{% if errors.username %}<div class="block_error_access">{{ errors.username }}</div>{% endif %}
+								<div class="access_info">
+									<div>{% trans "Логин" %}:</div> <input type="text" name="username" value="{{ user.username }}" maxlength="30" class="inp_txt{% if errors.username %} error_border{% endif %}" />
+								</div>
+								{% if errors.password1 %}<div class="block_error_access">{{ errors.password1 }}</div>{% endif %}								
+								<div class="access_info">
+									<div>{% trans "Пароль" %}:</div>
+									<input type="password" name="password1" value="" maxlength="128" class="inp_txt{% if errors.password1 %} error_border{% endif %}" />
+								</div>						
+								{% if errors.password2 %}<div class="block_error_access">{{ errors.password2 }}</div>{% endif %}								
+								<div class="access_info">
+									<div>{% trans "Пароль повтор" %}:</div>
+									<input type="password" name="password2" value="" maxlength="128" class="inp_txt{% if errors.password2 %} error_border{% endif %}" />
+								</div>
+							</div>		
+						</div>
+						<div class="frm_block">
+							<input type="hidden" name="division" value="{{ user.division }}" />
+							<input type="hidden" name="id" value="{{ user.id }}" />
+							<input type="submit" name="{{ action }}" value="{% trans "Сохранить" %}" class="inp_btn btn_blue" />
+						</div>					
+					</form>
+				</div>
+			</div>
+		</div>
+		{% if select_page == 'anketauser' %}</div>{% endif %}
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po4footer.html" %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% include "window_help.html" %}
+
+</body>
+</html>

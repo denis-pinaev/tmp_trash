@@ -1,0 +1,44 @@
+{% extends "base_archive_tab.html" %}
+{% load i18n a_templatetags %}
+{% load templatetags %}
+{% block title %}{% trans 'Найденные люди' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/list_photos.css?v=v{{ version }}" />
+<script src="/files/archive/files/js/page_faces.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js-global/FancyZoom.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js-global/FancyZoomHTML.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript">
+$(function() {
+	initTooltip();
+	setupZoom();
+	initFacesSize();
+});
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu/menu_archive.html" %}{% endblock %}
+{% block subcontent %}
+	<h2><a href="{% url archive_page "video" %}">{% trans "Видеоролики" %}</a> - {% trans "Найденные люди" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Видеоархив Видеоролики Найденные люди' %}');" /></h2>
+	{% include "current_time.html" %}
+	<form method="get" action="" id="main_form">
+		<div>{% trans "Всего людей" %}: <span class="info_important">{{ all_faces|default:0 }}</span></div>
+		{% if faces and faces|length > 0 %}
+		{% include "navigation/light_top.html" %}
+		{% include "navigation/main.html" %}                                        
+		<ul class="list_photos">                            
+			{% for face in faces %}
+				<li>
+					<div class="block_photo" onClick="javascript: checkPhoto2(this, {{ forloop.counter }}, {{ faces|length }});">
+						{% if face.fio %}<div class="block_name short_descr" title="{{ face.fio }}">{{ face.fio|truncchar:20 }}</div>{% endif %}
+						<a href="{% url person_info_url %}?id={{ face.id_cs }}" target="_blank" class="short_descr" title="{% trans 'Перейти к анкете персоны' %}">
+						<img src="{{ face.url }}/files/video/{{ face.location_photo }}" alt="" id="img{{ forloop.counter }}" /></a>
+					</div>
+					<div class="photo_info"><div class="photo_param size short_descr" id="span_img{{ forloop.counter }}">&nbsp;{% comment %}{{ face.w }}x{{ face.h }}{% endcomment %}</div></div>
+					<a href="{{ face.url }}/files/video/{{ face.location_photo }}" target="_blank" class="btn_loupe"><span class="short_descr" title="{% trans 'Увеличить изображение' %}"></span></a>
+				</li>
+			{% endfor %}                        
+		</ul>
+		{% include "navigation/main_buttom.html" %}
+		{% endif %}                  
+	</form>
+{% endblock %}

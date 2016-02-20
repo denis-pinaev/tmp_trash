@@ -1,0 +1,212 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Настройки протокола SNMP' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/settings_integration.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<script src="/files/js/lib/jquery-ui/jquery-ui-1.8.min.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/settings_integration.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript">
+var ERROR1 = "{% trans "Обязательное поле для заполнения." %}";
+var ERROR2 = "{% trans "Введите целое число." %}";
+var ERROR3 = "{% trans "Такое значение уже используется." %}";
+var ERROR_GLOBAL = "{% trans "Внимание! Произошла ошибка при сохранении настроек для протокола SNMP. Попробуйте ещё раз." %}";
+var SET_SAVE = "{% trans "Настройки для протокола SNMP успешно сохранены" %}.";
+var SET_SAVE_APPLY = "{% trans "Настройки для протокола SNMP успешно сохранены и применены" %}.";
+$(function() {
+    initSNMP();
+});
+// функция для сбрасывания настроек
+function resetParamsForm() {
+	var validator = $("#formIntegration").validate();
+	validator.resetForm();
+	checkAlertSNMP();
+	settingsSNMPVersion( $("input[name=system_control_snmp_trap_version]:checked") );
+	settingsSNMPTimeout( $("input[name=system_control_snmp_trap_type]:checked") );
+}
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+{% include "integration_menu.html" %}
+<h2>{% trans "Настройка параметров оповещения внешних систем по протоколу SNMP" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Настройки протокола SNMP' %}');" /></h2>
+{% include "current_time.html" %}
+{% if params.us_error %}
+	<div class="message_warning">{% trans "Управляющая система" %} <strong>"{{ params.HOST }}:{{ params.PORT }}"</strong> {% trans "недоступна." %}</div>
+{% else %}
+<form method="post" action="" id="formIntegration">
+	<div class="block_form">{% trans "Поля, отмеченные звёздочкой" %} (<span class="req">*</span>), {% trans "являются обязательными для заполнения" %}.</div>
+	<div class="message_action" style="display: none;"></div>
+	<div class="message_warning" style="display: none;"></div>                                             
+	<div class="bl_param">
+		<div class="block">
+			<label for="smtp_to" class="bl_txt">{% trans "Оповещения по SNMP" %}:</label>
+			<div class="bl_enter">
+				<input type="radio" name="system_control_snmp_need_alert" id="snmp_need_alert_yes" value="true" class="inp_check" {% if params.system_control_snmp_need_alert == 'true' %}checked="checked" {% endif %} /><label for="snmp_need_alert_yes">{% trans "Включить" %}</label>
+				<input type="radio" name="system_control_snmp_need_alert" id="snmp_need_alert_no" value="false" class="inp_check dist_left" {% if params.system_control_snmp_need_alert == 'false' or not params.system_control_snmp_need_alert %}checked="checked" {% endif %} /><label for="snmp_need_alert_no">{% trans "Выключить" %}</label>
+			</div>
+		</div>
+	</div>                                                
+	<div id="settings_snmp" style="display: none;">
+		<div class="delim_block"></div>
+		<div class="bl_param">
+			<div class="bl_error"></div>
+			<div class="block">
+				<label for="snmp_common_upd" class="bl_txt"><span class="req">*</span>{% trans "Хост сервера" %}:</label>
+				<div class="bl_enter">
+					<div class="block_ie">
+						<div class="block">
+							<div class="bl_address"><input type="text" name="default_control_snmp_common_udp" value="{{ params.default_control_snmp_common_udp }}" class="inp_txt" id="snmp_common_upd" /><span>/162</span></div>
+							<span class="bl_help">{% trans "для отправки на данный хост оповещений, формируемых системой" %}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="bl_param">
+			<div class="bl_error"></div>
+			<div class="block">
+				<label for="snmp_oid_base" class="bl_txt"><span class="req">*</span>{% trans "Уникальный идентификатор объекта" %}:</label>
+				<div class="bl_enter">
+					<input type="text" name="default_control_snmp_oid_base" value="{{ params.default_control_snmp_oid_base }}" class="inp_txt" id="snmp_oid_base" /><span class="bl_help">{% trans "например" %}, 1.3.6.1.4.1.25728.8800.1.1</span>                                    
+				</div>
+			</div>
+		</div>                        
+		<div class="delim_block"></div>
+		<div class="bl_param">
+			<div class="block">
+				<label for="snmp_version1" class="bl_txt">{% trans "Версия протокола" %}:</label>
+				<div class="bl_enter">
+					<input type="radio" name="system_control_snmp_trap_version" value="version1" id="snmp_version1" class="inp_check" {% if params.system_control_snmp_trap_version == 'version1' %} checked="checked" {% endif %}/><label for="snmp_version1">{% trans "Версия" %} 1</label>
+					<input type="radio" name="system_control_snmp_trap_version" value="version2" id="snmp_version2" class="inp_check dist_left" {% if params.system_control_snmp_trap_version == 'version2' or not params.system_control_snmp_trap_version %} checked="checked" {% endif %} /><label for="snmp_version2">{% trans "Версия" %} 2</label>
+				</div>
+			</div>
+		</div>
+		<div id="settings_snmp_version2" style="display: none;">
+			<div class="delim_block"></div>
+			<div class="head_setting">{% trans "Общие настройки" %}</div>                        
+			<div class="bl_param">
+				<div class="block">
+					<label for="snmp_type_trap" class="bl_txt">{% trans "Тип генерируемого сообщения" %}:</label>
+					<div class="bl_enter">
+						<span class="short_descr" title="{% trans "Генерация трапов при возникновении события системы и отправка их на удалённый сервер" %}"><input type="radio" name="system_control_snmp_trap_type" value="trap" id="snmp_type_trap" class="inp_check" {% if params.system_control_snmp_trap_type == 'trap' %} checked="checked" {% endif %}/><label for="snmp_type_trap">trap</label></span>
+						<span class="short_descr" title="{% trans "Формирование уведомительных сообщений при возникновении событий системы, посылаемых на сервер, и требование ответного подтверждения при получении данного оповещения" %}"><input type="radio" name="system_control_snmp_trap_type" value="inform" id="snmp_type_inform" class="inp_check dist_left"{% if params.system_control_snmp_trap_type == 'inform' or not params.system_control_snmp_trap_type %} checked="checked"{% endif %} /><label for="snmp_type_inform">inform</label>										
+					</div>
+				</div>
+			</div>
+			<div class="bl_param" id="settings_snmp_version2_alert_timeout">
+				<div class="bl_error"></div>
+				<div class="block">
+					<label for="system_control_snmp_timeout" class="bl_txt">{% trans "Время ожидания ответа (в мс)" %}:</label>
+					{% spinbox "system_control_snmp_timeout" "system_control_snmp_timeout" params.system_control_snmp_timeout "55" "0" "20120000" "100" %}
+				</div>
+			</div>                                    
+			<div class="bl_param">
+				<div class="block">
+					<label for="snmp_area" class="bl_txt">{% trans "Идентификатор сервера" %}:</label>
+					<div class="bl_enter">
+						<input type="text" name="system_control_snmp_area" value="{{ params.system_control_snmp_area }}" class="inp_txt" id="snmp_area" />
+						<span class="bl_help">{% trans "например" %}, SmilartArea</span>
+					</div>
+				</div>
+			</div>
+			<div class="delim_block"></div>
+			<div class="head_setting">{% trans "Структура оповещения" %}</div>
+			<div class="bl_error"></div>
+			<div class="bl_param">
+				<div class="bl_error"></div>
+				<div class="block">
+					<label class="bl_txt" for="snmp_ident"><span class="req">*</span>{% trans "Код типа оповещения" %}:</label>                                
+					<div class="bl_enter">
+						<input type="text" name="system_control_snmp_oid_identification" value="{{ params.system_control_snmp_oid_identification }}" class="inp_txt" id="snmp_ident" />
+						<span class="bl_help">{% trans "например" %}, 1010.1</span>
+					</div>
+				</div>
+			</div>
+			<div class="block bl_param">{% trans "В поля вводятся идентификаторы данных параметров. Их значения - целые уникальные числа." %}
+			<br />{% trans "Для изменения последовательности параметров перетащите их мышкой." %}</div>
+			<div id="sortable">
+				{% if params.system_control_snmp_oid_identification_personId %}
+				<div class="block bl_param">
+					<label class="bl_txt bl_move" for="snmp_ident_person_id">{% trans "Идентификатор персоны" %}:</label>
+					<input type="text" name="system_control_snmp_oid_identification_personId" id="snmp_ident_person_id" value="{{ params.system_control_snmp_oid_identification_personId }}" class="inp_txt inp_move" />
+					<span class="bl_error2"></span>
+				</div>
+				{% endif %}
+				{% if params.system_control_snmp_oid_identification_personName %}
+				<div class="block bl_param">
+					<label class="bl_txt bl_move" for="snmp_ident_person_name">{% trans "Имя персоны" %}:</label>
+					<input type="text" name="system_control_snmp_oid_identification_personName" id="snmp_ident_person_name" value="{{ params.system_control_snmp_oid_identification_personName }}" class="inp_txt inp_move" />
+					<span class="bl_error2"></span>
+				</div>
+				{% endif %}
+				{% if params.system_control_snmp_oid_identification_personPhoto %}
+				<div class="block bl_param">
+					<label class="bl_txt bl_move" for="snmp_ident_person_photo">{% trans "Номер фотографии персоны в базе" %}:</label>
+					<input type="text" name="system_control_snmp_oid_identification_personPhoto" id="snmp_ident_person_photo" value="{{ params.system_control_snmp_oid_identification_personPhoto }}" class="inp_txt inp_move" />
+					<span class="bl_error2"></span>
+				</div>
+				{% endif %}
+				{% if params.system_control_snmp_oid_identification_personCoeff %}
+				<div class="block bl_param">
+					<label class="bl_txt bl_move" for="snmp_ident_coeff">{% trans "Коэффициент похожести" %}:</label>
+					<input type="text" name="system_control_snmp_oid_identification_personCoeff" id="snmp_ident_coeff" value="{{ params.system_control_snmp_oid_identification_personCoeff }}" class="inp_txt inp_move" />
+					<span class="bl_error2"></span>
+				</div>
+				{% endif %}
+				{% if params.system_control_snmp_oid_identification_cameraIp %}
+				<div class="block bl_param">
+					<label class="bl_txt bl_move" for="snmp_ident_camera_ip">{% trans "Адрес камеры" %}:</label>
+					<input type="text" name="system_control_snmp_oid_identification_cameraIp" id="snmp_ident_camera_ip" value="{{ params.system_control_snmp_oid_identification_cameraIp }}" class="inp_txt inp_move" />
+					<span class="bl_error2"></span>
+				</div>
+				{% endif %}
+				{% if params.system_control_snmp_oid_identification_cameraType %}
+				<div class="block bl_param">
+					<label class="bl_txt bl_move" for="snmp_ident_camera_type">{% trans "Тип камеры" %}:</label>
+					<input type="text" name="system_control_snmp_oid_identification_cameraType" id="snmp_ident_camera_type" value="{{ params.system_control_snmp_oid_identification_cameraType }}" class="inp_txt inp_move" />
+					<span class="bl_error2"></span>
+				</div>
+				{% endif %}
+				{% if params.system_control_snmp_oid_identification_alertTime %}
+				<div class="block bl_param">
+					<label class="bl_txt bl_move" for="snmp_ident_time">{% trans "Время обнаружения" %}:</label>
+					<input type="text" name="system_control_snmp_oid_identification_alertTime" id="snmp_ident_time" value="{{ params.system_control_snmp_oid_identification_alertTime }}" class="inp_txt inp_move" />
+					<span class="bl_error2"></span>
+				</div>
+				{% endif %}
+				{% if params.system_control_snmp_oid_identification_originalUrl %}
+				<div class="block bl_param">
+					<label class="bl_txt bl_move" for="snmp_ident_image_camera">{% trans "Адрес изображения с камеры" %}:</label>
+					<input type="text" name="system_control_snmp_oid_identification_originalUrl" id="snmp_ident_image_camera" value="{{ params.system_control_snmp_oid_identification_originalUrl }}" class="inp_txt inp_move" />
+					<span class="bl_error2"></span>
+				</div>
+				{% endif %}
+				{% if params.system_control_snmp_oid_identification_foundUrl %}
+				<div class="block bl_param">
+					<label class="bl_txt bl_move" for="snmp_ident_image_base">{% trans "Адрес изображения из базы" %}:</label>
+					<input type="text" name="system_control_snmp_oid_identification_foundUrl" id="snmp_ident_image_base" value="{{ params.system_control_snmp_oid_identification_foundUrl }}" class="inp_txt inp_move" />
+					<span class="bl_error2"></span>
+				</div>
+				{% endif %}
+			</div>
+			<input type="hidden" name="system_control_snmp_oid_identification_order" id="system_control_snmp_oid_identification_order" value="{{ params.system_control_snmp_oid_identification_order }}" />
+			<div class="bl_param">
+				<div class="block">
+					<label for="system_control_snmp_identification_alert_timeout" class="bl_txt"><span class="req">*</span>{% trans "Время (в мс)" %}:</label>
+					{% spinbox "system_control_snmp_identification_alert_timeout" "system_control_snmp_identification_alert_timeout" params.system_control_snmp_identification_alert_timeout "55" "0" "20120000" "100" %}
+					<span class="bl_help2">{% trans "минимальное время между последовательными оповещениями об идентификации одной персоны" %}</span>
+				</div>
+			</div>
+		</div>
+		<div id="sortable_add" style="display: none;"></div>
+	</div>                                        
+	<div class="dist_top"><input type="submit" name="" value="{% trans "Применить" %}" class="inp_btn inp_btn_blue" /><input type="button" name="" value="{% trans "Отменить" %}" class="inp_btn inp_btn90 dist_left" onClick="javascript: resetParamsForm();" /></div>
+</form>
+{% endif %}
+{% endblock %}
+{% block windows %}
+{% include "window_integration.html" %}
+{% include "window_reboot_us.html" %}
+{% endblock %}

@@ -1,0 +1,86 @@
+{% load i18n %}
+{% if project == "po4" %}{% include "po4header.html" %}{% endif %}
+{% if project == None %}{% include "header.html" %}{% endif %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4settings_export.css?v=v{{ version }}" />
+
+<script type="text/javascript">
+    
+function export_info(){
+    showIndicator(true);
+    fr = 0;
+    if (document.getElementById("fr")){
+        if (document.getElementById("fr").checked){fr = 1;}                                       
+    }
+    journal = 0;
+    if (document.getElementById("journal")){
+        if (document.getElementById("journal").checked){journal = 1;}                                       
+    }    
+    admin = 0;
+    if (document.getElementById("admin")){
+        if (document.getElementById("admin").checked){admin = 1;}                                       
+    }    
+    db = 0;
+    if (document.getElementById("db")){
+        if (document.getElementById("db").checked){db = 1;}                                       
+    }    
+    version = 0;
+    if (document.getElementById("version")){
+        if (document.getElementById("version").checked){version = 1;}                                       
+    }    
+    $.ajax({
+        type: "GET",
+        url: "/exportinfo",
+        data: {version: version, db: db, admin: admin, journal: journal, fr: fr},
+        success: function(msg){
+            // alert(msg);
+            showIndicator(false);
+            var content = '<ul class="list_links">'+msg+'</ul>';
+//                        '<li><a href="#">Общая информация</a></li>'
+            changeWindow({id: 'win_mess', css: {width: '300px', height: '220px'}, txt: content});
+        },
+        error: function(msg){
+            // alert("!!!"+msg);
+            showIndicator(false);
+        }
+    });        
+}
+
+</script>
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+    <div class="block_settings">
+        {% if project == "po4" %}{% include "po4menu_insert.html" %}{% endif %}
+        {% if project == None %}{% include "menu_insert.html" %}{% endif %}
+        <div class="block_cont">
+            <div class="block_cont_top2">
+                <div class="block_cont_bottom min_height">
+                    <h2>{% trans "Экспорт информации о системе" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Экспорт_информации_о_системе" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>    
+                    <form method="post" action="">
+                        <div class="frm_block"><span class="tick"></span>{% trans "Настройки камер" %}</div>
+                        <div class="frm_block"><span class="tick"></span>{% trans "Настройки распознавания" %}</div>
+                        <div class="frm_block"><span class="tick"></span>{% trans "Системные настройки" %}</div>
+                        <div class="frm_block"><input type="checkbox" name="export" value="fr" class="inp_check" id="fr" /><label for="fr">{% trans "Демона идентификации личности" %}</label></div>
+                        <div class="frm_block"><input type="checkbox" name="export" value="journal" class="inp_check" id="journal" /><label for="journal">{% trans "Журнал" %}</label></div>
+                        <div class="frm_block"><input type="checkbox" name="export" value="db_dump" class="inp_check" id="db" /><label for="db">{% trans "Базы данных" %}</label></div>
+                        <div class="frm_block"><input type="checkbox" name="export" value="admin" class="inp_check" id="admin" /><label for="admin">{% trans "Админка" %}</label></div>
+                        <div class="frm_block"><input type="checkbox" name="export" value="version" class="inp_check" id="version" /><label for="version">{% trans "Версии ПО" %}</label></div>
+                        <div class="frm_block"><input type="button" name="" value="{% trans "Экспорт информации" %}" class="inp_btn inp_blue140" onClick="javascript: export_info();" /></div>
+                    </form>
+                </div>                
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>            
+
+{% if project == "po4" %}{% include "po4footer.html" %}{% endif %}
+{% if project == None %}{% include "footer.html" %}{% endif %}
+{% include "window_export.html"%}
+{% include "window_help.html" %}
+</body>
+</html>

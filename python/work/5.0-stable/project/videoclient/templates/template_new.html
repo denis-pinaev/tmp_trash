@@ -1,0 +1,145 @@
+{% load i18n %}
+{% include "header.html" %}
+{% load templatetags %}
+{% load pagination_tags %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4photos.css?v=v{{ version }}" />
+{% if res_interface == "1" %}
+    <link rel="stylesheet" type="text/css" href="/files/css/1920/photosperson.css?v=v{{ version }}" />
+{% endif %}
+<script type="text/javascript" src="/files/js/lib/tooltip/easyTooltip.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+    $(function() {
+        $(".short_descr").easyTooltip();     
+    });    
+</script>
+<!-- BEGIN: content-->
+<div class="content" id="content">
+    <div class="block_cont">
+        <div class="block_cont_top">
+            <div class="block_cont_bottom min_height">
+                <h2><a href="#">Списки</a> - <a href="#">Руководство</a> - <a href="#">Иванов Иван Иванович</a> - <a href="#">Добавление фотографий</a> - Вырезанные лица (14)<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+                {% include "current_time.html" %}
+                <form method="post" action="" name="">  
+                    <div class="message_action">
+                        {% trans 'Пожалуйста, выберите лица, которыми хотите обучить, и нажмите кнопку <strong>"Продолжить обучение"</strong>' %}.
+                    </div>
+                    <div class="frm_block">
+                        <ul class="menu_cutfaces" id="menu_cutfaces">
+                            <li class="mcf_first mcf_act"><a href="po4_photos_cut_faces_all.html">Все (14)</a></li>
+                            <li><a href="po4_photos_cut_faces_choose.html">Только выделенные (6)</a></li>
+                        </ul>                    
+                        <div class="bl_btn_check">
+                            <input type="button" name="" value="{% trans "Выделить всё" %}" class="inp_btn inp_btn120" onMouseUp="javascript: buttonStatus(this, 'over');" onMouseDown="javascript: buttonStatus(this, 'down');" 
+                                onMouseOut="javascript: buttonStatus(this, 'up');" onMouseOver="javascript: buttonStatus(this, 'over');" onClick="javascript: checkAllPhotosBtn('choose_all', {{ allphotos.photos|length }}, 1, {{ photos_|length }});" />
+                            <input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAllPhotos(this, {{ allphotos.photos|length }}, 1, {{ photos_|length }});" id="choose_all" />
+                        </div>
+                    </div>
+                    <ul class="list_photos">
+                        <li>
+                            <div class="block_photo"><img src="images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+                            <div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глаз">83</div><div class="photo_param">120x120</div></div>
+                            <input type="checkbox" name="" value="" class="inp_check" />
+                            <a href="#" class="btn_loupe" title="Увеличить изображение"><span></span></a>                            
+                        </li>
+                        <li>
+                            <div class="block_photo"><img src="images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+                            <div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глаз">83</div><div class="photo_param">120x120</div></div>
+                            <input type="checkbox" name="" value="" class="inp_check" />
+                            <a href="#" class="btn_loupe" title="Увеличить изображение"><span></span></a>                            
+                        </li>
+                        <li>
+                            <div class="block_photo"><img src="images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+                            <div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глаз">83</div><div class="photo_param">120x120</div></div>
+                            <input type="checkbox" name="" value="" class="inp_check" />
+                            <a href="#" class="btn_loupe" title="Увеличить изображение"><span></span></a>                            
+                        </li>
+                        <li>
+                            <div class="block_photo"><img src="images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+                            <div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глаз">83</div><div class="photo_param">120x120</div></div>
+                            <input type="checkbox" name="" value="" class="inp_check" />
+                            <a href="#" class="btn_loupe" title="Увеличить изображение"><span></span></a>                            
+                        </li>
+                        <li>
+                            <div class="block_photo"><img src="images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+                            <div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глаз">83</div><div class="photo_param">120x120</div></div>
+                            <input type="checkbox" name="" value="" class="inp_check" />
+                            <a href="#" class="btn_loupe" title="Увеличить изображение"><span></span></a>                            
+                        </li>
+                        <li>
+                            <div class="block_photo"><img src="images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+                            <div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глаз">83</div><div class="photo_param">120x120</div></div>
+                            <input type="checkbox" name="" value="" class="inp_check" />
+                            <a href="#" class="btn_loupe" title="Увеличить изображение"><span></span></a>                            
+                        </li>
+                        <li>
+                            <div class="block_photo"><img src="images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+                            <div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глаз">83</div><div class="photo_param">120x120</div></div>
+                            <input type="checkbox" name="" value="" class="inp_check" />
+                            <a href="#" class="btn_loupe" title="Увеличить изображение"><span></span></a>                            
+                        </li>
+                        <li>
+                            <div class="block_photo"><img src="images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+                            <div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глаз">83</div><div class="photo_param">120x120</div></div>
+                            <input type="checkbox" name="" value="" class="inp_check" />
+                            <a href="#" class="btn_loupe" title="Увеличить изображение"><span></span></a>                            
+                        </li>
+                        <li>
+                            <div class="block_photo"><img src="images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+                            <div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глаз">83</div><div class="photo_param">120x120</div></div>
+                            <input type="checkbox" name="" value="" class="inp_check" />
+                            <a href="#" class="btn_loupe" title="Увеличить изображение"><span></span></a>                            
+                        </li>
+                        <li>
+                            <div class="block_photo"><img src="images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+                            <div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глаз">83</div><div class="photo_param">120x120</div></div>
+                            <input type="checkbox" name="" value="" class="inp_check" />
+                            <a href="#" class="btn_loupe" title="Увеличить изображение"><span></span></a>                            
+                        </li>
+                        <li>
+                            <div class="block_photo"><img src="images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+                            <div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глаз">83</div><div class="photo_param">120x120</div></div>
+                            <input type="checkbox" name="" value="" class="inp_check" />
+                            <a href="#" class="btn_loupe" title="Увеличить изображение"><span></span></a>                            
+                        </li>
+                        <li>
+                            <div class="block_photo"><img src="images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+                            <div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глаз">83</div><div class="photo_param">120x120</div></div>
+                            <input type="checkbox" name="" value="" class="inp_check" />
+                            <a href="#" class="btn_loupe" title="Увеличить изображение"><span></span></a>                            
+                        </li>
+                        <li>
+                            <div class="block_photo"><img src="images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+                            <div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глаз">83</div><div class="photo_param">120x120</div></div>
+                            <input type="checkbox" name="" value="" class="inp_check" />
+                            <a href="#" class="btn_loupe" title="Увеличить изображение"><span></span></a>                            
+                        </li>
+                        <li>
+                            <div class="block_photo"><img src="images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+                            <div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глаз">83</div><div class="photo_param">120x120</div></div>
+                            <input type="checkbox" name="" value="" class="inp_check" />
+                            <a href="#" class="btn_loupe" title="Увеличить изображение"><span></span></a>                            
+                        </li>
+                    </ul>                    
+                    <div class="frm_block">
+                        <div class="bl_btn_check">
+                            <input type="button" name="" value="{% trans "Выделить всё" %}" class="inp_btn inp_btn120" onMouseUp="javascript: buttonStatus(this, 'over');" onMouseDown="javascript: buttonStatus(this, 'down');" 
+                                onMouseOut="javascript: buttonStatus(this, 'up');" onMouseOver="javascript: buttonStatus(this, 'over');" onClick="javascript: checkAllPhotosBtn('choose_all2', {{ allphotos.photos|length }}, 1, {{ photos_|length }});" />
+                            <input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAllPhotos(this, {{ allphotos.photos|length }}, 1, {{ photos_|length }});" id="choose_all2" />
+                        </div>
+                    </div>     
+                    <div class="frm_block">
+                        <input type="button" name="" value="Продолжить обучение" class="inp_btn inp_btn170blue" />
+                    </div>                                  
+                </form>            
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+{% include "footer.html" %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% include "po4window_photos.html" %}
+</body>
+</html>

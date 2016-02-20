@@ -1,0 +1,144 @@
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>{% block title %}{% endblock %}</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="keywords" content="" />
+	<meta name="description" content="" />
+	<meta http-equiv="content-language" content="{{ LANGUAGE_CODE }}" />
+{% block main_css %}
+	<link rel="stylesheet" type="text/css" href="/files/css/main.css?v=v{{ version }}" />
+	{% if res_interface == "1" %}<link rel="stylesheet" type="text/css" href="/files/css/1920/main.css?v=v{{ version }}" />{% endif %}
+	<link rel="stylesheet" type="text/css" href="/files/css/windows.css?v=v{{ version }}" />
+{% endblock %}
+{% block main_js %}
+	<script type="text/javascript" src="/files/js/lib/draw/jquery-1.6.2.js?v=v{{ version }}"></script>
+	<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script> 
+	<script type="text/javascript" src="/files/js/lib/jquery.validate.js?v=v{{ version }}"></script>
+	<script type="text/javascript" src="/files/js/lib/additional-methods.js?v=v{{ version }}"></script>
+	<script type="text/javascript" src="/files/js/lib/tooltip/tooltip.js?v=v{{ version }}"></script>
+	<script type="text/javascript" src="/files/js/util.js?v=v{{ version }}"></script>
+	{% include "system_blocks/datepicker.html" %}
+	{% include "system_blocks/system_windows.html" %}
+{% endblock %}
+{% block js_css %}{% endblock %}
+</head>
+<body>
+<div class="body1">
+<!-- BEGIN: header -->
+<div class="header">
+	<div class="block_tm">
+		<div class="block_rtm"></div>
+		<div class="block_ltm"></div>
+		{% if LANGUAGES %}
+		<form method="post" action="/i18n/setlang/" class="frm_language" id="frm_language">
+			{% for lang in LANGUAGES %}
+			{% if lang.0 != LANGUAGE_CODE %}
+			<input type="hidden" name="language" value="{% if lang.0 != 'en' %}ru{% else %}en{% endif %}" />
+		   	{% endif %}
+			{% endfor %}
+			{% block language %}<input type="button" class="language {{ LANGUAGE_CODE }}" name="" id="change_language" value="{{ LANGUAGE_CODE|upper }}" onClick="javascript: $('#frm_language').submit();" />{% endblock %}
+		</form>
+		{% endif %}
+		<ul class="right_menu">
+			<li><a href="/logout" class="exit"><span>{% trans "Выход" %}</span></a></li>	
+			{% if login_user or user %}<li><span class="user">{% if login_user %}{{ login_user }}{% else %}{{ user }}{% endif %}</span></li>{% endif %}
+		</ul>
+		{% block menu_top %}
+			<ul class="top_menu">
+				
+				{% if perms.user_perms.perm_view %}
+					<li><a href="/ident/"{% if select_page == "ident" or select_page == 'video' or select_page == "ident_js" %} class="tm_active first"{% else %} class="first"{% endif %}>{% trans "Просмотр" %}</a></li>
+				{% endif %}
+				
+				{% if perms.user_perms.perm_lists %}
+					{% if show_recognition == '1' %}
+						<li><a href="/lists/"{% if select_page == "lists" or "person_training" in select_page %} class="tm_active" {% endif %}>{% trans "Списки" %}</a></li>
+					{% endif %}
+				{% endif %}
+				
+				{% if perms.user_perms.perm_logs %}
+					<li><a href="{% if show_recognition == '1' %}/journal/{% else %}{% url journal-videoanalytics %}{% endif %}"{% if select_page == "journal" or select_page == "kpp" or select_page == "historychange" or select_page == "journal_videoanalytics" or select_page == "noiselist_result" %} class="tm_active" {% endif %}>{% trans "Журнал" %}</a></li>
+				{% endif %}
+				
+				{% if perms.user_perms.perm_settings %}
+					<li><a href="{% url communicator_settings %}"{% if 'integration' in select_page or select_page == 'control_settings_settings' or select_page == 'control_settings_default' or select_page == 'control_settings_users' or select_page == 'settings_interface' or select_page == 'anketauser' or select_page == 'users' or select_page == 'special' or select_page == "settings" or select_page == "export" or select_page == "alert" or select_page == "settings_vanalytics" or select_page == "settings_web_api" or select_page == "distortion_js" or select_page == "turnstiles" or select_page == 'setup' %} class="tm_active" {% endif %}>{% trans "Настройки" %}</a></li>
+				{% endif %}
+				
+				{% if perms.user_perms.perm_monitoring %}
+					<li><a href="{% url monitoring %}"{% if 'monitoring' in select_page %} class="tm_active"{% endif %}>{% trans "Мониторинг" %}</a></li>
+				{% endif %}
+				
+				{% if perms.user_perms.perm_maps %}{% if show_maps == '1' %}
+					<li><a href="{% url maps %}"{% if select_page == "maps" %} class="tm_active" {% endif %}>{% trans "Карты" %}</a></li>
+				{% endif %}{% endif %}
+				
+				{% if perms.user_perms.perm_videoarchive %}{% if show_videoarchive == '1' %}
+				    <li><a href="{% url archive %}" target="_blank">{% trans "Видеоархив" %}</a></li>
+				{% endif %}{% endif %}
+				
+				<li><a href="/help/"{% if select_page == "help" %} class="last tm_active"{% else %} class="last"{% endif %}>{% trans "Помощь" %}</a></li>
+			</ul>
+		{% endblock %}
+	</div>
+</div>
+<!-- END: header -->
+<!-- BEGIN: content-->
+<div class="content">
+	{% block content %}{% endblock %}
+	<div class="clear"></div>
+</div>
+<!-- END: content-->
+</div>
+<!-- BEGIN: footer -->
+<div class="footer">
+	<div class="foot_menu_ver">
+		{% if version %}<div class="version">{% trans "Версия" %}: {{ version }}</div>{% endif %}
+		{% block menu_bottom %}
+			<ul class="bottom_menu">
+				
+				{% if perms.user_perms.perm_view %}
+					<li><a href="/ident/"{% if select_page == "ident" or select_page == 'video' or select_page == 'ident_js' %} class="act first" {% else %} class="first" {% endif %}>{% trans "Просмотр" %}</a></li>
+				{% endif %}
+				
+				{% if perms.user_perms.perm_lists %}
+					{% if show_recognition == '1' %}
+						<li><a href="/lists/"{% if select_page == "lists" or select_page == 'person_training' %} class="act" {% endif %}>{% trans "Списки" %}</a></li>
+					{% endif %}
+				{% endif %}
+				
+				{% if perms.user_perms.perm_logs %}
+					<li><a href="{% if show_recognition == '1' %}/journal/{% else %}{% url journal-videoanalytics %}{% endif %}"{% if select_page == "journal" or select_page == "journal_videoanalytics" or select_page == "historychange" or select_page == "kpp" or select_page == "noiselist_result" %} class="act" {% endif %}>{% trans "Журнал" %}</a></li>
+				{% endif %}
+				
+				{% if perms.user_perms.perm_settings %}
+					<li><a href="{% url communicator_settings %}"{% if 'integration' in select_page or select_page == 'settings_interface' or select_page == 'anketauser' or select_page == 'users' or select_page == 'special' or select_page == "settings" or select_page == 'control_settings_users' or select_page == 'control_settings_settings' or select_page == 'control_settings_default' or select_page == 'settings_vanalytics' or select_page == 'settings_web_api' or select_page == "turnstiles" or select_page == 'setup' %} class="act" {% endif %}>{% trans "Настройки" %}</a></li>
+				{% endif %}
+				
+				{% if perms.user_perms.perm_monitoring %}
+					<li><a href="{% url monitoring %}"{% if 'monitoring' in select_page %} class="act" {% endif %}>{% trans "Мониторинг" %}</a></li>
+				{% endif %}
+				
+				{% if perms.user_perms.perm_maps %}{% if show_maps == '1' %}
+					<li><a href="{% url maps %}"{% if 'maps' in select_page %} class="act"{% endif %}>{% trans "Карты" %}</a></li>
+				{% endif %}{% endif %}
+				
+				{% if perms.user_perms.perm_videoarchive %}{% if show_videoarchive == '1' %}
+					<li><a href="{% url archive %}" target="_blank">{% trans "Видеоархив" %}</a></li>
+				{% endif %}{% endif %}
+				
+				<li><a href="/help/"{% if select_page == "help" %} class="last act"{% else %} class="last"{% endif %}>{% trans "Помощь" %}</a></li>
+			</ul>
+		{% endblock %}
+	</div>
+	{% include "footer_contacts.html" %}
+</div>
+<!-- END: footer -->
+{% include "window_help.html" %}
+{% include "window_journal.html" %}
+{% if not learn %}<script type="text/javascript">checkJournal();</script>{% endif %}
+{% include "monitoring_checkmessage.html" %}
+{% block windows %}{% endblock %}
+</body>
+</html>

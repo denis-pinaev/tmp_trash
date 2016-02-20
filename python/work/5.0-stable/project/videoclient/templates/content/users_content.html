@@ -1,0 +1,61 @@
+{% load i18n %}
+{% load templatetags %}
+<h2>{% trans "Настройки пользователей" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Список пользователей' %}');" /></h2>
+{% include "current_time.html" %}
+<form method="get" action="" name="" id="mainForm">
+	<input type="hidden" value="0" name="delo" id="delid">
+	<div class="frm_block">	
+		{% if all_users_count > 0 %}{% include "search.html" %}{% endif %}			
+		<div>{% trans "Общее количество пользователей" %}: <span class="info_important">{{ all_users_count }}</span></div>
+		{% if filter %}
+			<div>{% trans "Количество отфильтрованных записей" %}: <span class="info_important">{{ users|length }}</span></div>
+		{% endif %}
+	</div>				
+	<div class="frm_block">
+		{% if all_users > 0 %}
+			<div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all" /><label for="choose_all">{% trans "Выделить всё" %}</label></div></div>
+		{% endif %}
+		<a href="{{ project_url }}/anketauser/" class="link_btn">{% trans "Добавить" %}</a>
+		{% if all_users > 0 %}
+			<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_btn_del" onClick="javascript: showMessageDelete()" />
+		{% endif %}					
+	</div>
+	{% if all_users > 0 %}
+		<!--<div class="frm_block">
+			{% trans "Просмотр записей" %}: {% trans "с:" %} <span style="margin-right: 10px;"><input type="text" name="" value="" class="inp_txt" /><input type="button" name="" value="" class="btn_calend" title="{% trans "Выбрать дату" %}" /></span> {% trans "по" %} <span style="margin-left: 10px;"><input type="text" name="" value="" class="inp_txt" /><input type="button" name="" value="" class="btn_calend" title="{% trans "Выбрать дату" %}" /></span>
+		</div>-->					
+		{% include "po4NavigationBlock.html" %}
+		<div class="frm_block">
+			<table cellspacing="0" cellpadding="0" id="table" class="list_users">
+				<tr>
+					<th class="first">&nbsp;</th>
+					<th><a href="?start={{start}}&sorto=1&up={% if sorto == 1 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 1 and up == 1  %}up{% else %}down{% endif %}">ID</a></th>
+					<th class="th_fio2"><a href="?start={{start}}&sorto=2&up={% if sorto == 2 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if group %}&group={{ group }}{% endif %}" class="btn_arrow {% if sorto == 2 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "ФИО" %}</a></th>
+					<th class="th_status2"><a href="?start={{start}}&sorto=3&up={% if sorto == 3 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if group %}&group={{ group }}{% endif %}" class="btn_arrow {% if sorto == 3 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "Логин" %}</a></th>
+					<!--<th><a href="?start={{start}}&sorto=4&up={% if sorto == 4 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if group %}&group={{ group }}{% endif %}" class="btn_arrow {% if sorto == 4 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "Должность" %}</a></th>-->
+					<th class="th_status2"><a href="?start={{start}}&sorto=5&up={% if sorto == 5 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if group %}&group={{ group }}{% endif %}" class="btn_arrow {% if sorto == 5 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "Статус" %}</a></th>
+					<th class="th_kpp"><a href="?start={{start}}&sorto=6&up={% if sorto == 6 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if group %}&group={{ group }}{% endif %}" class="btn_arrow {% if sorto == 6 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "КПП" %}</a></th>
+				</tr>
+				{% for user in users %}
+					{% if forloop.counter >= start and forloop.counter < finish %}
+						<tr {% cycle '' 'class="odd"' %}>
+							<td class="td_check first"><input type="checkbox" name="u{{forloop.counter}}" value="{{user.id}}" class="inp_check" id="check{{ forloop.counter }}" /></td>
+							<td class="td_id">{{ user.id }}</td>
+							<td class="td_fio2"><a href="{{ project_url }}/anketauser/{{ user.id }}/">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> {% if user.is_active == 0 %}<img title="Пользователь удален" src="/files/images/delete.png">{% endif %}</td>
+							<td class="td_status2">{{ user.username }}</td>
+							<!--<td>{{ user.staff.person.status }}</td>-->
+							<td class="td_status2">{% trans user.self.groups.all.0.name %}</td>
+							<td class="td_kpp">{% trans user.kpp %}</td>
+						</tr>
+					{% endif %}
+				{% endfor %}
+			</table>
+		</div>
+		{% include "po4NavigationBlock.html" %}
+		<div class="frm_block">					
+			<div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all2" /><label for="choose_all2">{% trans "Выделить всё" %}</label></div></div>
+			<a href="{{ project_url }}/anketauser/" class="link_btn">{% trans "Добавить" %}</a>
+			<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_btn_del" onClick="javascript: showMessageDelete()" />						
+		</div>
+	{% endif %}					
+</form>

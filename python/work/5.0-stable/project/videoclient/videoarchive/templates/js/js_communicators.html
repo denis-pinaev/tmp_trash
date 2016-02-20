@@ -1,0 +1,80 @@
+{% load i18n %}
+{% load a_templatetags %}
+<script type="text/javascript">
+/* check communicator */
+function clearFieldCommunicator() {
+    showErrorText(byId('frm_add'), 'error', '');
+    var ip = byId("ip"); ip.value = ''; ip.className = 'inp_txt';
+    var port = byId("port"); port.value = ''; port.className = 'inp_txt';
+    var name = byId("nameCom"); name.value = '';
+}
+function addCommunicator() {
+    clearFieldCommunicator()
+    changeWindow({id: 'win_add', css: {width: '340px', height: '215px'}});
+}
+function showErrorText(parent, className, text) {
+    var array = parent.getElementsByTagName('DIV');
+    for (var i=0; i<array.length; i++) {
+        if (array[i].className == className) {
+            array[i].innerHTML = text;
+        }
+    }    
+}
+function checkAddCommunicator() {
+    var ip = byId("ip");
+    var port = byId("port");
+    var parent;
+    if (ip.value == 0) {
+        parent = ip.parentNode;
+        showErrorText(parent, 'error', '{% trans "поле не заполнено" %}');
+        setCaretTo(ip, 0);
+        ip.className = ip.className + ' border_error';
+        return;
+    }
+    if (port.value == 0) {
+        parent = port.parentNode;
+        showErrorText(parent, 'error', '{% trans "поле не заполнено" %}');
+        setCaretTo(port, 0);
+        port.className = port.className + ' border_error';
+        return;
+    }
+    closeChangeWindow('win_add');
+    var name = byId("nameCom");
+    var txt = '';
+    if (name.value) {
+        txt = '{% trans "Коммуникатор" %} "'+ name.value+'" {% trans "успешно добавлен" %}.';
+    } else {
+        txt = '{% trans "Коммуникатор" %} "'+ ip.value + ':'+port.value+'" {% trans "успешно добавлен" %}.';
+    }
+    changeWindow({id: 'win_add2', css: {width: '300px', height: '200px'}, txt: txt});
+}
+function clearError(inp) {
+    showErrorText(inp.parentNode, 'error', '');
+    inp.className = 'inp_txt';
+}
+function sendEnter(e) {
+    if (e.keyCode == 13) {    
+        var input = getObject(e);
+        var parent = input.parentNode;
+        var num = parent.id.substr(6, parent.id.length);
+        byId('object_name'+num).innerHTML = input.value;
+        parent.removeChild(input);
+        byId('object_name'+num).style.display = 'inline';
+        return false;
+    }
+    return true;
+}
+function editName(elem, num) {
+    var parent = byId('object'+num);
+    var input = searchChild(parent, 'INPUT', 'text');
+    if (!input) {
+        var el = byId(elem);
+        var txt = el.innerHTML;
+        el.style.display = 'none';
+        input = createElem('INPUT', {value: el.innerHTML, name: '', type: 'text', _class: 'inp_txt'}, parent);
+        input.style.width = parent.offsetWidth - 42 + 'px';
+        setCaretTo(input, txt.length);
+        addEvent(input, 'keypress', sendEnter);    
+    }
+}
+</script>

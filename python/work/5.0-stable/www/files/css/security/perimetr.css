@@ -1,0 +1,91 @@
+.content .block_buttons {
+	background: url("/files/images/security/fon_gray_small.png") top left no-repeat;
+	height: 430px;
+	margin-top: 5px;
+}
+.content .menu_action li.dist_danger {
+	margin-top: 17px;
+}
+.list_cameras {
+	margin-top: 10px;
+}
+.list_cameras.dist_top {
+	margin-top: 223px;
+}
+.list_cameras li {
+	float: left;
+	width: 96px;
+	height: 73px;
+	position: relative;
+	margin-right: 7px;
+	margin-top: 7px;
+}
+.list_cameras li div.camera {
+	width: 92px;
+	height: 62px;
+	text-align: center;
+	margin-top: 1px;
+	margin-left: 2px;
+}
+.list_cameras li div.camera img {
+	max-width: 92px;
+	max-height: 69px;
+	vertical-align: top;
+} 
+.list_cameras li div.frame {
+	width: 96px;
+	height: 73px;
+	background: url("/files/images/security/camera_frame.png") top left no-repeat;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+.list_cameras li div.frame_active {
+	width: 102px;
+	height: 88px;
+	background: url("/files/images/security/camera_frame_active.png") top left no-repeat;
+	position: absolute;
+	top: -3px;
+	left: -3px;
+	z-index: 1;	
+	display: none;
+}
+.list_cameras li div.number {
+	width: 29px;
+	height: 29px;
+	line-height: 29px;
+	background: url("/files/images/security/fon_number.png") top left no-repeat;
+	position: absolute;
+	bottom: 4px;
+	left: 3px;
+	text-align: center;
+	vertical-align: middle;
+	font-size: 14px;
+	font-family: "PT_SANS_wide_bold";
+}
+.list_cameras li.last_in_row {
+	margin-right: 0px;
+}
+.list_cameras li.active div.camera {
+	width: 96px;
+	height: 72px;
+	margin-top: 0px;
+	margin-left: 0px;
+	position: relative;
+	z-index: 2;
+}
+.list_cameras li.active div.camera img {
+	max-width: 96px;
+	max-height: 72px;	
+}
+.list_cameras li.active div.frame {
+	display: none;
+}
+.list_cameras li.active div.frame_active {
+	display: block;
+}
+.list_cameras li.active div.number {
+	z-index: 3;
+	left: 0px;
+	bottom: 1px;
+}

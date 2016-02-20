@@ -1,0 +1,289 @@
+{% extends "base_archive_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Сохраненное видео' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/video.css?v=v{{ version }}" />
+{% if res_interface == 1 or res_interface == "1" %}
+    <link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/1920/video.css?v=v{{ version }}" />
+{% endif %}
+<script type="text/javascript" src="{{ root_path }}/files/js/spinbox.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="{{ root_path }}/files/js/video.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+var URLS = {
+	"get_video_faces_count": "{% url archive_command "get_video_faces_count" %}",
+	"video_faces": "{% url archive_page "video_faces" %}",
+	"video_persons": "{% url archive_page "video_persons" %}",
+	"video_delete": "{{ root_path }}/command/delete_rollers/",
+	"video_delete_found": "{{ root_path }}/command/delete_all_rollers/"
+}
+var MESSAGES = {
+	"faces_found": "{% trans 'Найденные лица' %}",
+	"persons_found": "{% trans 'Найденные люди' %}",
+	"adv_search": '{% trans "Расширенный поиск" %}',
+	"hide_adv_search": '{% trans "Скрыть расширенный поиск" %}',
+	"delete": "{% trans 'Вы действительно хотите удалить выбранные видеоролики' %} ({} {% trans 'шт.' %})?",
+	"delete_found": "{% trans 'Вы действительно хотите удалить найденные видеоролики' %} ({} {% trans 'шт.' %})?",
+	"export": "{% trans 'Экспортировать выделенные видеоролики' %} ({} {% trans 'шт.' %})?",
+	"video_delete_found": "{% trans 'Видеоролики успешно удалены' %}."
+}
+var ERRORS = {
+	"no_data": "{% trans 'Выберите, пожалуйста, хотя бы один видеоролик' %}.",
+	"video_delete_found": "{% trans 'Произошла ошибка при удалении видеороликов.' %}"
+}
+// проверка формы поиска на валидность
+function checkFormSearch() {
+	$.validator.addMethod("checkDateReq", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) return true;
+		return false;
+	}, "{% trans 'Введите дату' %}" );
+	$.validator.addMethod("checkDateFormat", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			var regexp = /^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})$/;
+			if (regexp.test(val)) return true;
+			return false
+		}
+		return true;
+	}, "{% trans 'Некорректный формат даты (ДД.ММ.ГГГГ)' %}" );		
+	$.validator.addMethod("checkDate", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			if (checkDateValidator(val)) return true;
+			return false;
+		}
+		return true;
+	}, "{% trans 'Некорректное значение даты' %}" );
+	$.validator.addMethod("checkDateRangeReq", function(value, element) {
+		if (!$("#dateBegin").val() && !$("#dateEnd").val()) return false;
+		return true;
+	}, "{% trans 'Введите период' %}" );		
+	$.validator.addMethod("checkDateRange", function(value, element) {
+		var date1 = $("#dateBegin").val();
+		var date2 = $("#dateEnd").val();
+		if (date1 && (date1 != "") && date2 && (date2 != "")) {
+			if (checkDateValidator(date1) && checkDateValidator(date2)) { 
+				var dates = checkDateRangeValidator('dateBegin', 'dateEnd');
+				if (dates[0] <= dates[1]) return true;
+				return false;
+			}
+			return true;
+		}
+		return true;
+	}, "{% trans 'Дата окончания меньше даты начала' %}" );		
+	$.validator.addMethod("checkTimeSearchRange", function(value, element) {
+		if ($("#hour1").val() && $("#minute1").val() && $("#second1").val() && $("#hour2").val() && $("#minute2").val() && $("#second2").val()) {
+            var intStart = parseInt($("#hour1").val())*60*60 + parseInt($("#minute1").val())*60 + parseInt($("#second1").val());
+			var intStop = parseInt($("#hour2").val())*60*60 + parseInt($("#minute2").val())*60 + parseInt($("#second2").val());
+			if ($("#dateBegin").val() == $("#dateEnd").val()) {
+				if (intStart <= intStop) {
+					$("#error_time").html("");
+					$("#block_time input[type=text]").removeClass("err_forms");
+					return true;
+				}	
+				$("#block_time input[type=text]").addClass("err_forms");
+				return false; 
+			}
+			return true;
+		}
+		return true;
+	}, "{% trans 'Указан некорректный период времени' %}" );		
+    var validator = $("#mainForm").validate({
+        errorPlacement: function(error, element) {
+			var block_error = $(element).parent().prev();
+			var id = element.attr("id");	
+			if ((id == "hour1") || (id == "hour2") || (id == "minute1") || (id == "minute2") || (id == "second1") || (id == "second2")) {
+				block_error = $("#error_time");			
+			}			
+			block_error.html("");
+            error.appendTo( block_error ); 
+        },
+        submitHandler: function() {
+			document.getElementById("mainForm").submit();
+        }        
+    });
+}
+// добавление правил для периода дат
+function addRulesDates() {
+    $("#dateBegin").rules("add", {
+		checkDateRangeReq: true,
+		checkDateReq: true,
+		checkDateFormat: true,
+		checkDate: true,
+        messages: {
+			checkDateRangeReq: "{% trans 'Укажите период' %}",
+			checkDateReq: "{% trans 'Введите дату начала' %}",
+			checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+			checkDate: "{% trans 'Введено некорректное значение' %}"
+        }
+    });    
+	$("#dateEnd").rules("add", {
+		checkDateRangeReq: true,
+		checkDateReq: true,
+		checkDateFormat: true,
+		checkDate: true,
+		checkDateRange: true,
+        messages: {
+			checkDateRangeReq: "{% trans 'Укажите период' %}",
+			checkDateReq: "{% trans 'Введите дату окончания' %}",	
+			checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+			checkDate: "{% trans 'Введено некорректное значение' %}",
+			checkDateRange: "{% trans 'Указан некорректный период дат' %}"
+        }
+    });
+}
+// удаление правил для периода дат
+function removeRulesDates() {
+	$("#dateBegin").rules("remove");
+	$("#dateEnd").rules("remove");
+}
+// добавление правил для периода времени
+function addRulesTime() {
+	if ($("#period_dates").attr("checked")) {
+		$("#hour1").rules("add", {
+			checkTimeSearchRange: true,
+			messages: {
+				checkTimeSearchRange: "{% trans 'Указан некорректный период времени' %}"
+			}
+		});
+		$("#minute1").rules("add", {
+			checkTimeSearchRange: true,
+			messages: {
+				checkTimeSearchRange: "{% trans 'Указан некорректный период времени' %}"
+			}
+		});		
+		$("#second1").rules("add", {
+			checkTimeSearchRange: true,
+			messages: {
+				checkTimeSearchRange: "{% trans 'Указан некорректный период времени' %}"
+			}
+		});	
+		$("#hour2").rules("add", {
+			checkTimeSearchRange: true,
+			messages: {
+				checkTimeSearchRange: "{% trans 'Указан некорректный период времени' %}"
+			}
+		});
+		$("#minute2").rules("add", {
+			checkTimeSearchRange: true,
+			messages: {
+				checkTimeSearchRange: "{% trans 'Указан некорректный период времени' %}"
+			}
+		});		
+		$("#second2").rules("add", {
+			checkTimeSearchRange: true,
+			messages: {
+				checkTimeSearchRange: "{% trans 'Указан некорректный период времени' %}"
+			}
+		});	
+	}
+}
+// удаление правил для периода времени
+function removeRulesTime() {
+	$("#hour1").rules("remove");
+	$("#minute1").rules("remove");
+	$("#second1").rules("remove");	
+	$("#hour2").rules("remove");
+	$("#minute2").rules("remove");
+	$("#second2").rules("remove");
+}
+$(function() {	
+	initTooltip();
+	{% if all_rollers > 0 %}
+		init();
+	{% endif %}
+});
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu/menu_archive.html" %}{% endblock %}
+{% block subcontent %}
+	<h2>{% trans "Сохраненное видео" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Видеоархив Сохраненное видео' %}');" /></h2>
+	{% include "current_time.html" %}
+	<form method="get" action="" id="mainForm">
+		<div class="block_search">
+			{% trans "Общее количество видеороликов" %}: <span class="info_important">{{ all_rollers }}</span>
+			{% if all_rollers > 0 %}
+				{% if found_rollers > 0 %}<div>{% trans "Количество отфильтрованных записей" %}: <span class="info_important">{{ found_rollers }}</span></div>{% endif %}
+				{% include "page_video_search.html" %}
+			{% endif %}                     
+		</div>
+		<input type="hidden" name="per_page" value="{{ per_page }}" />
+		<input type="hidden" name="page" value="{{ page }}" />
+	</form>    
+	<form method="get" action="" id="main_form">
+		{% if all_rollers > 0 %}
+			<div class="frm_block">
+				{% include "navigation/light_top.html" %}
+				{% if found_rollers > 0 %}
+				    <div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all" /><label for="choose_all">{% trans "Выделить всё" %}</label></div></div>
+					{% if perms.user_perms.perm_videoarchive_export_video %}
+					    <input type="button" name="" value="{% trans "Экспорт видеороликов" %}" class="inp_btn inp_btn170" onClick="javascript: saveOriginalVideo()" />
+					{% endif %}
+					{% if perms.user_perms.perm_videoarchive_delete_video %}
+					    <input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_btn" onClick="javascript: showMessageDelete()" />
+					    <input type="button" name="" value="{% trans "Удалить найденные" %}" class="inp_btn inp_btn170 dist_left" onClick="javascript: showMessageAllDelete('{{ found_rollers }}');" />
+					{% endif %}
+				{% endif %}
+			</div>
+			{% include "navigation/main.html" %}
+			{% if found_rollers > 0 %}
+				<ul class="list_videos" id="list_videos">
+					{% for roller in rollers %}
+						<li>
+							<div class="video">
+								<a href="{% url archive_page "view_video" %}/{{ roller.id }}/" class="frame_video"><img src="{{ roller.url }}files/video{{ roller.location }}.jpg" alt="" /></a>
+								<div class="permission">{{ roller.params|pParam:"w" }}x{{ roller.params|pParam:"h" }}</div>
+								<div class="time">{% if roller.dt_time %}{{ roller.dt_time|ttime }}{% else %}{% trans "запись" %}{% endif %}</div>
+								<a href="{% url archive_page "view_video" %}/{{ roller.id }}/" class="play_video"></a>
+							</div>
+							<div class="info">
+								<div class="info_cont">
+									<div><span>{% trans "Источник" %}:</span> <a href="?source={{ roller.camera_id }}" class="short_descr" title='{% trans "Показать все видеоролики источника" %} "{{ roller.ip }} {{ roller.type }}"'>{% if res_interface == 0 or res_interface == "0" %}{{ roller.ip|truncchar:7 }}{% else %}{{ roller.ip|truncchar:18 }}{% endif %} {{ roller.type|truncchar:6 }}</a></div>
+									<div><span>{% trans "Запуск задачи" %}:</span> {% if roller.signal_name %}{% trans roller.signal_name %}{% else %}{% trans roller.signal_type %}{% endif %}</div>                            
+									<div><span>{% trans "Дата" %}:</span> {{ roller.tm_start|date:"d.m.Y" }}</div>
+									<div><span>{% trans "Время" %}:</span> {% trans "с" %} {{ roller.tm_start|time:"H:i:s" }} {% trans "до" %} {% if roller.tm_stop %}{{ roller.tm_stop|time:"H:i:s" }}{% else %}{% trans "Идет запись" %}{% endif %}</div>
+									<div><span>{% trans "Частота кадров" %}:</span> {{ roller.params|pParam:"fps"|floatformat:2 }} {% trans "кадр/сек" %}</div>
+									<div><span>{% trans "Размер" %}:</span> {{ roller.params|pParam:"sz"|fdiv:1024|fdiv:1024|floatformat:3 }} {% trans "Мб" %}</div>                            
+									<div><span>{% trans "Формат" %}:</span> {{ roller.params|pParam:"fmt" }}</div>
+								</div>
+								<div id="count_faces{{ roller.id }}">{% trans "Найденные лица" %}: <img src="/files/images/loader20x20.gif" width="14px;" height="14px;"></div>
+								<div id="count_persons{{ roller.id }}">{% trans "Найденные люди" %}: <img src="/files/images/loader20x20.gif" width="14px;" height="14px;"></div>
+							</div>
+							<input type="checkbox" name="select" value="{{ roller.id }}" class="inp_check" id="check{{ forloop.counter }}" />
+						</li>
+					{% endfor %}
+				</ul>
+				{% include "navigation/main_buttom.html" %}
+				<div class="frm_block">
+				    {% if found_rollers > 0 %}
+				        <div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all" /><label for="choose_all">{% trans "Выделить всё" %}</label></div></div>
+					    {% if perms.user_perms.perm_videoarchive_export_video %}
+					        <input type="button" name="" value="{% trans "Экспорт видеороликов" %}" class="inp_btn inp_btn170" onClick="javascript: saveOriginalVideo()" />
+					    {% endif %}
+					    {% if perms.user_perms.perm_videoarchive_delete_video %}
+					        <input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_btn" onClick="javascript: showMessageDelete()" />
+					        <input type="button" name="" value="{% trans "Удалить найденные" %}" class="inp_btn inp_btn170 dist_left" onClick="javascript: showMessageAllDelete('{{ found_rollers }}');" />
+					    {% endif %}
+				    {% endif %}
+				</div>
+			{% else %}
+				<div class="message_action">{% trans "Не найдены записи, соответствующие заданным условиям поиска" %}.</div>                            
+			{% endif %} 
+		{% endif %}
+		<input type="hidden" name="source" value="{{ params.source }}" />
+		<input type="hidden" name="signal" value="{{ params.signal }}" />
+		<input type="hidden" name="interval" value="{{ params.interval }}" />
+		<input type="hidden" name="dateEnd" value="{{ params.dateEnd }}" />
+		<input type="hidden" name="dateBegin" value="{{ params.dateBegin }}" />
+		<input type="hidden" name="period_date" value="{{ params.period_date }}" />
+		<input type="hidden" name="minute1" value="{{ params.minute1 }}" />
+		<input type="hidden" name="second1" value="{{ params.second1 }}" />
+		<input type="hidden" name="hour1" value="{{ params.hour1 }}" />
+		<input type="hidden" name="hour2" value="{{ params.hour2 }}" />
+		<input type="hidden" name="minute2" value="{{ params.minute2 }}" />
+		<input type="hidden" name="second2" value="{{ params.second2 }}" />
+		<input type="hidden" name="cr" value="{{ params.cr }}" />
+	</form>
+{% endblock %}
+{% block windows %}{% include "a_window_video.html" %}{% endblock %}

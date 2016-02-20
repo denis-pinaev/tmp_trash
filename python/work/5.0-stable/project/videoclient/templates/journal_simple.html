@@ -1,0 +1,6 @@
+{% extends "journal_base.html" %}
+{% load i18n templatetags %}
+{% block datajournal %}
+<div id="dataJournal">{% if version_journal = 'simple' %}{% include "data_simple_journal.html" %}{% else %}{% include "data_journal.html" %}{% endif %}</div>
+<script type="text/javascript">doTimeRefresh();</script>
+{% endblock %}

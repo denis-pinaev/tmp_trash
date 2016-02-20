@@ -1,0 +1,189 @@
+﻿.inp_btn26 {
+	width: 26px;
+	background: url('/files/images/button26x24_up.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/button26x24_up.png', sizingMethod='crop');		
+}
+.inp_btn40 {
+	width: 40px;
+	background: url('/files/images/button40x24_up.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/button40x24_up.png', sizingMethod='crop');		
+}
+.inp_btn140 {
+	width: 140px;
+	background: url('/files/images/button140x24_up.gif') top left no-repeat;
+}
+.inp_btn140_ar {
+	width: 140px;
+	background: url('/files/images/button140x24_up_arr.gif') top left no-repeat;
+}
+.inp_btn170 {
+	width: 170px;
+	background: url('/files/images/button170x24_up.gif') top left no-repeat;
+}
+.inp_btn170_ar {
+	width: 170px;
+	background: url('/files/images/button170x24_up_arr.gif') top left no-repeat;
+}
+.btn_calend {
+	padding: 0px;
+	margin: 0px;
+	border: none;
+	height: 16px;
+	width: 16px;
+	cursor: pointer;
+	font-size: 13px;
+	font-family: arial,helvetica,sans-serif;
+	background: url('/files/images/calend.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/calend.png', sizingMethod='crop');
+	margin-left: 5px;
+}
+.btn_arrow {
+	color: #505050;
+	display: block;
+	padding-right: 15px;	
+	cursor: pointer;	
+}
+.btn_arrow.down {
+	background: url('/files/images/arrow_down.gif') 100% 6px no-repeat;
+}
+.btn_arrow.up {
+	background: url('/files/images/arrow_up.gif') 100% 6px no-repeat;
+}
+.not_wrap {
+	white-space: nowrap;
+}
+.bl_btn_check {
+	width: 120px; 
+	height: 24px; 
+	text-align: left; 
+	background: url('/files/images/button120x24_up.gif') top left no-repeat;
+	float: left;
+	margin-right: 30px;
+	position: relative;	
+}
+.bl_btn_check div {
+	display: table-cell; 
+	vertical-align: middle; 
+	width: 120px;
+	height: 24px;
+	cursor: pointer; 
+}
+.bl_btn_check div .inp_check {
+	margin-left: 5px;
+	margin-right: 5px;
+	vertical-align: middle;
+}
+.bl_btn_check div label {
+	vertical-align: middle; 
+	line-height: 24px;
+	cursor: pointer;
+}
+.link_btn {
+	float: left;
+}
+.dist_btn_del {
+	margin-left: 30px;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.frm_block .inp_check {
+	margin-right: 5px;
+}
+/* таблица */
+.list_users {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	border-top: 1px solid #6e7d98;
+}
+.list_users tr.odd {
+	background-color: #DBE2F0;
+}
+.list_users th {
+	vertical-align:top;
+	text-align: center;
+	border-right: 1px solid #6e7d98;
+	border-bottom: 1px solid #6e7d98;
+	background-color: #d9dee7;
+	padding: 5px 5px;
+	font-weight: normal;
+}
+.list_users th.first {
+	border-left: 1px solid #6e7d98;
+}
+.list_users th.th_check,
+.list_users td.td_check  {
+	width: 62px;
+}
+.list_users th.th_fio,
+.list_users td.td_fio {
+	width: 220px;
+}
+/*.list_users th.th_fio2,
+.list_users td.td_fio2 {
+	width: 320px;
+}*/
+.list_users th.th_time,
+.list_users td.td_time {
+	width: 70px;
+}
+/*.list_users th.th_kpp,
+.list_users td.td_kpp {
+	width: 100px;
+}*/
+.list_users th.th_date,
+.list_users td.td_date {
+	width: 80px;
+}
+.list_users th.th_status,
+.list_users td.td_status {
+	width: 100px;
+}
+/*.list_users th.th_status2,
+.list_users td.td_status2 {
+	width: 120px;
+}*/
+.list_users td {
+	border-bottom: 1px solid #cccccc;
+	border-right: 1px solid #cccccc;
+	vertical-align: top;
+	padding: 3px 5px;	
+}
+.list_users td.first {
+	border-left: 1px solid #cccccc;
+}
+.list_users td.td_act {
+	width: 30px;
+	text-align: center;
+}
+.list_users td .inp_check {
+	margin-right: 0px;
+}
+.list_users td.td_check {
+	width: 20px;
+	text-align: center;
+}
+.list_users td.td_check .inp_check {
+	margin-top: 3px;
+}
+.list_users td.td_id {
+	width: 40px;
+	white-space: nowrap;
+}
+.list_users tr.act td {
+	background-color: #849ac1;
+	color: #ffffff;
+}
+.list_users tr.act td a {
+	color: #ffffff;
+}
+/**/
+.dist_link {
+	margin-top: 7px;
+}

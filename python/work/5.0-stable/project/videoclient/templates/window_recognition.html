@@ -1,0 +1,60 @@
+{% load i18n %}
+{% load templatetags %}
+<div id="win_fd" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_fd');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Переключение FaceDetect" %}</div>
+        </div>
+        <div class="contWF" id="win_fd_contWF">&nbsp;</div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Переключить" %}" class="btn_wf_blue" onClick="
+                javascript: changeFDBalancer(); closeChangeWindow('win_fd');  "/>           
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_fd');" />     
+        </div>
+    </div>
+</div>
+<div id="win_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close close" onClick="javascript: closeChangeWindow('win_mess');" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF" id="win_mess_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue close" onClick="javascript: closeChangeWindow('win_mess');" />	
+		</div>
+	</div>
+</div>
+<div id="win_fd1" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_fd1');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Предупреждение" %}</div>
+        </div>
+        <div class="contWF" id="win_fd_contWF">
+			{% trans "Для переключения алгоритма распознавания рекомендуется обратиться к специалистам" %} <a href="mailto:support@smilart.com" class="blue">{% trans "технической поддержки" %}</a> {% trans 'компании ООО "Простые решения"' %}.
+			<div class="dist_top"><strong>{% trans "Обратите внимание" %}</strong>, {% trans "что работа программного комплекса (обработка видео, обновление журнала, доступ к настройкам системы и т.д.) будет приостановлена до завершения конвертирования базы персон" %}.</div>
+		</div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Продолжить" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_fd1'); changeFD(2);" />           
+            <input type="button" name="" value="{% trans "Отменить" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_fd1');" />     
+        </div>
+    </div>
+</div>
+<div id="win_fd2" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_fd2');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Переключение FaceDetect" %}</div>
+        </div>
+        <div class="contWF" id="win_fd_contWF">
+			{% trans "Конвертация базы персон может занять длительное время." %}
+			<div class="dist_top">{% trans "Работа программного комплекса будет приостановлена до завершения конвертирования базы персон." %}</div>
+		</div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Переключить" %}" class="btn_wf_blue" onClick="javascript: changeFDBalancer(); closeChangeWindow('win_fd2');" />           
+            <input type="button" name="" value="{% trans "Отменить" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_fd2');" />     
+        </div>
+    </div>
+</div>

@@ -1,0 +1,61 @@
+{% include "header.html" %}
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+    <div class="block_settings">
+        <div class="block_cont">
+            <div class="block_cont_top">
+                <div class="block_cont_bottom min_height">
+
+<h2>Обновление системы</h2>
+
+<b>Загрузка обновлений</b>
+<form action="/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" size="35" name="updates">
+    <input type="submit" value="Загрузить обновление">
+</form>
+{{result}}
+<p>
+<b>Информация об обновлении серверов</b>
+
+{% if servers|length > 0%}
+    <table>
+    <tr>
+        <td>Имя</td>
+        <td>Статус</td>
+    </tr>
+    {% for s in servers %}
+        <tr>
+            <td>{{s.name}}</td>
+            <td>{{s.check}}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    Нет серверов для получения информации об обновлении
+{% endif %}
+
+{% if log %}
+    <b>Лог обновлений</b>
+    {{log}}
+{% endif %}
+
+                </div> 
+                <div id="div_info"></div>               
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>   
+</div>
+
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>Пожалуйста, подождите...</div>
+</div>
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>            
+
+{% include "footer.html" %}
+</body>
+</html>
+ 

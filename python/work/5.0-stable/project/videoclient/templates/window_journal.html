@@ -1,0 +1,14 @@
+{% load i18n %}
+{% load templatetags %}
+<div id="win_journal" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_journal');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Обнаружен похожий объект!" %}</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_journal_contWF"></div></div>
+		<!--<div class="footerWF">
+			<input type="button" name="" value="ОК" class="btn_wf_blue" onClick="javascript:  closeChangeWindow('win_journal'); location.reload(true);" />	
+		</div>-->
+	</div>
+</div>

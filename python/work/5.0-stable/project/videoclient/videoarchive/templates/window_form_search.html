@@ -1,0 +1,36 @@
+{% load i18n %}
+{% load a_templatetags %}
+<div id="win_choose_source" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: checkCancelSource(8); closeChangeWindow('win_choose_source');" title="Закрыть окно" /></div>
+            <div class="headWF_txt">{% trans "Выбор источников" %}</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add" id="win_choose_source_contWF">
+            <div class="info_add_cameras">
+                <div class="bl_btn_check">
+                    <input type="button" name="" value="{% trans "Выделить всё" %}" class="inp_btn inp_btn120" onClick="javascript: checkAll('choose_all', 8, true);" />
+                    <input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAll(this, 8);" id="choose_all" />
+                </div>            
+                <div class="info_cameras">{% trans "Всего источников:" %} <span class="info_important">8</span></div>
+            </div>
+            <div class="block_error_add" id="block_error_add" style="display: none;"></div>
+            <div class="block_add_cameras">
+                <ul>
+                    <li><span class="num">1.</span><input type="checkbox" class="inp_check" name="" value="" id="check1" onClick="javascript: checkPhoto(this, 8);" /><label for="check1">192.168.0.13 AV2100</label></li>
+                    <li class="odd"><span class="num">2.</span><input type="checkbox" class="inp_check" name="" value="" id="check2" onClick="javascript: checkPhoto(this, 8);" /><label for="check2">192.168.0.14 AV2100</label></li>
+                    <li><span class="num">3.</span><input type="checkbox" class="inp_check" name="" value="" id="check3" onClick="javascript: checkPhoto(this, 8);" /><label for="check3">192.168.0.15 AV2100</label></li>
+                    <li class="odd"><span class="num">4.</span><input type="checkbox" class="inp_check" name="" value="" id="check4" onClick="javascript: checkPhoto(this, 8);" /><label for="check4">192.168.0.16 AV2100</label></li>
+                    <li><span class="num">5.</span><input type="checkbox" class="inp_check" name="" value="" id="check5" onClick="javascript: checkPhoto(this, 8);" /><label for="check5">192.168.0.17 AV2100</label></li>
+                    <li class="odd"><span class="num">6.</span><input type="checkbox" class="inp_check" name="" value="" id="check6"  onClick="javascript: checkPhoto(this, 8);" /><label for="check6">192.168.0.18 AV2100</label></li>
+                    <li><span class="num">7.</span><input type="checkbox" class="inp_check" name="" value="" id="check7" onClick="javascript: checkPhoto(this, 8);" /><label for="check7">192.168.0.19 AV2100</label></li>
+                    <li class="odd"><span class="num">8.</span><input type="checkbox" class="inp_check" name="" value="" id="check8" onClick="javascript: checkPhoto(this, 8);" /><label for="check8">192.168.0.20 AV2100</label></li>
+                </ul>
+            </div>
+        </div></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Выбрать" %}" class="btn_wf_blue" id="wcs_ok" onClick="javascript: checkСhooseSource2(8);" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: checkCancelSource(8); closeChangeWindow('win_choose_source');" />
+        </div>
+    </div>
+</div>

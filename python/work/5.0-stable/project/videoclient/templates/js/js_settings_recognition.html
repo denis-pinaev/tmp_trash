@@ -1,0 +1,125 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+var params = new Array();
+g_ItemId = null;
+function change_gItemId(id) {
+    g_ItemId = id;
+}
+function change_onButgItemId(i, itemId) {
+    switch(itemId)
+    {
+        case 'focus-accept-but':
+            g_ItemId = (i>0) ? 'ident_focuson' : 'ident_focusoff';
+            break;
+
+        case 'noiselv-accept-but':
+            g_ItemId = (i>0) ? 'ident_noiselvon' : 'ident_noiselvoff';
+            break;
+    }
+}
+function setBackReconParam(itemId) {
+	showMessage("{% trans 'Параметр не применён. Пожалуйста, попробуйте ещё раз'%}.");
+    switch (itemId) {
+        case 'ident_focuson':
+            $('#ident_focus_on').attr('checked', false);
+            $('#ident_focus_off').attr('checked', true);
+            break;
+
+        case 'ident_focusoff':
+            $('#ident_focus_off').attr('checked', false);
+            $('#ident_focus_on').attr('checked', true);
+            break;
+
+        case 'ident_noiselvon':
+            $('#ident_noiselv_on').attr('checked', false);
+            $('#ident_noiselv_off').attr('checked', true);
+            break;
+
+        case 'ident_noiselvoff':
+            $('#ident_noiselv_off').attr('checked', false);
+            $('#ident_noiselv_on').attr('checked', true);
+            break;
+    }
+}
+function setReconParam(itemId) {
+	showMessage('{% trans "Параметр успешно применён." %}');
+    switch (itemId) {
+        case 'ident_focuson':
+            $('#focus-text').removeClass("txt_dis");
+            $('#focus-wrapper').slideDown("normal");
+            $('#ident_focus_on').attr('checked', true);
+            $('#ident_focus_off').attr('checked', false);
+            break;
+
+        case 'ident_focusoff':
+            $('#focus-text').addClass("txt_dis");
+            $('#focus-wrapper').slideUp("normal");
+            $('#ident_focus_off').attr('checked', true);
+            $('#ident_focus_on').attr('checked', false);
+            break;
+
+        case 'ident_noiselvon':
+            $('#noise-text').removeClass("txt_dis");
+            $('#noise-wrapper').slideDown("normal");
+            $('#ident_noiselv_on').attr('checked', true);
+            $('#ident_noiselv_off').attr('checked', false);
+            break;
+
+        case 'ident_noiselvoff':
+            $('#noise-text').addClass("txt_dis");
+            $('#noise-wrapper').slideUp("normal");
+            $('#ident_noiselv_off').attr('checked', true);
+            $('#ident_noiselv_on').attr('checked', false);
+            break;
+    }
+}
+function init() {
+    initFuncs();
+}
+function initFuncs() {
+    $(".btnSpUp").click(function() {    
+        clickSpinboxButton($(this));
+    });
+    $(".btnSpDown").click(function() {    
+        clickSpinboxButton($(this));
+    });
+    $(".spinbox input[type=text]").change(function() {
+        changeSpinboxValue($(this));
+    });
+    $(".spinbox input[type=text]").keyup(function() {
+        changeSpinboxValue($(this));
+    });    
+}
+function clickSpinboxButton(obj) {
+    if (obj.attr("class").indexOf("dis") < 0) {
+        var inp = obj.parent().prev();
+        changeSpinboxValue(inp);
+    }                                
+}
+function changeSpinboxValue(obj) {
+    var inp = obj;
+    var inp_id = inp.attr("id");
+    if (params[inp_id] != inp.attr("value")) {
+        activeButtonApply(true, inp_id);    
+    } else {
+        activeButtonApply(false, inp_id);
+    }
+}
+function activeButtonApply(active, id) {
+    var btn_id = "btn_" + id;
+    var btn = $("#" + btn_id);
+    if (active) {
+        btn.attr("disabled", false);
+        btn.removeClass("dis");
+    } else {
+        btn.attr("disabled", "disabled");
+        btn.addClass("dis");
+    }
+}
+function setValueParams() {
+    id = g_ItemId;
+    params[id] = $("#" + id).attr("value");
+    activeButtonApply(false, id);
+}
+</script>

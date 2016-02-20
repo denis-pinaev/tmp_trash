@@ -1,0 +1,208 @@
+{% extends "wizard_base.html" %}
+{% load i18n %}
+{% load templatetags %}
+{% block wizard_content %}
+<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/tooltip/easyTooltip.js?v=v{{ version }}"></script>
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+{% include "javascript.html" %} 
+{% include "js/js_wizard.html" %}
+<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script> 
+<script type="text/javascript" src="/files/js/lib/jquery.validate.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/additional-methods.js?v=v{{ version }}"></script>
+<script type="text/javascript">  
+$(function() {
+	checkImportParamsForm(); 
+    $("input[name=settings]").click(function() {
+        var block_id = $(this).attr("value");
+		var servers = $("#list_servers li");
+        if (block_id == "block_list_servers") {
+            $("#block_file_upload").hide();
+            $("#error_list_servers").html("");
+			removeRulesUploadFile();
+			if (servers.size() > 0) {
+				$.each(servers, function(key, value) {
+					addRulesSetSettings(key + 1);
+				});
+			}
+        } else {
+            $("#block_list_servers").hide();
+            $("#error_file").html("");
+			addRulesUploadFile();
+			if (servers.size() > 0) {
+				$.each(servers, function(key, value) {
+					removeRulesSetSettings(key + 1);
+				});
+			}			
+        }
+        $("#"+block_id).slideDown("normal");
+    });
+    $("#add_server").click(function() {
+        addServer();
+        return false;        
+    });
+    $(".link_head").click(function() {
+        headLinkWizard($(this));
+    });
+    $(".btn_delete").click(function() {
+        deleteServer($(this));
+    });
+    $(".list_servers li:first").css("marginTop", "0px");
+    $(".list_servers li .info .bl_enter input[type=text]").bind("change keyup", function() {
+        if ($(this).val() != "") {
+            $("#error_list_servers").html("");
+        }
+    });
+    initTooltip();
+});
+function checkCPU(obj_id){
+    var obj = $("#"+obj_id);
+    var server_id = obj.attr("id").replace("cpu_on", "").replace("cpu_off", "");
+    if (obj.val() == "1") $("#card"+server_id).hide();
+    else $("#card"+server_id).show();
+}
+// проверка формы
+function checkImportParamsForm() {
+    var validator = $("#ImportParamsForm").validate({
+        errorPlacement: function(error, element) {
+			var inp = $("input[name=settings]:checked");
+			var block = $("#error_list_servers");
+			block.html("");
+			if (inp.attr("id") == "file_yes") {
+				block = $("#error_file");
+			}
+            error.appendTo( block ); 
+        },
+        submitHandler: function() {
+			var inp = $("input[name=settings]:checked");
+			if (inp.attr("id") == "file_yes") {
+				importp();
+			} else {
+				if ($("#list_servers li").size() == 0) {
+					$("#error_list_servers").html("{% trans 'Добавьте сервер с настройками' %}");
+				} else {
+					document.getElementById('ImportParamsForm').submit();
+				}
+			}
+        }
+    });
+	var inp = $("input[name=settings]:checked");
+    if (inp.attr("id") == "file_yes") {
+		addRulesUploadFile();
+    } else {
+		var servers = $("#list_servers li");
+		if (servers.size() > 0) {
+			$.each(servers, function(key, value) {
+				addRulesSetSettings(key + 1);
+			});
+		}
+    }	
+}
+// добавление проверки для загрузки файла настроек
+function addRulesUploadFile() {
+    $("#import_file").rules("add", {
+        required: true,
+        messages: {
+            required: "{% trans 'Выберите файл с настройками' %}"
+        }
+    });	
+}
+// удаление проверки для загрузки файла настроек
+function removeRulesUploadFile() {
+	$("#import_file").rules("remove");
+}
+// добавление проверки для ip-адреса сервера
+function addRulesSetSettings(num) {
+    $("#ip_server" + num).rules("add", {
+        required: true,
+		minlength: 2,
+        messages: {
+            required: '{% trans 'Заполните поле "IP-адрес" для сервера' %} "' + $("#ip_server" + num).parent().parent().parent().parent().find("a.link_head").html() + '"',
+			minlength: "{% trans 'Введено некорректное значение' %}"
+        }
+    });
+}
+// удаление проверки для ip-адреса сервера
+function removeRulesSetSettings(num) {
+	$("#ip_server" + num).rules("remove");
+}
+// проверка числа cpu демонов
+function checkCardDaemon(num){
+    var cpu = $("#cpu_on"+num);
+    if (cpu.val() == "0") $("#card"+num).css("display", "block");
+    else $("#card"+num).css("display", "none"); 
+}
+// проверка числа демонов на видеокарте
+function checkCPUDaemon(num){
+    var card = $("#videocard"+num);
+    if (card.val() == "0") $("#cpu"+num).css("display", "block");
+    else $("#cpu"+num).css("display", "none");  
+}
+</script>
+
+<div class="step"><strong>{% trans "Шаг 3 из" %} <span id="step_end">{{ all_steps }}</span>. <span class="dist_left">{% trans "Настройка управляющей системы" %}.</span></strong></div>
+<div class="message_action dist_top">{% trans 'Введите настройки управляющей системы и нажмите на кнопку' %} <strong>{% trans "Далее" %}</strong>.</div>
+<div class="dist_top">{% trans 'Поля, отмеченные звездочкой' %} (<span class="req">*</span>), {% trans 'являются обязательными для заполнения' %}.</div>
+<form method="post" action="" class="dist_top"  id="ImportParamsForm" enctype="multipart/form-data">
+    <div class="frm">
+        <input class="inp_check" name="settings" type="radio" id="file_yes" value="block_file_upload"{% if not balancers.balancer or balancers.balancer|length == 0 %} checked="checked"{% endif %} /><label for="file_yes">{% trans "Загрузить файл" %}</label>
+        <input class="inp_check" name="settings" type="radio" id="adjusted" value="block_list_servers" style="margin-left: 30px;"{% if balancers.balancer and balancers.balancer|length > 0 %} checked="checked"{% endif %} /><label for="adjusted">{% trans "Настроить вручную" %}</label>
+    </div>
+    <div class="frm" id="block_file_upload"{% if balancers.balancer and balancers.balancer|length > 0 %} style="display: none;"{% endif %}>
+		<div class="bl_error3" id="error_file"></div>
+		<div class="block">
+			<label for="" class="bl_txt3"><span class="req">*</span>{% trans "Файл с настройками" %} (<strong>.xml</strong>):</label>
+			<input type="file" name="importfile" value="" id="import_file" onChange="javascript: checkFile(this);" accept="text/*"/>
+		</div>
+    </div>
+    <div id="block_list_servers">
+        <span class="error" id="error_list_servers"></span>
+        <ul class="list_servers" id="list_servers">
+        {% for balancer in balancers.balancer %}
+                <li><div class="head"><span>{{ forloop.counter }}.</span><a href="#" class="link_head">{% trans "Сервер" %} {{ forloop.counter }}</a><input type="button" name="" value="" class="btn_delete short_descr" title="{% trans "Удалить" %} '{% trans "Сервер" %} {{ forloop.counter }}' {% trans "из настроек" %}" /></div>
+                    <div class="info">	
+                        <div class="frm">
+                            <label for="ip_server{{ forloop.counter }}" class="bl_txt"><span class="req">*</span>{% trans "IP-адрес" %}:</label>
+                            <div class="bl_enter">                
+                                <input type="text" name="ip_server{{ forloop.counter }}" value="{{ balancer.address }}" class="inp_txt" id="ip_server{{ forloop.counter }}" maxlength="255" />                            
+                            </div>
+                        </div>
+                        <div class="frm" id="cpu{{ forloop.counter }}" {% if not 'CPU DU Daemon' in balancer.daemons_type and balancer.video_count > 0 %}style="display: none;"{% endif %}>
+                            <label for="step" class="bl_txt"><span class="req">*</span>{% trans "CPU версии универсального демона" %}:</label>
+                            <div class="bl_enter">                    
+                                <div class="spinbox">
+                                    <input type="text" id="cpu_on{{ forloop.counter }}" name="cpu_on{{ forloop.counter }}" value="{% if not 'CPU DU Daemon' in balancer.daemons_type %}0{% else %}{{ balancer.video_count }}{% endif %}" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 1, 0, 4);" onChange="javascript: checkCardDaemon('{{ forloop.counter }}');" />
+                                    <div class="spinbtns">
+                                        <input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 0, 4, 1, 'cpu_on{{ forloop.counter }}');" onMouseUp="javascript: clearTimer(); checkCardDaemon('{{ forloop.counter }}');" />
+                                        <input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 0, 4, 1, 'cpu_on{{ forloop.counter }}');" onMouseUp="javascript: clearTimer();  checkCardDaemon('{{ forloop.counter }}');" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>             
+                        <div class="frm" id="card{{ forloop.counter }}" {% if 'CPU DU Daemon' in balancer.daemons_type and balancer.video_count > 0 %}style="display: none;"{% endif %}>
+                            <label for="step" class="bl_txt"><span class="req">*</span>{% trans "Видеокарты" %}:</label>
+                            <div class="bl_enter">                    
+                                <div class="spinbox">
+                                    <input type="text" id="videocard{{ forloop.counter }}" name="videocard{{ forloop.counter }}" value="{% if 'CPU DU Daemon' in balancer.daemons_type %}0{% else %}{{ balancer.video_count }}{% endif %}" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 1, 0, 1000);" onChange="javascript:  checkCPUDaemon('{{ forloop.counter }}');" />
+                                    <div class="spinbtns">
+                                        <input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 0, 8, 1, 'videocard{{ forloop.counter }}');" onMouseUp="javascript: clearTimer(); checkCPUDaemon('{{ forloop.counter }}');" />
+                                        <input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 0, 8, 1, 'videocard{{ forloop.counter }}');" onMouseUp="javascript: clearTimer(); checkCPUDaemon('{{ forloop.counter }}');" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>						
+                    </div>
+                </li>
+        {% endfor %}
+        </ul>
+        <div class="frm"><a href="#" class="blue" id="add_server">{% trans "Добавить сервер" %}</a></div>
+    </div>
+    <div class="frm_btn">
+        <input type="hidden" name="save_balancer" value="" />
+        <input type="hidden" name="count_servers" value="{{ balancers.balancer|length }}" id="count_servers"/>
+        <input type="hidden" name="action" value="next" id="inp_action" />
+        <input type="button" name="" value="{% trans "Назад" %}" class="inp_btn inp_btn90" onClick="javascript: document.location='/wizard/communicator/';" /> <!-- javascript: history.go(-1); -->
+        <input type="submit" name="" value="{% trans "Далее" %}" class="inp_btn btn_blue dist_left" />
+    </div>
+</form>
+{% endblock wizard_content %}

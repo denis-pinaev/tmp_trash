@@ -1,0 +1,62 @@
+﻿.block {
+	width: 100%;
+	overflow: hidden;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.frm_block_txt,
+.frm_block_txt2,
+.frm_block_txt3 {
+	width: 185px;
+	float: left;
+}
+.frm_block_txt2 {
+	width: 290px;
+	margin-right: 10px;
+}
+.frm_block_txt3 {
+	width: 215px;
+}
+.frm_block_txt4 {
+	float: left;
+	margin-right: 10px;
+}
+.frm_block .inp_check {
+	margin-right: 5px;
+}
+.block_set {
+	float: left;
+	margin-right: 20px;
+	width: 415px;
+}
+.block_set.bl_last {
+	margin-right: 0px;
+}
+.head_set {
+	font-weight: bold;
+}
+.block_ie {
+	float: left;
+	width: 100%;
+}
+.hide_block_set {
+	margin-left: 185px; 
+	margin-top: 5px;
+	clear: both;
+}
+.block_enter {
+	float: left;
+}
+.not_recognition .frm_block_txt {
+	width: 250px;
+	margin-right: 10px;
+}
+ul.list_num {
+	margin-left: 30px;
+	padding-left: 10px;
+	list-style-type: decimal;
+	padding-top: 3px;
+}

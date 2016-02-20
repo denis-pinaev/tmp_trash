@@ -1,0 +1,52 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Добавление КПП' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/addlist.css?v=v{{ version }}" />
+<script type="text/javascript">
+$(function() {
+    var validator = $("#frm").validate({
+        rules: {
+            name: "required"
+        },
+        messages: {
+            name: "{% trans "Введите название КПП" %}"
+        },
+        errorPlacement: function(error, element) {
+            error.appendTo( element.parent().parent().prev() ); 
+        }
+    });    
+});
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+<h2><a href="{% url kpp_list %}">{% trans "Настройки КПП" %}</a> - {% if kpp %}{% trans "Редактирование КПП" %}{% else %}{% trans "Добавление КПП" %}{% endif %}<input type="button" name="" value="" class="btn_quest" style="display:none" onClick="javascript: showContextHelp('lists');" /></h2>
+{% include "current_time.html" %}
+<form method="post" action="{% url save_kpp kpp.id %}" name="" id="frm">
+	<div>{% trans "Поля, отмеченные звёздочкой" %} (<span class="req">*</span>), {% trans "являются обязательными для заполнения" %}.</div>
+	<div class="bl_param">
+		<div class="bl_error">{% if error.name %}{{ error.name }}{% endif %}</div>
+		<div class="block">
+			<label for="name_list" class="bl_txt"><span class="req">*</span>{% trans "Название" %}:</label>
+			<div class="bl_enter"><input type="text" name="name" maxlength="32" value="{{ kpp.name|default_if_none:'' }}" class="inp_txt" /></div>
+		</div>
+		<div class="bl_error">{% if error.location %}{{ error.location }}{% endif %}</div>
+		<div class="block dist_top">
+			<label for="name_list" class="bl_txt">{% trans "Расположение" %}:</label>
+			<div class="bl_enter">
+				<textarea name="location" maxlength="128" class="textarea">{{ kpp.location|default_if_none:'' }}</textarea>
+			</div>
+		</div>
+	</div>                    
+	<div class="block bl_btn">
+	    {% if kpp %}
+		    <input type="submit" name="" value="{% trans "Сохранить" %}" class="inp_btn btn_blue" />
+		{% else %}
+		    <input type="submit" name="" value="{% trans "Добавить" %}" class="inp_btn btn_blue" />
+		{% endif %}
+		<a href="{% url kpp_list %}" class="link_btn90"><span>{% trans "Отменить" %}</span></a>
+	</div>
+</form>			
+{% endblock %}

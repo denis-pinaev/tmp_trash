@@ -1,0 +1,70 @@
+{% load a_templatetags %}
+<script type="text/javascript">
+function checkVisitorCard(id_form) {
+    var inp1 = byId("iddateVisit1");
+    var inp2 = byId("iddateVisit2");
+    var dateBeg = inp1.value;
+    var dateEnd = inp2.value;
+    var error = byId('err1');
+    error.style.display = 'none';
+    if ((!dateBeg) && (!dateEnd)) {
+        error.innerHTML = '{% trans "Укажите период посещений" %}.';
+        error.style.display = 'block';
+        inp1.style.borderColor = '#FF6600';
+        inp2.style.borderColor = '#FF6600';
+        return;
+    }
+    if (!dateBeg) {
+        error.innerHTML = '{% trans "Укажите дату начала посещений" %}.';
+        error.style.display = 'block';
+        inp1.style.borderColor = '#FF6600';        
+        inp2.style.borderColor = '#AAAAAA';
+        return;
+    }
+    if (!dateEnd) {
+        error.innerHTML = '{% trans "Укажите дату окончания посещений" %}.';
+        error.style.display = 'block';
+        inp1.style.borderColor = '#AAAAAA';
+        inp2.style.borderColor = '#FF6600';
+        return;    
+    }
+    var arr1 = dateBeg.split('.');
+    var arr2 = dateEnd.split('.');
+    if ((arr1[2] > arr2[2]) || (arr1[1] > arr2[1]) || (arr1[0] > arr2[0])) {
+        error.innerHTML = '{% trans "Некорректно введена дата окончания посещений" %}.';
+        error.style.display = 'block';
+        inp1.style.borderColor = '#AAAAAA';
+        inp2.style.borderColor = '#FF6600';                
+        return;
+    }
+    inp1.style.borderColor = '#AAAAAA';
+    inp2.style.borderColor = '#AAAAAA';        
+    error.style.display = 'none';
+    var time = new Array();
+    time['h1'] = byId('time11');
+    time['h2'] = byId('time21');
+    time['m1'] = byId('time12');
+    time['m2'] = byId('time22');
+    var h1 = time['h1'].options[time['h1'].selectedIndex].text;
+    var h2 = time['h2'].options[time['h2'].selectedIndex].text;
+    var m1 = time['m1'].options[time['m1'].selectedIndex].text;
+    var m2 = time['m2'].options[time['m2'].selectedIndex].text;
+    
+    error = byId('err2');
+    if ((h1 > h2) || ((h1 == h2) && (m1 >= m2))) {
+        error.innerHTML = '{% trans "Некорректно введено время посещения" %}.';
+        error.style.display = 'block';
+        time['h1'].style.borderColor = '#FF6600';
+        time['h2'].style.borderColor = '#FF6600';
+        time['m1'].style.borderColor = '#FF6600';
+        time['m2'].style.borderColor = '#FF6600';
+        return;
+    }
+    time['h1'].style.borderColor = '#AAAAAA';
+    time['h2'].style.borderColor = '#AAAAAA';
+    time['m1'].style.borderColor = '#AAAAAA';
+    time['m2'].style.borderColor = '#AAAAAA';    
+    error.style.display = 'none';
+    byId(id_form).submit();
+}
+</script>

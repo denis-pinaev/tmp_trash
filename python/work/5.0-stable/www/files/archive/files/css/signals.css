@@ -1,0 +1,84 @@
+﻿/* list */
+.list_signals {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	border-top: 1px solid #6e7d98;
+}
+.list_signals tr.odd {
+	background-color: #DBE2F0;
+}
+.list_signals th {
+	vertical-align:top;
+	text-align: center;
+	border-right: 1px solid #6e7d98;
+	border-bottom: 1px solid #6e7d98;
+	background-color: #d9dee7;
+	padding: 5px 5px;
+	font-weight: normal;
+}
+.list_signals th.first {
+	border-left: 1px solid #6e7d98;
+}
+.list_signals th .btn_arrow {
+	float: right;
+	margin-left: 5px;
+	margin-top: 5px;	
+}
+.list_signals th.th_date,
+.list_signals td.td_date {
+	width: 100px;
+}
+.list_signals th.th_time,
+.list_signals td.td_time {
+	width: 90px;
+}
+.list_signals th.th_event,
+.list_signals td.td_event {
+	width: 85px;
+}
+.list_signals th.th_kpp,
+.list_signals td.td_kpp {
+	width: 100px;
+}
+.list_signals th.th_name,
+.list_signals td.td_name  {
+	width: 200px;
+}
+.list_signals td {
+	border-bottom: 1px solid #cccccc;
+	border-right: 1px solid #cccccc;
+	vertical-align: top;
+	padding: 3px 5px;	
+}
+.list_signals td.first {
+	border-left: 1px solid #cccccc;
+}
+.list_signals td.td_act {
+	width: 30px;
+	text-align: center;
+}
+.list_signals td .inp_check {
+	margin-right: 0px;
+}
+.list_signals td.td_check {
+	overflow: hidden;
+}
+.list_signals td.td_check span {
+	float: left;
+}
+.list_signals td.td_check .inp_check {
+	float: right;
+	margin-top: 3px;
+	-margin-top: 0px;
+}
+.list_signals tr.act {
+	cursor: default;
+}
+.list_signals tr.act td {
+	background-color: #849ac1;
+	color: #ffffff;
+}
+.list_signals tr.act td a {
+	color: #ffffff;
+}

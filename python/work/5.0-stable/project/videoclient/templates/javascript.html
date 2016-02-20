@@ -1,0 +1,1801 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+// general
+function byId(node) {
+	return typeof node == 'string' ? document.getElementById(node) : node;
+}
+function buttonStatus(btn, status) {
+	var w = btn.offsetWidth;
+	var h = btn.offsetHeight;
+	var path = '/files/images/button'+w+'x'+h+'_'+status+'.gif';
+	btn.style.backgroundImage = "url("+path+")";
+}
+function linkStatus(link, status, w) {
+	var path = '/files/images/button'+w+'x24_'+status+'.gif';
+	link.style.backgroundImage = "url("+path+")";
+}
+function rtrim(s) {
+	return s.replace(/\s+$/, '');
+}
+function setCaretTo(obj, pos) {
+	var obj = byId(obj); 
+	if(obj.createTextRange) { 
+		var range = obj.createTextRange(); 
+		range.move("character", pos); 
+		range.select(); 
+	} else if(obj.selectionStart || obj.selectionStart == '0') { 
+		obj.focus(); 
+		obj.setSelectionRange(pos, pos); 
+	}
+}
+function replace_string(txt, cut_str, paste_str) { 
+	var f = 0;
+	var ht = '';
+	ht = ht + txt;
+	f = ht.indexOf(cut_str);
+	if (f > -1) {
+		ht = ht.substr(0,f) + paste_str + ht.substr(f + cut_str.length);
+	}
+	return ht.replace(cut_str, paste_str)
+}
+function browser() {
+	var browserType = navigator.userAgent.toLowerCase();
+	if (browserType.indexOf('msie') >= 0) {
+		if (browserType.indexOf('msie 8.0') > -1) {
+			return 'ie8';
+		}
+		if (browserType.indexOf('msie 7.0') > -1) {
+			return 'ie7';
+		}			
+		if (browserType.indexOf('msie 6.0') > -1) {
+			return 'ie6';
+		}		
+		return 'ie';
+	}
+	if (browserType.indexOf('firefox') >= 0) {
+		return 'firefox';
+	}
+	if (browserType.indexOf('opera') >= 0) {
+		return 'opera';
+	}	
+	if (browserType.indexOf('chrome') >= 0) {
+		return 'chrome';
+	}
+	if (browserType.indexOf('safari') >= 0) {
+		return 'safari';
+	}			
+	return 'other';
+}
+function searchElem(el, nameNode) {
+	var node = byId(el);
+	do node = node.parentNode
+	while (node && node.nodeType != 1 && node.nodeName != nameNode);
+	return node;
+}
+function getExt(id) {
+	var file = byId(id).value;
+	var array = file.split('.');
+	if (array) {
+		var ext = array[array.length-1];
+		return ext;
+	}
+	return '';
+}
+function  getPageSize(){
+   var xScroll, yScroll;
+   if (window.innerHeight && window.scrollMaxY) {
+	xScroll = document.body.scrollWidth;
+	yScroll = window.innerHeight + window.scrollMaxY;
+   } else if (document.body.scrollHeight > document.body.offsetHeight){ // all but Explorer Mac
+	xScroll = document.body.scrollWidth;
+	yScroll = document.body.scrollHeight;
+   } else if (document.documentElement && document.documentElement.scrollHeight > document.documentElement.offsetHeight){ // Explorer 6 strict mode
+	xScroll = document.documentElement.scrollWidth;
+	yScroll = document.documentElement.scrollHeight;
+   } else { // Explorer Mac...would also work in Mozilla and Safari
+	xScroll = document.body.offsetWidth;
+	yScroll = document.body.offsetHeight;
+   }
+   var windowWidth, windowHeight;
+   if (self.innerHeight) { // all except Explorer
+	windowWidth = self.innerWidth;
+	windowHeight = self.innerHeight;
+   } else if (document.documentElement && document.documentElement.clientHeight) { // Explorer 6 Strict Mode
+	windowWidth = document.documentElement.clientWidth;
+	windowHeight = document.documentElement.clientHeight;
+   } else if (document.body) { // other Explorers
+	windowWidth = document.body.clientWidth;
+	windowHeight = document.body.clientHeight;
+   }
+   // for small pages with total height less then height of the viewport
+   if(yScroll < windowHeight){
+	pageHeight = windowHeight;
+   } else {
+	pageHeight = yScroll;
+   }
+   // for small pages with total width less then width of the viewport
+   if(xScroll < windowWidth){
+	pageWidth = windowWidth;
+   } else {
+	pageWidth = xScroll;
+   }
+   return {pageWidth: pageWidth, pageHeight: pageHeight, windowWidth: windowWidth, windowHeight: windowHeight};
+}
+function isChecked(count) {
+	var c = 0;
+	if (count > 0) {
+		while (count > 0) {
+			if (byId("check"+count)) {
+				if (byId("check"+count).checked) {
+					c++;
+				}
+			}
+			count--;
+		}
+	}
+	return c;
+}
+function checkAllRow(input, count, button) {
+	var inp = byId(input);
+	if (button) {
+		inp.checked =  (inp.checked == false) ? 'checked' : false;
+	}
+	if (inp.id == 'choose_all') {
+		byId('choose_all2').checked = inp.checked;
+	} else {
+		byId('choose_all').checked = inp.checked;
+	}
+	var check;
+	for (var i = 1; i <= count; i++) {
+		check = byId('check'+i);
+		if (inp.checked) {		
+			check.checked = true;
+		} else {		
+			check.checked = false;
+		}
+	}
+}
+function check(inp, count) {
+	if (inp.checked) {
+		isCheckAll(count);
+	} else {
+		isChooseAll(false);		
+	}
+}
+function isCheckAll(count) {
+	var count_checked = 0;
+	for (var i = 1; i <= count; i++) {
+		if (byId('check'+i)){
+		if (byId('check'+i).checked) {
+			count_checked++;
+		}
+		}
+	}
+	if (count == count_checked) {
+		isChooseAll(true);	
+	}	
+}
+function isChooseAll(choose) {
+	if (byId('choose_all')) {
+		byId('choose_all').checked = choose;
+	}
+	if (byId('choose_all2')) {
+		byId('choose_all2').checked = choose;
+	}	
+}
+function getValueIsChecked(count) {
+	var c = 0;
+	var arr_value = new Array();
+	if (count > 0) {
+		while (count > 0) {
+			if (byId("check"+count)) {
+				if (byId("check"+count).checked) {
+					arr_value[c] = byId("check"+count).value;
+					c++;
+				}
+			}
+			count--;
+		}
+	}
+	return {c: c, array: arr_value};
+}
+function allRowBtn(id, count, start, finish) {
+	var num = Math.min(count, finish);
+	var inp = byId(id);
+	inp.checked =  (inp.checked == false) ? 'checked' : false;
+	if (inp.id == 'choose_all') {
+		byId('choose_all2').checked = inp.checked;
+	} else {
+		byId('choose_all').checked = inp.checked;
+	}
+	var check;
+	for (var i = start; i <= num; i++) {								
+		check = byId('check'+i);
+		if (check) {
+			if (inp.checked) {		
+				check.checked = true;
+			} else {		
+				check.checked = false;
+			}
+		}
+	}												
+}
+function isChooseAllRow(choose) {
+	byId('choose_all').checked = choose;
+	if (byId('choose_all2')) {
+		byId('choose_all2').checked = choose;
+	}	
+}
+function isCheckAllRow(count, start, finish) {
+	var count_checked = 0;
+	var num = Math.min(count, finish);
+	for (var i = start; i <= num; i++) {
+		if (byId('check'+i)) {
+			if (byId('check'+i).checked) {
+				count_checked++;
+			}							
+		}
+	}
+	if (count < finish) {
+		num = num + 1;
+	}
+	var count_current = num - start;
+	if (count_current == count_checked) {
+		isChooseAllRow(true);	
+	}	
+}
+function checkRow(inp, count, start, finish) {
+	if (inp.checked) {
+		isCheckAllRow(count, start, finish);
+	} else {
+		isChooseAllRow(false);		
+	}
+}
+function getCountChilds(id, nameNode) {
+	var parent = byId(id);
+	var oChilds = parent.childNodes;
+	var count = 0;
+	for (var i = 0; i < oChilds.length; i++) {
+		if (oChilds[i].nodeName == nameNode) {
+			count++;
+		}
+	}
+	return count;
+}
+function checkAll(inp, count) {
+	if (inp.id == 'choose_all') {
+		byId('choose_all2').checked = inp.checked;
+	} else {
+		byId('choose_all').checked = inp.checked;
+	}
+	var check;
+	for (var i = 1; i <= count; i++) {
+		check = byId('check'+i);
+		if (check){
+		if (inp.checked) {		
+			check.checked = true;
+			searchElem(check, 'LI').className = 'act';
+		} else {		
+			check.checked = false;
+			searchElem(check, 'LI').className = '';
+		}
+		}
+	}
+}
+function allRow(inp, count, start, finish) {
+	var num = Math.min(count, finish);
+	if (inp.id == 'choose_all') {
+		byId('choose_all2').checked = inp.checked;
+	} else {
+		byId('choose_all').checked = inp.checked;
+	}
+	var check;
+	for (var i = start; i <= num; i++) {								
+		check = byId('check'+i);
+		if (check) {
+			if (inp.checked) {		
+				check.checked = true;
+			} else {		
+				check.checked = false;
+			}
+		}
+	}												
+}
+function checkAllPhotosBtn(id, count, start, finish) {
+	var num = Math.min(count, finish);
+	var inp = byId(id);
+	inp.checked =  (inp.checked == false) ? 'checked' : false;	
+	if (inp.id == 'choose_all') {
+		byId('choose_all2').checked = inp.checked;
+	} else {
+		byId('choose_all').checked = inp.checked;
+	}
+	var check;
+	for (var i = 1; i <= num; i++) {
+		check = byId('check'+i);
+		if (check){
+			if (inp.checked) {		
+			   check.checked = true;
+			   searchElem(check, 'LI').className = 'act';
+			} else {		
+			   check.checked = false;
+			   searchElem(check, 'LI').className = '';
+			}
+		}
+	}
+}
+function checkAllPhotos(inp, count, start, finish) {
+	var num = Math.min(count, finish);
+	if (inp.id == 'choose_all') {
+		byId('choose_all2').checked = inp.checked;
+	} else {
+		byId('choose_all').checked = inp.checked;
+	}
+	var check;
+	for (var i = 1; i <= num; i++) {
+		check = byId('check'+i);
+		if (check){
+			if (inp.checked) {		
+			   check.checked = true;
+			   searchElem(check, 'LI').className = 'act';
+			} else {		
+			   check.checked = false;
+			   searchElem(check, 'LI').className = '';
+			}
+		}
+	}
+}
+function checkAllElem(count, start) {
+	var count_checked = 0;
+	var j = 1;
+	if (start) {
+		j = start;
+	}
+	for (var i = j; i <= count; i++) {
+		if (byId('check'+i)) {
+			if (byId('check'+i).checked) {
+				count_checked++;
+			}
+		}
+	}
+	if (count == count_checked) {
+		document.getElementById('choose_all').checked = true;
+		if (document.getElementById('choose_all2')) {
+			document.getElementById('choose_all2').checked = true;
+		}	
+	}	
+}
+function checkPhoto(inp, count) {
+	var li = searchElem(inp, 'LI');
+	if (inp.checked) {
+		li.className = 'act';
+		checkAllElem(count);
+	} else {
+		li.className = '';
+		byId('choose_all').checked = false;
+		if (byId('choose_all2')) {
+			byId('choose_all2').checked = false;
+		}		
+	}
+}
+function checkPhoto2(el, num, count) {
+	var li = searchElem(el, 'LI');
+	var inp = byId('check'+num);
+	if (inp.checked) {
+		inp.checked = false;
+		li.className = "";
+		byId('choose_all').checked = false;
+		if (byId('choose_all2')) {
+			byId('choose_all2').checked = false;
+		}		
+	} else {
+		inp.checked = true;
+		li.className = "act";
+		checkAllElem(count);
+	}
+}
+function checkPhoto3(inp, count, start, finish) {
+	var li = searchElem(inp, 'LI');
+	if (inp.checked) {
+		li.className = 'act';
+		var num = Math.min(count, finish);	
+		checkAllElem(num, start);
+	} else {
+		li.className = '';
+		byId('choose_all').checked = false;
+		if (byId('choose_all2')) {
+			byId('choose_all2').checked = false;
+		}		
+	}
+}
+function addEvent(el, evType, handle) {
+	var el = byId(el);
+	if (el.addEventListener) {
+		el.addEventListener(evType, handle, false);
+	}
+	else if (el.attachEvent) {
+	// for ie
+		el["e" + evType + handle] = handle;
+		el[evType + handle] = function() {
+			el["e" + evType + handle](window.event)
+		}
+		el.attachEvent("on" + evType, el[evType + handle]);
+	}
+}
+function removeEvent(obj, e) {
+	obj.unbind(e);
+}
+// flash version
+function getFlashVersion(){
+  // ie
+  try {
+	try {
+	  // avoid fp6 minor version lookup issues
+	  // see: http://blog.deconcept.com/2006/01/11/getvariable-setvariable-crash-internet-explorer-flash-6/
+	  var axo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash.6');
+	  try { axo.AllowScriptAccess = 'always'; }
+	  catch(e) { return '6,0,0'; }
+	} catch(e) {}
+	return new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version').replace(/\D+/g, ',').match(/^,?(.+),?$/)[1];
+  // other browsers
+  } catch(e) {
+	try {
+	  if(navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin){
+		return (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]).description.replace(/\D+/g, ",").match(/^,?(.+),?$/)[1];
+	  }
+	} catch(e) {}
+  }
+  return '0,0,0';
+}
+function flashVersion() {
+   var version = getFlashVersion().split(',').shift();
+   if (version >= 10) { return true; } 
+   else { return false; }
+}
+// search
+function search(inp, focus, txt) {
+	var defaultValue = txt;
+	if (focus) {
+		if ((inp.value == defaultValue) || (inp.value == '')) {
+			inp.value = '';
+			inp.style.color = '#505050';
+		} 
+	} else {
+		if (inp.value == '') {
+			inp.value = defaultValue;
+			inp.style.color = '#868686';
+		}
+	}
+}
+// window
+function screenSize() {
+	return { w: $(window).width(), h: $(window).height() }
+}
+function positionScreen(idElement, obj) {
+	var element = byId(idElement);
+	var top = findPositionWithScrolling(element)[1] - obj.distY;
+	if (getBodyScrollTop()) {
+		top=top-getBodyScrollTop();
+	} 
+	var left = findPositionWithScrolling(element)[0] + element.offsetWidth + obj.distX;
+	var sizeScreen = screenSize();
+	var width = obj.w;
+	var height = obj.h;
+	if (left + width > sizeScreen.w) {
+		left = findPositionWithScrolling(element)[0] - width - obj.distX;
+	}
+	if ((top + height) > sizeScreen.h) {
+		top = sizeScreen.h - height - obj.distX;
+	}
+	return {top: top, left: left};	
+}
+function positionScreen2(param) {
+	var elem = param.obj;
+	var pos_elem = elem.offset();
+	var top = pos_elem.top - param.distY;
+	var left = pos_elem.left + elem.width() + param.distX;
+	var scr = screenSize();
+	if ( ( left + param.win_width ) > scr.width ) {
+		left = pos_elem.left - param.win_width - param.distX;
+	}
+	if (param.win_height) {
+		if ( ( top + param.win_height ) > scr.height ) {
+			top = scr.height - param.win_height - param.distY;
+		}
+	}
+	return { top: top, left: left };
+}
+// закрытие окна на esc
+function closeWindowOnEsc(e, cls, f) {
+	var code = e.keyCode;
+	if ( code == 27 ) {
+		if (cls) {
+			var wins = $("body").find("." + cls)
+		} else {
+			var wins = $("body").find(".winFloating")
+		}
+		$.each(wins, function() {
+			if ($(this).css("display") == "block") {
+				closeChangeWindow($(this).attr("id"));
+				if (f) f.call();
+			}
+		});
+	}
+}
+function getBodyScrollTop() {
+	return $(window).scrollTop();
+}
+
+function findPositionWithScrolling( oElement ) {
+  function getNextAncestor( oElement ) {
+	var actualStyle;
+	if( window.getComputedStyle ) {
+	  actualStyle = getComputedStyle(oElement,null).position;
+	} else if( oElement.currentStyle ) {
+	  actualStyle = oElement.currentStyle.position;
+	} else {
+	  //fallback for browsers with low support - only reliable for inline styles
+	  actualStyle = oElement.style.position;
+	}
+	if( actualStyle == 'absolute' || actualStyle == 'fixed' ) {
+	  //the offsetParent of a fixed position element is null so it will stop
+	  return oElement.offsetParent;
+	}
+	return oElement.parentNode;
+  }
+  if( typeof( oElement.offsetParent ) != 'undefined' ) {
+	var originalElement = oElement;
+	for( var posX = 0, posY = 0; oElement; oElement = oElement.offsetParent ) {
+	  posX += oElement.offsetLeft;
+	  posY += oElement.offsetTop;
+	}
+	if( !originalElement.parentNode || !originalElement.style || typeof( originalElement.scrollTop ) == 'undefined' ) {
+	  //older browsers cannot check element scrolling
+	  return [ posX, posY ];
+	}
+	oElement = getNextAncestor(originalElement);
+	while( oElement && oElement != document.body && oElement != document.documentElement ) {
+	  posX -= oElement.scrollLeft;
+	  posY -= oElement.scrollTop;
+	  oElement = getNextAncestor(oElement);
+	}
+	return [ posX, posY ];
+  } else {
+	return [ oElement.x, oElement.y ];
+  }
+}
+var DEFAULT_WIDTH = '300px';
+var DEFAULT_HEIGHT = '200px';
+function changeWindow(param) {
+	if ($("#datepicker").size() > 0) $("#datepicker").hide();
+	var win = $("#" + param.id);
+	win.css("width", DEFAULT_WIDTH);
+	win.css("height", DEFAULT_HEIGHT);
+	if (param.head) {
+		win.find("div.headWF_txt").html(param.head);
+	}
+	if (param.txt) {
+		/*win.find("div.contWF").html(param.txt);*/
+		if (win.find("div.contWF").size() == 0) {
+			win.find("div.contWF_add").html(param.txt);
+		} else {
+			win.find("div.contWF").html(param.txt);
+		}		
+	}
+	if (param.css) {
+		for (var i in param.css) {
+			win.css(i, param.css[i])
+		}
+	}		
+	var scr = screenSize();	
+	var t = (scr.h - parseInt(win.css("height")))/ 2*0.8;
+	if (t < 0) { t = 0 }
+	t = t + 'px';
+	win.css("top", t);
+	win.css("left", (scr.w - parseInt(win.css("width"))) / 2 + 'px');
+	var fon = $("#block_fon");	
+	if ($.browser.msie && $.browser.version == "6.0") {
+		win.css("top", parseInt(t)+ document.documentElement.scrollTop +'px')
+		fon.css("height", document.body.offsetHeight + 'px');
+	}		
+	fon.show();	
+	win.show();
+}
+// создание диалогового окна
+function changeWindow2(param) {
+	if ($("#datepicker").size() > 0) $("#datepicker").hide();
+	var win = $("#" + param.id);
+	win.css("width", DEFAULT_WIDTH);
+	win.css("height", DEFAULT_HEIGHT);
+	if (param.css) {
+		for (var i in param.css) {
+			win.css(i, param.css[i])
+		}
+	}	
+	if (param.head) {
+		win.find("div.headWF_txt").html(param.head);
+	}	
+	if (win.find("div.contWF").size() == 0) {
+		var content = win.find("div.contWF_add");
+		content.parent().css("height", win.height() - 62 + 'px');
+	} else {
+		var content = win.find("div.contWF");
+	}
+	if (param.txt) {
+		content.html(param.txt);
+	}
+	var scr = screenSize();	
+	var t = (scr.h - parseInt(win.css("height")))/ 2*0.8;
+	if (t < 0) { t = 0 }
+	t = t + 'px';
+	win.css("top", t);
+	win.css("left", (scr.w - parseInt(win.css("width"))) / 2 + 'px');
+	var fon = $("#block_fon");	
+	if ($.browser.msie && $.browser.version == "6.0") {
+		win.css("top", parseInt(t)+ document.documentElement.scrollTop +'px')
+		fon.css("height", document.body.offsetHeight + 'px');
+	}
+	fon.show();	
+	win.show();
+	var btn_cancel = win.find("div.bodyWF div.footerWF .close")
+	var btn_close = win.find("div.bodyWF div.btnCloseWF input[type=button]");
+	removeEvent(btn_close, 'click');
+	removeEvent(btn_cancel, 'click');	
+	btn_close.click(function() {
+		closeChangeWindow(param.id);
+	});
+	btn_cancel.click(function() {
+		closeChangeWindow(param.id);	
+	});	
+}
+
+function createInfoWindow(param) {
+	var distX = 0;
+	var distY = 0;
+	if (param.distX) {
+		distX = param.distX;
+	}
+	if (param.distY) {
+		distY = param.distY;
+	}
+	var w1 = param.width;
+	var h1 = param.height;
+
+	var scr = screenSize();
+	var win = byId(param.id);
+	var fon = byId('block_fon');
+	var content = byId(param.id+'_contWF');
+
+	win.style.position = 'absolute';		
+	win.style.left = positionScreen(param.elem, {w: w1, h: h1, distX: distX, distY: distY}).left +'px';
+	var t = win.style.top = positionScreen(param.elem, {w: w1, h: h1, distX: distX, distY: distY}).top + getBodyScrollTop() - 10 +'px';
+
+	var browserType = navigator.userAgent.toLowerCase();
+	if (browserType.indexOf('msie') >= 0) {
+		byId('block_fon').style.height = document.body.offsetHeight + 'px';
+	}
+	if (param.txt) {
+		content.innerHTML = param.txt;						
+	}
+
+	content.parentNode.style.height = h1 - 62 + 'px';
+
+	win.style.width = w1 + 'px';
+	win.style.height = h1 + 'px';
+
+	fon.style.display = 'block';
+	win.style.display = 'block';	
+}
+// chooseLang
+function chooseLang(id) {
+	var lang = readCookie('django_language');
+	var elem = byId(id);
+	if (!lang || lang == 'ru'){
+		elem.innerHTML = 'RU';
+		elem.style.backgroundImage = "url('/files/images/lang_ru.gif')";
+		elem.style.backgroundPosition = "0px 5px";
+	} else if (lang == 'en'){
+		elem.innerHTML = 'EN';
+		elem.style.backgroundImage = "url('/files/images/lang_en2.gif')";
+		elem.style.backgroundPosition = "0px 4px";
+	}
+}
+function readCookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0;i < ca.length;i++) {
+	var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
+}
+function setCookie(name,value,days) {
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime()+(days*24*60*60*1000));
+		var expires = "; expires="+date.toGMTString();
+	}
+	else var expires = "";
+	document.cookie = name+"="+value+expires+"; path=/";
+}
+// camera
+function getInfoCommunicator() {
+	var list = byId('select');
+	if (list.selectedIndex != -1) {
+		var value = list.options[list.selectedIndex].text;
+		var i = value.indexOf(':');
+		var host = value.substr(0, i);
+		var port = value.substr(i+1, value.length);
+		return {host: host, port: port};
+	}
+}
+function showChooseCamera() {
+	var info = getChooseCamera();
+	if (info) {
+		var numCamera = info.num;
+		var communicator = getInfoCommunicator();
+		var nameCamera = byId('info' + info.numId).innerHTML;
+		showNameCamera(nameCamera);
+		byId("mini_camera_info").style.display = 'none';
+		byId("mini_camera").style.display = 'block';
+		if (flashVersion()) {
+			byId('mini_camera').innerHTML = addFlash(numCamera, communicator.host, communicator.port);
+		} else {
+			byId('mini_camera').innerHTML = '<div class="noFlash">{% trans "У Вас отсутствует или установлена старая версия flash плеера. Новую версию плеера можно скачать" %} <a target="_blank" href="http://get.adobe.com/flashplayer/">{% trans "здесь" %}</a></div>';
+		}
+	}
+}
+function getChooseCamera() {
+	var radioObj = document.frm_learn.video;
+	if (radioObj.length) {
+		for (var i = 0; i < radioObj.length; i++) {
+			if (radioObj[i].checked) {
+				return {num: radioObj[i].value, numId: i+1};
+			}
+		}
+	} else {
+		return {num: radioObj.value, numId: 1};
+	}
+}
+function showNameCamera(nameCamera) {
+	byId("nameCamera").innerHTML = nameCamera;
+	byId("nameCamera").style.display = 'block';
+}
+function chooseCamera(num, nameCamera, numCamera) {
+	byId('choose'+num).checked = 'checked';
+	var communicator = getInfoCommunicator();
+	showNameCamera(nameCamera);
+	byId("mini_camera_info").style.display = 'none';
+	byId("mini_camera").style.display = 'block';
+	if (flashVersion()) {
+		byId('mini_camera').innerHTML = addFlash(numCamera, communicator.host, communicator.port);
+	} else {
+		byId('mini_camera').innerHTML = '<div class="noFlash">{% trans "У Вас отсутствует или установлена старая версия flash плеера. Новую версию плеера можно скачать" %} <a target="_blank" href="http://get.adobe.com/flashplayer/">{% trans "здесь" %}</a></div>';
+	}
+}
+function showLearnCamera(link, url, person) {
+	var num = getChooseCamera().num;
+	if (num) {
+		link.href = url + num + person;
+	} else {
+		return false;
+	}
+}
+var num_active_camera = 0;
+function showCamera(btn, count, nameCamera, numCamera) {
+	num_active_camera = numCamera;
+	var communicator = getInfoCommunicator();
+	var curr_class = btn.className;
+	if (curr_class.indexOf('play') > -1) {
+		initButtonCamera(count);
+		btn.className = 'btn_camera stop_act';
+		showNameCamera(nameCamera);
+		byId("mini_camera_info").style.display = 'none';
+		byId("mini_camera").style.display = 'block';
+		if (flashVersion()) {
+			byId('mini_camera').innerHTML = addFlash(numCamera, communicator.host, communicator.port);
+		} else {
+			byId('mini_camera').innerHTML = '<div class="noFlash">{% trans "У Вас отсутствует или установлена старая версия flash плеера. Новую версию плеера можно скачать" %} <a target="_blank" href="http://get.adobe.com/flashplayer/">{% trans "здесь" %}</a></div>';
+		}
+	} else {
+		btn.className = 'btn_camera play_act';
+		showNameCamera('&nbsp;');
+		byId("mini_camera_info").style.display = 'block';
+		byId("mini_camera").style.display = 'none';	
+		byId("mini_camera").innerHTML = '&nbsp;';		
+	}
+}
+function initButtonCamera(count) {
+	var cl = '';
+	for (var i = 1; i <= count; i++) {
+		cl = byId("btn_play"+i).className;
+		if (cl.indexOf("dis") == -1) {
+			byId("btn_play"+i).className = 'btn_camera play';
+		}
+	}
+	byId("mini_camera").style.display = 'none';	
+	byId("mini_camera").innerHTML = '&nbsp;';
+}
+function showListCamera(link, url) {
+	var check = checkChoosePerson();
+	if (check) {
+		link.href = url;
+	} else {
+		return false;
+	}
+}
+// checkJournal
+function checkJournal(){
+	if ({{ show_ident_window|default:1 }} == 0) {
+		return false;
+	}
+	$.ajax({
+		type: "GET",
+		url: "/checkjournal",
+		data: {},
+		success: function(msg){
+		//alert(msg);
+			obj = msg;
+			if  (obj && obj.status){
+				//createInfoWindow({distX: 10, width: 700, height: 600, elem: document.getElementById('divlang'), id: 'win_journal', txt: msg});
+				windowJournal({id: 'win_journal', css: {width: '600px', height: '600px'}, txt:obj.content, pos: '{{ ident_window_position|default_if_none:1 }}'}); //
+				if (byId('event')){
+				if (byId('event').value) { 
+					addFlashSound(byId('event').value);
+				}}
+				delayCheckJournal();
+			} else {
+				setTimeout('checkJournal()', 3000);
+			}
+		},
+		error: function(msg){
+			setTimeout('checkJournal()', 3000);
+		}
+	});
+}
+function delayCheckJournal() {
+	if (document.getElementById('win_journal').style.display == 'none') {
+		checkJournal();
+	} else {
+		setTimeout('delayCheckJournal()', 1000);
+	}
+}
+function DHTMLSound(surl) {
+	if (!byId('cont_sound')) {
+		showBlockSound();
+	}
+	byId("cont_sound").innerHTML="<embed src='"+surl+"' hidden='true' autostart='true' loop='false'>";
+}
+function addFlashSound(surl) {
+	if (!byId('cont_sound')) {
+		showBlockSound();
+	}
+	var flash = '<object id="flash-sound" name="flash-sound" width="1" height="1" data="/files/swf/sound/flash.swf" type="application/x-shockwave-flash">'+
+				'<param value="/files/swf/sound/flash.swf" name="movie">'+
+				'<param value="always" name="AllowScriptAccess">'+
+				'<param value="all" name="allowNetworking">'+
+				'<param value="true" name="allowFullScreen">'+
+				'<param name="quality" value="high" />'+
+				'<param name="bgcolor" value="#ffffff" />'+
+				'<param name="wmode" value="opaque" />'+
+				'<param name="FlashVars" value="sound='+surl+'" />'+
+				'<embed src="/files/swf/sound/flash.swf" wmode="opaque" FlashVars="sound='+surl+'" quality="high" bgcolor="#ffffff" width="1" height="1" name="flash-app" align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer" />'+
+				'</object>';
+	byId("cont_sound").innerHTML=flash;                      
+}
+function showBlockSound() {
+	var newElem = document.createElement('div');
+	var cl = document.createAttribute('class');
+	cl.nodeValue = "cont_sound";
+	newElem.setAttributeNode(cl);
+	var id = document.createAttribute('id');
+	id.nodeValue = "cont_sound";
+	newElem.setAttributeNode(id);
+	byId('content').appendChild(newElem);
+}
+function hideBlockSound() {
+	var sound = byId('cont_sound');
+	if (sound) {
+		byId('content').removeChild(sound);
+	}
+}
+function windowJournal(param) {
+	var border_left = 20;
+	var border_top = 20;
+	var scroll_width = 16;
+	var dist_ie6 = 10;
+	var browserType = navigator.userAgent.toLowerCase();
+	if (param) {	
+		if (param.id) {
+			var win = byId(param.id);
+		}
+		if (param.css) {
+			win.style.width = param.css.width;
+			win.style.height = param.css.height;
+		}
+		if (param.txt) {
+			byId(param.id+'_contWF').innerHTML = param.txt;
+		}
+		if (param.head) {
+			byId(param.id+'_headWF').innerHTML = param.head;
+		}
+	}
+	var pageSize = getPageSize();	
+	var h1 = parseFloat(param.css.height);
+	var content = byId(param.id+'_contWF');
+	content.parentNode.style.height = h1 - 32 + 'px';
+	if (param.pos == 0) {
+		var t = (pageSize.windowHeight - parseInt(win.style.height))/ 2*0.8;
+		if (t < 0) { t = 0 }
+		t = t + 'px';
+		win.style.top = t;
+		win.style.left = (pageSize.windowWidth - parseInt(win.style.width)) / 2 + 'px';
+		if ((browserType.indexOf('msie') >= 0) && (browserType.indexOf('msie 8.0') < 0)) {
+			win.style.position = 'absolute';
+			win.style.top = parseInt(t)+ document.documentElement.scrollTop +'px';
+			byId('block_fon').style.height = document.body.offsetHeight + 'px';
+		} else {
+			win.style.position = 'fixed';
+		}	
+	} else {
+		if ((pageSize.pageHeight > pageSize.windowHeight) && (browserType.indexOf('msie') < 0)) {
+			border_left = border_left + scroll_width;
+		}
+		var top = pageSize.windowHeight - parseInt(win.style.height) - border_top;
+		if (top < 0) { top = 0 }
+		top = top + 'px';
+		win.style.top = top;	
+		var left = win.style.left = (pageSize.windowWidth - parseInt(win.style.width) - border_left) + 'px';
+
+		if ((browserType.indexOf('msie') >= 0) && (browserType.indexOf('msie 8.0') < 0)) {
+			win.style.position = 'absolute';
+			win.style.top = parseInt(top)+ document.documentElement.scrollTop - dist_ie6 +'px';
+			win.style.left = parseInt(left) - dist_ie6 + 'px';
+			byId('block_fon').style.height = document.body.offsetHeight + 'px';
+		} else {	
+			win.style.position = 'fixed';
+		}
+	}
+	win.style.display = 'block';
+	byId('block_fon').style.display = 'block';	
+}
+function JournalReload(){
+   var wj = document.getElementById("win_journal");
+   if (wj && wj.style.display == "none"){location.reload(true);}
+   else{setTimeout('JournalReload()', 60000);}
+}
+function repeatRecognition(){
+	$.ajax({
+		type: "GET",
+		url: "/po4/repeatRecognition/",
+		data: {},
+		success: function(msg){closeChangeWindow('win_journal');},
+		error: function(msg){closeChangeWindow('win_journal');}
+	});
+}
+function movementProcess(id){
+	$.ajax({
+		type: "POST",
+		url: "/po4/movementProcess/"+id,
+		data: {},
+		success: function(msg){closeChangeWindow('win_journal'); },
+		error: function(msg){closeChangeWindow('win_journal'); }
+	});
+}
+// select row
+function overRow(tr) {
+	var cur_class = "";
+	if (tr.className) {
+		cur_class = rtrim(tr.className);
+	}
+	tr.className = cur_class + " act";
+}
+function outRow(tr) {
+	if (tr.className.indexOf('odd') != -1) {
+		tr.className = "odd";
+	} else {
+		tr.className = "";
+	}
+}
+function selectRow(tr, num) {
+	var cur_class = "";
+	if (tr.className) {
+		cur_class = rtrim(tr.className);
+	}	
+	tr.className = cur_class + " act";
+
+	var btn = byId("btn_play"+num);
+	if (btn) {
+		var btn_class = btn.className;
+		btn.className = btn_class + "_act";	
+	}
+}
+function unselectRow(tr, num) {
+	if (tr.className.indexOf('odd') != -1) {
+		tr.className = "odd";
+	} else {
+		tr.className = "";
+	}
+
+	var btn = byId("btn_play"+num);
+	if (btn) {
+		var btn_class = btn.className;
+		var i = btn_class.indexOf('_act');;
+		btn.className = btn_class.substr(0, i);
+	}
+}
+// window function
+function createTextMessage(param) {
+	switch (param.name_block) {
+		case "persons": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одну персону." %}';
+			break;
+		case "person": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одну фотографию персоны" %}.';
+			break;
+		case "visitors": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одного посетителя." %}';
+			break;
+		case "staffs": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одного сотрудника." %}';
+			break;
+		case "photos": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одну фотографию" %}.';
+			break;
+		case "cameras": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одну камеру" %}.';
+			break;			
+		case "users": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одного пользователя" %}.';
+			break;
+		case "lists": 
+			return '{% trans "Вы должны выбрать хотя бы одну запись" %}.';
+			break;		
+		case "visitingcards": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одну карточку" %}.';
+			break;
+		case "video": 
+			return '{% trans "Выберите, пожалуйста, хотя бы один ролик" %}.';
+			break;													
+		case "persons_del": 
+			return '{% trans "Вы действительно хотите удалить выбранных персон" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "person_del": 
+			return '{% trans "Вы действительно хотите удалить выбранные фотографии" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "persons_export": 
+			return '<div class="choose_export"><div><input type="radio" name="group1" value="0" id="export_group_0" class="inp_check" checked="checked" /><label for="export_group_0">{% trans "Экспортировать выбранные персоны" %} ('+param.count+' {% trans "шт" %}.)?</label></div><input type="radio" name="group1"  id="export_group_1" value="1" class="inp_check" /><label for="export_group_1">{% trans "Экспортировать весь список" %}?</label><input type="hidden" value="{{ group }}" id="export_group"/></div>';
+			break;
+		case "persons_export_all": 
+			return '{% trans "Экспортировать весь список?" %}';
+			break;
+		case "persons_concat": 
+			return '{% trans "Вы действительно хотите объединить выбранных персон" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "photos_del": 
+			return '{% trans "Вы действительно хотите удалить выбранные фотографии" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "photos_export": 
+			return '{% trans "Сохранить выделенные фотографии" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;					
+		case "visitors_del": 
+			return '{% trans "Вы действительно хотите удалить выбранных посетителей" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "visitors_export": 
+			return '<div class="choose_export"><div><input type="radio" name="group1" value="0" id="export_group_0" class="inp_check" checked="checked" /><label for="export_group_0">{% trans "Экспортировать выбранные персоны" %} ('+param.count+' {% trans "шт" %}.)?</label></div><input type="radio" name="group1"  id="export_group_1" value="1" class="inp_check" /><label for="export_group_1">{% trans "Экспортировать весь список" %}?</label><input type="hidden" value="{{ group }}" id="export_group"/></div>';
+			break;
+		case "visitors_export_all": 
+			return '{% trans "Экспортировать весь список?" %}';
+			break;		
+		case "staffs_del": 
+			return '{% trans "Вы действительно хотите удалить выбранных сотрудников" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "staffs_export": 
+			return '<div class="choose_export"><div><input type="radio" name="group1" value="0" id="export_group_0" class="inp_check" checked="checked" /><label for="export_group_0">{% trans "Экспортировать выбранные персоны" %} ('+param.count+' {% trans "шт" %}.)?</label></div><input type="radio" name="group1" id="export_group_1" value="1" class="inp_check" /><label for="export_group_1">{% trans "Экспортировать весь список" %}?</label><input type="hidden" value="{{ group }}" id="export_group"/></div>';
+			break;
+		case "staffs_export_all": 
+			return '{% trans "Экспортировать весь список?" %}';
+			break;		
+		case "staffs_concat": 
+			return '{% trans "Вы действительно хотите объединить выбранные фотографии" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;		
+		case "users_del": 
+			return '{% trans "Вы действительно хотите удалить выбранных пользователей" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "visitingcards_del": 
+			return '{% trans "Вы действительно хотите удалить выбранные карточки" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "lists_del": 
+			return '{% trans "Вы действительно хотите удалить выбранные списки" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "video_del": 
+			return '{% trans "Вы действительно хотите удалить выбранные ролики" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;														
+		case "persons_zeroing": 
+			return '{% trans "Вы действительно хотите удалить базу персон" %}?';
+			break;
+		case "lists_zeroing": 
+			return '{% trans "Прежде чем удалить список, удалите все входящие в него записи." %}';
+			break;
+		case "restart": 
+			return '{% trans "Вы действительно хотите перезапустить систему" %}?';
+			break;
+		case "reboot": 
+			return '{% trans "Вы действительно хотите перезагрузить компьютер" %}?';
+			break;
+		case "journal": 
+			return '{% trans "Очистить записи журнала" %} '+getPeriodClear()+'?';
+			break;
+		case "journalexport":
+			return '{% trans "Выберите, пожалуйста, хотя бы одну фотографию" %}';
+			break;
+		case "journalexport_export":
+			return '{% trans "Экспортировать выбранные фотографии" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "journalexportfilter":
+			return '{% trans "Нет данных для экспорта" %}';
+			break;
+		case "journalexportfailed":
+			return '{% trans "При экспорте возникли проблемы" %}.';
+			break;
+		case "journalexportfilter_export":
+			return '{% trans "Экспортировать выбранные фотографии" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "journalexportfilter_export_filter":
+			/*return '<div class="dist_top">{% trans "Экспортировать фотографии" %} ('+param.count+' {% trans "шт" %}.) из отфильтрованного списка?</div>';*/
+			return '<div class="dist_top">' + replace_string('{% trans "Экспортировать фотографии {} из отфильтрованного списка?" %}', '{}', '('+param.count+' {% trans "шт" %}.)') + '</div>';
+			break;		
+		case "win_persontraining_wrong":
+			return '{% trans "Возможно, не выбрана ни одна запись или выбранные персоны уже обучены." %}';
+			break;
+		case "model": 
+			return '{% trans "Выберите, пожалуйста, модель объектива" %}.';
+			break;		
+		case "win_test_fr":
+			return '<span class="info_important">{% trans "Внимание!" %}</span> {% trans "Выполнение теста может занять несколько минут" %}.'; 
+			break;
+		case "save_profile":
+			return '{% trans "Cохранить настройки для всех камер выбранного коммуникатора " %}"'+getInfoCommunicator().host+':'+getInfoCommunicator().port+'"? <div class="dist_top"><span class="info_important">{% trans "Внимание!" %}</span><div class="dist_top">{% trans "Время выполнения данного действия зависит от количества видеокамер и может занять до 20 минут" %}.</div></div>';
+			break;
+		case "upload_profile":
+			return '{% trans "Загрузить сохранённые настройки камер для коммуникатора " %}"'+getInfoCommunicator().host+':'+getInfoCommunicator().port+'"?'; 
+			break;
+		case "change_settings_camera":
+			return '{% trans "На странице есть несохранённые данные. Вы действительно хотите покинуть страницу" %}?'; 
+			break;
+		case "param_del":
+			if (param.head) {
+				return '{% trans "Вы действительно хотите удалить группу параметров" %} <strong>"'+param.name+'"</strong>?';
+			} else {
+				return '{% trans "Вы действительно хотите удалить параметр" %} <strong>"'+param.name+'"</strong>?';
+			}
+			break;
+		case "model_del":
+			return '{% trans "Вы действительно хотите удалить модель объектива " %} <strong>"'+param.name+'"</strong>?';
+			break;
+		case "param_edit":
+			if (param.head) {
+				return '{% trans "Переименование группы параметров" %} <strong>"'+param.name+'"</strong>.';
+			} else {
+				return '{% trans "Переименование параметра" %} <strong>"'+param.name+'"</strong>.';
+			}
+			break;
+		case "param_dupl":
+			if (param.type == 'balancer') {
+				return '{% trans "Создать дубликат балансировщика" %} <strong>"'+param.name+'"</strong>?';
+			} else  if (param.type == 'daemon') {
+				return '{% trans "Создать дубликат демона" %} <strong>"'+param.name+'"</strong>?';
+			} else {
+				return '{% trans "Создать дубликат группы" %} <strong>"'+param.name+'"</strong>?';
+			}
+			break;
+		case "param_exp":
+			return '{% trans "Экспортировать настройки управляющей системы" %}?';
+			break;						
+		case "min": 
+			return '{% trans "Минимальное значение" %}:';
+			break;
+		case "max": 
+			return '{% trans "Максимальное значение" %}:';
+			break;
+		case "reboot_system":
+			return '{% trans "Вы действительно хотите перезапустить систему?" %}';
+			break;
+		case "reboot_offer_window":
+			return '{% trans "Для применения сохраненных изменений требуется перезапустить систему. Перезапустить систему сейчас?" %}';
+			break;																			
+		default:
+			return '{% trans "Выберите, пожалуйста, хотя бы одно изображение" %}.';
+			break;
+	}
+}
+function showMessageDelete(count, name_block) {
+	var txt;
+	var head;
+	var check = isChecked(count);
+	if (check) {
+		txt = createTextMessage({name_block: name_block+"_del", count: check});
+		changeWindow({id: 'win_del', css: {width: '300px', height: '200px'}, txt: txt});
+	} else {
+		txt = createTextMessage({name_block: name_block});
+		changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+	}
+}
+function showMessageExport(count, name_block) {
+	var txt;
+	var head;
+	var check = isChecked(count);
+	if (check) {
+		txt = createTextMessage({name_block: name_block+"_export", count: check});
+		changeWindow({id: 'win_export', css: {width: '300px', height: '200px'}, txt: txt});
+	} else {
+		txt = createTextMessage({name_block: name_block});
+		changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+	}
+}
+function showMessageExport2(count) {
+	var txt;
+	var head;
+	var check = isChecked(count);
+	if (check) {
+		txt = '{% trans "Экспортировать выбранные записи" %} ('+check+' {% trans "шт" %}.)?';
+		changeWindow({id: 'win_export', css: {width: '300px', height: '200px'}, txt: txt});
+	} else {
+		txt = '{% trans "Выберите, пожалуйста, хотя бы одну запись" %}.';
+		changeWindow({id: 'win_export_mess', css: {width: '300px', height: '200px'}, txt: txt});
+	}
+}
+function showMessageExport3(count, name_block) {
+	var txt;
+	var head;
+	var check = isChecked(count);
+	if (check) {
+		txt = createTextMessage({name_block: name_block+"_export", count: check});
+		changeWindow({id: 'win_export', css: {width: '350px', height: '200px'}, txt: txt});
+	} else {
+		txt = createTextMessage({name_block: name_block + "_export_all"});
+		changeWindow({id: 'win_mess_export_all', css: {width: '300px', height: '200px'}, txt: txt});
+	}
+}
+function showMessageConcat(count, name_block) {
+	var txt;
+	var head;
+	var check = isChecked(count);
+	if (check) {
+		txt = createTextMessage({name_block: name_block+"_concat", count: check});
+		changeWindow({id: 'win_concat', css: {width: '300px', height: '200px'}, txt: txt});
+	} else {
+		txt = createTextMessage({name_block: name_block});
+		changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+	}
+}
+function showHelp(btn, txt) {
+	createInfoWindow({distX: 10, width: 400, height: 300, elem: btn, id: 'win_help', txt: txt})
+}
+function closeChangeWindow(id) {
+	$("#" + id).hide();
+	$("#block_fon").hide();
+	//hideBlockSound();
+}
+function showMessageZeroing(name_block) {
+	var txt;
+	txt = createTextMessage({name_block: name_block+'_zeroing'});
+	changeWindow({id: 'win_zeroing', css: {width: '300px', height: '200px'}, txt: txt});
+}
+function showIndicator(show) {
+	var win = $('#indicator');
+	var fon = $('#block_fon');
+	if (show) {
+		var w = 200;
+		var h = 60;
+		var scr = screenSize();
+		win.css("top", (100 - h * 100 / scr.h) / 3 / 100 * scr.h + 'px');
+		win.css("left", (scr.w - w) / 2 + 'px')
+		fon.show();
+		win.show();
+	} else {
+		fon.hide();
+		win.hide();
+	}	
+}
+function showMessage(txt) {	
+	changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+}
+function showUpdateWindow() {
+	var inp = $("#countcameras");
+	if (inp.size() > 0) {
+		$("#win_update_contWF").find("div.error").html("");
+		inp.removeClass("err_forms");
+		inp.val("");
+		inp.focus();
+	}
+	changeWindow({id: 'win_update', css: {width: '300px', height: '220px'}});
+}
+function addCamera() {
+	changeWindow({id: 'win_add', css: {width: '400px', height: '300px'}});
+}
+function confirm_del(){
+	createInfoWindow({distX: 10, width: 400, height: 200, elem: document.getElementById('img_1'), id: 'win_delete', txt: '{% trans "Удалить выделенные данные?" %}'});
+}
+function restartSystem(name_block) {
+   var txt = createTextMessage({name_block: name_block});
+   changeWindow({id: 'win_restart', css: {width: '300px', height: '200px'}, txt: txt});
+}
+function rebootComputer(name_block) {
+   var txt = createTextMessage({name_block: name_block});
+   changeWindow({id: 'win_reboot', css: {width: '300px', height: '200px'}, txt: txt});
+}
+function createMessageTestFr(name_block) {
+   var txt = createTextMessage({name_block: name_block});
+   changeWindow({id: name_block, css: {width: '300px', height: '200px'}, txt: txt});
+}
+function showWindowDialog(id_win, name_block) {
+   var txt = createTextMessage({name_block: name_block});
+   changeWindow({id: id_win, css: {width: '300px', height: '200px'}, txt: txt});
+}
+// delete objects
+function clickDelete(count) {
+	closeChangeWindow('win_del');
+	var obj = getValueIsChecked(count);
+	var res = '';
+	for(var i = 0; i<obj.c; i++){
+		if (i!=0){
+			res=res+',';
+		}
+		res = res + obj.array[i];
+	}
+	return res;
+}
+function DelPick(num){
+	showIndicator(true);
+	var inp = byId("delid");
+	if (inp){ inp.value = num;}
+	byId("mainForm").submit();
+}
+function ConcatPick(num){
+	showIndicator(true);
+	var inp = byId("delid");
+	if(inp) {
+		inp.name = "concato";
+		inp.value = num;
+	}
+	byId("mainForm").submit();
+}
+// check validate data
+function setValueDefaultSelect(id) {
+	var select = byId(id);
+	select.selectedIndex = 0;
+}
+function getSelectedElem(obj) {
+	var select = byId(obj);
+	for (var i = 0; i < select.options.length; i++) {
+		if (select.options[i].selected) {
+			return {text: select.options[i].text, value: parseInt(select.options[i].value)};
+		}
+	}
+}
+function showBlock(id) {
+	if (id.indexOf('radio1') != -1)  {
+		byId(id).style.display='block'; 
+		byId('radio2').style.display='none';
+	} else {
+		byId(id).style.display='block'; 
+		byId('radio1').style.display='none';
+	}
+}
+function disabledOption(obj, index) {
+	var select = byId(obj);
+	var count = select.options.length;
+	if ((index + 1) <= count) {
+		index = index + 1;
+	}
+	for (var i = 0; i < index; i++) {
+		select.options[i].disabled = false;
+	}
+	for (i = index; i < count; i++) {
+		select.options[i].disabled = "disabled";
+	}
+}
+function changeBorder(obj, err) {
+	if (err) {
+		obj.style.border = "1px solid #FF6600";
+	} else {
+		obj.style.border = "1px solid #AAAAAA";
+	}
+}
+function checkInt(obj) {	
+	var re = /^\d+$/i;
+	if (obj.value) {
+		return re.exec(obj.value);
+	}
+	return true;	
+}
+function ltrim(s) {
+	var new_s;
+	if (s.length >= 1) {
+		new_s = s.replace(/^0+/, '');
+		if (new_s) {
+			return new_s;
+		}
+		return '0';
+	}
+	return '0'; 
+}
+function getInt(value) {
+	return parseInt(ltrim(value));
+}
+function checkValue(inp, defaultValue) {
+	if (!inp.value) {
+		inp.value = defaultValue;
+		return;
+	}
+	changeBorder(inp, false);
+	byId('err_mess').innerHTML = "&nbsp;";		
+}
+function msgErrorBlockPicture(id) {
+	switch (id) {
+		case "brightness": 
+			return "{% trans 'Введено слишком большое значение для параметра &quot;Яркость&quot;' %}";
+			break;
+		case "sharpness": 
+			return "{% trans 'Введено слишком большое значение для параметра &quot;Резкость&quot;' %}";
+			break;
+		case "saturation": 
+			return "{% trans 'Введено слишком большое значение для параметра &quot;Насыщенность&quot;' %}";
+			break;
+		case "contrast": 
+			return "{% trans 'Введено слишком большое значение для параметра &quot;Контраст&quot;' %}";
+			break;
+		case "qualityPicture": 
+			return "{% trans 'Введено слишком большое значение для параметра &quot;Качество&quot;' %}";
+			break;
+		case "shortexposures": 
+			return "{% trans 'Введённое значение для параметра &quot;Время экспозиции&quot; находится вне указанного диапазона' %}";
+			break;			
+		default: 
+			return "{% trans 'Введено слишком большое значение' %}";
+			break;
+	}
+}
+function searchPerson(inp, focus) {
+	var defaultValue =  "{% trans 'Введите имя персоны' %}";
+	if (focus) {
+		if ((inp.value == defaultValue) || (inp.value == '')) {
+			inp.value = '';
+			inp.style.color = '#505050';
+		} 
+	} else {
+		if (inp.value == '') {
+			inp.value = defaultValue;
+			inp.style.color = '#868686';
+		}
+	}		
+}
+function showError(elem, show, txt) {
+	if (show) {
+		changeBorder(elem, true);
+		byId('err_mess').innerHTML = txt;
+		//elem.focus();
+	} else {
+		changeBorder(elem, false);
+		byId('err_mess').innerHTML = '&nbsp;';	
+	}
+}
+function focusElem(inp, focus, defaultValue) {
+	if (focus) {
+		if ((inp.value == defaultValue) || (inp.value == '')) {
+			inp.value = '';
+			inp.style.color = '#505050';
+		} 
+	} else {
+		if (inp.value == '') {
+			inp.value = defaultValue;
+			inp.style.color = '#868686';
+		}
+	}
+	showError(inp, false);
+}
+function checkChoosePerson() {
+	var defaultValue = "{% trans 'Введите имя персоны' %}";
+	var error1 = "{% trans 'Пожалуйста, введите имя персоны' %}.";
+	var error2 = "{% trans 'Пожалуйста, выберите персону из базы' %}.";
+	if (byId('pers_radio2').checked) {
+		var name = byId('name_person');
+		if ((name.value == '') || (name.value == defaultValue) ) {
+			showError(name, true, error1);
+			return false;
+		}
+	} else if (byId('pers_radio1').checked) {
+		var list = byId('persid');
+		if (list.selectedIndex == 0) {
+			showError(list, true, error2);	
+			return false;
+		}
+	}
+	return true;
+}
+function choosePerson(id) {
+	byId(id).checked = true;
+	var list = byId('persid');
+	var name = byId('name_person');
+	if (id == 'pers_radio1') {
+		showError(name, false);
+		if (list.selectedIndex > 0) {
+			showError(list, false);	
+		}
+	} else if (id == 'pers_radio2') {
+		showError(list, false);
+	}
+}
+function initChoosePerson() {
+	var list = byId('persid');
+	var name = byId('name_person');
+	showError(name, false);
+	showError(list, false);
+}
+function getInfoPerson() {
+	var radio1 = document.getElementById('pers_radio1');
+	var radio2 = document.getElementById('pers_radio2');
+	var persid = document.getElementById('persid');
+	var name_person = document.getElementById('name_person');
+	var name = '';
+	var txt = '';
+	var headTxt1 = '{% trans "Обучение персоны" %}';
+	var headTxt2 = '{% trans "Обучение новой персоной" %}';
+	if (radio1.checked) {
+		name = persid.options[persid.selectedIndex].value;
+		txt = ' - ' + headTxt1 + ': ' + name;
+	} else {
+		name = name_person.value;
+		txt = ' - ' + headTxt2 + ': ' + name;
+	}
+	return {name_person: name, head: txt};
+}
+function showFlash() {
+	var check = checkChoosePerson();
+	if (check) {
+		var divFlash = byId('newFlash');
+		if (flashVersion()) {
+			divFlash.innerHTML = addFlash();
+		} else {
+			divFlash.innerHTML = '<div class="noFlash">{% trans "У Вас отсутствует или установлена старая версия flash плеера. Новую версию плеера можно скачать" %} <a target="_blank" href="http://get.adobe.com/flashplayer/">{% trans "здесь" %}</a></div>';
+		}
+		var head = byId('head_name');
+		head.innerHTML = getInfoPerson().head;
+		showUploadBlock(true);
+	}
+}
+function chooseDoc(select) {
+	var id = getSelectedElem(select).value;
+	if (id == 'passport') {
+		byId('card').style.display = 'none';
+	} else {
+		byId('passport').style.display = 'none';	
+	}	
+	byId(id).style.display = 'block';
+}
+function getRadioGroupValue(radioGroupObj) {
+  for (var i=0; i < radioGroupObj.length; i++)
+	if (radioGroupObj[i].checked) return radioGroupObj[i].value;
+  return null;
+}
+// add file
+function add_file(str, cl) {
+	var inpContent = byId("tmp");
+	var numEl = byId("load_img");
+	if (!numEl) return false;
+	var num = 0;
+	if (numEl.innerText != undefined) {
+		num = parseInt(numEl.innerText);   
+	} else {
+		num = parseInt(numEl.textContent);  
+	}
+	var inpArray = inpContent.getElementsByTagName('input');
+	var lenArray = inpArray.length;
+	var inpTemplate = byId("template_block");
+	var inpOld = -1;
+	var numFileInp = 0;
+	for (var i = 0; i < lenArray; i++) {
+		if ((inpArray[i].value == "") && (inpArray[i].type == 'file')) {
+			if (inpOld == -1) {
+				inpOld = i;
+			} 
+		}
+		if (inpArray[i].type == 'file') {
+			numFileInp++;
+		}
+	}
+	if (str && (inpOld == -1) && (num <= 19)) {
+		if (num < 19) {
+			inpBlock = document.createElement("div");
+			inpBlock.innerHTML = inpTemplate.innerHTML;
+			if (cl) {
+				inpBlock.className = cl;
+			}
+			inpContent.appendChild(inpBlock);
+
+			newInpArr = inpBlock.getElementsByTagName('input');
+			newInpArr[0].name = "file" + numFileInp;
+		}
+		num +=1;
+	}	
+	numEl.innerHTML = num;
+}
+// other
+function showLoupe(num, show) {
+	byId('loupe'+num).style.display = show ? 'block' : 'none';
+}
+function showUploadBlock(show) {
+	if (show) {
+		byId('choose_person').style.display = 'none';
+		byId('upload_files').style.display = 'block';
+	} else {
+		var divFlash = byId('newFlash');
+		divFlash.innerHTML = '&nbsp;';
+		byId('upload_files').style.display = 'none';
+		byId('choose_person').style.display = 'block';
+	}
+}
+function changeWhom(num){
+	if (num==dperson){
+		document.getElementById('swhom'+dperson).name='person';
+		document.getElementById('swhom'+demployee).name='p';
+		document.getElementById('whom'+dperson).style.display='block';
+		document.getElementById('whom'+demployee).style.display='none';
+	}else{
+		document.getElementById('swhom'+demployee).name='person';
+		document.getElementById('swhom'+dperson).name='p';
+		document.getElementById('whom'+demployee).style.display='block';
+		document.getElementById('whom'+dperson).style.display='none';
+	}
+}
+function sortPick(name){
+	var inp = document.getElementById("sortid");
+	if (inp && name){ 
+		if(inp.value == name.id){inp.value="";}
+		else{inp.value = name.id;}
+	}
+	document.getElementById("mainForm").submit();
+}
+function savePerson() {
+	byId('divLearn').style.display='block'; 
+	byId('bLearn').style.display='none';
+}
+function editNamePerson(num) {
+	var id_name = 'nameperson'+num;
+	var name = byId(id_name).title;
+	byId('oldname_person').value = name;
+	byId('newname_person').value = name;
+	changeWindow({id: 'win_editname', css: {width: '300px', height: '200px'}});
+}
+function saveArchive(ok) {
+	closeChangeWindow('win_export');
+	var txt = '';
+	showIndicator(false);
+	if (ok == 'False') {
+		txt = '{% trans "Сохранить фотографии не удалось. Пожалуйста, попробуйте ещё раз." %}'
+		changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+	} else {
+		txt='<div class="linkArchive">{% trans "Скачать архив с фотографиями Вы можете " %}<div><a href="'+ok+'">{% trans "здесь" %}</a></div></div>';
+		changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+	}
+}
+function checkDataFields(){
+	var dateB = document.getElementById('mainForm').elements["dateBegin"].value.split(".");
+	var dateE = document.getElementById('mainForm').elements["dateEnd"].value.split(".");
+	var uDateB = new Date(dateB[2] + '/' +  dateB[1] + '/' + dateB[0]).getTime() / 1000;
+	var uDateE = new Date(dateE[2] + '/' +  dateE[1] + '/' + dateE[0]).getTime() / 1000;
+	if(uDateB > uDateE)	{
+		$('input[name="dateEnd"]').css({'border': '1px solid #ff0000'});
+		$('input[name="dateBegin"]').css({'border': '1px solid #ff0000'});
+		$('#date_warning').text('{% trans "Указан некорректный период дат" %}');
+		$('#date_warning').fadeIn();
+		return false;
+	}else{
+		
+		$('input[name="dateEnd"]').css({'border': '1px solid #aaa'});
+		$('input[name="dateBegin"]').css({'border': '1px solid #aaa'});
+		
+		if($("#block_filter_time").css("display") == "block"){
+			correct_hours = true;
+			var bh = parseInt(document.getElementById('mainForm').elements["hour_beg"].value);
+			var bm = parseInt(document.getElementById('mainForm').elements["min_beg"].value);
+			var eh = parseInt(document.getElementById('mainForm').elements["hour_end"].value);
+			var em = parseInt(document.getElementById('mainForm').elements["min_end"].value);
+					$('input[name="hour_beg"]').css({'border': '1px solid #aaa'});
+					$('input[name="hour_end"]').css({'border': '1px solid #aaa'});
+					$('input[name="min_beg"]').css({'border': '1px solid #aaa'});
+					$('input[name="min_end"]').css({'border': '1px solid #aaa'});
+			if(bh.toString()!=document.getElementById('mainForm').elements["hour_beg"].value){
+				$('input[name="hour_beg"]').css({'border': '1px solid #ff0000'});
+				correct_hours = false;
+			}
+			if(bm.toString()!=document.getElementById('mainForm').elements["min_beg"].value){
+				$('input[name="min_beg"]').css({'border': '1px solid #ff0000'});
+				correct_hours = false;
+			}
+			if(eh.toString()!=document.getElementById('mainForm').elements["hour_end"].value){
+				$('input[name="hour_end"]').css({'border': '1px solid #ff0000'});
+				correct_hours = false;
+			}
+			if(em.toString()!=document.getElementById('mainForm').elements["min_end"].value){
+				$('input[name="min_end"]').css({'border': '1px solid #ff0000'});
+				correct_hours = false;
+			}
+			if(!correct_hours) return false;
+			if(uDateB == uDateE){
+				correct_hours = ((bh<eh) || ((bh==eh) && (bm<em)) || ((bh==eh) && (bm==em) && (bs<=es)));
+				if(correct_hours){
+					$('input[name="hour_beg"]').css({'border': '1px solid #aaa'});
+					$('input[name="hour_end"]').css({'border': '1px solid #aaa'});
+					$('input[name="min_beg"]').css({'border': '1px solid #aaa'});
+					$('input[name="min_end"]').css({'border': '1px solid #aaa'});
+					$('#date_warning').fadeOut();
+					return true;
+				}else{
+					$('input[name="hour_beg"]').css({'border': '1px solid #ff0000'});
+					$('input[name="hour_end"]').css({'border': '1px solid #ff0000'});
+					$('input[name="min_beg"]').css({'border': '1px solid #ff0000'});
+					$('input[name="min_end"]').css({'border': '1px solid #ff0000'});
+					$('#date_warning').text('{% trans "Указан неверный период времени" %}');
+					$('#date_warning').fadeIn();
+					return false;
+				}
+			}
+		}
+		$('#date_warning').fadeOut();
+		return true;
+	}
+}
+function mainFormSubmit(){
+	if(checkDataFields()){
+		document.getElementById('mainForm').submit();
+	}
+}
+//при клике на enter submit form 
+function submitonEnter(e) {
+	var e = (e) ? e : window.event;
+	var code = (e.charCode) ? e.charCode : e.keyCode;
+	if (code == 13) {
+		document.getElementById('mainForm').submit();
+	}
+}
+// общие всплывающие подсказки на всех страницах
+function initCurrentTooltip() {
+	$(".short_descr").easyTooltip();
+}
+// выделение всех строк
+function selectedAllRow(id) {
+	var inp = $("#" + id);
+	var checks = $("#table td input[type=checkbox]");
+	var checks_all = $("input[type=checkbox].check_all");
+	if (inp.attr("checked")) {
+		$.each(checks, function() {
+			$(this).attr("checked", "checked");
+		});
+		checks_all.attr("checked", "checked");
+	} else {
+		$.each(checks, function() {
+			$(this).attr("checked", false);
+		});
+		checks_all.attr("checked", false);	
+	}
+}
+// выделение одной строки
+function selectedRow(obj) {
+	var inp = $(obj);
+	var checks_all = $("input[type=checkbox].check_all");
+	var count = $("#table td input[type=checkbox]").size();
+	var count_sel = 0;
+	if (inp.attr("checked")) {
+		count_sel = $("#table td input[type=checkbox]:checked").size();
+		if (count_sel == count) {
+			checks_all.attr("checked", "checked");
+		}
+	} else {	
+		checks_all.attr("checked", false);
+	}
+}
+</script>

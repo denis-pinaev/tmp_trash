@@ -1,0 +1,11 @@
+{% extends "base_notab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Ошибка 404' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/1280/main.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4help.css?v=v{{ version }}" />
+{% endblock %}
+{% block subcontent %}
+	<h2>{% trans "Ошибка" %} 404<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Ошибка 404" %}');" /></h2>
+	<div class="page_error">{% trans "Ошибка" %} 404! {% trans "Файл не найден" %}.</div>
+{% endblock %}

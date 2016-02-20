@@ -1,0 +1,46 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Настройки интерфейса' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/interface.css?v=v{{ version }}" />
+<script type="text/javascript"> 
+$(function() {
+    $("input[name=resolution]").click(function() {
+        setResolution($(this).val());
+    })
+});  
+function setResolution() {
+	var value = $("input[name=resolution]:checked").val();
+    $.ajax({
+        type: "POST",
+        url: "{% url settings_interface %}",
+        data: {res_interface: value},
+        success: function(msg){
+            var txt = '';
+            if (msg != 'True') {
+				showMessage('{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}');
+                return;
+            } else {
+                location.reload(true);
+            }
+        },
+        error: function() {
+            showMessage('{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}');
+        }                                            
+    });                                  
+}
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+<h2>{% trans "Настройки интерфейса" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Настройки_интерфейса' %}');" /></h2>
+{% include "current_time.html" %}
+<form method="POST" action="" name="mainForm" id="settings_interface1">
+	<div class="frm_block">
+		<label for="resolution1">{% trans "Разрешение экрана" %}:</label>
+		<input type="radio" name="resolution" value="0" id="resolution1" class="inp_check dist_left"{% if res_interface == "0" %} checked="checked"{% endif %} /><label for="resolution1">1280x1024</label>
+		<input type="radio" name="resolution" value="1" id="resolution2" class="inp_check dist_left"{% if res_interface == "1" %} checked="checked"{% endif %} /><label for="resolution2">1920x1080</label>                               
+	</div>
+</form>
+{% endblock %}

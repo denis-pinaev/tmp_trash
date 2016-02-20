@@ -1,0 +1,55 @@
+{% load a_templatetags %}
+<script type="text/javascript">
+function showCameraIdent(link, nameCamera, numCamera) {
+    var communicator = getInfoCommunicator();
+    var curr_class = link.className;
+    byId("act_camera").innerHTML = ' - ' + nameCamera;
+    byId("big_camera_info").style.display = 'none';
+    byId("big_camera").style.display = 'block';
+    if (flashVersion()) {
+        byId('big_camera').innerHTML = addFlash(numCamera, communicator.host, communicator.port);
+    } else {
+        byId('big_camera').innerHTML = '<div class="noFlash">{% trans "У вас отсутствует или установлена старая версия flash плеера. Новую версию плеера можно скачать" %} <a target="_blank" href="http://get.adobe.com/flashplayer/">{% trans "здесь" %}</a></div>';
+    }
+}
+function getChooseCameraIdent() {
+    var parent = byId('cameras');
+    var oChilds = parent.childNodes;
+    var nameNode = 'DIV';
+    var li;
+    for (var i = 0; i < oChilds.length; i++) {
+        if (oChilds[i].nodeName == nameNode) {
+            li = oChilds[i];
+            if (li.className.indexOf('noact') == -1) {
+                return li.id.split('_')[1];
+            }
+        }
+    }
+    return false;
+}
+function showChooseCameraIdent() {
+    var numcamera = getChooseCameraIdent();
+    if (numcamera) {
+        var communicator = getInfoCommunicator();
+        var nameCamera = byId('link_' + numcamera).innerHTML;
+        byId("big_camera_info").style.display = 'none';
+        byId("big_camera").style.display = 'block';
+        byId("act_communicator").innerHTML = ' - ' + communicator.host+':'+communicator.port;
+        byId("act_camera").innerHTML = ' - ' + nameCamera;
+        if (flashVersion()) {
+            byId('big_camera').innerHTML = addFlash(numcamera, communicator.host, communicator.port);
+        } else {
+            byId('big_camera').innerHTML = '<div class="noFlash">{% trans "У вас отсутствует или установлена старая версия flash плеера. Новую версию плеера можно скачать" %} <a target="_blank" href="http://get.adobe.com/flashplayer/">{% trans "здесь" %}</a></div>';
+        }
+    }
+}
+function showListCameras(obj) {
+    var obj = byId(obj);
+    var inp = byId('btn_all');
+    inp.className = (inp.className == 'btn_set_left') ? 'btn_set_bottom': 'btn_set_left';
+    var text = (obj.innerHTML == '{% trans "Показать всё" %}') ? '{% trans "Скрыть" %}' : '{% trans "Показать всё" %}';
+    obj.innerHTML = text;
+    var block = byId('all_cameras');
+    block.style.display = (block.style.display == 'none') ? 'block' : 'none';    
+}
+</script>

@@ -1,0 +1,1 @@
+mysql -ulike_gale_ru -pgbplbrkzec --host=192.168.4.41 like_gale_ru

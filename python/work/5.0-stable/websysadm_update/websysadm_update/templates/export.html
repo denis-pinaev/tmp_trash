@@ -1,0 +1,47 @@
+{% include "header.html" %}
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+    <div class="block_settings">
+        <div class="block_cont">
+            <div class="block_cont_top">
+                <div class="block_cont_bottom min_height">
+                    <h2>Экспорт настроек</h2>
+                    <form method="post" action="">
+                        <div class="frm_block"><span class="tick">&nbsp; </span>Настройки камер</div>
+                        <div class="frm_block"><span class="tick">&nbsp; </span>Настройки распознавания</div>
+                        <div class="frm_block"><span class="tick">&nbsp; </span>Системные настройки</div>
+                        <div class="frm_block"><input type="checkbox" name="export" value="fr" class="inp_check" id="fr" /><label for="fr">База идентифицируемых личностей</label></div>
+                        <div class="frm_block"><input type="checkbox" name="export" value="journal" class="inp_check" id="journal" /><label for="journal">Журнал</label></div>
+                        <div class="frm_block"><input type="checkbox" name="export" value="db_dump" class="inp_check" id="db" /><label for="db">Базы данных</label></div>
+                        <div class="frm_block"><input type="checkbox" name="export" value="admin" class="inp_check" id="admin" /><label for="admin">Админка</label></div>
+                        <div class="frm_block"><input type="checkbox" name="export" value="version" class="inp_check" id="version" /><label for="version">Версии ПО</label></div>
+                        <div class="frm_block"><input type="button" name="" value="Экспорт информации" class="inp_btn inp_blue140" onClick="javascript: if (confirm('Начать операцию экспорта информации?')){export_info();}" /></div>
+                    </form>
+                    <div id="div_info" style="margin-top:15px;">
+                        {% if tar|length > 0 %}
+                        <ul class="list_links">
+                        {% for t in tar %}
+                            <li><a href='{{ t.url }}'>{{ t.name }} (дата создания - {{ t.dt }})</a></li>
+                        {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>                                
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>       
+</div>
+
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>Пожалуйста, подождите...</div>
+</div>
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>            
+
+{% include "footer.html" %}
+</body>
+</html>
+ 

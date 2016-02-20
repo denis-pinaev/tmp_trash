@@ -1,0 +1,80 @@
+{% load i18n %}
+{% load templatetags %}
+{% if now_hour and now_minute and now_second %}<div id="current_time" class="current_time short_descr" title="{% trans 'Время на сервере' %}">{{ now_hour }}:{{ now_minute }}:{{ now_second }}</div>{% endif %}
+<script type="text/javascript">
+// получить время на сервере
+	function getTimeServer() {
+		if (windowIsActive) {
+			$.ajax({
+				type: "GET",
+				url: "{% url api_get_server_time %}",
+				cache: false,
+				dataType: "json",
+				success: function(data){
+					if (data.status) {
+						var arr = data.server_time.split(":");
+						hour = parseInt(arr['0']);
+						minute = parseInt(arr['1']);
+						second = parseInt(arr['2']);
+					} else {
+						//alert('Status error');
+					}
+				},
+				error: function(data) {
+					//alert('ajax request error');
+				}
+			});	
+		}
+	}
+// обновить время в интерфейсе, если вкладка активна
+	windowOnFocusFunctions.push('getTimeServer()');
+	
+	var hour = {{ now_hour|default:0 }};
+	var minute = {{ now_minute|default:0 }};
+	var second = {{ now_second|default:0 }};
+	var ms = 0;
+	if(hour == 0 && minute == 0 && second == 0){
+		var date = Date();
+		hour = date.getHours();
+		minute = date.getMinutes();
+		second = date.getSeconds();
+		setTimeout('getTimeServer(0);', 1000);
+	}
+	
+	function getDoubleNumber(num) {
+		if (num>9){
+			return num;
+		} else {
+			return '0'+num;
+		}
+	}
+	function makeCurrentTime() {
+		return getDoubleNumber(hour)+':'+getDoubleNumber(minute)+':'+getDoubleNumber(second);
+	}
+	function makeCurrentDate(){
+		return '01.01.2010';
+	}
+	function updateTime(add) {
+		ms += add;
+		while (ms >= 1000) {
+			second+=1;
+			ms-=1000;
+		}
+		while (second>=60) {
+			minute+=1;
+			second-=60;
+		}
+		while (minute>=60) {
+			hour+=1;
+			minute-=60;
+		}
+		while (hour>=24) {
+			hour-=24;
+		}
+		if (document.getElementById('current_time')){
+			document.getElementById('current_time').innerHTML = makeCurrentTime()
+			setTimeout('updateTime(500);', 500);
+		}
+	}
+	updateTime(0);
+</script>

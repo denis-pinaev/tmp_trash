@@ -1,0 +1,1029 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+var params = new Array(); // глобальный массив с текущимим настройками
+var timer; 
+function byId(node) {
+	return typeof node == 'string' ? document.getElementById(node) : node;
+}
+function initFuncs() {
+    $("#list_settings li .head_setting a").click(function() {
+        showSettingsBlock($(this));
+        return false;
+    });
+    initFuncsSpinbox();
+    initFuncsInputTypeRadio();
+    initFuncsDistortion();
+    initFuncsCamera();
+    $(document).keydown(function(e) {
+        closeWindowSettingsOnEsc(e);
+    });    
+}
+// показать блок с настройками
+function showSettingsBlock(link) {
+    var head = link.parent();
+    if (head.attr("class").indexOf("head_dis") < 0) {
+        var block = link.parent().next();
+        var blocks = $("#list_settings li .cont_settings");
+        if (block.css("display") == "block") {
+            block.slideUp("normal", function() {
+                link.removeClass("hs_bottom");
+            });
+        } else {
+            blocks.slideUp("normal");
+            block.slideDown("normal", function() {        
+                link.addClass("hs_bottom");
+            });
+			if (block.attr("id") && (block.attr("id") == 'block_low_light')) {
+				var mode_light = $("#block_low_light input[name=qualitylow]:checked").attr("id");
+				if (mode_light == "highspeed") {
+					lockParamHighspeed(false);
+				} else {
+					lockParamHighspeed(true);
+				}
+			}
+        }
+    }
+}
+// блокировать / не блокировать параметр низкой освещённости High Speed
+function lockParamHighspeed(lock) {
+	if (lock) {
+		$("#block_high_speed div.spinbox input[type=text]").attr("disabled", "disabled");
+		$("#block_high_speed div.spinbox input[type=text]").addClass("dis");
+		$("#block_high_speed div.spinbox input[type=button]").attr("disabled", "disabled");
+		$("#block_high_speed div.spinbox input[type=button]").addClass("dis");	
+	} else {
+		if ($("#shortexposures").val()) {
+			$("#block_high_speed div.spinbox input[type=text]").attr("disabled", false);
+			$("#block_high_speed div.spinbox input[type=text]").removeClass("dis");
+			$("#block_high_speed div.spinbox input[type=button]").attr("disabled", false);
+			$("#block_high_speed div.spinbox input[type=button]").removeClass("dis");			
+		}
+	}
+}
+
+// функции для спинбоксов
+function initFuncsSpinbox() {
+    $("#list_settings li div.cont_settings .spinbox input[type=text]").bind("keyup change", function() {
+        checkChangeSpinboxValue($(this));    
+    });
+    $("#list_settings li div.cont_settings .spinbox input[type=button]").click(function() {
+        var inp = $(this).parent().prev();
+        checkChangeSpinboxValue(inp);
+    });
+    $("#list_settings li div.cont_settings.frames .spinbox input[type=text]").bind("keyup change", function() {
+        checkChangeSpinboxValue2();    
+    });    
+    $("#list_settings li div.cont_settings.frames .spinbox input[type=button]").click(function() {
+        checkChangeSpinboxValue2();
+    });
+    $("#list_settings li div.cont_settings.distortion .spinbox input[type=text]").bind("keyup change", function() {
+        checkChangeSpinboxValue3();    
+    });       
+    $("#list_settings li div.cont_settings.distortion .spinbox input[type=button]").click(function() {
+        checkChangeSpinboxValue3();
+    }); 
+    $("#list_settings li div.cont_settings.frame_minification_block .spinbox input[type=text]").bind("keyup change", function() {
+        checkChangeBlockFrameMin();    
+    });       
+    $("#list_settings li div.cont_settings.frame_minification_block .spinbox input[type=button]").click(function() {
+        checkChangeBlockFrameMin();
+    });
+    $("#list_settings li div.cont_settings.resolution .spinbox input[type=text]").bind("blur change", function() {
+        checkAllArea();
+        checkArea($(this));
+    });         
+    $("#list_settings li div.cont_settings.resolution .spinbox input[type=button]").click(function() {
+        var inp = $(this).parent().prev();
+        checkAllArea();
+        checkArea(inp);        
+    });
+}
+// проверка поля на изменение значения
+function checkChangeSpinboxValue(inp) {
+    if (inp.val() != params[inp.attr("id")]) {
+        lockButton(inp, false);
+    } else {
+        lockButton(inp, true);
+    }
+	if (checkInt(document.getElementById(inp.attr("id")))) {
+		$("#err_mess").html("");
+		inp.css("border-color", "#AAAAAA");
+	}	
+}
+function checkChangeSpinboxValue2() {
+    var inp1 = $("#interval");
+    var inp2 = $("#delay");
+    if ((inp1.val() != params["interval"]) || (inp2.val() != params["delay"])) {
+        lockButton('btn_time', false);
+    } else {
+        lockButton('btn_time', true);
+    }
+}
+function checkChangeSpinboxValue3() {
+    var inp1 = $("#distr1");
+    var inp2 = $("#distr2");
+    var inp3 = $("#distr3");
+    var inp4 = $("#distr4");
+    var defVal1 = params["distr1"];
+    var defVal2 = params["distr2"];
+    var defVal3 = params["distr3"];
+    var defVal4 = params["distr4"];
+    var type = $("#list_settings li div.cont_settings input[name=distr]:checked").attr("value");
+    if (type == 4) {
+        if ((inp1.val() != defVal1) || (inp2.val() != defVal2) || (inp3.val() != defVal3) || (inp4.val() != defVal4) || (params["distortion"] != type)) {
+            lockButton('btn_distr', false);
+        } else {
+            lockButton('btn_distr', true);
+        }
+    } else {
+        if ((inp1.val() != defVal1) || (inp3.val() != defVal3) || (inp4.val() != defVal4) || (params["distortion"] != type)) {
+            lockButton('btn_distr', false);
+        } else {
+            lockButton('btn_distr', true);
+        }    
+    }
+}
+// проверка на правильность ввода 
+function checkBlockPicture(id, defaultValue) {
+    var inp = byId(id);
+    var max_value = 255;
+    if (!inp.value) {
+        inp.value = defaultValue;
+        return false;
+    }    
+    if (!checkInt(inp)) {
+        changeBorder(inp, true);
+        byId('err_mess').innerHTML = "{% trans 'Установлено некорректное значение' %}";
+        return false;
+    }
+    if (id == 'sharpness') {
+        max_value = 16;
+    } 
+    if (parseInt(inp.value) > max_value) {
+        changeBorder(inp, true);
+        byId('err_mess').innerHTML = msgErrorBlockPicture(id);
+        return false;
+    }
+    changeBorder(inp, false);
+    byId('err_mess').innerHTML = "";    
+    return true;
+}
+// проверка на правильность ввода для блока "Режим низкой освещённости"
+function checkBlockLowLightMode(id, defaultValue) {
+    var inp = byId(id);
+    var max_value = 80;
+    var min_value = 1;
+    if (!inp.value) {
+        inp.value = defaultValue;
+        return false;
+    }    
+    if (!checkInt(inp)) {
+        changeBorder(inp, true);
+        byId('err_mess').innerHTML = '{% trans "Установлено некорректное значение" %}';
+        return false;
+    }
+    if ((parseInt(inp.value) > max_value) || (parseInt(inp.value) < min_value)) {
+        changeBorder(inp, true);
+        byId('err_mess').innerHTML = msgErrorBlockPicture(id);
+        return false;
+    }
+    changeBorder(inp, false);
+    byId('err_mess').innerHTML = "";    
+    return true;    
+}
+function initFuncsInputTypeRadio() {
+    $("#list_settings li div.cont_settings input[name=light]").click(function() {
+        applayRadioCheck($(this), 'setIlluminationMode');
+    });
+    $("#list_settings li div.cont_settings input[name=qualitylow]").click(function() {
+        applayRadioCheck($(this), 'setLowLight');
+		if ($(this).attr("id") == "highspeed") {
+			lockParamHighspeed(false);
+		} else {
+			lockParamHighspeed(true);
+		}		
+    });
+    $("#list_settings li div.cont_settings input[name=frequency]").click(function() {
+        applayRadioCheck($(this), 'setLightHZCamera');
+    });
+    $("#list_settings li div.cont_settings input[name=daynight]").click(function() {
+        applayRadioCheck($(this), 'setNightModeCamera');
+    });
+}
+// проверка открыто ли окно с настройками 
+function checkWindowSettingsOpen() {
+    var wins = $("body").find(".win_set_camera");
+    $.each(wins, function() {
+        if ($(this).css("display") == "block") {
+            closeChangeWindow($(this).attr("id"));
+        }
+    });    
+    clearTime();
+    var error = $("#win_set_camera_cont").find("div.error").size();
+    if (error == 0) {
+        var id_cur_btn = $("#current_settings").val();
+        lockButton($("#" + id_cur_btn), true);
+    }
+    $("#current_settings").val("");
+}
+
+
+// функция на кнопку Применить
+function applayClick(id, defaultValue, param, uuid) {
+
+    checkWindowSettingsOpen();
+    var obj = $("#" + id);
+    if (id == 'shortexposures') {
+        $('#highspeed').attr('checked', true);
+        if (checkBlockLowLightMode(id, defaultValue)) { 
+            jsonUniversalExecutingMethod({url: '/execute_method/', params:{ name: param, index: document.getElementById('communicator').value, format: 'json'}  ,arguments: [uuid, byId(id).value,], 
+                hooks: { hook_success: funcsSuccessShortexposures, args_hook_success: [ id,uuid ], hook_error: funcsError, args_hook_errors: [ id ], hook_error_undefinded: funcsUndefinded , args_hook_error_undefinded: [ id ] , hook_error_global: funcsUndefinded, args_hook_error_global: [ id ] }});                    
+
+        }
+    } else if (checkBlockPicture(id, defaultValue)) {  
+
+        jsonUniversalExecutingMethod({url: '/execute_method/', params:{ name: param, index: document.getElementById('communicator').value, format: 'json'}  ,arguments: [uuid, byId(id).value,], 
+                hooks: { hook_success: funcsSuccess, args_hook_success: [ id ], hook_error: funcsError, args_hook_errors: [ id ], hook_error_undefinded: funcsUndefinded , args_hook_error_undefinded: [ id ] , hook_error_global: funcsUndefinded, args_hook_error_global: [ id ] }});                    
+    } param, uuid, byId(id).value
+}
+
+
+function funcsSuccessShortexposures(args, value) {
+    var id = args[0]
+    var uuid = args[1];
+    jsonUniversalExecutingMethod({url: '/execute_method/', params:{ name: 'setLowLight', index: document.getElementById('communicator').value, format: 'json'}  ,arguments: [uuid, 'highspeed'], 
+        hooks: { hook_success: funcsSuccess, args_hook_success: [ id ], hook_error: funcsError, args_hook_errors: [ id ], hook_error_undefinded: funcsUndefinded , args_hook_error_undefinded: [ id ] , hook_error_global: funcsUndefinded, args_hook_error_global: [ id ] }});                    
+}
+
+// проверка на целое число
+function checkForInteger(id) {
+	var inp = document.getElementById(id);
+	var value = $("#" + id).attr("value");
+	var reg = /^[0-9]*$/;
+	if (reg.test(value)) {
+		changeBorder(inp, false);
+		$("#err_mess").html("");
+		return true;
+	}
+	changeBorder(inp, true);
+	$("#err_mess").html("{% trans 'Установлено некорректное значение' %}");
+	return false;
+}
+// функция на радиобаттон
+function applayRadioCheck(obj, name_block) {
+    checkWindowSettingsOpen();
+    var id = obj.attr("id");
+    var val = obj.attr("value");
+    jsonUniversalExecutingMethod({url: '/execute_method/', params:{ name: name_block, index: document.getElementById('communicator').value, format: 'json'}, arguments: ['{{ uuid }}', val], 
+            hooks: { hook_success: funcsSuccess, args_hook_success: [ id, 'radio' ], hook_error: funcsError, args_hook_errors:[ id, 'radio' ], hook_error_undefinded: funcsUndefinded , args_hook_error_undefinded: [ id, 'radio'] }});                    
+}
+// функция на блок Количество кадров
+function applyFrames(camera) {
+    checkWindowSettingsOpen();
+    var id = "btn_time";
+	if (checkForInteger("interval") && checkForInteger("delay")) {
+		jsonUniversalExecutingMethod({url: '/execute_method/', params:{ name: 'setParamsScheduler', index: document.getElementById('communicator').value, format: 'json'}, arguments: [camera, document.getElementsByName('interval')[0].value, document.getElementsByName('delay')[0].value, -1, -1, -1], 
+				hooks: { hook_success: funcsSuccess, args_hook_success: [ id, 'frames' ], hook_error: funcsError, args_hook_errors:[ id ], hook_error_undefinded: funcsUndefinded , args_hook_error_undefinded: [ id] }});                    
+    }
+}
+// функция на блок Детектирование
+function applyDetect(id, camera) {
+    checkWindowSettingsOpen();
+	if (checkForInteger(id)) {
+		jsonUniversalExecutingMethod({url: '/execute_method/', params:{ name: 'setParamsScheduler', index: document.getElementById('communicator').value, format: 'json'}, arguments: [camera, -1, -1,document.getElementsByName('limit_fd')[0].value, -1, -1], 
+				hooks: { hook_success: funcsSuccess, args_hook_success: [ id], hook_error: funcsError, args_hook_errors:[ id ], hook_error_undefinded: funcsUndefinded , args_hook_error_undefinded: [ id ] }});
+	}
+}
+// функция на блок Идентификация
+function applyIdent(id, camera) {
+    checkWindowSettingsOpen();
+	if (checkForInteger(id)) {
+		jsonUniversalExecutingMethod({url: '/execute_method/', params:{ name: 'setParamsScheduler', index: document.getElementById('communicator').value, format: 'json'}, arguments: [camera, -1, -1, -1,document.getElementsByName('limit_fr')[0].value, -1], 
+				hooks: { hook_success: funcsSuccess, args_hook_success: [ id], hook_error: funcsError, args_hook_errors:[ id ], hook_error_undefinded: funcsUndefinded , args_hook_error_undefinded: [ id ] }});
+	}
+}
+// функция на блок Обучение
+function applyTeach(id, camera) {
+    checkWindowSettingsOpen();
+	if (checkForInteger(id)) {
+		jsonUniversalExecutingMethod({url: '/execute_method/', params:{ name: 'setParamsScheduler', index: document.getElementById('communicator').value, format: 'json'}, arguments: [camera, -1, -1, -1, -1, document.getElementsByName('limit_fl')[0].value], 
+			   hooks: { hook_success: funcsSuccess, args_hook_success: [ id], hook_error: funcsError, args_hook_errors:[ id ], hook_error_undefinded: funcsUndefinded , args_hook_error_undefinded: [ id ] }}); 
+	}
+}
+// функция на блок Дисторсии
+function applyDistortion(source) {
+    checkWindowSettingsOpen();
+    var id = "btn_distr";
+    if ($("#distr_param4").attr("checked")) {
+        jsonUniversalExecutingMethod({url: '/execute_method_balancer/', params:{ name: 'setCameraParameter', format: 'json'}, arguments: [source, byId('distr1').value, byId('distr2').value, byId('distr3').value, byId('distr4').value ], 
+               hooks: { hook_success: funcsSuccess, args_hook_success: [ id,'distortion4' ], hook_error: funcsError, args_hook_errors:[ id ], hook_error_undefinded: funcsUndefinded , args_hook_error_undefinded: [ id ] }});                    
+    } else {
+        jsonUniversalExecutingMethod({url: '/execute_method_balancer/', params:{ name: 'setCameraParameter', format: 'json'}, arguments: [source, byId('distr1').value, 'None', byId('distr3').value, byId('distr4').value], 
+               hooks: { hook_success: funcsSuccess, args_hook_success: [ id,'distortion3' ], hook_error: funcsError, args_hook_errors:[ id ], hook_error_undefinded: funcsUndefinded , args_hook_error_undefinded: [ id ] }});                        
+    }                  
+}
+// функция на блока коэффициента масштабирования кадра
+function applyFrameMinification(source) {
+    checkWindowSettingsOpen();
+    var id = "frame_minification";
+    if (checkForInteger(id)) {
+        jsonUniversalExecutingMethod({url: '/execute_method_balancer/', params:{ name: 'setCameraParameter', format: 'json'}, 
+               arguments: [source, byId(id).value, 'None', 'None', 'None', 'frame-minification'],
+               hooks: { hook_success: funcsSuccess, args_hook_success: [ id,'frame_minification' ], 
+               hook_error: funcsError, args_hook_errors:[ id ], hook_error_undefinded: funcsUndefinded , args_hook_error_undefinded: [ id ] }});
+    }
+}
+// функция для сохранения fps
+function applyFPS() {
+	checkWindowSettingsOpen();
+	var id = "selectFps";	
+	var d = {'params': '{"uuid": "{{ uuid }}", "parameter": "fps"}', 'methodName': 'setCameraSetting', 'answer_type': 'IsTrue', 'host': '{{ selected_camera.com_host }}', 'port': '{{ selected_camera.com_port }}' };
+	showIndicator(true);
+	$.ajax({
+			type: "POST",
+			url: "{% url execute-communicator-method %}",
+			data: d,
+			success: function(data) {
+				showIndicator(false);
+				var obj = data;
+				if (obj.result == 'success') {
+					funcsSuccess([id, 'fps']);
+				} else {
+					funcsError([id, 'fps']);
+				}
+			}, 
+			error: function(data) {
+				showIndicator(false);
+				funcsUndefinded([id, 'fps']);
+			}
+	});
+}
+// функция для сохранения Kpp
+function applyKPP() {
+	checkWindowSettingsOpen();
+	var id = "selectKPP";
+	var d = {"camera_id": {{ camera.id }}, "kpp_id": $("#"+id).val()};
+	
+	showIndicator(true);
+	$.ajax({
+			type: "POST",
+			url: "{% url change_camera_kpp %}",
+			data: d,
+			success: function(data) {
+				showIndicator(false);
+				var obj = data;
+				if (obj.result == 'success') {
+					funcsSuccess([id, 'kpp']);
+				} else {
+					funcsError([id, 'kpp']);
+				}
+			}, 
+			error: function(data) {
+				showIndicator(false);
+				funcsUndefinded([id, 'kpp']);
+			}
+	});
+}
+// функция на блок Разрешение камеры и область захвата
+function applayAreaClick() {
+    checkWindowSettingsOpen();    
+    var id = "btn_area";
+    var win_cont = $("#win_set_camera_cont");
+    win_cont.html("");
+	
+    var sel_perm = $("#selectPermission option:selected").attr("value");
+    var x = $("#areaX").attr("value");
+    var y = $("#areaY").attr("value");
+    var w = $("#areaWidth").attr("value");
+    var h = $("#areaHeight").attr("value");
+    if (sel_perm != params["selectPermission"]) {
+        var res = getMaxResolution();
+        jsonUniversalExecutingMethod({url: '/execute_method/', params:{'show_name':true, name: 'setResolutionCamera', index: document.getElementById('communicator').value, format: 'json'}, arguments: [ '{{ uuid }}', res.w, res.h ], 
+            hooks: { hook_success: funcsSuccess, args_hook_success: [ id, 'resolution' ], hook_error: funcsError, args_hook_errors:[ id, 'resolution' ], hook_error_undefinded: funcsUndefinded , args_hook_error_undefinded: [ id, 'resolution' ] }});     
+    } 
+	if ((x != params["areaX"]) || (y != params["areaY"]) || (w != params["areaWidth"]) || (h != params["areaHeight"])) {
+        var res = applyResolution();
+        jsonUniversalExecutingMethod({url: '/execute_method/', params:{ name: 'setCaptureRectCamera', index: document.getElementById('communicator').value, format: 'json'}, arguments: ['{{ uuid }}', res.x, res.y, res.w, res.h ], 
+            hooks: { hook_success: funcsSuccess, args_hook_success: [ id, 'resolution' ], hook_error: funcsError, args_hook_errors:[ id, 'resolution' ], hook_error_undefinded: funcsUndefinded , args_hook_error_undefinded: [ id, 'resolution' ] }});       
+    }
+}
+// функция для успешного сохранения
+//function funcsSuccess(id, type) {
+function funcsSuccess(args, value, name) {
+
+    var obj;    
+    
+    var id = args[0];
+    if (args.length > 1){
+        type = args[1];
+    } else {
+        type = null;
+    }
+    if (type && (type == "radio")) {
+        obj = $("#" + id).next();
+        showWindowMessageSettings(obj, "success");
+    } else if (type && (type == "fps" || type == "kpp")) {
+        obj = $("#" + id);
+        showWindowMessageSettings(obj, "success");	
+	} else if (type && (type == "frames")) {
+        $("#current_settings").val(id);
+        obj = $("#" + id);
+        params['interval'] = $("#interval").val();
+        params['delay'] = $("#delay").val();
+        showWindowMessageSettings(obj, "success", 'lockButton(\'' + id + '\', true)');
+    } else if (type && (type == "distortion3")) {
+        $("#current_settings").val(id);
+        obj = $("#" + id);
+        params['distr1'] = $("#distr1").val();
+        params['distr3'] = $("#distr3").val();
+        params['distr4'] = $("#distr4").val();
+        params["distortion"] = 3;
+        showWindowMessageSettings(obj, "success", 'lockButton(\'' + id + '\', true)');
+    } else if (type && (type == "distortion4")) {
+        $("#current_settings").val(id);
+        obj = $("#" + id);
+        params['distr1'] = $("#distr1").val();
+        params['distr2'] = $("#distr2").val();
+        params['distr3'] = $("#distr3").val();
+        params['distr4'] = $("#distr4").val();
+        params["distortion"] = 4;
+        showWindowMessageSettings(obj, "success", 'lockButton(\'' + id + '\', true)');    
+    } else if (type && (type == "resolution")) {
+        $("#current_settings").val(id);
+        obj = $("#" + id);
+        params['areaX'] = $("#areaX").attr("value");
+        params['areaY'] = $("#areaY").attr("value");
+        params['areaWidth'] = $("#areaWidth").attr("value");
+        params['areaHeight'] = $("#areaHeight").attr("value");
+        params["selectPermission"] = $("#selectPermission option:selected").attr("value");     
+        showWindowMessageSettings(obj, "success", 'lockButton(\'' + id + '\', true)', name);    
+    } else {
+        updateSaveParam(id);
+        if (value){
+            $("#" + id).val(value)
+        }
+        id = "btn_" + id;
+        var obj = $("#" + id);
+        $("#current_settings").val(id);
+        showWindowMessageSettings(obj, "success", 'lockButton(\'' + id + '\', true)');
+    }
+}
+// функция для ошибки
+function funcsError(args, result, name){
+    var id = args[0];
+    if (args.length>1){
+        type = args[1];
+    } else {
+        type = null;
+    }
+    var obj = $("#btn_" + id);
+    if (type && (type == "radio")) {
+        obj = $("#" + id).next();
+    } else if (type && ((type == "frames") || (type == "distortion3") || (type == "distortion4") || (type == "resolution") || (type == "fps"))) {
+        obj = $("#" + id);
+    }
+    showWindowMessageSettings(obj, "error", null, name);
+}
+// функция для неизвестной ошибки
+function funcsUndefinded(args, result, name) {
+    var id = args[0];
+    if (args.length>1){
+        type = args[1];
+    } else {
+        type = null;
+    }
+    var obj = $("#btn_" + id);
+    if (type && (type == "radio")) {
+        obj = $("#" + id).next();
+    } else if (type && ((type == "frames") || (type == "distortion3") || (type == "distortion4") || (type == "resolution") || (type == "fps"))) {
+        obj = $("#" + id);
+    }
+    showWindowMessageSettings(obj, "error", null, name);
+}
+// обновление сохранённых параметров
+function updateSaveParam(id) {
+    var obj = $("#" + id);
+    params[id] = obj.val();
+}
+// функции для блока Дисторсия
+function initFuncsDistortion() {
+    checkTypeDistortion();
+}
+// проверка на тип текущей дисторсии
+function checkTypeDistortion() {
+    var type = $("#list_settings li div.cont_settings input[name=distr]:checked").attr("value");
+    params["distortion"] = type;
+    paramDistortion(type)
+}
+function checkTypeDistortionAdd(type) {
+    var inp1 = $("#distr1");
+    var inp2 = $("#distr2");
+    var inp3 = $("#distr3");
+    var inp4 = $("#distr4");
+    var defVal1 = params["distr1"];
+    var defVal2 = params["distr2"];
+    var defVal3 = params["distr3"];
+    var defVal4 = params["distr4"];
+    if (type == 3) {
+        if ((inp1.val() == defVal1) && (inp3.val() == defVal3) && (inp4.val() == defVal4) && (params["distortion"] == type)) {
+            lockButton('btn_distr', true);
+        } else {
+            lockButton('btn_distr', false);
+        }
+    } else {
+        if ((inp1.val() == defVal1) && (inp2.val() == defVal2) && (inp3.val() == defVal3) && (inp4.val() == defVal4) && (params["distortion"] == type)) {
+            lockButton('btn_distr', true);
+        } else {
+            lockButton('btn_distr', false);
+        }
+    }
+}
+// в зависимости от типа показывать параметры для дисторсии
+function paramDistortion(count) {
+    var param2 = $("#distr_param2");
+    var inp2 = $("#distr2");
+    var btns2 = param2.find("div.spinbox div.spinbtns input[type=button]");
+    if (count == 3) {
+        param2.addClass("param_dis");
+        inp2.attr("disabled", "disabled");
+        btns2.attr("disabled", "disabled");
+    } else {
+        param2.removeClass("param_dis");
+        inp2.attr("disabled", false);
+        btns2.attr("disabled", false);
+    }
+    checkTypeDistortionAdd(count)
+}
+// всплывающее информационное окно
+// создание окна
+function showWindowMessageSettings(obj, state, func, name) {
+    clearTime();
+    var coords = positionScreen({obj: obj, win_width: 300, distY: 0, distX: 5});
+    var win = $("#win_set_camera");
+    win.css("top", coords.top + "px");
+    win.css("left", coords.left + "px");
+    messageSettingsContent(state, name);
+    win.slideDown(100);
+    timer = setTimeout('hideWindowMessageSettings(' + func + ');', 2500);
+}
+// закрытие окна
+function hideWindowMessageSettings(func) {
+    var win = $("#win_set_camera");
+    win.slideUp(100, function() {
+        if (func) { eval(func) }
+    });
+}
+// добавление контента в окно
+function messageSettingsContent(state, name) {
+    var params = {setResolutionCamera: "Разрешение камеры", setCaptureRectCamera: "Область захвата"}
+    var win_cont = $("#win_set_camera_cont");
+    var win_html = "";
+    switch (state) {
+        case "loader":
+            win_html = "<div class='loader'></div><div>{% trans 'Идёт применение параметра' %}.<br />{% trans 'Пожалуйста, подождите' %}...</div>";
+            break;
+        case "success":
+            win_html = "<div>{% trans 'Параметр успешно применён' %}</div>";
+            break;
+        case "error":
+            win_html = "<div class='error'>{% trans 'Параметр не применён' %}. {% trans 'Попробуйте ещё раз' %}.</div>";
+            break;
+    }
+    if (name && params[name]){
+        win_html = "<div class='resolution_win_param'><strong>"+params[name]+"</strong>: "+win_html+"</div>";
+        win_cont.html(win_cont.html()+win_html);
+    }else{win_cont.html(win_html);}
+}
+// обнуление глобальной переменной для времени
+function clearTime() {
+    clearTimeout(timer);
+}
+// блокирование кнопки
+function lockButton(inp, lock) {
+    if (typeof(inp) == "string") {
+        var inp = $("#" + inp);
+    }
+    var type = inp.attr("type");
+    var btn = inp;
+    if (type == "text") {
+        btn = inp.parent().next();
+    }     
+    if (lock) {
+        btn.attr("disabled", "disabled");
+        btn.removeClass("activeButton");        
+        btn.addClass("dis");
+    } else {
+        btn.attr("disabled", false);        
+        btn.removeClass("dis");
+        btn.addClass("activeButton");        
+    }
+}
+// закрытие окна на кнопку esc
+function closeWindowSettingsOnEsc(e) {
+    closeWindowOnEsc(e, 'win_set_camera');
+    clearTime();
+    var error = $("#win_set_camera_cont").find("div.error").size();
+    if (error == 0) {
+        var id_cur_btn = $("#current_settings").val();
+        lockButton($("#" + id_cur_btn), true);
+    }
+}
+// функции для камеры
+// установить значения в массиве params для списков
+function setValueParamsSelect() {
+    params["selectPermission"] = $("#selectPermission option:selected").attr("value");
+}
+// проверка на изменение значений в блоке разрешение камеры
+function checkChangeBlockSize() {
+    var sel_perm = $("#selectPermission option:selected").attr("value");
+    var x = $("#areaX").attr("value");
+    var y = $("#areaY").attr("value");
+    var w = $("#areaWidth").attr("value");
+    var h = $("#areaHeight").attr("value");
+    if ((sel_perm == params["selectPermission"]) && (x == params["areaX"]) && (y == params["areaY"]) && (w == params["areaWidth"]) && (h == params["areaHeight"])) {
+        lockButton('btn_area', true);
+    } else {
+        lockButton('btn_area', false);
+    }
+}
+// проверка на изменение значений в блоке Коэффициента масштабирования кадра
+function checkChangeBlockFrameMin() {
+    var sel_perm = $("#frame_minification").attr("value");
+    if (sel_perm == params["frame_minification"]) {
+        lockButton('btn_frame_minification', true);
+    } else {
+        lockButton('btn_frame_minification', false);
+    }
+}
+// инициализация функций для камеры
+function initFuncsCamera() {
+    setValueParamsSelect();
+}
+var errorResolution = false;
+function init() {
+    var area = setAreaObjects();
+    byId('err_mess').innerHTML = '';
+    errorResolution = false;
+    changeBorder(area.x, false);
+    changeBorder(area.y, false);
+    changeBorder(area.w, false);
+    changeBorder(area.h, false);
+}
+// получение данных
+function setAreaObjects() {
+    var areaX = byId('areaX');
+    var areaY = byId('areaY');
+    var areaWidth = byId('areaWidth');
+    var areaHeight = byId('areaHeight');
+
+    return {x: areaX, y: areaY, w: areaWidth, h: areaHeight};
+}
+// получить размер из списка
+function getSizeParams(value) {
+    var delimiter = 'x';
+    var array = value.split(delimiter);
+    return {w: array[0], h: array[1]};    
+}
+// получить максимальное текущее разрешение
+function getMaxResolution() {
+    var perm_list = byId('selectPermission');
+    var selectedIndex = perm_list.selectedIndex;
+    var perm_elem;
+    var perm_size = [];
+
+    if (selectedIndex != -1) {
+        perm_elem = perm_list.options[selectedIndex];
+        perm_size = getSizeParams(perm_elem.text);
+        return {w: perm_size.w, h: perm_size.h}
+    }
+}
+// установить разрешение для камеры
+function setResolution(obj) {
+	var selectedIndex = obj.selectedIndex;
+	if (selectedIndex != -1) {
+		var select = $(obj);
+		var size = select.find("option:selected").text().split("x");
+		var isArea = $("#param_area").css("display");
+		if (isArea == "block") {
+			var area = setAreaObjects();
+			$(area.w).val(size[0]);
+			$(area.h).val(size[1]);
+			$(area.x).val(0);
+			$(area.y).val(0);
+			init();	
+		}
+	}
+	checkChangeBlockSize();
+}
+// установить блок с заданной шириной и высотой в центре
+function setBlockInCenter() {
+	// значения разрешения
+	var size = $("#selectPermission option:selected").text().split("x");
+	
+	// значения параметров для области захвата
+	var x = $("#areaX");
+	var y = $("#areaY");
+	var width = $("#areaWidth");
+	var height = $("#areaHeight");
+	
+	// центрирование области захвата
+	if ( parseInt( width.val() ) >= size[0] ) {
+		width.val( size[0] );
+	}
+	if ( parseInt( height.val() ) >= size[1] ) {
+		height.val( size[1] );
+	}
+	x.val( ( size[0] - width.val() ) / 2 );
+	y.val( ( size[1] - height.val() ) / 2 );
+	
+	init();
+}
+// проверка коорд-ты X
+function checkAreaX(obj) {
+    var value = 0;
+    var areaWidth = byId('areaWidth');
+    if (areaWidth.value) {
+        if (getInt(areaWidth.value) > getSizeParams(getSelectedElem('selectPermission').text).w) {
+            byId('err_mess').innerHTML = "{% trans 'Введена слишком большая ширина для области захвата' %}";
+            changeBorder(obj, false);
+            changeBorder(areaWidth, true);
+            return false;            
+        }
+        value = getInt(byId('areaWidth').value);
+    }
+    var s = getInt(obj.value) + value;
+    if (s > getSizeParams(getSelectedElem('selectPermission').text).w) {
+        byId('err_mess').innerHTML = "{% trans 'Введено слишком большое смещение по горизонтали' %}";
+        changeBorder(obj, true);
+        changeBorder(areaWidth, false);
+        return false;
+    }
+    return true;    
+}
+// проверка коорд-ты Y
+function checkAreaY(obj) {
+    var value = 0;
+    var areaHeight = byId('areaHeight');
+    if (byId('areaHeight').value) {
+        if (getInt(areaHeight.value) > getSizeParams(getSelectedElem('selectPermission').text).h) {
+            byId('err_mess').innerHTML = "{% trans 'Введена слишком большая высота для области захвата' %}";
+            changeBorder(obj, false);
+            changeBorder(areaHeight, true);
+            return false;            
+        }    
+        value = getInt(areaHeight.value);
+    }
+    var s = getInt(obj.value) + value;
+    if (s > getSizeParams(getSelectedElem('selectPermission').text).h) {
+        byId('err_mess').innerHTML = "{% trans 'Введено слишком большое смещение по вертикали' %}";
+        changeBorder(obj, true);
+        changeBorder(areaHeight, false);
+        return false;
+    }
+    return true;
+}
+// проверка Width
+function checkAreaWidth(obj) {
+    if (getInt(obj.value) > getSizeParams(getSelectedElem('selectPermission').text).w) {
+        byId('err_mess').innerHTML = "{% trans 'Введена слишком большая ширина для области захвата' %}";
+        changeBorder(obj, true);
+        return false;    
+    }
+    var value = 0;
+    var areaX = byId('areaX');
+    if (areaX.value) {
+        value = getInt(areaX.value);
+    }
+    if (getInt(obj.value) < 320) {
+        obj.value = 320;
+    }    
+    var s = getInt(obj.value) + value;
+    if (s > getSizeParams(getSelectedElem('selectPermission').text).w) {
+        byId('err_mess').innerHTML = "{% trans 'Введено слишком большое смещение по горизонтали' %}";
+        changeBorder(areaX, true);
+        return false;            
+    }
+    return true;
+}
+// проверка Height
+function checkAreaHeight(obj) {
+    if (getInt(obj.value) > getSizeParams(getSelectedElem('selectPermission').text).h) {
+        byId('err_mess').innerHTML = "{% trans 'Введена слишком большая высота для области захвата' %}";
+        changeBorder(obj, true);
+        return false;    
+    }
+    var value = 0;
+    var areaY = byId('areaY');
+    if (areaY.value) {
+        value = getInt(areaY.value);
+    }
+    if (getInt(obj.value) < 240) {
+        obj.value = 240;
+    }    
+    var s = getInt(obj.value) + value;
+    if (s > getSizeParams(getSelectedElem('selectPermission').text).h) {
+        byId('err_mess').innerHTML = "{% trans 'Введено слишком большое смещение по вертикали' %}";
+        changeBorder(areaY, true);
+        return false;
+    }
+    return true;
+}
+// функции на изменение координат X, Y, Width, Height
+function checkAllArea() {
+    var area = setAreaObjects();
+    var x = area.x;
+    var y = area.y;
+    var w = area.w;
+    var h = area.h;
+    if (x.value) {        
+        if (!checkInt(x)) {
+            byId('err_mess').innerHTML = "{% trans 'Установлено некорректное значение' %}";
+            errorResolution = true;
+            return;
+        }    
+        if (!checkAreaX(x)) {
+            errorResolution = true;
+            return;
+        }
+    } else {
+        x.value = 0;
+        errorResolution = false;
+        return;
+    }
+    if (y.value) {
+        if (!checkInt(y)) {
+            byId('err_mess').innerHTML = "{% trans 'Установлено некорректное значение' %}";
+            errorResolution = true;
+            return;
+        }
+        if (!checkAreaY(y)) {
+            errorResolution = true;
+            return;
+        }
+    } else {
+        y.value = 0;
+        errorResolution = false;
+        return;
+    }
+    if (w.value) {
+        if (!checkInt(w)) {
+            byId('err_mess').innerHTML = "{% trans 'Установлено некорректное значение' %}";
+            errorResolution = true;
+            return;
+        }
+        if (!checkAreaWidth(w)) {
+            errorResolution = true;
+            return;
+        }
+    } else {
+        w.value = 320;
+        errorResolution = false;
+        return;
+    }
+    if (h.value) {
+        if (!checkInt(h)) {
+            byId('err_mess').innerHTML = "{% trans 'Установлено некорректное значение' %}";
+            errorResolution = true;
+            return;
+        }
+        if (!checkAreaHeight(h)) {
+            errorResolution = true;
+            return;
+        }
+    } else {
+        h.value = 240;
+        errorResolution = false;
+        return;
+    }
+}
+function checkArea(o) {
+    var id = o.attr("id");
+    var obj = byId(id);
+    if (!checkInt(obj)) {
+        changeBorder(obj, true);
+        errorResolution = true;
+        return;
+    }
+    if (obj.id == 'areaX') {
+        if (!checkAreaX(obj)) {
+            errorResolution = true;
+            return;
+        }
+    }
+    if (obj.id == 'areaY') {
+        if (!checkAreaY(obj)) {
+            errorResolution = true;
+            return;
+        }
+    }
+    if (obj.id == 'areaWidth') {
+        if (!checkAreaWidth(obj)) {
+            errorResolution = true;
+            return;
+        }        
+    }
+    if (obj.id == 'areaHeight') {
+        if (!checkAreaHeight(obj)) {
+            errorResolution = true;
+            return;
+        }
+    }
+    changeBorder(obj, false);
+    errorResolution = false;
+    byId('err_mess').innerHTML = '';
+    checkChangeBlockSize();
+}
+function applyResolution() {
+    if (!errorResolution) {
+        var dx = 32;
+        var dy = 16;
+        var minResolutionWidth = 320;
+        var minResolutionHeight = 240;
+
+        var area = setAreaObjects();
+        var x = area.x.value;
+        var y = area.y.value;
+        var w = area.w.value;
+        var h = area.h.value;
+
+        var maxResolution = getMaxResolution();
+
+        x = Math.max(0, x);
+        x = Math.min(maxResolution.w - minResolutionWidth, x);
+
+        y = Math.max(0, y);
+        y = Math.min(maxResolution.h - minResolutionHeight, y);
+
+        x = Math.floor(x / dx) * dx;
+        y = Math.floor(y / dy) * dy;
+
+        w = Math.max(minResolutionWidth, w);
+        w = Math.min(maxResolution.w - x, w);
+
+        h = Math.max(minResolutionHeight, h);
+        h = Math.min(maxResolution.h - y, h);
+
+        w = Math.floor(w / dx) * dx;
+        if (h != 600 && h != 240) {
+            h = Math.floor(h / dy) * dy;
+        }
+        return {x: x, y: y, w: w, h: h, maxW: maxResolution.w, maxH: maxResolution.h};
+    }
+}
+// проверка на наличие несохранённых данных
+function checkChangesParams() {
+    var btns = $("#list_settings li div.cont_settings input[type=button].inp_btn90");
+    var change = 0;
+    $.each(btns, function(key, value) {
+        if ($(this).attr("class").indexOf("activeButton") > -1) {
+            change += 1;
+        }
+    });
+    if (change > 0) return true
+    return false;
+}
+function checkGoToPage() {
+    if (checkChangesParams()) {
+        return "{% trans 'На странице есть несохранённые данные' %}";
+    }
+}
+window.onbeforeunload = checkGoToPage;
+/* функции для проверки на валидность данных */
+function checkInt(obj) {	
+	var re = /^\d+$/i;
+	if (obj.value) {
+		return re.exec(obj.value);
+	}
+	return true;	
+}
+function changeBorder(obj, err) {
+	if (err) {
+		obj.style.border = "1px solid #FF6600";
+	} else {
+		obj.style.border = "1px solid #AAAAAA";
+	}
+}
+function getInt(value) {
+	return parseInt(ltrim(value));
+}
+function ltrim(s) {
+	var new_s;
+	if (s.length >= 1) {
+		new_s = s.replace(/^0+/, '');
+		if (new_s) {
+			return new_s;
+		}
+		return '0';
+	}
+	return '0'; 
+}
+function getSelectedElem(obj) {
+	var select = byId(obj);
+	for (var i = 0; i < select.options.length; i++) {
+		if (select.options[i].selected) {
+			return {text: select.options[i].text, value: parseInt(select.options[i].value)};
+		}
+	}
+}
+</script>

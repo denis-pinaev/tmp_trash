@@ -1,0 +1,86 @@
+{% load i18n %}
+{% include "po4header.html" %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4photos.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2><a href="/po4/staff/">Сотрудники</a> - <a href="/po4/anketastaff/">Иванов Сергей Петрович</a> - Все фотографии (3)<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				<form method="post" action="" name="">
+					<div class="frm_block_link"><a href="/po4/anketasatff/" class="link_btn">Назад</a></div>					
+					<div class="frm_block dist_link">
+						<label for="choose_all"><input type="checkbox" name="" id="choose_all" value="" class="inp_check" />Выбрать всё на странице</label>
+						<input type="button" name="" value="Удалить выделенные" class="inp_btn inp_btn170 dist_left" />
+					</div>
+
+					<!--<div class="block_navigation">
+						<a href="#" class="page" title="Первая страница">Начало</a>
+						<a href="#" class="page" title="Последняя страница">Конец</a>
+						<a href="#" class="page" title="Предыдущая страница">&#8592;&nbsp;Назад</a>
+						<a href="#" class="page" title="Следующая страница">Вперёд&nbsp;&#8594;</a>
+						<span class="page active">1</span>
+						<a href="#" class="page" title="">2</a>
+						<a href="#" class="page" title="">3</a>
+						<a href="#" class="page" title="">4</a>
+						<a href="#" class="page" title="">5</a>
+						<a href="#" class="page" title="">6</a>
+						<span class="page" style="border: none;">...</span>
+						<a href="#" class="page" title="">100</a>						
+					</div>-->
+
+					<ul class="list_photos">
+						<li>
+							<div class="block_photo"><img src="/files/images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" />
+						</li>
+						<li>
+							<div class="block_photo"><img src="/files/images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" />
+						</li>
+						<li>
+							<div class="block_photo"><img src="/files/images/image_test3.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" />
+						</li>
+					</ul>
+
+					<!--<div class="block_navigation">
+						<a href="#" class="page" title="Первая страница">Начало</a>
+						<a href="#" class="page" title="Последняя страница">Конец</a>
+						<a href="#" class="page" title="Предыдущая страница">&#8592;&nbsp;Назад</a>
+						<a href="#" class="page" title="Следующая страница">Вперёд&nbsp;&#8594;</a>
+						<span class="page active">1</span>
+						<a href="#" class="page" title="">2</a>
+						<a href="#" class="page" title="">3</a>
+						<a href="#" class="page" title="">4</a>
+						<a href="#" class="page" title="">5</a>
+						<a href="#" class="page" title="">6</a>
+						<span class="page" style="border: none;">...</span>
+						<a href="#" class="page" title="">100</a>						
+					</div>-->
+
+					<div class="frm_block">
+						<label for="choose_all"><input type="checkbox" name="" id="choose_all" value="" class="inp_check" />Выбрать всё на странице</label>
+						<input type="button" name="" value="Удалить выделенные" class="inp_btn inp_btn170 dist_left" />
+					</div>
+					<div class="frm_block"><a href="/po4/anketastaff/" class="link_btn">Назад</a></div>					
+
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po4footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+{% include "window_help.html" %}
+
+</body>
+</html>

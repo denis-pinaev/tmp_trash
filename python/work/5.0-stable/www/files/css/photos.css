@@ -1,0 +1,178 @@
+﻿/* current */
+.inp_btn170blue {
+    width: 170px;
+    background: url('/files/images/btn_blue_170.png') top left no-repeat;
+    -background: none;
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_170.png', sizingMethod='scale');
+    color: #ffffff;
+}
+.frm_block {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 10px;
+}
+.photo_info {
+    width: 100%;
+    overflow: hidden;
+}
+.photo_info .photo_param {
+    float: left;
+    margin-right: 10px;
+}
+.photo_info .photo_param.eyes,
+.photo_info2 .eyes {
+    background: url("/files/images/eye.png") left center no-repeat;
+    padding-left: 18px;
+    cursor: default;
+}
+/* list result learn */
+.block_results strong {
+	font-size: 110%;
+}
+.list_result_learn {
+    width: 100%;
+    overflow: hidden;
+	margin-top: 5px;
+}
+.list_result_learn li {
+	padding: 5px; 
+	margin: 5px 5px 0px 0px; 
+	border: 1px solid #cccccc; 
+	float: left;
+	background-color: #f2f2f2;
+	position: relative;
+	overflow: hidden;
+	width: 290px;
+	height: 95px;
+	border-radius: 3px;
+	moz-border-radius: 3px;	
+}
+.list_result_learn li.lrl_error {
+    border-color: #ff0000;
+}
+.list_result_learn li .block_photo_cont {
+    float: left;
+}
+.list_result_learn li .block_photo_cont .block_photo {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    background-color: #dddddd;
+    text-align: center;
+}
+.list_result_learn li .block_photo_cont .block_photo img {
+	max-height: 80px;
+	max-width: 80px;
+}
+.list_result_learn li .block_photo_cont .block_photo .btn_loupe {
+    display: block;
+    position: absolute;
+    left: 70px;
+    bottom: -4px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    background: url('/files/images/icons.png') -128px 0px no-repeat;    
+    text-decoration: none;
+}
+.list_result_learn li .block_photo_cont .photo_info,
+.list_result_learn li .block_photo_cont .photo_info2 {
+    font-size: 85%;
+    margin-top: 2px;
+}
+.list_result_learn li .block_photo_cont .photo_info .photo_param,
+.list_result_learn li .block_photo_cont .photo_info2 span {
+    margin-right: 5px;
+}
+.list_result_learn li .result_learn_status {
+    float: right;
+    width: 48px;
+    height: 48px;
+    background: url("/files/images/learn_yes.png") top left no-repeat;
+}
+.list_result_learn li .result_learn_status.error {
+    background-image: url("/files/images/learn_no.png")
+}
+.list_result_learn li .result_learn_text {
+    line-height: 1.2;
+    color: #000000;
+    margin-right: 52px;
+    margin-left: 110px;
+	width: 128px;
+	overflow: hidden;
+}
+.list_result_learn li.lrl_error .result_learn_text {
+    color: #ff0000;
+}
+.list_result_learn li.lrl_error .result_learn_text .error_learn {
+    color: #666666;
+    display: block;
+}
+/* list photos */
+.list_photos {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 5px;
+    clear: both;
+}
+.list_photos li {
+    padding: 5px; 
+    margin: 5px 5px 0px 0px; 
+    border: 1px solid #e5e5e5; 
+    float: left;
+    background-color: #f9f9f9;
+    position: relative;
+}
+.list_photos li.act {
+    border: 1px solid #aaaaaa;
+    background-color: #DBE2F0;
+}
+.list_photos .block_photo {
+    width: 163px;
+    text-align: center;
+    min-height: 120px;
+    height: auto !important;
+    height: 120px;    
+    margin-bottom: 5px;
+}
+.list_photos .block_info {
+    color: #666666;
+}
+.list_photos .block_info span {
+    color: #000000;
+}
+.list_photos li a:hover {
+    text-decoration: none;
+}
+.list_photos li .inp_check {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+/* menu */
+.menu_cutfaces {
+    float: right;
+}
+.menu_cutfaces li {
+    float: left;
+}
+.menu_cutfaces li.mcf_first {
+    margin-right: 5px;
+}
+.menu_cutfaces li a {
+    padding: 1px 12px;
+    display: block;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+}
+.menu_cutfaces li a:hover {
+    text-decoration: none;
+}
+.menu_cutfaces li.mcf_act a {
+    background-color: #777777;
+    color: #ffffff;
+}
+.menu_cutfaces li.mcf_dis a {
+    cursor: default;
+    color: #868686;
+}

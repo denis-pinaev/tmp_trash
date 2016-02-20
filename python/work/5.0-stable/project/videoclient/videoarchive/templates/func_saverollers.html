@@ -1,0 +1,43 @@
+	function saveRollers(rollers) {
+		closeChangeWindow('win_save_orig');
+		showIndicator(true);
+		$.ajax({
+			type: "POST",
+			url: "{{ root_path }}/command/save_rollers/",
+			data: {rollers: rollers},
+			success: function(msg){
+				showIndicator(false);
+				obj = msg;
+				if (obj.status) {
+					location.replace(obj.url);
+				} else {
+
+				}
+			},
+			error: function(msg) {
+
+			}
+		});
+	}	
+	
+function saveVideoWithface(video_id){
+		closeChangeWindow('win_save_orig');
+		showIndicator(true);
+		$.ajax({
+			type: "POST",
+			url: "{% url archive_command "save_video_with_face/" %}",
+			data: {id: video_id},
+			success: function(msg){
+				showIndicator(false);
+				obj = msg;
+				if (obj.status) {
+					location.replace(obj.url);
+				} else {
+
+				}
+			},
+			error: function(msg) {
+
+			}
+		});
+}

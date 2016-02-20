@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<script type="text/javascript">
+	function addAttributte(id) {
+		var container = document.getElementById(id);
+		var containerElements = container.getElementsByTagName('a');
+		var length = containerElements.length;
+		
+		for (var i = 0; i < length; i++)  {
+			var attributte = document.createAttribute('target');
+			attributte.nodeValue = "_top";
+			containerElements[i].setAttributeNode(attributte);
+		}
+	}
+	function clearClassName(id) {
+		var container = document.getElementById(id);
+		var containerElements = container.getElementsByTagName('li');
+		var length = containerElements.length;
+		for (var i = 0; i < length; i++)  {
+			containerElements[i].className="";
+		}	
+	}
+	function activeInsert(obj) {
+		clearClassName("top_menu");
+		obj.className = "active";
+	}
+</script>
+<style type="text/css">
+	.top_menu {
+		padding: 0px;
+		margin: 0px;
+		list-style:none;
+		overflow:hidden;
+		width: 760px;
+		font: 11pt Tahoma;
+	}
+	.top_menu li {
+		float: left;
+		background: url("images/vkladka.jpg") top left no-repeat;
+		width: 150px;
+		height: 27px;
+		text-align: center;
+		margin-right: 5px;
+	}
+	.top_menu li a {
+		color: #4a2725;
+		text-decoration: none;
+		display: block;
+		cursor: pointer;
+		padding: 3px 0px 0px 0px;
+	}	
+	.top_menu li.active {
+		background: url("images/vkladka_act.jpg") top left no-repeat;
+	}
+	.top_menu li.active a {
+		color: #FFFFFF;
+	}
+	
+</style>
+
+</head>
+<body onLoad="javascript: addAttributte('test');">
+	<ul id="test">
+		<li><a href="http://www.google.ru/" title="hgjdkgdfgjdjkf">link_1</a></li>
+		<li><a href="http://www.google.ru/" title="hgjdkgdfgjdjkf">link_2</a></li>
+	</ul>
+	<ul class="top_menu" id="top_menu">
+		<li onClick="javascript: activeInsert(this);"><a href="#">Приложение</a></li>
+		<li onClick="javascript: activeInsert(this);"><a href="#">Пригласить друзей</a></li>
+	</ul>
+</body>
+</html>

@@ -1,0 +1,1255 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+// http://jqueryui.com/demos/draggable/#option-containment
+// http://docs.jquery.com/UI/Draggable
+// http://jsfiddle.net/aflin/vbSMy/
+var videoframetime;
+var addCameraVideoFrameTime;
+var terminalFullVideoFrameTime;
+var fps = 300;
+var emptybuffer = "data:image/gif;base64,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G71cjKLqWf4Cvdlurror9mz/AEl/q2raSUpJJJJSkkkklP8A/9P1VJJJJSkkkklKSSSSUpJJJJSkkkklKSSSSUpJJJJSkkkklKSSSSUpJJJJT//U9VSSSSUpJJJJSkkkklKSSSSUpJJJJSkkkklKSSSSUpJJJJSkkkklKSSSSU//1fVUkkklKSSSSUpJJJJSkkkklKSSSSUpJJJJSkkkklKSSSSUpJJJJSkkkklP/9b1VJfKqSSn6qSXyqkkp+qkl8qpJKfqpJfKqSSn6qSXyqkkp+qkl8qpJKfqpJfKqSSn6qSXyqkkp+qkl8qpJKfqpJfKqSSn/9n/7Q0gUGhvdG9zaG9wIDMuMAA4QklNBCUAAAAAABAAAAAAAAAAAAAAAAAAAAAAOEJJTQQvAAAAAABK6wMBAEgAAABIAAAAAAAAAAAAAADQAgAAQAIAAAAAAAAAAAAAGAMAAGQCAAAAAcADAACwBAAAAQAPJwEAbGx1bgAAAAAAAAAAAAA4QklNA+0AAAAAABAASAAAAAEAAgBIAAAAAQACOEJJTQQmAAAAAAAOAAAAAAAAAAAAAD+AAAA4QklNBA0AAAAAAAQAAAB4OEJJTQQZAAAAAAAEAAAAHjhCSU0D8wAAAAAACQAAAAAAAAAAAQA4QklNBAoAAAAAAAEAADhCSU0nEAAAAAAACgABAAAAAAAAAAI4QklNA/UAAAAAAEgAL2ZmAAEAbGZmAAYAAAAAAAEAL2ZmAAEAoZmaAAYAAAAAAAEAMgAAAAEAWgAAAAYAAAAAAAEANQAAAAEALQAAAAYAAAAAAAE4QklNA/gAAAAAAHAAAP////////////////////////////8D6AAAAAD/////////////////////////////A+gAAAAA/////////////////////////////wPoAAAAAP////////////////////////////8D6AAAOEJJTQQAAAAAAAACAAI4QklNBAIAAAAAAAYAAAAAAAA4QklNBDAAAAAAAAMBAQEAOEJJTQQtAAAAAAAGAAEAAAADOEJJTQQIAAAAAAAQAAAAAQAAAkAAAAJAAAAAADhCSU0EHgAAAAAABAAAAAA4QklNBBoAAAAAA0kAAAAGAAAAAAAAAAAAAADwAAABQAAAAAoEEQQ1BDcEOAQ8BDUEPQQ4AC0AMwAA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AAcACAABAAEBAP/hD85odHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDQuMS1jMDM2IDQ2LjI3NjcyMCwgTW9uIEZlYiAxOSAyMDA3IDIyOjQwOjA4ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnhhcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eGFwTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIiB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyIgZGM6Zm9ybWF0PSJpbWFnZS9qcGVnIiB4YXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzMgV2luZG93cyIgeGFwOkNyZWF0ZURhdGU9IjIwMTEtMDktMjhUMTk6Mzg6NDYrMDQ6MDAiIHhhcDpNb2RpZnlEYXRlPSIyMDExLTA5LTI4VDE5OjM4OjQ2KzA0OjAwIiB4YXA6TWV0YWRhdGFEYXRlPSIyMDExLTA5LTI4VDE5OjM4OjQ2KzA0OjAwIiB4YXBNTTpEb2N1bWVudElEPSJ1dWlkOkE3ODA4Njc5REZFOUUwMTE4Q0E2ODUwNDAyQjUyQkY2IiB4YXBNTTpJbnN0YW5jZUlEPSJ1dWlkOkE4ODA4Njc5REZFOUUwMTE4Q0E2ODUwNDAyQjUyQkY2IiBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIiBwaG90b3Nob3A6SUNDUHJvZmlsZT0ic1JHQiBJRUM2MTk2Ni0yLjEiIHBob3Rvc2hvcDpIaXN0b3J5PSIiIHRpZmY6T3JpZW50YXRpb249IjEiIHRpZmY6WFJlc29sdXRpb249IjcyMDAwMC8xMDAwMCIgdGlmZjpZUmVzb2x1dGlvbj0iNzIwMDAwLzEwMDAwIiB0aWZmOlJlc29sdXRpb25Vbml0PSIyIiB0aWZmOk5hdGl2ZURpZ2VzdD0iMjU2LDI1NywyNTgsMjU5LDI2MiwyNzQsMjc3LDI4NCw1MzAsNTMxLDI4MiwyODMsMjk2LDMwMSwzMTgsMzE5LDUyOSw1MzIsMzA2LDI3MCwyNzEsMjcyLDMwNSwzMTUsMzM0MzI7NUEyMURDMTBFQkFBODYxOThFMEYxNkIxQThCN0E4MzQiIGV4aWY6UGl4ZWxYRGltZW5zaW9uPSIzMjAiIGV4aWY6UGl4ZWxZRGltZW5zaW9uPSIyNDAiIGV4aWY6Q29sb3JTcGFjZT0iMSIgZXhpZjpOYXRpdmVEaWdlc3Q9IjM2ODY0LDQwOTYwLDQwOTYxLDM3MTIxLDM3MTIyLDQwOTYyLDQwOTYzLDM3NTEwLDQwOTY0LDM2ODY3LDM2ODY4LDMzNDM0LDMzNDM3LDM0ODUwLDM0ODUyLDM0ODU1LDM0ODU2LDM3Mzc3LDM3Mzc4LDM3Mzc5LDM3MzgwLDM3MzgxLDM3MzgyLDM3MzgzLDM3Mzg0LDM3Mzg1LDM3Mzg2LDM3Mzk2LDQxNDgzLDQxNDg0LDQxNDg2LDQxNDg3LDQxNDg4LDQxNDkyLDQxNDkzLDQxNDk1LDQxNzI4LDQxNzI5LDQxNzMwLDQxOTg1LDQxOTg2LDQxOTg3LDQxOTg4LDQxOTg5LDQxOTkwLDQxOTkxLDQxOTkyLDQxOTkzLDQxOTk0LDQxOTk1LDQxOTk2LDQyMDE2LDAsMiw0LDUsNiw3LDgsOSwxMCwxMSwxMiwxMywxNCwxNSwxNiwxNywxOCwyMCwyMiwyMywyNCwyNSwyNiwyNywyOCwzMDtBREJDMkIxNjRERkFGNEIxNTQ3NjM2NDkyQzcyOTRDNiI+IDx4YXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ1dWlkOkE2ODA4Njc5REZFOUUwMTE4Q0E2ODUwNDAyQjUyQkY2IiBzdFJlZjpkb2N1bWVudElEPSJ1dWlkOkE2ODA4Njc5REZFOUUwMTE4Q0E2ODUwNDAyQjUyQkY2Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDw/eHBhY2tldCBlbmQ9InciPz7/4gxYSUNDX1BST0ZJTEUAAQEAAAxITGlubwIQAABtbnRyUkdCIFhZWiAHzgACAAkABgAxAABhY3NwTVNGVAAAAABJRUMgc1JHQgAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLUhQICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABFjcHJ0AAABUAAAADNkZXNjAAABhAAAAGx3dHB0AAAB8AAAABRia3B0AAACBAAAABRyWFlaAAACGAAAABRnWFlaAAACLAAAABRiWFlaAAACQAAAABRkbW5kAAACVAAAAHBkbWRkAAACxAAAAIh2dWVkAAADTAAAAIZ2aWV3AAAD1AAAACRsdW1pAAAD+AAAABRtZWFzAAAEDAAAACR0ZWNoAAAEMAAAAAxyVFJDAAAEPAAACAxnVFJDAAAEPAAACAxiVFJDAAAEPAAACAx0ZXh0AAAAAENvcHlyaWdodCAoYykgMTk5OCBIZXdsZXR0LVBhY2thcmQgQ29tcGFueQAAZGVzYwAAAAAAAAASc1JHQiBJRUM2MTk2Ni0yLjEAAAAAAAAA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";
+
+function mapRunStrFunc(func) {
+	eval(func);
+}
+$(function() {
+	init();
+});
+// инициализация
+function init() {
+	var currentElementNumber = 0; // номер текущего элемента, который добавили или перемещали
+	getImageSize();
+	initHelpTooltip();
+	
+	{% if perms.user_perms.perm_maps_edit %}
+		dragElement($(".map_elem"));
+		contextMenuElement($(".map_elem .terminal"));
+		contextMenuElement($(".map_elem .camera"));
+	{% endif %}
+	initTerminalModel();
+}
+// установление размеров блоку-контейнеру 
+function getImageSize() {
+	var w = $(".map img").width();
+	var h = $(".map img").height();
+	$(".map").css("width", w + "px");
+	$(".map").css("height", h + "px");
+}
+// всплывающие подсказки
+function initHelpTooltip() {
+	//$("div.terminal").easyTooltip();
+	$("div.camera").easyTooltip();
+}
+// скрывает нижнюю границу у таблицы
+function styleTableInfo() {
+	$("table.table_info").find("tr:last").addClass("tr_last");
+}
+// движение элементов
+function dragElement(elem) {
+	elem.draggable();
+	elem.draggable("option", "containment", "parent");
+	elem.draggable("option", "cursor", "move");
+	elem.draggable({start: function(event, ui) { $("#easyTooltip").hide(); }});
+	elem.draggable({stop: function(event, ui) { $("#easyTooltip").show(); getCurrentTerminal(event, ui); }});
+}
+// http://www.trendskitchens.co.nz/jquery/contextmenu/
+// контекстное меню
+function contextMenuElement(elem) {
+	elem.contextMenu('myMenu1', {
+		menuStyle: {
+			width: '130px',
+			backgroundColor: '#eeeeee',
+			borderColor: '#cccccc'
+		},
+		itemStyle: {
+			paddingLeft: '22px'
+		},
+		itemHoverStyle: {
+			color: '#ffffff',
+			cursor: 'pointer'
+		},
+		bindings: {
+			'edit': function(el) {
+				if ($(el).attr("class") == "terminal") {
+					editMapTerminal(0, $(el).parent().attr('id'));
+					return;
+				}
+				if ($(el).attr("class").indexOf("camera") > -1) {
+					editTerminalCamera(0, $(el).attr('id'));
+					//showWindowCameraEdit($(el));
+					return;
+				}
+			},
+			'delete': function(el) {
+				if ($(el).attr("class") == "terminal") {
+					showWindowTerminalDelete($(el));
+					return;
+				}
+				if ($(el).attr("class").indexOf("camera") > -1) { 
+					showWindowCameraDelete($(el));
+					return;
+				}
+			},
+			'quit': function(el) {}
+		}
+	});	
+}
+// инициализация моделей терминала
+// к каждой моделе привязывается картинка
+function initTerminalModel() {
+	//$("#terminal_model option:first").attr("selected", "selected");
+
+	var type = $("#terminal_model option:first").attr("value");
+	var image = $("#terminal_model_img img");
+	image.attr("src", "/files/images/map/terminal_" + type + ".jpg");
+	$("#terminal_model").change(function() {
+		type = $(this).children("option:selected").attr("value");
+		$("#terminal_model_img img").remove();
+		$("#terminal_model_img").append("<img src='/files/images/map/terminal_" + type + ".jpg' alt='' />")
+	});
+
+}
+function editTerminalImageChange() {
+	type = $("#terminal_model").children("option:selected").attr("value");
+	$("#terminal_model_img img").remove();
+	$("#terminal_model_img").append("<img src='/files/images/map/terminal_" + type + ".jpg' alt='' />")
+}
+// инициализация датчиков и добавление функций
+function initTerminalSensors() {
+	var all_sensors = $("#terminal_sensors");
+	var sensors = $("#block_sensors input[type=checkbox]");
+	setSensors();
+	all_sensors.click(function() {
+		if ($(this).attr("checked")) {
+			sensors.attr("checked", "checked");
+		} else {
+			sensors.attr("checked", false);
+		}
+	});
+	var count = sensors.size();
+	var count_current;
+	sensors.click(function() {
+		if ($(this).attr("checked")) {
+			count_current = $("#block_sensors input[type=checkbox]:checked").size();
+			if (count == count_current) {
+				all_sensors.attr("checked", "checked");
+			}
+		} else {
+			all_sensors.attr("checked", false);
+		}
+	});
+}
+/***** Терминалы *****/
+// добавление терминала
+function addTerminalToMap(cmd) {
+	var typeMethod = "GET";
+	var params;
+
+	if(cmd == 1)
+	{
+		typeMethod = "POST";
+		params = {'name': $("#terminal_name").val(), 'model': $("#terminal_model").val(), 'number': $("#terminal_number").val(), 'direction': $("#terminal_direction").val(), 'description': $("#terminal_location").val(), 'map': {% if map.pk %}{{ map.pk }}{% else %}0{% endif %}};
+	}
+
+	loadingIndicator(true);
+	$.ajax({
+		type: typeMethod,
+		url: "{% url add-terminal %}",
+		data: params,
+		success: function(data){
+			if(data.res == 'success') {
+				loadingIndicator(false);
+				switch(cmd)
+				{
+					case 0:
+						$("#win_add_terminal").html(data.html);
+						showAddTerminalWindow();
+						initTerminalSensors();
+					break;
+					case 1:
+						$("#win_add_terminal").dialog("close");
+						showTerminalInMap(data.id, data.x, data.y);
+						showMapAlertDialog(true, '{% trans "Терминал успешно добавлен" %}', '');
+					break;
+				}
+			}else{
+				loadingIndicator(false);
+				$("#win_add_terminal").html(data.html);
+			}
+		},
+		error: function(data) {
+			loadingIndicator(false);
+			$("#win_add_terminal").dialog("close");
+			showMapAlertDialog(true, '{% trans "Ошибка добавления терминала" %}', '');
+		}
+	})
+}
+//редактирование терминала
+function editMapTerminal(cmd, id) {
+	var typeMethod = "GET";
+	var params = {'id': id };
+
+	if(cmd == 1)
+	{
+		typeMethod = "POST";
+		params = {'name': $("#terminal_name").val(), 'model': $("#terminal_model").val(), 'number': $("#terminal_number").val(), 'direction': $("#terminal_direction").val(), 'description': $("#terminal_location").val(), 'map': {% if map.pk %}{{ map.pk }}{% else %}0{% endif %}, 'id': id};
+	}
+
+	loadingIndicator(true);
+	$.ajax({
+		type: typeMethod,
+		url: "{% url edit-terminal %}",
+		data: params,
+		success: function(data){
+			if(data.res == 'success') {
+				loadingIndicator(false);
+				switch(cmd)
+				{
+					case 0:
+						$("#win_add_terminal").html(data.html);
+						//showAddTerminalWindow();
+						showWindowTerminalEdit(id);
+					break;
+					case 1:
+						$("#win_add_terminal").dialog("close");
+						showMapAlertDialog(true, '{% trans "Изменения сохранены" %}', '');
+					break;
+				}
+			}else{
+				loadingIndicator(false);
+				$("#win_add_terminal").html(data.html);
+			}
+		},
+		error: function(data) {
+			loadingIndicator(false);
+			$("#win_add_terminal").dialog("close");
+			showMapAlertDialog(true, '{% trans "Ошибка запроса" %}', '');
+		}
+	})
+}
+//редактирование камеры
+function editTerminalCamera(cmd, id) {
+	var typeMethod = "GET";
+	var params = {'id': id, 'map_id': {% if map.pk %}{{ map.pk }}{% else %}0{% endif %} };
+
+	if(cmd == 1)
+	{
+		typeMethod = "POST";
+		params = {	'id': id,
+					'map_id': {% if map.pk %}{{ map.pk }}{% else %}0{% endif %},
+					'terminal': $('#camera_terminal').val(),
+					'camera': $('#camera_model').val(),
+					'lens': $('#camera_model_lens').val(),
+					'direction': $('#camera_direction').val(),
+					'visible_objects': $('#camera_objects').val(),
+					'visibility': $('#camera_distance1').val(),
+					'range': $('#camera_distance2').val(),
+					'recognition': $('#camera_distance3').val(),
+					'focal': $('#camera_lens').val(),
+					'angle': $('#camera_angle').val()
+					};
+	}
+
+	loadingIndicator(true);
+	$.ajax({
+		type: typeMethod,
+		url: "{% url edit-camera %}",
+		data: params,
+		success: function(data){
+			if(data.res == 'success') {
+				loadingIndicator(false);
+				switch(cmd)
+				{
+					case 0:
+						$("#win_add_camera").html(data.html);
+						showWindowCameraEdit(id);
+					break;
+					case 1:
+						$("#win_add_camera").dialog("close");
+						deleteCamera($("#camera_" + data.camera_id));
+						showCameraInTerminal(data.camera_id, data.terminal_id , data.direction);
+						showMapAlertDialog(true, '{% trans "Изменения сохранены" %}', '');
+					break;
+				}
+			}else{
+				loadingIndicator(false);
+				$("#win_add_camera").html(data.html);
+			}
+		},
+		error: function(data) {
+			loadingIndicator(false);
+			$("#win_add_camera").dialog("close");
+			showMapAlertDialog(true, '{% trans "Ошибка запроса" %}', '');
+		}
+	})
+}
+// окно-диалог для добавления терминала
+function showAddTerminalWindow() {
+	$("#win_add_terminal").dialog({
+		buttons: { 
+			"{% trans "Добавить терминал" %}": function() { addTerminalToMap(1); /*showTerminalInMap(); */ },
+			"{% trans "Отмена" %}": function() { $(this).dialog("close"); }
+		},
+		modal: true,
+		draggable: false,
+		resizable: false,
+		width: 500,
+		open: function() {
+			initAddTerminalWindow();
+		}
+	});
+}
+// отображение терминала на карте
+function showTerminalInMap(id, x, y) {
+	var map = $(".map");
+	var terminal_count = getTerminalCount();
+	var params = getParamsFormTerminal();
+
+	var map_elem = $("<div class='map_elem' id='" + id + "' style='display: block; left: " + x +"px; top: " + y + "px;'><div class='flashing'></div><div class='terminal' id='terminal_" + id + "'  onMouseOver='javascript: updateTerminalTitle(" + id + ");'></div></div>");
+	map.append(map_elem);
+	$(".map .map_elem .flashing").css("opacity", 0);
+	initHelpTooltip();
+	{% if perms.user_perms.perm_maps_edit %}
+		dragElement(map_elem);	
+	{% endif %}
+	map_elem.show();
+	addNameTerminalToSelect(terminal_count, params["terminal_name"]);
+	map_elem.children(".terminal").click(function() {
+		showFullInfoTerminalWindow($(this), terminal_count);	
+	});
+	{% if perms.user_perms.perm_maps_edit %}
+		contextMenuElement(map_elem.children(".terminal"));
+	{% endif %}
+}
+// инициализация окна-диалога для добавления терминала
+function initAddTerminalWindow() {
+	changeHeadWindow("win_add_terminal", "{% trans 'Добавление терминала' %}");
+	var count = getTerminalCount() + 1;
+	$("#terminal_name").attr("value", "{% trans "Терминал" %} №" + count);
+	//$("#terminal_model option:first").attr("selected", "selected");
+	initTerminalModel();
+	$("#terminal_number").attr("value", count);
+	//$("#terminal_direction option:first").attr("selected", "selected");
+	setSensors();
+	$("#block_terminal_cameras").css("display", "none");
+	$("#terminal_location").attr("value", "");
+}
+// получение данных с формы добавления терминала
+function getParamsFormTerminal() {
+	var params = {};
+	params["terminal_name"] = $("#terminal_name").attr("value");
+	params["terminal_model"] = $("#terminal_model option:selected").attr("text");
+	params["terminal_number"] = $("#terminal_number").attr("value");	
+	params["terminal_direction"] = $("#terminal_direction option:selected").attr("text");
+	params["terminal_sensors"] = getSensors();
+	params["terminal_location"] = $("#terminal_location").attr("value");
+	return params;	
+}
+// получение всплывающей подсказки для терминала
+// number_element - номер элемента карты
+function updateTerminalTitle(id) {
+	$("#terminal_" + id).easyTooltip({
+		content: "<div id='terminal_title'>{% trans 'Загрузка' %}</div>"
+	});
+	$.ajax({
+		type: "POST",
+		url: "{% url get-terminal-info %}",
+		data: { 'id': id },
+		success: function(data){
+			if(data.res != 'success') {
+				$("#terminal_title").html("");
+			}else{
+				$("#terminal_" + id).easyTooltip({
+					content: $("#terminal_title").html(data.html)
+				});
+				styleTableInfo();
+			}
+		},
+		error: function(data) {
+			$("#terminal_title").html("");
+		}
+	});
+}
+function updateCameraTitle(id) {
+	$("#camera_" + id).easyTooltip({
+		content: "<div id='camera_title'>{% trans 'Загрузка' %}</div>"
+	});
+
+	$.ajax({
+		type: "POST",
+		url: "{% url get-camera-info %}",
+		data: { 'id': id },
+		success: function(data){
+			if(data.res != 'success') {
+				$("#camera_title").html("");
+			}else{
+				$("#camera_" + id).easyTooltip({
+					content: $("#camera_title").html(data.html)
+				});
+				styleTableInfo();
+			}
+		},
+		error: function(data) {
+			$("#camera_title").html("");
+		}
+	});
+}
+// получение количества уже добавленных терминалов
+function getTerminalCount() {
+	var map = $(".map");
+	var terminal_count = map.children("div.map_elem").size();
+	return terminal_count;
+}
+// получение списка датчиков со значениями
+function getTerminalSensors(params, number_element) {
+	var sensors = "";
+	for (var i in params) {
+		sensors += "<div>" + params[i] + " = " + i + "</div>";
+	}
+	return sensors;
+}
+// получение списка камер, относящихся к данному терминалу
+function getTerminalCameras(number_element) {
+	var cameras = "<div>192.168.0.55 AV3100</div><div>192.168.0.54 AV3100</div><div>192.168.0.53 AV3100</div>";
+	return cameras;
+}
+// добавление терминала в список
+function addNameTerminalToSelect(num, name) {
+	$("#camera_terminal").append("<option value='" + num + "'>" + name + "</option>");
+	currentElementNumber = num;
+}
+// проверка на наличие терминалов
+function checkIsTerminals() {
+	var countTerminal = getTerminalCount();
+	if (countTerminal == 0) {
+		return false;
+	}
+	return true;
+}
+// получение текущего терминала
+function getCurrentTerminal(e, ui) {
+	var e = (e) ? e : window.event;
+	var el = (e.target) ? e.target : e.srcElement;
+	currentElementNumber = parseInt(el.id.split("_")["1"]);
+}
+// показывает картинку модели при наведении на название модели терминала в окне подробной информации
+function imageModelTerminal() {
+	$("a.terminal_model_info").click(function() {
+		return false;
+	});
+	$("a.terminal_model_info").easyTooltip({ tooltipId: "tooltipInfoModel" });
+}
+// окно для получения полной информации о терминале
+function getCameraInfoForTerminalInfo(unic_id, camera_id) {
+	$.ajax({
+		type: "POST",
+		url: "{% url get-camera-info %}",
+		data: { 'id': camera_id },
+		success: function(data){
+			if(data.res != 'success') {
+				$("#full_terminal_camera_info_" + unic_id).html("");
+			}else{
+				$("#full_terminal_camera_info_" + unic_id).html(data.html);
+				styleTableInfo();
+			}
+		},
+		error: function(data) {
+			$("#full_terminal_camera_info_" + unic_id).html("");
+		}
+	});
+}
+function showFullInfoTerminalWindow(obj, count) {
+	var cameras = obj.parent().children(".camera");
+	if (cameras.size() != 0) {
+		var unic_id= obj.parent().attr('id');
+		$('<div id="info_'+unic_id+'" style="display:none;" title="{% trans "Информация о терминале" %}"></div>').appendTo('body');
+		$("#info_" + unic_id).html("{% trans 'Загрузка' %}");
+		$("#info_" + unic_id).bind('dialogclose', function(event) {
+			clearTimeout(terminalFullVideoFrameTime);
+			//location.reload(true);
+		});
+		$("#info_"+unic_id).dialog({
+			buttons: { 
+				"{% trans "ОК" %}": function() { clearTimeout(terminalFullVideoFrameTime); $(this).dialog("close"); /*location.reload(true);*/}
+			},
+			modal: true,
+			draggable: true,
+			resizable: true,
+			width: 900,
+			open: function() { imageModelTerminal(); }
+		});
+
+		$.ajax({
+			type: "POST",
+			url: "{% url get-terminal-full-info %}",
+			data: { 	'id': obj.parent().attr('id'), 
+						'map_id': {% if map.pk %}{{ map.pk }}{% else %}0{% endif %}},
+			success: function(data){
+				if(data.res != 'success') {
+					$("#info_" + unic_id).html("");
+				}else{
+					$("#info_" + unic_id).html(data.html);
+					getCameraInfoForTerminalInfo(unic_id, data.camera_id);
+				}
+			},
+			error: function(data) {
+				$("#info_" + unic_id).html("");
+			}
+		});
+	}
+}
+// окно для редактирования данных терминала
+function showWindowTerminalEdit(id) {
+	var terminal = $("#camera_terminal option").attr("value", currentElementNumber).attr("text");
+	$("#win_add_terminal").dialog({
+		buttons: { 
+			"{% trans "Сохранить" %}": function() { editMapTerminal(1, id);},
+			"{% trans "Отмена" %}": function() { $(this).dialog("close"); }
+		},
+		modal: true,
+		draggable: false,
+		resizable: false,
+		width: 500,
+		open: function() {
+			changeHeadWindow("win_add_terminal", "{% trans "Редактирование данных терминала" %}");
+			$("#block_terminal_cameras").css("display", "block");
+			$("#link_add_camera").click(function() {
+				$("#win_add_terminal").dialog("close");
+				showAddCameraWindow();
+				return false;
+			});
+		}
+	});
+}
+// окно для удаления терминала
+function showWindowTerminalDelete(obj) {
+	$("#win_delete").attr("title", "{% trans "Удаление терминала" %}");
+	var terminal = $("#camera_terminal option").attr("value", currentElementNumber).attr("text");
+	var txt = "{% trans "Удалить терминал со всеми камерами?" %}";
+	$("#win_delete").dialog({
+		buttons: { 
+			"{% trans "Удалить терминал" %}": function() { 
+					loadingIndicator(true);
+					$.ajax({
+						type: "POST",
+						url: "{% url delete-map-terminal %}",
+						data: { 'id': obj.parent().attr('id')},
+						success: function(data){
+							if(data.res != 'success') {
+								loadingIndicator(false);
+								showMessageWindow('{% trans "Ошибка удаления терминала." %}');
+							}else{
+								loadingIndicator(false);
+								$("#win_delete").dialog("close"); deleteTerminal(obj);
+							}
+						},
+						error: function(data) {
+							loadingIndicator(false);
+							showMessageWindow('{% trans "Ошибка удаления терминала." %}');
+						}
+					});
+				},
+			"{% trans "Отмена" %}": function() { $(this).dialog("close"); }
+		},
+		modal: true,
+		draggable: false,
+		resizable: false,
+		width: 360,
+		open: function() { $(this).html(txt) }
+	});
+}
+// удаление терминала
+function deleteTerminal(obj) {
+	var map = $(".map");
+	obj.parent().remove();
+	$("#camera_terminal option").attr("value", currentElementNumber).remove();
+}
+
+/***** /Терминалы *****/
+/***** Датчики *****/
+// инициализация датчиков
+function setSensors() {
+	var all_sensors = $("#terminal_sensors");
+	var sensors = $("#block_sensors input[type=checkbox]");
+	all_sensors.attr("checked", false);
+	sensors.attr("checked", false);	
+}
+// получение названий датчиков
+function getSensors() {
+	var sensors = {};
+	var i = 0;
+	$.each($("#block_sensors input[type=checkbox]:checked"), function(key, value) {
+		sensors[i] = $(this).next().html();
+		i++;
+	});
+	return sensors;
+}
+/***** /Датчики *****/
+/***** Камеры *****/
+// добавление камеры
+function addCameraToTerminal() {
+	if (checkIsTerminals()) {
+		addCamera(0);
+	} else {
+		showMessageWindow("{% trans "Пожалуйста, добавьте сначала терминал" %}.");
+	}
+}
+//добавление терминала
+function addCamera(cmd) {
+	var params = {'map_id': {% if map.pk %}{{ map.pk }}{% else %}0{% endif %}};
+	var typeMethod = "GET";
+
+	if(cmd == 1)
+	{
+		typeMethod = "POST";
+		params = {'map_id': {% if map.pk %}{{ map.pk }}{% else %}0{% endif %},
+					'terminal': $('#camera_terminal').val(),
+					'camera': $('#camera_model').val(),
+					'lens': $('#camera_model_lens').val(),
+					'direction': $('#camera_direction').val(),
+					'visible_objects': $('#camera_objects').val(),
+					'visibility': $('#camera_distance1').val(),
+					'range': $('#camera_distance2').val(),
+					'recognition': $('#camera_distance3').val(),
+					'focal': $('#camera_lens').val(),
+					'angle': $('#camera_angle').val()
+					};
+	}
+
+	loadingIndicator(true);
+	$.ajax({
+		type: typeMethod,
+		url: "{% url add-camera %}",
+		data: params,
+		success: function(data){
+			if(data.res == 'success') {
+				loadingIndicator(false);
+				switch(cmd)
+				{
+					case 0:
+						$("#win_add_camera").html(data.html);
+						showAddCameraWindow();
+					break;
+					case 1:
+						$("#win_add_camera").dialog("close");
+						//showTerminalInMap(data.id, data.x, data.y);
+						showCameraInTerminal(data.camera_id, $('#camera_terminal').val(), $('#camera_direction').val());
+						showMapAlertDialog(true, '{% trans "Камера успешно добавлена" %}', '');
+					break;
+				}
+			}else{
+				loadingIndicator(false);
+				$("#win_add_camera").html(data.html);
+				showAddCameraWindow();
+			}
+		},
+		error: function(data) {
+			loadingIndicator(false);
+			$("#win_add_camera").dialog("close");
+			showMapAlertDialog(true, '{% trans "Ошибка добавления камеры" %}', '');
+		}
+	})
+}
+// окно-диалог для добавления камеры
+function showAddCameraWindow() {
+	$('#win_add_camera').bind('dialogclose', function(event) {
+		clearTimeout(addCameraVideoFrameTime);
+	});
+	$("#win_add_camera").dialog({
+		buttons: { 
+			"{% trans "Добавить камеру" %}": function() { clearTimeout(addCameraVideoFrameTime); addCamera(1); $(this).dialog("close"); },
+			"{% trans "Отмена" %}": function() { clearTimeout(addCameraVideoFrameTime); $(this).dialog("close"); }
+		},
+		modal: true,
+		draggable: false,
+		resizable: false,
+		width: 740
+	});
+}
+// инициализация окна-диалога для добавления камеры
+function initAddCameraWindow() {
+	changeHeadWindow('win_add_camera', '{% trans "Добавление камеры" %}');
+	var num = currentElementNumber + 1;
+	$("#change_distance").click(function() {
+		var block = $("#block_change_distance");
+		var link = $("#change_distance");
+		if (block.css("display") == "block") {
+			block.slideUp("normal", function() { link.html("{% trans "Изменить" %}") });
+		} else {
+			block.slideDown("normal", function() { link.html("{% trans "Скрыть" %}") });
+		}
+		return false;
+	});
+	$("#change_params_lens").click(function() {
+		var block = $("#block_params_lens");
+		var link = $("#change_params_lens");
+		if (block.css("display") == "block") {
+			block.slideUp("normal", function() { link.html("{% trans "Изменить" %}") });
+		} else {
+			block.slideDown("normal", function() { link.html("{% trans "Скрыть" %}") });
+		}
+		return false;
+	});
+}
+// отображение камеры на карте
+function showCameraInTerminal(camera_id, terminal_id, direction) {
+	var camera = $("<div id='camera_" + camera_id + "' class='camera camera_" + getDirectionCamera(direction) + "' onMouseOver='javascript: updateCameraTitle(" + camera_id + ");'></div>");
+	$("#" + terminal_id).append(camera);
+	initHelpTooltip();
+	camera.click(function() {
+		showVideoCamera(camera_id);
+	});
+	{% if perms.user_perms.perm_maps_edit %}
+		contextMenuElement(camera);
+	{% endif %}
+}
+// получение данных с формы добавления камеры
+function getParamsFormCamera() {
+	var params = {};
+	params["terminal"] = $("#camera_terminal option:selected").attr("text");
+	params["camera_ip"] = $("#camera_ip option:selected").attr("text");
+	params["camera_model"] = $("#camera_model option:selected").attr("text");
+	params["camera_model_lens"] = $("#camera_model_lens option:selected").attr("text");
+	params["camera_direction"] = $("#camera_direction option:selected").attr("text");
+	params["camera_distance"] = {};
+	params["camera_distance"][1] =  $("#camera_distance1").attr("value");
+	params["camera_distance"][2] =  $("#camera_distance2").attr("value");
+	params["camera_distance"][3] =  $("#camera_distance3").attr("value");
+	params["camera_objects"] =  $("#camera_objects").attr("value");
+	return params;
+}
+// получение направления камеры
+function getDirectionCamera(direction) {
+	var dir;
+	switch(direction)
+	{
+		case '1':
+			dir = 'left';
+		break;
+		case '2':
+			dir = 'right';
+		break;
+		case '3':
+			dir = 'top';
+		break;
+		case '4':
+			dir = 'bottom';
+		break;
+	}
+	return dir;
+}
+// получение значений дальности для камеры
+function getCameraDistance(params) {
+	var distance = "";
+	for (var i in params) {
+		if (i == 1) {
+			distance += "<div>{% trans "видимости" %}: " + params[i] + " м</div>";
+		}
+		if (i == 2) {
+			distance += "<div>{% trans "детектирования" %}: " + params[i] + " м</div>";
+		}
+		if (i == 3) {
+			distance += "<div>{% trans "распознавания" %}: " + params[i] + " м</div>";
+		}
+	}
+	return distance;
+}
+// показать видео с камеры
+function showVideoCamera(id) {
+	$("#video div.video_info").html('{% trans "Загрузка" %}');
+	$.ajax({
+		type: "POST",
+		url: "{% url get-camera-video %}",
+		data: { 'id': id },
+		success: function(data){
+			if(data.res != 'success') {
+				$("#video div.video_info").html("");
+			}else{
+				$("#video div.video_info").html(data.html);
+				styleTableInfo();
+			}
+		},
+		error: function(data) {
+			$("#video div.video_info").html("");
+		}
+	});
+
+	$('#video').bind('dialogclose', function(event) {
+		$("#video_info_frame").html('<img id="video_info_img" src=""/>');
+		clearTimeout(videoframetime);
+	});
+
+	$("#video").dialog({
+		buttons: { 
+			"{% trans "ОК" %}": function() { clearTimeout(videoframetime); $(this).dialog("close"); $("#video_info_frame").html('<img id="video_info_img" src=""/>');}
+	},
+	modal: true,
+	draggable: false,
+	resizable: false,
+	width: 740
+	});		
+}
+// окно для редактирования камеры
+function showWindowCameraEdit(id) {
+
+	$('#win_add_camera').bind('dialogclose', function(event) {
+		clearTimeout(addCameraVideoFrameTime);
+	});
+
+	$("#win_add_camera").dialog({
+		buttons: { 
+			"{% trans "Сохранить" %}": function() { clearTimeout(addCameraVideoFrameTime); editTerminalCamera(1, id);  },
+			"{% trans "Отмена" %}": function() { clearTimeout(addCameraVideoFrameTime); $(this).dialog("close"); }
+		},
+		modal: true,
+		draggable: false,
+		resizable: false,
+		width: 740,
+		open: function() { 
+			changeHeadWindow('win_add_camera', '{% trans "Редактирование данных камеры" %}');
+		}
+	});
+}
+// окно для удаления камеры
+function showWindowCameraDelete(obj) {
+	var txt = "{% trans "Удалить камеру?" %}";
+	$("#win_delete").dialog({
+		buttons: { 
+			"{% trans "Удалить камеру" %}": function() { 
+					loadingIndicator(true);
+					$.ajax({
+						type: "POST",
+						url: "{% url delete-terminal-camera %}",
+						data: { 'id': obj.attr('id')},
+						success: function(data){
+							if(data.res != 'success') {
+								loadingIndicator(false);
+								showMessageWindow('{% trans "Ошибка удаления камеры." %}');
+							}else{
+								loadingIndicator(false);
+								$("#win_delete").dialog("close"); deleteCamera(obj);
+							}
+						},
+						error: function(data) {
+							loadingIndicator(false);
+							showMessageWindow('{% trans "Ошибка удаления камеры." %}');
+						}
+					});
+				},
+			"{% trans "Отмена" %}": function() { $(this).dialog("close"); }
+		},
+		modal: true,
+		draggable: false,
+		resizable: false,
+		width: 360,
+		open: function() { changeHeadWindow("win_delete", "{% trans "Удаление камеры" %}"); $(this).html(txt) }
+	});
+}
+
+// удаление камеры
+function deleteCamera(obj) {
+	obj.remove();
+}
+/***** /Камеры *****/
+/***** Карта *****/
+function showMapAlertDialog(show, html, okSignalFunc) {
+	if(show)
+	{
+		$("#map_alert_div").html(html);
+		$("#win_map_alert").dialog({
+			buttons: { 
+				"ОK": function() { $(this).dialog("close"); mapRunStrFunc(okSignalFunc);}
+			},
+			modal: true,
+			draggable: false,
+			resizable: false,
+			width: 300
+		});
+	}else{
+		$("#win_map_alert").dialog("close");
+	}
+}
+function loadingIndicator(show) {
+	if(show)
+	{
+		$("#win_map_indicator").dialog({
+			modal: true,
+			draggable: false,
+			resizable: false,
+			width: 300,
+			closeOnEscape: false,
+			//open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
+			open: function(event, ui) { $("#ui-dialog-title-win_map_indicator").next().hide(); }
+		});
+	}else{
+		$("#win_map_indicator").dialog("close");
+	}
+}
+function showClearMapDialog(html) {
+	$('#win_clear_map').html(html);
+	$("#win_clear_map").dialog({
+		buttons: { 
+			"{% trans "Удалить" %}": function() { clearMap(); $(this).dialog("close");},
+			"{% trans "Отмена" %}": function() { $(this).dialog("close"); }
+		},
+		modal: true,
+		draggable: false,
+		resizable: false,
+		width: 500,
+		open: function() { }
+	});	
+}
+function showAddMapDialog(html) {
+	$('#win_add_map').html(html);
+	$("#win_add_map").dialog({
+		buttons: { 
+			"{% trans "Добавить карту" %}": function() { addMap(1);},
+			"{% trans "Отмена" %}": function() { $(this).dialog("close"); loadingIndicator(false);}
+		},
+		modal: true,
+		draggable: false,
+		resizable: false,
+		width: 500,
+		open: function() { initAddMap(); }
+	});	
+	$('#win_add_map').bind('dialogclose', function(event) {
+		loadingIndicator(false);
+	});
+}
+// добавление карты
+function checkMapImageFile() {
+	var file = $("#map_image").val();
+	var err = false;
+	if (file == "") {
+		$("#map_error_file").html('{% trans "Пожалуйста, выберите файл с изображением карты" %}');
+		$("#map_error_file").show("fast");
+		err = true;
+	}
+
+	if($('#map_city').val() == '') {
+		$('#map_error_city').html('{% trans "Обязательное поле" %}');
+		err = true;
+	}else{
+		$('#map_error_city').html('');
+	}
+
+	if($('#map_obj_name').val() == '') {
+		$('#map_error_obj_name').html('{% trans "Обязательное поле" %}');
+		err = true;
+	}else{
+		$('#map_error_obj_name').html('');
+	}
+
+	if(!($("#objtype_name").is(':hidden')) && $('#objtype_name').val() == '') {
+		$('#map_error_objtype_name').html('{% trans "Обязательное поле" %}');
+	}else{
+		$('#map_error_objtype_name').html('');
+	}
+
+	if(err){
+		return err;
+	}
+
+	$("#map_error_file").hide();
+	var ext = $('#map_image').val().split('.').pop().toLowerCase();
+	if($.inArray(ext, ['gif','png','jpg','jpeg']) == -1) {
+		$("#map_error_file").html('{% trans "Пожалуйста, выберите файл формата .jpg .png или .gif" %}');
+		$("#map_error_file").show("fast");
+		err = true;
+		return err;
+	}
+
+	return err;
+}
+function mapImageUpload(map_id) {
+	$("#form_map_id").val(map_id);
+	ifile = document.getElementById("map_image");
+	if (ifile && ifile.value){
+		var options = {
+			url: "{% url add-map %}",
+			type: "POST",
+			success: function(msg) {
+				if (msg.indexOf('pre') >=0) {
+					var begin = msg.indexOf('{');
+					var end = msg.indexOf('}');
+					msg = '{' + msg.substring(begin + 1, end) + '}';
+				};
+				msg = eval('('+msg+')');
+				loadingIndicator(false);
+				if(msg.res != 'success'){
+					loadingIndicator(false);
+					showMapAlertDialog(true, '{% trans "Ошибка загрузки изображения карты" %}', '');
+				}else{
+					loadingIndicator(false);
+					showMapAlertDialog(true, '{% trans "Карта успешно добавлена" %}', 'location.href="{% url maps %}' + map_id + '";');
+				}
+			},
+			error: function(msg){
+				loadingIndicator(false);
+				showMapAlertDialog(true, '{% trans "Ошибка во время загрузки изображения карты" %}', '');
+			}
+		};
+		$("#map-image-form").ajaxSubmit(options);           
+	}
+}
+function addMap(cmd) {
+	g_cmd = cmd;
+	ajax_method = "GET";
+	var data = {};
+
+	if(g_cmd == 1)
+	{
+		ajax_method = "POST";
+		var obj_type;
+		var new_obj_type = '';
+		var block = $('#map_type_objects').parent().next();
+		if(block.css('display') != 'none'){
+			obj_type = $('#objtype_name').val();
+			new_obj_type = '1';
+		}else{
+			obj_type = $('#map_type_objects').val();
+		}
+		data = {'city': $('#map_city').val(), 'obj_type': obj_type, 'new_obj_type': new_obj_type, 'obj_name': $('#map_obj_name').val()};
+	}
+	loadingIndicator(true);
+	if(g_cmd == 0 || !checkMapImageFile()){
+		if(g_cmd == 1){
+			$("#win_add_map").dialog("close");
+		}
+		$.ajax({
+			type: ajax_method,
+			url: "{% url add-map %}",
+			data: data,
+			success: function(data){
+				switch(g_cmd)
+				{
+					case 0:
+						showAddMapDialog(data.html);
+					break;
+					case 1:
+						if(data.res != 'success') {
+							loadingIndicator(false);
+							showAddMapDialog(data.html);
+						}else{
+							mapImageUpload(data.map_id);
+						}
+					break;
+				}
+			},
+			error: function(data) {
+				loadingIndicator(false);
+				showMapAlertDialog(true, '{% trans "Ошибка добавления карты" %}', '');
+			}
+		});
+	}
+}
+// инициализация окна для добавления карты
+function initAddMap() {
+	var select = $("#map_type_objects");
+	select.children("option:first").attr("selected", "selected");
+	select.parent().next().css("display", "none");
+	initFuncsAddMap();
+}
+// инициализация функций окна для добавления карты
+function updateMapObjectOptions(obj) {
+	var block = $(obj).parent().next();
+	if ($(obj).children("option:last").attr("selected")) {
+		block.slideDown("normal");
+		block.children("input[type=text]").focus();
+	} else {
+		block.slideUp("normal");
+	}
+}
+function initFuncsAddMap() {
+	var numOpt = $("#map_type_objects option").length;
+	if(numOpt == 1){
+		$("#map_type_objects").click(function() {
+			updateMapObjectOptions(this);
+		});
+	}else{
+		$("#map_type_objects").change(function() {
+			updateMapObjectOptions(this);
+		});
+	}
+}
+// очистить карту
+function clearMap() {
+	loadingIndicator(true);
+	$.ajax({
+		type: "POST",
+		url: "{% url clear-map-terminals %}",
+		data: { 'map_id': {% if map.pk %}{{ map.pk }}{% else %}0{% endif %}},
+		success: function(data){
+			if(data.res != 'success') {
+				loadingIndicator(false);
+				showMessageWindow('{% trans "Ошибка удаления терминалов с карты." %}');
+			}else{
+				loadingIndicator(false);
+				$(".map .map_elem").remove();
+				//$("#camera_terminal option").remove();
+				location.href="{% if map.pk %}{% url mapid map.pk %}{% else %}{% url maps %}0/{% endif %}";
+			}
+		},
+		error: function(data) {
+			loadingIndicator(false);
+			showMessageWindow('{% trans "Ошибка удаления терминалов с карты." %}');
+		}
+	});
+}
+// сохранить карту
+function saveMap() {
+	var countTerminal = getTerminalCount();
+	if (countTerminal == 0) {
+		showMessageWindow("{% trans "Пожалуйста, заполните карту" %}.");
+	} else {
+		//получаем ids терминалов
+		var termIds = new Array();
+		var termX = new Array();
+		var termY = new Array();
+		$('.map div.map_elem').each(function(index) {
+			termIds.push($(this).attr("id"));
+			termX.push($(this).css("left"));
+			termY.push($(this).css("top"));
+		});
+
+		data = {'termIds': termIds.toString(), 'termX': termX.toString(), 'termY': termY.toString()};
+		loadingIndicator(true);
+		$.ajax({
+			type: "POST",
+			url: "{% url save-terminal-position %}",
+			data: data,
+			success: function(data){
+				if(data.res != 'success') {
+					loadingIndicator(false);
+					showMessageWindow('{% trans "Ошибка при сохранении расположения терминалов." %}');
+				}else{
+					loadingIndicator(false);
+					showMessageWindow('{% trans "Расположение терминалов и камер успешно сохранено." %}');
+				}
+			},
+			error: function(data) {
+				loadingIndicator(false);
+				showMessageWindow('{% trans "Ошибка при сохранении расположения терминалов." %}');
+			}
+		});
+	}
+}
+// мигание
+function flashingTerminal(animate) {
+	var map = $(".map");
+	if (getTerminalCount() == 0) {
+		showMessageWindow("{% trans "Пожалуйста, заполните карту" %}.");
+	} else {
+		if (animate) {
+			flashingTerminalPlay($(".map .map_elem .flashing"), 1);
+			$("#flashing_yes").hide();
+			$("#flashing_no").css("display", "inline");
+		} else {		
+			flashingTerminalStop($(".map .map_elem .flashing"));
+			$("#flashing_no").hide();
+			$("#flashing_yes").css("display", "inline");			
+		}
+	}
+}
+// добавление анимации
+function flashingTerminalPlay(obj, value_opacity) {
+	$.each(obj, function(key, value) {
+		$(this).animate({
+			opacity: value_opacity
+			}, 300, function() {
+				if (value_opacity == 1) { value_opacity = 0	} 
+				else { value_opacity = 1 }
+				flashingTerminalPlay($(this), value_opacity);
+			});
+	});
+}
+// удаление анимации
+function flashingTerminalStop(obj) {
+	$.each(obj, function(key, value) {
+		$(this).stop();
+		$(this).css("opacity", "0");
+	});
+}
+/***** /Карта *****/
+/***** Общее *****/
+// окно-сообщение
+function showMessageWindow(txt) {
+	$("#message").dialog({
+		buttons: { 
+			"{% trans "ОК" %}": function() { $(this).dialog("close"); }
+		},
+		modal: true,
+		draggable: false,
+		resizable: false,
+		open: function() { $(this).html(txt) }
+	});	
+}
+// изменение заголовка окна
+function changeHeadWindow(id_window, text) {
+	$("#ui-dialog-title-" + id_window).html(text);
+}
+//Выбор карт
+function initMapSelector() {
+	var numOpt = $("#map-object-name option").length;
+	if(numOpt == 1){
+		$("#map-object-name").click(function() {
+			if($(this).val() > 0){
+				location.href="{% url maps %}" + $("#map-object-name").val();
+			}
+		});
+	}else{
+		$("#map-object-name").change(function() {
+			if($(this).val() > 0){
+				location.href="{% url maps %}" + $("#map-object-name").val();
+			}
+		});
+	}
+}
+function updateMapObjNameSelector()
+{
+	$.ajax({
+		type: "POST",
+		url: "{% url update-obj-name-select %}",
+		data: {'city_id': $("#map-​​city").val(), 'obj_type_id': $("#map-type-object-name").val()},
+		success: function(data){
+			if(data.res == 'success') {
+				$("#map-object-name").html(data.html);
+				initFuncAfterPageLoad();
+			}
+		},
+		error: function(data) {
+		}
+	})
+}
+function initMapObjTypeSelector() {
+	var numOpt = $("#map-type-object-name option").length;
+	if(numOpt == 1){
+		$("#map-type-object-name").click(function() {
+			updateMapObjNameSelector();
+		});
+	}else{
+		$("#map-type-object-name").change(function() {
+			updateMapObjNameSelector();
+		});
+	}
+}
+function initMapCitySelector() {
+	var numOpt = $("#map-​​city option").length;
+	$("#map-​​city").click(function() {
+		$("#map-type-object-name").val($("#map-type-object-name option:first").val());
+		$("#map-object-name").val($("#map-object-name option:first").val());
+	});
+}
+function initFuncAfterPageLoad() {
+	initMapCitySelector();
+	initMapObjTypeSelector();
+	initMapSelector();
+	{% for terminal in map_terminals %}
+	showTerminalInMap({{ terminal.id }}, {{ terminal.x }}, {{ terminal.y }});
+	{% endfor %}
+	{% for camera in map_terminal_cameras %}
+	showCameraInTerminal({{ camera.pk }}, {{ camera.terminal.pk }}, '{{ camera.direction.pk }}');
+	{% endfor %}
+}
+</script>

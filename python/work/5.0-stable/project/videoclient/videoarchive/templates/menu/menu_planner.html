@@ -1,0 +1,18 @@
+{% load i18n %}
+{% load a_templatetags %}
+<ul class="menu_vkl">
+    <li{% if select_page == 'page_tasks' or select_page == 'page_task' or select_page == 'page_copy_task' %} class="menu_vkl_act"{% endif %}>
+        <div>
+            <div>
+                <a href="{% url archive_page "tasks" %}">{% trans "Задачи" %}</a>
+            </div>
+        </div>
+    </li>
+    <li{% if select_page == 'page_records' %} class="menu_vkl_act"{% endif %}>
+        <div>
+            <div>
+                <a href="{% url archive_page "records" %}">{% trans "Процессы" %}</a>
+            </div>
+        </div>
+    </li>
+</ul>

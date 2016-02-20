@@ -1,0 +1,14 @@
+{% load i18n %}
+{% load a_templatetags %}
+<div id="win_help" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_help');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Помощь" %}</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_help_contWF"></div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_help');" />	
+		</div>
+	</div>
+</div>

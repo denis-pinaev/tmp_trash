@@ -1,0 +1,72 @@
+{% extends "wizard_base.html" %}
+{% load i18n %}
+{% load templatetags %}
+{% block wizard_content %}
+{% include "js/js_wizard.html" %}
+<script type="text/javascript">  
+$(function() {
+    $(".link_head").click(function() {
+        headLinkWizard($(this));
+    });
+});
+</script>
+<div class="step"><strong>{% trans "Шаг 2 из" %} <span id="step_end">{{ all_steps }}</span>.</strong></div>
+<div class="dist_top">{% trans "Выберите для каждой видеокарты сервера демона и нажмите на кнопку "Далее"" %}.</div>
+<div class="dist_top">{% trans "Поля, отмеченные звёздочкой" %} (<span class="info_important">*</span>), {% trans "являются обязательными для заполнения" %}.</div>
+<form method="post" action="" id="ImportParamsForm" enctype="multipart/form-data">
+    <ul class="list_servers">
+        <li><div class="head"><span>1.</span><a href="#" class="link_head">{% trans "Сервер" %} "192.168.0.55"</a></div>
+            <div class="info">
+                <div class="frm">
+                    <label for="videocard1" class="bl_txt"><strong class="info_important">*</strong>{% trans "Видеокарта" %} 1:</label>
+                    <div class="bl_enter">    
+                        <input type="checkbox" name="" value="" id="videocard1_fdd" class="inp_check" /><label for="videocard1_fdd">Face Detection Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_frd" class="inp_check dist_left" /><label for="videocard1_frd">Face Recognition Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_fsd" class="inp_check dist_left" /><label for="videocard1_fsd">Fan Studio Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_sdd" class="inp_check dist_left" /><label for="videocard1_sdd">Skin Detection Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_ddd" class="inp_check dist_left" /><label for="videocard1_ddd">Dupp Detection Daemon</label>
+                    </div>
+                </div>
+                <div class="frm">
+                    <label for="videocard1" class="bl_txt"><strong class="info_important">*</strong>{% trans "Видеокарта" %} 2:</label>
+                    <div class="bl_enter">    
+                        <input type="checkbox" name="" value="" id="videocard1_fdd" class="inp_check" /><label for="videocard1_fdd">Face Detection Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_frd" class="inp_check dist_left" /><label for="videocard1_frd">Face Recognition Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_fsd" class="inp_check dist_left" /><label for="videocard1_fsd">Fan Studio Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_sdd" class="inp_check dist_left" /><label for="videocard1_sdd">Skin Detection Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_ddd" class="inp_check dist_left" /><label for="videocard1_ddd">Dupp Detection Daemon</label>
+                    </div>
+                </div>
+                <div class="frm">
+                    <label for="videocard1" class="bl_txt"><strong class="info_important">*</strong>{% trans "Видеокарта" %} 3:</label>
+                    <div class="bl_enter">    
+                        <input type="checkbox" name="" value="" id="videocard1_fdd" class="inp_check" /><label for="videocard1_fdd">Face Detection Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_frd" class="inp_check dist_left" /><label for="videocard1_frd">Face Recognition Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_fsd" class="inp_check dist_left" /><label for="videocard1_fsd">Fan Studio Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_sdd" class="inp_check dist_left" /><label for="videocard1_sdd">Skin Detection Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_ddd" class="inp_check dist_left" /><label for="videocard1_ddd">Dupp Detection Daemon</label>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li><div class="head"><span>2.</span><a href="#" class="link_head">{% trans "Сервер" %} "192.168.0.56"</a></div>
+            <div class="info">
+                <div class="frm">
+                    <label for="videocard1" class="bl_txt"><strong class="info_important">*</strong>{% trans "Видеокарта" %} 1:</label>
+                    <div class="bl_enter">    
+                        <input type="checkbox" name="" value="" id="videocard1_fdd" class="inp_check" /><label for="videocard1_fdd">Face Detection Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_frd" class="inp_check dist_left" /><label for="videocard1_frd">Face Recognition Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_fsd" class="inp_check dist_left" /><label for="videocard1_fsd">Fan Studio Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_sdd" class="inp_check dist_left" /><label for="videocard1_sdd">Skin Detection Daemon</label>
+                        <input type="checkbox" name="" value="" id="videocard1_ddd" class="inp_check dist_left" /><label for="videocard1_ddd">Dupp Detection Daemon</label>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <div class="frm_btn">
+        <input type="button" name="" value="{% trans "Назад" %}" class="inp_btn inp_btn90" />
+        <input type="button" name="" value="{% trans "Далее" %}" class="inp_btn btn_blue dist_left" />
+    </div>
+</form>
+{% endblock wizard_content %}

@@ -1,0 +1,37 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript" src="/files/js/lib/datepicker/jquery-ui-1.8.22.custom.js?v=v{{ version }}"></script>
+<link rel="stylesheet" href="/files/js/lib/datepicker/jquery.ui.datepicker.css?v=v{{ version }}">
+<script type="text/javascript">
+	$(function() {
+		$.datepicker.regional['ru'] = {
+			closeText: 'Закрыть',
+			prevText: '&#x3c;Пред',
+			nextText: 'След&#x3e;',
+			currentText: 'Сегодня',
+			monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь',
+			'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+			monthNamesShort: ['Янв','Фев','Мар','Апр','Май','Июн',
+			'Июл','Авг','Сен','Окт','Ноя','Дек'],
+			dayNames: ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'],
+			dayNamesShort: ['вск','пнд','втр','срд','чтв','птн','сбт'],
+			dayNamesMin: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+			weekHeader: 'Не',
+			dateFormat: 'dd.mm.yy',
+			firstDay: 1,
+			isRTL: false,
+			showMonthAfterYear: false,
+			yearSuffix: ''
+		};		
+		$.datepicker.setDefaults($.datepicker.regional['{{ LANGUAGE_CODE }}']);
+		$("input[type=text].inp_date").datepicker({ 
+			showButtonPanel: true,
+			showOtherMonths: true,
+			selectOtherMonths: true			
+		});	
+		$("input[type=text].inp_date").datepicker( "option", "dateFormat", "dd.mm.yy" );	
+		$("input[type=button].btn_calend").click(function() {
+			$(this).prev().datepicker("show");
+		});
+	});
+</script>

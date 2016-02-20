@@ -1,0 +1,13 @@
+{% load i18n %}
+{% load a_templatetags %}
+				{% if pages > 1 %}
+					<div class="nav">
+						{% include "navigation/list_pages.html" %}
+						<div class="current_page">
+							<div class="current_page_head">{% trans "Страница" %}:</div>
+							{% spinbox "page" "page" page "38" "1" pages "1" %}
+							<div class="current_page_btn"><input type="submit" name="" value="{% trans "Перейти" %}" class="inp_btn inp_btn80" /></div>
+						</div>					
+						{% include "navigation/light.html" %}
+					</div>
+				{% endif %}	

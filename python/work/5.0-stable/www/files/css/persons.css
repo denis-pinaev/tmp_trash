@@ -1,0 +1,149 @@
+﻿.err_mess_settings {
+	color: #FF6600;
+	text-align: center;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.frm_block .inp_check {
+	margin-right: 5px;
+}
+.inp_btn140 {
+	width: 140px;
+	background: url('/files/images/button140x24_up.gif') top left no-repeat;
+}
+.inp_btn170 {
+	width: 170px;
+	background: url('/files/images/button170x24_up.gif') top left no-repeat;
+}
+/* поиск */
+.search {
+	float: right;
+	width: 220px;
+	position: relative;
+}
+.search .left {
+	float: left;
+	width: 3px;
+	height: 24px;
+	background: url('/files/images/search_left.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/search_left.png', sizingMethod='crop');		
+}
+.search .btn_search {
+	float: right;
+	width: 23px;
+	height: 24px;
+	background: url('/files/images/search_right.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/search_right.png', sizingMethod='crop');			
+	padding: 0px;
+	margin: 0px;
+	border: none;
+	cursor: pointer;
+}
+.search .center {
+	width: 194px;
+	height: 24px;
+	background: url('/files/images/search_bg.gif') top left repeat-x;
+	position: absolute;
+	top: 0px;
+	left: 3px;		
+}
+.search .txt_search {
+	margin: 0px;
+	padding: 3px 2px 2px 0px;
+	border: none;
+	font-size: 13px;
+	font-family: arial,helvetica,sans-serif;
+	color: #868686;
+	background: none;
+	width: 190px;
+}
+/* список персон */
+.list_photos {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 5px;
+}
+.list_photos li {
+	padding: 5px; 
+	margin: 5px 5px 0px 0px; 
+	border: 1px solid #e5e5e5; 
+	float: left;
+	background-color: #f9f9f9;
+	position: relative;
+}
+.list_photos li.act {
+	border: 1px solid #aaaaaa;
+}
+.list_photos .block_photo {
+	width: 178px;
+	text-align: center;
+	min-height: 120px;
+	height: auto !important;
+	height: 120px;	
+	margin-bottom: 5px;
+}
+.list_photos .block_info {
+	color: #666666;
+	width: 178px;
+	overflow: hidden;	
+}
+.list_photos .block_info div {
+	float: left;
+}
+.list_photos .block_info span {
+	color: #000000;
+	margin-left: 5px;
+}
+.list_photos .inp_check {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	-top: 1px;
+	-right: 2px;
+}
+.list_photos .bl_loupe {
+	position: absolute;
+	right: 5px;
+	bottom: 5px;
+	padding: 0px;
+	margin: 0px;
+	border: 0px;	
+	width: 24px;
+	height: 24px;
+	background: url("/files/images/loupe4.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/loupe4.png', sizingMethod='crop');	
+	cursor: pointer;
+	display: none;	
+}
+.btn_edit_name {
+	width: 10px;
+	height: 10px;
+	padding: 0px;
+	margin: 3px 0px 0px 5px;
+	border: 0px;
+	background: url("/files/images/edit.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/edit.png', sizingMethod='crop');	
+	float: left;
+	cursor: pointer;
+}
+.bl_name {
+	float: left;
+	cursor: pointer;
+}
+.bl_name span {
+	float: left;
+}
+.bl_edit_name {
+	margin: 40px auto 0px auto;
+	width: 250px;
+}
+.bl_edit_name .inp_txt {
+	margin-left: 5px;
+}

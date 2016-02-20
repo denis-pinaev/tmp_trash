@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load i18n templatetags %}    
+{% block content %}
+	<div class="block_cont">
+        <div class="block_cont_top">
+            <div class="block_cont_bottom min_height">
+				{% block subcontent %}{% endblock %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

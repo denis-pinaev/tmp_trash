@@ -1,0 +1,9 @@
+﻿/* content */
+.form .inp_txt {
+    width: 270px;
+}
+.form .btn_blue {
+    color: #ffffff;
+    width: 210px;
+    background: url('/files/images/btn_blue210.png') top left no-repeat;
+}

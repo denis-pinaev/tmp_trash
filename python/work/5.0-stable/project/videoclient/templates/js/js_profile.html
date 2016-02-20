@@ -1,0 +1,275 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+var params = new Array();
+// загрузка шаблона с настройками для камеры
+function uploadCameraFormProfile(close){
+	closeChangeWindow('win_upload_cameraprofile');
+	showIndicator(true);
+    var options = {
+      url: "/profile/camera/apply/",
+      type: "POST",
+      success: function(msg) {      
+          showIndicator(false);	  
+          if (msg == "True"){          
+              showMessage("{% trans 'Профиль загружен' %}.");
+              if (close){
+                  //closeChangeWindow('win_upload_camerasprofile');
+              }else {
+			      $("#win_mess div.bodyWF input[type=button].close").click(function() { window.location.reload(); });
+              }
+          }else{
+              showMessage("{% trans 'Произошла ошибка. Профиль не загружен' %}.");
+          }          
+
+      },
+      error: function(msg){
+		  showIndicator(false);
+          showMessage("{% trans 'Произошла ошибка. Профиль не загружен' %}.");
+      }      
+    };
+    if (close){ $("#MainUploadProfileCamerasForm").ajaxSubmit(options);}
+    else{ $("#MainUploadProfileForm").ajaxSubmit(options);}
+}
+// Уточнее у пользователя удалять ли профиль камеры
+function isDeleteProfile(select_id) {
+     $("#select_name_delete_profile").val(select_id);
+     $("#id_delete_profile").val($("#" + select_id).val());
+     $("#name_delete_profile").html($("#" + select_id + " option:selected").text());
+     closeChangeWindow('win_upload_camerasprofile');
+     closeChangeWindow('win_upload_cameraprofile');
+     closeChangeWindow('win_save_cameraprofile');
+     changeWindow({id: 'win_delete_profile', css: {width: '300px', height: '200px'}});
+}
+// Удаление профиля камеры
+function deleteProfile(){
+    closeChangeWindow('win_delete_profile');
+    var id = $("#select_name_delete_profile").val();
+    if (!id) {
+        showMessage("{% trans 'Произошла ошибка. Профиль не удален' %}.");
+    }
+	showIndicator(true);
+	var value = $("#" + id).val();
+    var options = {
+      url: "/profile/camera/delete/",
+      type: "POST",
+      success: function(msg) {
+          showIndicator(false);	  
+          if (msg == "True"){          
+              showMessage("{% trans 'Профиль успешно удален' %}.");
+              if (value != "") {
+                  $("select.profiles option[value='" + value + "']").remove();
+                  if ($("select.profiles option").size() == 1) {
+                      $("input.btnApplyProfile").removeAttr('onclick');
+                      $("input.btnApplyProfile").addClass('dis');
+                  }
+              }
+          }else{
+              showMessage("{% trans 'Произошла ошибка. Профиль не удален' %}.");
+          }
+      },
+      error: function(msg){
+		  showIndicator(false);
+          showMessage("{% trans 'Произошла ошибка. Профиль не удален' %}.");
+      }      
+    };
+    $("#MainDeleteCameraProfileForm").ajaxSubmit(options);
+}
+// окно для загрузки настроек камеры по шаблону
+function uploadCameraProfile(count) {
+	if (count == 0) {
+		showMessage("{% trans 'Нет сохранённых профилей' %}.");
+	} else {
+	    if ($("#idprofile_dis").size() > 0) { 
+	        $("#idprofile").html($("#idprofile_dis").html());
+	    }
+		$("#idprofile option:first").attr("selected", "selected");
+		changeWindow({id: 'win_upload_cameraprofile', css: {width: '410px', height: '200px'}});
+	}
+}
+// настроить камеры по шаблону
+function uploadCamerasProfile() {
+	var inps = $("#cameras td.td_check input[type=checkbox]:checked");
+	var count = inps.size();
+	if (count > 0) {
+		var count_dis = 0;
+		var tr_class;
+		$.each(inps, function() {
+			tr_class = $(this).parent().parent().attr("class");
+			if (tr_class && (tr_class.indexOf("tr_lock") > -1)) {
+				count_dis++;
+			}
+		});
+		if (count_dis > 0) {
+			if (count == count_dis) {
+				showMessage('{% trans "Выполнение данного действия невозможно для неактивных камер" %}.');
+			} else {
+				showMessage('{% trans "Список выбранных камер содержит неактивные камеры" %}.');
+			}
+		} else {
+			if ($("#list_profile option").size() > 0) {
+				changeWindow({id: 'win_upload_camerasprofile', css: {width: '410px', height: '200px'}});
+			} else {
+				showMessage('{% trans "Нет сохранённых профилей" %}.');
+			}
+		}
+	} else {
+		showMessage('{% trans "Выберите, пожалуйста, хотя бы одну камеру" %}.');
+	}     
+}
+function preuploadCameraFormProfile(count){  
+	closeChangeWindow('win_upload_camerasprofile');
+	var enum_ = $("#id_numcameras");
+	showIndicator(true);
+	save_checks();    
+	if (enum_.size() > 0){
+		var res = new Array();
+		var check;
+		for (var i in check_buf) {
+			check = $("#check" + check_buf[i]);
+			if (check.size() > 0) res.push(check.val());		
+		}
+		enum_.val("" + res); 
+		uploadCameraFormProfile(true);
+	}
+}
+// окно для сохранения настроек камер как шаблон
+function saveCameraProfile() {
+    if ($("#list_save_profile option").size() == 1) {
+        $("#list_save_profile_delete").hide();
+        $("#select_profiles").hide();
+        $("#other_profile_name_error").show();
+        $("#other_profile").show();
+    } else {
+        $("#list_save_profile_delete").show();
+        $("#select_profiles").show();
+    }
+    initSaveProfile();
+    var txt = '';
+    changeWindow({id: 'win_save_cameraprofile', css: {width: '360px', height: '200px'}, txt: txt});
+}
+// инициализация окна сохранения настроек как шаблон
+function initSaveProfile() {
+	var other_name = $("#other_profile_name");
+	var error = $("#other_profile_name_error");
+	other_name.val("");
+	other_name.removeClass("err_forms");
+	error.html("");
+	$("#list_save_profile option:first").attr("selected", "selected");
+	if ($("#list_save_profile option").size() > 1) {
+		$("#other_profile").hide();
+	}
+}
+// выбор названия профиля
+function selectNameProfile(obj) {
+	var profile_val = $(obj).find("option:selected").attr("value");
+	var block = $("#other_profile");
+	var input = $("#other_profile_name");
+	var error = $("#other_profile_name_error");
+	if (profile_val) {
+		block.hide();
+		error.html("");		
+		removeRulesName();
+	} else {
+		block.show();
+		error.html("");
+		input.removeClass('err_forms');
+		input.focus();
+		addRulesName();
+	}
+}
+// добавление проверки на заполненность названия профиля
+function checkFormProfile() {	
+	var validator = $("#MainNewProfileForm").validate({
+		errorPlacement: function(error, element) {
+			var block = $("#other_profile_name_error");
+			error.appendTo( block ); 
+		},
+		submitHandler: function() {
+			checkSaveCameraProfile();
+		}		
+	});	
+}
+function addRulesName() {
+	$("#other_profile_name").rules("add", {
+		required: true,
+		messages: {
+			required: "{% trans 'Введите название профиля' %}"
+		}
+	});
+}
+function removeRulesName() {
+	$("#other_profile_name").rules("remove");
+}
+// сохранение профиля для камеры
+function checkSaveCameraProfile() {
+	closeChangeWindow('win_save_cameraprofile');
+	showIndicator(true);
+    var options = {
+		url: "/profile/camera/addprofile/",
+		type: "POST",
+		success: function(msg) {
+			var marr = msg.split(":");
+			if (marr[0]=="error") {
+				showIndicator(false);
+				var error = $("#other_profile_name_error");
+				error.append("<label for='other_profile_name' class='err_forms' generated='true'></label>");
+				error = error.find("label");
+				changeWindow({id: 'win_save_cameraprofile', css: {width: '340px', height: '200px'}});
+				if (marr[1] == "dublicate") {
+					error.html("{% trans 'Такое название профиля уже существует' %}");
+				} else if (marr[1] == "wrongname") {
+					error.html("{% trans 'Некорректное название профиля' %}");
+				} else {
+					error.html("{%trans 'Ошибка добавления профиля' %}");
+				}
+				var name = $("#other_profile_name");
+				name.addClass("err_forms");
+				name.focus();                
+			} else {
+				$("#IdSaveProfile").val(marr[0]);
+				saveCameraFormProfile();
+			}
+		},
+		error: function(msg) {
+			showIndicator(false);
+			showMessage(msg);
+		}      
+    };
+    $("#MainNewProfileForm").ajaxSubmit(options);
+}
+// Выделить все поля с ошибкой
+function setObjectError(msg) {
+    var obj = eval("("+msg+")");
+    for(var key in obj) {
+        var inp = document.getElementById(key);
+        $("#list_settings li div.cont_settings."+key+"_block").css("display", "block");
+        if (inp) {
+	        changeBorder(inp, true);
+		    $("#err_mess").html("{% trans 'Установлено некорректное значение' %}");
+        }
+    };   
+}
+function saveCameraFormProfile(){
+    var options = {
+      url: "/profile/camera/save/",
+      type: "POST",
+      success: function(msg) { 
+		  showIndicator(false); 
+          if (msg == "True") {
+              showMessage("{% trans 'Профиль сохранен' %}.");
+			  $("#win_mess div.bodyWF input[type=button].close").click(function() { window.location.reload(); });
+          }else{
+              showMessage("{% trans 'Произошла ошибка. Профиль не сохранен' %}.");
+              setObjectError(msg);
+          }
+      },
+      error: function(msg){
+		  showIndicator(false);
+          showMessage("{% trans 'Произошла ошибка. Профиль не сохранен' %}.");
+          setObjectError(msg);
+      }      
+    };
+    $("#MainParamsForm").ajaxSubmit(options);
+}
+</script>

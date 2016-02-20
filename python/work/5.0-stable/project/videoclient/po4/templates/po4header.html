@@ -1,0 +1,132 @@
+{% load i18n %}
+{% load templatetags %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>
+{% if select_page == 'ident' %}{% trans "Просмотр" %}{% endif %}	
+	
+{% if select_page == 'visitors' %}{% trans "Карточки посещений" %}{% endif %}
+{% if select_page == 'anketavisitor' %}{% trans "Анкета" %}{% endif %}
+{% if select_page == 'photosvisitor' %}{% trans "Фотографии посетителя" %}{% endif %}
+{% if select_page == 'visitorslist' %}{% trans "Посетители" %}{% endif %}
+
+{% if select_page == 'persons' %}{% trans "Персоны" %}{% endif %}
+{% if select_page == 'anketaperson' %}{% trans "Анкета" %}{% endif %}
+{% if select_page == 'photosperson' %}{% trans "Фотографии персоны" %}{% endif %}
+{% if select_page == 'anketaclear' %}{% trans "Создание персоны" %}{% endif %}
+
+{% if select_page == 'staff' %}{% trans "Журнал сотрудников" %}{% endif %}
+{% if select_page == 'anketastaff' %}{% trans "Анкета" %}{% endif %}
+{% if select_page == 'photosstaff' %}{% trans "Фотографии сотрудника" %}{% endif %}
+{% if select_page == 'stafflist' %}{% trans "Сотрудники" %}{% endif %}
+
+{% if select_page == 'users' %}{% trans "Пользователи" %}{% endif %}
+{% if select_page == 'anketauser' %}{% trans "Анкета" %}{% endif %}
+{% if select_page == 'photosuser' %}{% trans "Фотографии пользователя" %}{% endif %}
+{% if select_page == 'anketaclearuser' %}{% trans "Создание пользователя" %}{% endif %}
+
+{% if select_page == 'settingspage' %}{% trans "Настройки камер" %}{% endif %}
+{% if select_page == 'camera' %}{% trans "Настройки камеры" %}{% endif %}
+{% if select_page == 'distortion' %}{% trans "Настройки дисторсии" %}{% endif %}
+{% if select_page == 'recognition' %}{% trans "Настройки распознования" %}{% endif %}
+{% if select_page == 'settingsus' %}{% trans "Настройки управляющей системы" %}{% endif %}
+{% if select_page == 'events' %}{% trans "Настройки звуков и сигналов" %}{% endif %}
+{% if select_page == 'sounds' %}{% trans "Настройки звуков" %}{% endif %}
+
+{% if select_page == 'special' %}{% trans "Специальные настройки" %}{% endif %}
+
+
+{% if select_page == 'journal' %}{% trans "Журнал" %}{% endif %}
+
+{% if select_page == 'kpp' %}{% trans "КПП" %}{% endif %}
+{% if select_page == 'kppedit' %}{% trans "КПП" %}{% endif %}
+{% if select_page == 'kppadd' %}{% trans "КПП" %}{% endif %}
+ 
+{% if select_page == 'historychange' %}{% trans "История изменений" %}{% endif %}
+
+{% if select_page == 'help' %}{% trans "Помощь" %}{% endif %}
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+{% include "javascript.html" %}
+<script src="/files/js/datePick.js?v=v{{ version }}" type="text/javascript"></script>
+{% include "datepicker_translate.html" %}
+<script src="/files/js/po4_funcs.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/lib/jquery.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/lib/jquery.form.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/lib/jquery.validate.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/JavaScriptUtil.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/Parsers.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/InputMask.js?v=v{{ version }}" type="text/javascript"></script>
+
+<link rel="stylesheet" type="text/css" href="/files/css/main.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/windows.css?v=v{{ version }}" />
+
+<script type="text/javascript">
+	function addDateMask(name) {
+		if (document.getElementsByName(name).length>0) {
+			new DateMask("dd.MM.yyyy", name);
+		}
+	}
+	function setup(){
+		addDateMask("dateVisit1");
+		addDateMask("dateVisit2");
+		addDateMask("dateBegin");
+		addDateMask("dateEnd");
+		addDateMask("passport_date");
+		addDateMask("birthday");
+		//addDateMask("dateVisit1");
+		//addDateMask("dateVisit1");
+		
+		elements = document.getElementsByName("passport_series");
+		if (!(elements && elements[0])) {
+			return true
+		}
+		elements = document.getElementsByName("passport_number");
+		if (!(elements && elements[0])) {
+			return true
+		}
+		var intSeparator = '';
+		var groupSeparator = ''; 
+		var numParser1 = new NumberParser(0, intSeparator, groupSeparator, true);
+		var numMask1 = new NumberMask(numParser1, "passport_series");
+		var numParser2 = new NumberParser(0, intSeparator, groupSeparator, true);
+		var numMask2 = new NumberMask(numParser2, "passport_number");
+	}
+</script>
+</head>
+<body onload="setup();">
+<div class="body1">
+<!-- BEGIN: header -->
+<div class="header">
+	<div class="block_tm">
+		<div class="block_rtm"></div>
+		<div class="block_ltm"></div>
+		<!--<div class="logo"><a href="#"><img src="/files/images/logo.png" alt="" /></a></div> -->
+		<div class="lang" title="{% trans "Выбор языка" %}" id="divlang">RU</div>
+		<!--onClick="javascript: chooseLang(this);" -->
+		<ul class="right_menu">
+			<li><a href="/logout/">{% trans "Выход" %}</a></li>	
+			<li><span class="user">{{ login_user }}</span></li>
+		</ul>
+		<ul class="top_menu">
+			<li><a href="/po4/ident/"{% if select_page == 'ident' %} class="tm_active first"{% else %} class="first"{% endif %}>{% trans "Просмотр" %}</a></li>
+			<li><a href="/po4/visitors/" {% if select_page == 'visitors' or select_page == 'visitorslist' or select_page == 'anketavisitor' or select_page == 'photosvisitor' %} class="tm_active" {% endif %}>{% trans "Посетители" %}</a></li>
+			<li><a href="/po4/persons/" {% if select_page == 'persons' or select_page == 'photosperson' or select_page == 'anketaperson' or select_page == 'anketaclear' %} class="tm_active" {% endif %}>{% trans "Персоны" %}</a></li>
+			<li><a href="/po4/staff/" {% if select_page == 'staff' or select_page == 'stafflist' or select_page == 'anketastaff' or select_page == 'photosstaff' %} class="tm_active" {% endif %}>{% trans "Сотрудники" %}</a></li>
+			{% if access != 'Оператор' %}
+				<li><a href="/po4/kpp/" {% if select_page == 'kpp' or select_page == 'kppedit' or select_page == 'kppadd' %} class="tm_active" {% endif %}>{% trans "КПП" %}</a></li>
+			{% endif %}
+			<li><a href="/po4/journal/" {% if select_page == 'journal' %} class="tm_active" {% endif %}>{% trans "Журнал" %}</a></li>
+			<li><a href="/po4/historychange/" {% if select_page == 'historychange' or select_page == 'historychangep1' %} class="tm_active" {% endif %}>{% trans "История" %}</a>{{role}}</li>
+			{% if access != 'Оператор' or not 1 in role %}
+				<li><a href="{% url settings_user %}" {% if select_page == 'events' or select_page == 'sounds' or select_page == 'settingsus' or select_page == 'special' or select_page == 'camera' or select_page == 'distortion' or select_page == 'recognition' or select_page == 'settingspage' or select_page == 'users' or select_page == 'anketauser' or select_page == 'photosuser' or select_page == 'anketaclearuser' %} class="tm_active" {% endif %}>{% trans "Настройки" %}</a></li>
+			{% endif %}
+			<li><a href="/files/help/po4/help.html" {% if select_page == 'help' %} class="tm_active last" {% else %} class="last" {% endif %} target="_blank">{% trans "Помощь" %}</a></li>
+		</ul>
+	</div>
+</div>
+<!-- END: header -->

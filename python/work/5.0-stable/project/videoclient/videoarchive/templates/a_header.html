@@ -1,0 +1,93 @@
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>
+{% load a_templatetags %}
+{% if select_page == "page_calendar" %}{% trans "Календарь" %}{% endif %}
+{% if select_page == "page_communicatirs" %}{% trans "Коммуникаторы" %}{% endif %}
+{% if select_page == "page_video" %}{% trans "Сохраненное видео" %}{% endif %}
+{% if select_page == "page_analysis" %}{% trans "Анализ видео" %}{% endif %}
+{% if select_page == "page_records" %}{% trans "Процессы" %}{% endif %}
+{% if select_page == "page_tasks" %}{% trans "Задачи" %}{% endif %}
+{% if select_page == "page_task" %}{% trans "Добавление/редактирование задачи" %}{% endif %}
+{% if select_page == "page_journal" %}{% trans "Журнал процессов" %}{% endif %}
+{% if select_page == "page_person" %}{% trans "Персона" %}{% endif %}
+{% if select_page == "page_persons" %}{% trans "Персоны" %}{% endif %}
+{% if select_page == "page_record" %}{% trans "Запись" %}{% endif %}
+{% if select_page == "page_signals" %}{% trans "Запуск задачи" %}{% endif %}
+{% if select_page == "page_table_video" %}{% trans "Таблицы" %}{% endif %}
+{% if select_page == "page_monitor" %}{% trans "Мониторинг" %}{% endif %}
+{% if select_page == "page_cameras" %}{% trans "Настройки камер" %}{% endif %}
+{% if select_page == "page_interface" %}{% trans "Настройка интерфейса" %}{% endif %}
+{% if select_page == "page_users" %}{% trans "Пользователи системы" %}{% endif %}
+{% if select_page == "page_user" %}{% trans "Добавление/редактирование пользователя" %}{% endif %}
+{% if select_page == "page_help" %}{% trans "Помощь" %}{% endif %}
+{% if select_page == "page_view_video" %}{% trans "Просмотр видео" %}{% endif %}
+{% if select_page == "page_view_detail_video" %}{% trans "Просмотр видео" %}{% endif %}
+{% if select_page == "page_faces" %}{% trans "Видеоролики - Найденные лица" %}{% endif %}
+{% if select_page == "page_roller_persons" %}{% trans "Видеоролики - Найденные люди" %}{% endif %}
+{% if select_page == "page_roller_persons" %}{% trans "Видеоролики - Найденные люди" %}{% endif %}
+{% if select_page == "archive_settings_archive" %} {% trans "Настройки видеоархивов" %}{% endif %}
+{% if select_page == "archive_settings_tasks" %} {% trans "Настройки задач" %}{% endif %}
+{% if select_page == "archive_settings_communicators" %} {% trans "Настройки коммуникаторов" %}{% endif %}
+{% if select_page == "page_copy_task" %} {% trans "Создание дубликата задачи" %}{% endif %}
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<meta http-equiv="content-language" content="{{ LANGUAGE_CODE }}" />
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/main.css?v=v{{ version }}" />
+{% if res_interface == 1 or res_interface == "1" %}<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/1920/main.css?v=v{{ version }}" />{% endif %}
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/windows.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/lib/draw/jquery-1.6.2.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="{{ root_path }}/files/js/lib/jquery.form.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="{{ root_path }}/files/js/lib/jquery.validate.js?v=v{{ version }}"></script>
+{% include "system_blocks/datepicker.html" %}
+{% include "funcs.html" %}
+{% include "funcs_archive.html" %}
+</head>
+<body>
+<div class="body1">
+<!-- BEGIN: header -->
+<div class="header">
+	<div class="block_tm">
+		<div class="block_rtm"></div>
+		<div class="block_ltm"></div>
+		<div class="logo"><a href="{% url archive_page "calendar" %}"><img src="{{ root_path }}/files/images/logo.png" alt="" /></a></div>
+		<form method="post" action="/i18n/setlang/" class="frm_language" id="frm_language">
+			{% for lang in LANGUAGES %}
+			{% if lang.0 != LANGUAGE_CODE %}
+			<input type="hidden" name="language" value="{% if lang.0 != 'en' %}ru{% else %}en{% endif %}" />
+		   	{% endif %}
+			{% endfor %}
+			<div class="language {{ LANGUAGE_CODE }}" onClick="javascript: $('#frm_language').submit();">{{ LANGUAGE_CODE|upper }}</div>
+		</form>
+		<ul class="right_menu">
+			<li><a href="/logout" class="exit"><span>{% trans "Выход" %}</span></a></li>	
+			<li><span class="user">{% if login_user %}{{ login_user }}{% else %}{{ user }}{% endif %}</span></li>
+		</ul>
+		<ul class="top_menu">
+			<li class="tm_block" id="archive">
+				<a id="archive_link" {% if select_page == "page_calendar" or select_page == "page_tables_video" or select_page == "page_video" or select_page == "page_view_video" or select_page == "page_view_detail_video" %}class="tm_link first tm_active" {% else %}class="tm_link first" {% endif %}href="{% url archive_page "calendar" %}">{% trans "Архив" %}</a>				
+			</li>
+			<li class="tm_block" id="planner">
+				<a href="{% url archive_page "tasks" %}" class="tm_link {% if select_page == 'page_records' or select_page == 'page_tasks' or select_page == 'page_task' %} tm_active{% endif %}" id="planner_link">{% trans "Планировщик" %}</a>
+			</li>
+			<li class="tm_block" id="planner">
+				<a href="{% url archive_page "analysis" %}" class="tm_link {% if select_page == 'page_analysis' %}tm_active{% endif %}" id="planner_link">{% trans "Анализ видео" %}</a>
+			</li>			
+			<li class="tm_block"><a class="tm_link {% if select_page == 'page_journal' %} tm_active{% endif %}" href="{% url archive_page "journal" %}">{% trans "Журнал" %}</a></li>				
+			<li class="tm_block" id="settings">
+				<a href="{% url archive_settings_archive "" %}" id="settings_link" class="tm_link {% if 'archive_settings' in select_page or select_page == 'page_cameras' or select_page == 'page_communicators' or select_page == 'page_users' or select_page == 'page_user' or select_page == 'page_interface' %} tm_active{% endif %}">{% trans "Настройки" %}</a>
+			</li>
+			<li class="tm_block">
+				<a class="tm_link{% if select_page == "page_monitor" %} tm_active{% endif %}" href="{% url archive_page "monitor" %}">{% trans "Мониторинг" %}</a>
+			</li>			
+			<li class="tm_block">
+				<a class="tm_link{% if select_page == "page_help" %} tm_active{% endif %}" href="{% url archive_page "help" %}">{% trans "Помощь" %}</a>
+			</li>
+		</ul>
+	</div>
+</div>
+<!-- END: header -->

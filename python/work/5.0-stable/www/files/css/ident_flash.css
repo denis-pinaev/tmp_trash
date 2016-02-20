@@ -1,0 +1,74 @@
+.inp_btn140 {
+    background: url('/files/images/button140x24_up.gif') top left no-repeat;
+    width: 140px;
+}
+.frm_block {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 10px;
+}
+.frm_block_txt {
+    margin-right: 10px;
+    float: left;
+}
+.list_com {
+    float: left;
+	margin-right: 20px;
+}
+.block_cameras {
+    margin-left: 350px;
+}
+.list_cameras {
+    width: 810px;
+    overflow: hidden;
+}
+.list_cameras .camera {
+    float: left;
+    width: 162px;
+}
+.list_cameras .camera a {
+    text-decoration: underline;
+    color: #0088CC;
+    margin-left: 5px;
+}
+.head_setting .num {
+    float: left;
+}
+.list_cameras .camera.noact {
+    color: #9b9b9b;
+}
+.list_cameras .camera.noact a,
+.list_cameras .camera.noact a:hover {
+    color: #9b9b9b;
+    text-decoration: none;
+    cursor: default;
+}
+.view_all {
+    float: right;
+}
+.view_all a {
+    text-decoration: underline;
+    color: #0088CC;
+    background: url("/files/images/arrowB_left.gif") left 50% no-repeat;
+    padding-left: 14px;
+    white-space: nowrap;
+}
+.view_all a.link_bottom {
+    background: url("/files/images/arrowB_bottom.gif") left 50% no-repeat;
+}
+.block_error {
+    padding-top: 10px;
+    clear: both;
+    width: 100%;
+    overflow: hidden;
+}
+.big_camera {
+    margin: 0px auto;
+}
+.frm_block_camera {
+    margin-top: 5px;
+}
+.block_record {
+    text-align: center;
+    margin-top: 5px;
+}

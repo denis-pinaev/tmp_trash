@@ -1,0 +1,56 @@
+.info_signals {
+	border: 1px solid #aaaaaa;
+	padding: 10px;
+	width: 300px;
+}
+.info_signals a {
+	color: #0088CC;
+	text-decoration: underline;
+}
+.list_signals_head {
+	margin: 0px;
+	padding: 0px;
+	width: 700px;
+	border-top: 1px solid #6e7d98;
+	border-left: 1px solid #6e7d98;	
+}
+.list_signals_head th {
+	vertical-align: middle;
+	text-align: center;
+	border-right: 1px solid #6e7d98;
+	border-bottom: 1px solid #6e7d98;
+	background-color: #d9dee7;
+	font-weight: normal;
+	padding: 5px 5px;
+}
+.list_signals_head th.th_num,
+.list_signals td.td_num {
+	width: 40px;
+}
+.list_signals_head th.th_fio,
+.list_signals td.td_fio {
+	width: 200px;
+}
+.list_signals_head th.th_time,
+.list_signals td.td_time {
+	width: 60px;
+}
+.list_signals_head th.th_error,
+.list_signals td.td_error {
+	width: 200px;
+}
+.list_signals {
+	width: 700px;
+	padding: 0px;
+	margin: 0px;
+	border-left: 1px solid #cccccc;
+}
+.list_signals td {
+	border-bottom: 1px solid #cccccc;
+	border-right: 1px solid #cccccc;
+	vertical-align: top;
+	padding: 3px 5px;
+}
+.list_signals tr.odd {
+	background-color: #dbe2f0;
+}

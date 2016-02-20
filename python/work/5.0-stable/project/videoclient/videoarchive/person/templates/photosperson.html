@@ -1,0 +1,141 @@
+{% load a_templatetags %}
+{% include "header.html" %}
+{% include "person_javascript.html" %}
+<link rel="stylesheet" type="text/css" href="/files/css/persons.css?v=v{{ version }}" />
+<script type="text/javascript">
+function checkAllPhotosBtn(id, count, start, finish) { 
+    var num = Math.min(count, finish); 
+    var inp = byId(id);
+    inp.checked =  (inp.checked == false) ? 'checked' : false; 
+    if (inp.id == 'choose_all') {
+        byId('choose_all2').checked = inp.checked; 
+    } else {
+        byId('choose_all').checked = inp.checked; 
+    }
+    var check;
+    for (var i = 1; i <= num; i++) { 
+        check = byId('check'+i); 
+        if (check){
+            if (inp.checked) { 
+               check.checked = true;
+               searchElem(check, 'LI').className = 'act'; 
+            } else {
+               check.checked = false;
+               searchElem(check, 'LI').className = ''; 
+            } 
+        } 
+    } 
+}
+function checkAllPhotos(inp, count, start, finish) { 
+    var num = Math.min(count, finish); 
+    if (inp.id == 'choose_all') {
+        byId('choose_all2').checked = inp.checked; 
+    } else {
+        byId('choose_all').checked = inp.checked; 
+    }
+    var check;
+    for (var i = 1; i <= num; i++) { 
+        check = byId('check'+i); 
+        if (check){
+            if (inp.checked) { 
+               check.checked = true;
+               searchElem(check, 'LI').className = 'act'; 
+            } else {
+               check.checked = false;
+               searchElem(check, 'LI').className = ''; 
+            } 
+        } 
+    } 
+}
+function checkPhoto3(inp, count, start, finish) { 
+    var li = searchElem(inp, 'LI'); 
+    if (inp.checked) {
+        li.className = 'act';
+        var num = Math.min(count, finish); 
+        checkAllElem(num, start); 
+    } else {
+        li.className = '';
+        byId('choose_all').checked = false; 
+        if (byId('choose_all2')) {
+            byId('choose_all2').checked = false; 
+        } 
+    } 
+}
+</script>
+{% if allphotos.photos|length == 0 %}
+	<script type="text/javascript">
+		{% if select_page == "photosperson" %}location.replace('{{ project_url }}/anketa/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}');{% endif %}
+		{% if select_page == "photosvisitor" %}location.replace('{{ project_url }}/anketavisitor/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}');{% endif %}
+		{% if select_page == "photosstaff" %}location.replace('{{ project_url }}/anketastaff/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}');{% endif %}
+	</script>
+{% endif %}
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>
+					{% if select_page == "photosperson" or select_sub_page == "photosperson" %}
+						<a href="/page_persons/">{% trans "Персоны" %}</a> - <a href="{{ project_url }}/anketa/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{% trans "Анкета персоны" %}: {{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> - {% trans "Все фотографии" %} ({{ allphotos.count }})
+					{% endif %}
+
+					{% if select_page == "photosvisitor" or select_sub_page == "photosvisitor" %}
+						<a href="{{ project_url }}/visitors/{% if group %}?group={{ group }}{% endif %}">{% trans "Карточки посещений" %}</a> - <a href="{{ project_url }}/visitorslist/{% if group %}?group={{ group }}{% endif %}">{% trans "Посетители" %}</a> - <a href="{{ project_url }}/anketavisitor/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{% trans "Анкета посетителя" %}: {{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> - {% trans "Все фотографии" %} ({{ allphotos.count }})
+					{% endif %}
+
+					{% if select_page == "photosstaff" or select_sub_page == "photosstaff" %}
+						<a href="{{ project_url }}/staff/{% if group %}?group={{ group }}{% endif %}">{% trans "Журнал проходов" %}</a> - <a href="{{ project_url }}/stafflist/{% if group %}?group={{ group }}{% endif %}">{% trans "Сотрудники" %}</a> - <a href="{{ project_url }}/anketastaff/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{% trans "Анкета сотрудника" %}: {{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> - {% trans "Все фотографии" %} ({{ allphotos.count }})
+					{% endif %}
+
+
+					<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Фотографии персоны" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+                {% if allphotos.photos|length > 0 %}
+				<form method="post" action="" name="">				
+					<div class="frm_block dist_link">
+						<div class="bl_btn_check">
+							<input type="button" name="" value="{% trans "Выделить всё" %}" class="inp_btn inp_btn120" onMouseUp="javascript: buttonStatus(this, 'over');" onMouseDown="javascript: buttonStatus(this, 'down');" 
+								onMouseOut="javascript: buttonStatus(this, 'up');" onMouseOver="javascript: buttonStatus(this, 'over');" onClick="javascript: checkAllPhotosBtn('choose_all', {{ allphotos.photos|length }}, {{ start }}, {{ finish }});" />
+							<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAllPhotos(this, {{ allphotos.photos|length }}, {{ start }}, {{ finish }});" id="choose_all" />
+						</div>
+						<input type="button" name="" value="{% trans "Экспорт фотографий" %}" class="inp_btn inp_btn170 dist_btn" onClick="javascript: showMessageExport({{ allphotos.photos|length }}, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_btn" onClick="javascript: showMessageDelete({{ allphotos.photos|length }}, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+					</div>
+
+					{% include "po4NavigationBlock.html" %}
+
+					<ul class="list_photos">
+						{% for photo in allphotos.photos %}
+							{% if forloop.counter >= start and forloop.counter < finish %}
+								<li>
+									<div class="block_photo" onClick="javascript: checkPhoto2(this, {{forloop.counter}}, {{ allphotos.photos|length }});"><img src="{{ project_url }}/image/?id={{ allphotos.id }}&photo={{ photo.num }}" alt="" /></div>
+									<div class="block_info">{% trans "Разрешение" %}: <span class="info_add">{{ photo.size.width }}x{{ photo.size.height }}</span></div>
+									<input type="checkbox" name="photo{{ photo.num }}" value="{{ photo.num }}" class="inp_check" id="check{{ forloop.counter }}" onClick="javascript: checkPhoto3(this, {{ allphotos.photos|length }}, {{ start }}, {{ finish }})" />
+								</li>
+							{% endif %}
+						{% endfor %}
+					</ul>
+
+					{% include "po4NavigationBlock.html" %}
+
+					<div class="frm_block">
+						<div class="bl_btn_check">
+							<input type="button" name="" value="{% trans "Выделить всё" %}" class="inp_btn inp_btn120" onMouseUp="javascript: buttonStatus(this, 'over');" onMouseDown="javascript: buttonStatus(this, 'down');" 
+								onMouseOut="javascript: buttonStatus(this, 'up');" onMouseOver="javascript: buttonStatus(this, 'over');" onClick="javascript: checkAllPhotosBtn('choose_all2', {{ allphotos.photos|length }}, {{ start }}, {{ finish }});" />
+							<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAllPhotos(this, {{ allphotos.photos|length }}, {{ start }}, {{ finish }});" id="choose_all2" />
+						</div>
+						<input type="button" name="" value="{% trans "Экспорт фотографий" %}" class="inp_btn inp_btn170 dist_btn" onClick="javascript: showMessageExport({{ allphotos.photos|length }}, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_btn" onClick="javascript: showMessageDelete({{ allphotos.photos|length }}, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+					</div>
+				</form>		
+				{% endif %}	
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+{% include "footer.html" %}
+{% include "po4window_photos.html" %}
+</body>
+</html>

@@ -1,0 +1,155 @@
+﻿{% extends "base_notab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans "Результат обучения из файлов" %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/photos.css?v=v{{ version }}" />
+{% if res_interface == "1" %}<style type="text/css">.list_result_learn li { width: 294px; }</style>{% endif %}
+<script src="/files/js-global/FancyZoom.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js-global/FancyZoomHTML.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript" src="/files/js/upload_multipe.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+    $(function() {
+        initResultLearn();
+    });   
+</script>
+{% endblock %}
+{% block language %}<input type="button" class="language {{ LANGUAGE_CODE }}" name="" id="change_language" value="{{ LANGUAGE_CODE|upper }}" onClick="javascript: showMessage('<span class=\'error\'>{% trans 'Внимание!' %}</span> {% trans 'Невозможно сменить язык на этой странице' %}.');" />{% endblock %}
+{% block subcontent %}
+<h2><a href="/lists/">{% trans "Списки" %}</a> - 
+	{% if select_page == 'persons' or select_sub_page == 'persons' %}
+		<a href="{{ project_url }}/persons/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketaperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a>
+	{% endif %}
+
+	{% if select_page == 'visitors' or select_sub_page == 'visitors' %}
+		<a href="{{ project_url }}/visitorslist/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketavisitor/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a>
+	{% endif %}
+
+	{% if select_page == 'staff' or select_sub_page == 'staff' %}
+		<a href="{{ project_url }}/stafflist/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketastaff/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a>
+	{% endif %}
+
+	{% if select_page == 'auto' or select_sub_page == 'auto' %}
+		<a href="{{ project_url }}/autolist/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketaauto/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a>
+	{% endif %}
+
+	  - <a href="{{ project_url }}/addphotoperson/{% if select_page == "lists" %}{{ select_sub_page }}{% else %}{{ select_page }}{% endif %}/{{ id }}/{% if group %}?group={{ group }}{% endif %}">{% trans "Загрузка файлов с компьютера" %}</a> - {% trans "Результаты обучения" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Результат обучения из файлов" %}');" /></h2>
+{% include "current_time.html" %}
+<form method="post" action="" name="">
+	<div class="message_action">
+		{% trans "После просмотра результата нажмите на кнопку" %} <strong>{% trans "Завершить обучение" %}</strong>.
+	</div>         
+	<div class="frm_block">
+		<ul class="menu_cutfaces" id="menu_cutfaces">
+			<li class="mcf_first mcf_act"><a href="#" id="link_all">{% trans "Все" %} (<span id="count_all">{{ status_all }}</span>)</a></li>
+			<li><a href="#" id="link_learn">{% trans "Обученные" %} (<span id="count_learn">{{ status_true }}</span>)</a></li>
+			<li><a href="#" id="link_nolearn">{% trans "Необученные" %} (<span id="count_nolearn">{{ status_false }}</span>)</a></li>
+		</ul>                    
+		<div class="block_results">{% trans "Всего лиц" %}: <strong id="count_cur">{{ status_all }}</strong></div>
+	</div>
+	<ul class="list_result_learn" id="list_learn" style="display: none;"></ul>
+	<ul class="list_result_learn" id="list_nolearn" style="display: none;"></ul>                    
+	<ul class="list_result_learn" id="list_all">
+		{% for face in faces %}
+			{% if face.status != None %}
+				<li {% if not face.status %}class="lrl_error"{% else %}class="lrl_success"{% endif %}>
+					<div class="block_photo_cont">
+						<div class="block_photo"><a href="{{ face.url_photo }}?big={{ forloop.counter }}.jpg" target="_blank"><img src="{{ face.url_photo_face }}" alt="" /></a><a href="{{ face.url_photo }}?big={{ forloop.counter }}.jpg" target="_blank" class="btn_loupe short_descr" title="{% trans "Увеличить изображение" %}"><span></span></a></div>
+						<div class="photo_info2"><span class="eyes short_descr" title="{% trans 'Расстояние между глазами' %}: {{ face.face_dist|floatformat }}">{{ face.face_dist|floatformat }}</span><span>{{ face.face_width }}x{{ face.face_height }}</span></div>
+					</div>
+					{% if not face.status %}
+						<div class="result_learn_status error"></div>
+						<div class="result_learn_text">{% trans "Не обучено" %}
+								{% if face.res2.cause or face.res2.log_error %}
+									<span class="error_learn short_descr" title="{% if "FR disable" in face.res2.cause or "FR disable" in face.res2.log_error %}
+										{% trans "Распознавание лиц недоступно" %}
+									{% else %}
+									{% if "Threshold" in face.res2.cause or "Threshold" in face.res2.log_error %}
+										{% trans "Ниже порога идентификации" %}
+									{% else %}
+									{% if "invalid eyes" in face.res2.cause or "invalid eyes" in face.res2.log_error %}
+										{% trans "Неверные координаты глаз" %}
+									{% else %}
+									{% if face.res2.cause in all_learn_errors %}
+										{% trans face.res2.cause %}
+									{% else %}
+									{% if face.res2.log_error in all_learn_errors %}
+										{% trans face.res2.log_error %}
+									{% else %}
+										{% trans "Неизвестная ошибка" %}
+									{% endif %}
+									{% endif %}
+									{% endif %}
+									{% endif %}
+									{% endif %}">
+									{% if "FR disable" in face.res2.cause or "FR disable" in face.res2.log_error %}
+										({% trans "Распознавание лиц недоступно" %})
+									{% else %}
+									{% if "Threshold" in face.res2.cause or "Threshold" in face.res2.log_error %}
+										({% trans "Ниже порога идентификации" %})
+									{% else %}
+									{% if "invalid eyes" in face.res2.cause or "invalid eyes" in face.res2.log_error %}
+										({% trans "Неверные координаты глаз" %})
+									{% else %}
+									{% if face.res2.cause in all_learn_errors %}
+										({% trans face.res2.cause %})
+									{% else %}
+									{% if face.res2.log_error in all_learn_errors %}
+										({% trans face.res2.log_error %})
+									{% else %}
+										({% trans "Неизвестная ошибка" %})
+									{% endif %}
+									{% endif %}
+									{% endif %}
+									{% endif %}
+									{% endif %}
+									</span>
+								{% endif %}
+						</div>
+					{% else %}
+						<div class="result_learn_status"></div>
+						<div class="result_learn_text">{% trans "Успешно обучено" %}</div>
+					{% endif %}                   
+				</li>
+			{% endif %}
+		{% endfor %}
+	</ul>
+	<div class="frm_block">
+		<input type="button" name="" value="{% trans "Завершить обучение" %}" class="inp_btn inp_btn170blue" onClick="javascript: document.location ='{% if select_page == 'persons' or select_sub_page == 'persons' %}/anketaperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}{% endif %}{% if select_page == 'visitors' or select_sub_page == 'visitors' %}/anketavisitor/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}{% endif %}{% if select_page == 'staff' or select_sub_page == 'staff' %}/anketastaff/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}{% endif %}{% if select_page == 'auto' or select_sub_page == 'auto' %}/anketaauto/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}{% endif %}'"/>
+	</div>
+	<span style="display: none;">
+	{% trans 'Max Photos Restriction Achieved' %}
+	{% trans 'Service Temporary Unavailable' %}
+	{% trans 'Low Quality Picture' %}
+	 {% trans 'Internal Server Error' %}
+	 {% trans 'Face is not found' %}
+	 {% trans 'Bad face' %}
+	 {% trans 'Bad eyes' %}
+	 {% trans 'Bad Parameters' %}
+	 {% trans 'Small eyes distance' %}
+	 {% trans 'Picture must contain one face' %}
+	 {% trans 'Max Photos Restriction Achieved' %}
+	 {% trans 'Max Persons Restriction Achieved' %}
+	 {% trans 'Max Daemon Photos Restriction Achieved' %}
+	 {% trans 'Bad Value' %}
+	 {% trans 'Incorrect Parameter Name' %}
+	 {% trans 'Incorrect Xml Format' %}
+	 {% trans 'Permission Denied' %}
+	 {% trans 'Access Denied' %}
+	 {% trans 'Unsupported Method' %}
+	</span>              
+</form>
+{% endblock %}
+{% block windows %}
+<div id="win_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF" id="win_mess_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />	
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% load i18n %}
+{% load templatetags %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>
+<div id="win_mess" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" /></div>
+            <div class="headWF_txt">{% trans "Экспорт информации о системе" %}</div>
+        </div>
+        <div class="contWF" id="win_mess_contWF"></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />
+        </div>
+    </div>
+</div>

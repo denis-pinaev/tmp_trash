@@ -1,0 +1,152 @@
+{% load i18n %}
+<script type="text/javascript">
+function updateProgressBar(id) {
+    var dateObj = new Date;
+    var unixtime_ms = dateObj.getTime();
+    var intervalUpdate = 500;
+	$.ajax({
+	    type: "POST",
+	    url: "{% url api_status_thread_list %}?rand="+unixtime_ms,
+	    data: {id: id},
+	    timeout: intervalUpdate,
+	    success: function(obj){
+	    	if (obj && obj.status && obj.threads && obj.threads.length>0) {
+	    		thread = obj.threads[0];
+    			if(thread.state<2) {
+				percent = thread.percent;
+				if (percent>100){
+					percent = 100;
+				}
+    				$('#status_thread_progress_bar_percent').html(percent);
+    				setTimeout('updateProgressBar('+id+')', intervalUpdate);
+    			} else {
+    				hideProgressBar();
+				$('#status_thread_progress_bar_percent').html('100');
+    				if (thread.answer && thread.answer.status) {
+    					if (thread.answer.url) {
+						location.replace(thread.answer.url);
+					} else {
+						location.reload();
+					}
+				} else {
+					if (thread.message) {
+						changeWindow({id: 'win_mess_import', css: {width: '300px', height: '200px'}, txt: thread.answer	});
+					} else {
+						changeWindow({id: 'win_mess_import', css: {width: '300px', height: '200px'}, txt: "{% trans 'Ошибка' %}"});
+					}
+				}
+    			}
+	    	} else {
+	    		setTimeout('updateProgressBar('+id+')', intervalUpdate);
+	    	}
+	    },
+	    error: function(msg) {
+	        setTimeout('updateProgressBar('+id+')', intervalUpdate);
+	    }
+	});
+}
+
+function changeHash(id) {	
+	try {
+		var data = {};
+		var pair = (location.search.substr(1)).split('&');
+		for(var i = 0; i < pair.length; i ++) {
+			var param = pair[i].split('=');
+			data[param[0]] = param[1];
+		}
+		data['thread_id'] = id;
+		var str = '';
+		for (i in data){
+			if (data[i]){
+				str += (str ? "&" : "") + i + '=' + data[i];
+			}
+		}
+		history.replaceState(null,null,'?' + str);
+	}
+	catch(e) {
+		location.hash = 'thread_id='+ id;
+	}
+}
+
+function listValidateProgressBar() {
+	var dateObj = new Date;
+	var unixtime_ms = dateObj.getTime();
+	data = parseUrlQuery();
+	
+	if ('thread_id' in data){
+		var thread = data['thread_id'];
+		if (thread) {
+			$.ajax({
+				type: "POST",
+				url: "{% url api_status_thread_list %}?active=true&="+unixtime_ms,
+				data: {id: thread},
+				success: function(obj){
+					if (obj && obj.status && obj.threads && obj.threads.length>0) {
+						for (var i = 0; i<obj.threads.length; i++) {
+							t = obj.threads[i];
+							if (t.id == thread) {
+								showProgressBar(t.percent);
+							}
+						}				
+					} 
+				},
+				error: function(msg) {
+				}
+			});
+		}
+	}
+}
+
+function parseUrlQuery() {
+    var data = {};
+    if(location.search) {
+        var pair = (location.search.substr(1)).split('&');
+        for(var i = 0; i < pair.length; i ++) {
+            var param = pair[i].split('=');
+            data[param[0]] = param[1];
+        }
+    }
+    if (location.hash) {
+        var pair = (location.hash.substr(1)).split('&');
+        for(var i = 0; i < pair.length; i ++) {
+            var param = pair[i].split('=');
+            data[param[0]] = param[1];
+        }
+    }
+    return data;
+}
+
+//убрать прогресбар
+function hideProgressBar() {
+	var win = $('#status_thread_progress_bar');
+	var fon = $('#block_fon');
+	fon.hide();
+	win.hide();
+}
+
+listValidateProgressBar();
+function showProgressBar(percent) {
+	if (typeof percent !== 'undefined') {
+		$('#status_thread_progress_bar_percent').html(percent);
+	}
+	var win = $('#status_thread_progress_bar');
+	var fon = $('#block_fon');
+	data = parseUrlQuery();
+	if ('thread_id' in data){
+		var w = 200;
+		var h = 60;
+		var scr = { w: $(window).width(), h: $(window).height() };
+		win.css("top", (100 - h * 100 / scr.h) / 3 / 100 * scr.h + 'px');
+		win.css("left", (scr.w - w) / 2 + 'px')
+		fon.show();
+		win.show();
+		setTimeout('updateProgressBar('+data['thread_id']+')', 500);
+	} else {
+		hideProgressBar();
+	}
+}
+</script>
+<div class="indicator" id="status_thread_progress_bar" style="display: none;">
+	<b><div><span id="status_thread_progress_bar_percent">0</span>%</div></b>
+	<div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>

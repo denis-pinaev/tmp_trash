@@ -1,0 +1,87 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% load pagination_tags %}
+{% block title %}{% trans 'Настройки пользователя' %} {{user_login}}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/configuration/security.css?v=v{{ version }}" />
+<script type="text/javascript">	
+var URL_CHANGE_KEY = '{% url change_key %}';
+var USER = '{{ user_login }}';
+var ERROR_MES = '{% trans "Произошла ошибка. Попробуйте ещё раз." %}';
+var SUCCESS_MES = '{% trans "Ключ доступа изменён" %}.'
+var ERR = {
+	1 : "{% trans "Произошла ошибка. Попробуйте ещё раз." %}",
+	2 : "{% trans "Ошибка передачи данных. Пожалуйста, попробуйте ещё раз." %}",
+	3 : "{% trans "Некорректный логин пользователя" %}",
+}
+
+$(function() {
+    $("#key_security").click(function() {
+        $(this).select();
+    });
+	$("#btn_change_key").click(function() {
+		changeKey();
+	});
+});
+//сменить текущий код доступа
+function changeKey(){
+	$.ajax({
+		url: URL_CHANGE_KEY,
+		type:'POST',
+		data: "user_login=" + USER,
+		dataType: 'json',
+		timeout: 20000,
+		success: function(msg) {
+			obj = eval(msg)
+			
+			if (obj && obj.status){
+				errorMessage(true, ERR[obj.status]);
+				setTimeout('errorMessage(false)', 3000);
+			} else if (obj && (obj.result)) {
+				$("#key_security").attr("value", obj.result);
+				successMessage(true, SUCCESS_MES);
+				setTimeout('successMessage(false)', 3000);
+			}
+		},
+		error: function() {
+			errorMessage(true, ERROR_MES);
+			setTimeout('errorMessage(false)', 3000);
+		} 
+	});
+}
+// сообщения
+function successMessage(show, msg, count) {
+    if (show) {
+        if (count) { $("#success_message").html(msg); } 
+        else { $("#success_message").html(msg); }    
+        $("#success_message").slideDown("normal");
+        $("html").scrollTop(0);
+    } else {
+        $("#success_message").slideUp("normal");
+    }
+}
+function errorMessage(show, msg) {
+    if (show) {
+        $("#error_message").html(msg);
+        $("#error_message").slideDown("normal");
+        $("html").scrollTop(0);
+    } else {
+        $("#error_message").slideUp("normal");
+    }
+}
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+	<h2><a href="{% url web_api_users %}">{% trans "Пользователи WEB API" %}</a> - {% trans "Настройки пользователя" %} {{user_login}}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Настройки пользователя WEB API генерация ключа' %}');" /></h2>                    
+	{% include "current_time.html" %}
+	{% include "webapi_menu.html" %}
+	<h3 class="dist_top">{% trans "Генерация ключа доступа" %}</h3>
+	<form method="post" action="" class="form">
+		<div class="message_action">{% trans "Для получения нового ключа доступа нажмите на кнопку <strong>Сгенерировать ключ доступа.</strong>" %}</div> 
+		<div class="message_action" id="success_message" style="display: none;"></div>
+		<div class="message_warning" id="error_message" style="display: none;"></div>                         
+		<div class="dist_top"><label for="key_security">{% trans "Ключ доступа" %}:</label><input type="text" name="" id="key_security" value="" class="inp_txt dist_left" readonly="readonly" /><input type="button" name="" id="btn_change_key" value="{% trans "Сгенерировать ключ доступа" %}" class="inp_btn btn_blue dist_left" /></div>
+	</form>   
+{% endblock %}

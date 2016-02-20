@@ -1,0 +1,51 @@
+﻿.inp_btn140 {
+	width: 140px;
+	background: url('/files/images/button140x24_up.gif') top left no-repeat;
+}
+.inp_btn170 {
+	width: 170px;
+	background: url('/files/images/button170x24_up.gif') top left no-repeat;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.frm_block .inp_check {
+	margin-right: 5px;
+}
+.settings_btns {
+	position:absolute;
+	top:36px;
+	right:10px;
+}
+.set_copy_rezerv {
+	float: left;
+	-width: 570px;
+}
+.set_copy_rezerv legend {
+	margin-left: 10px;
+	color: #505050;
+	font-weight: bold;
+}
+.bl_set_camera {
+	padding: 10px;
+}
+.bl_set {
+	padding-bottom: 5px;
+	width: 100%;
+	overflow: hidden;
+}
+.bl_set.last {
+	padding-bottom: 0px;
+}
+.bl_set .inp_txt {
+	width: 50px;
+}
+.bl_set .select {
+	width: 120px;
+}
+.bl_set_btn {
+	margin-top: 5px;
+	text-align: center;
+}

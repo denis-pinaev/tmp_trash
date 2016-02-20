@@ -1,0 +1,537 @@
+{% load a_templatetags %}
+<script type="text/javascript">
+var params = new Array();
+function disabledButton(id, change) {
+    var btn = byId('btn_'+id);
+    var clsName = btn.className;
+    if (change) {
+        if (clsName.indexOf('dis') > -1) {
+            btn.disabled = false;
+            btn.className = rtrim(clsName.substr(0, clsName.indexOf('dis')));
+        }    
+    } else {
+        if (clsName.indexOf('dis') < 0) {
+            btn.disabled = "disabled";
+            btn.className = clsName + ' dis';
+        }    
+    }
+}
+function disabledButtonParam4(id1, id2, id3, id4) {
+    var inp1 = byId(id1);
+    var inp2 = byId(id2);
+    var inp3 = byId(id3);
+    var inp4 = byId(id4);
+    var defaultValue1 = params[id1];
+    var defaultValue2 = params[id2];
+    var defaultValue3 = params[id3];
+    var defaultValue4 = params[id4];
+    var id_btn;    
+    if (id1.indexOf('area') > -1) {
+        id_btn = 'area';
+    } else if (id1.indexOf('distr') > -1) {
+        id_btn = 'distr';
+    }
+    if (inp1.value != defaultValue1) {
+        disabledButton(id_btn, true);
+    } else if ((inp2.value == defaultValue2) && (inp3.value == defaultValue3) && (inp4.value == defaultValue4)) {
+        disabledButton(id_btn, false);
+    } else {
+        disabledButton(id_btn, true);
+    }
+}
+function disabledButtonParam2(id1, id2) {
+    var inp1 = byId(id1);
+    var inp2 = byId(id2);
+    var defaultValue1 = params[id1];
+    var defaultValue2 = params[id2];
+    var id_btn = 'time';    
+    if (inp1.value != defaultValue1) {
+        disabledButton(id_btn, true);
+    } else if (inp2.value == defaultValue2) {
+        disabledButton(id_btn, false);
+    } else {
+        disabledButton(id_btn, true);
+    }
+}
+function checkField(id, defaultValue) {
+    var inp = byId(id);
+    var name = inp.id;
+    
+    if (name == 'areaX') {
+        disabledButtonParam4('areaX', 'areaY', 'areaWidth', 'areaHeight');
+    } else if (name == 'areaY') {
+        disabledButtonParam4('areaY', 'areaX', 'areaWidth', 'areaHeight');    
+    } else if (name == 'areaWidth') {
+        disabledButtonParam4('areaWidth', 'areaX', 'areaY', 'areaHeight');    
+    } else if (name == 'areaHeight') {
+        disabledButtonParam4('areaHeight', 'areaX', 'areaY', 'areaWidth');
+    } else if (name == 'distr1') {
+        disabledButtonParam4('distr1', 'distr2', 'distr3', 'distr4');
+    } else if (name == 'distr2') {
+        disabledButtonParam4('distr2', 'distr1', 'distr3', 'distr4');
+    } else if (name == 'distr3') {
+        disabledButtonParam4('distr3', 'distr1', 'distr2', 'distr4');
+    } else if (name == 'distr4') {
+        disabledButtonParam4('distr4', 'distr1', 'distr2', 'distr3');
+    } else if (name == 'interval') {
+        disabledButtonParam2('interval', 'delay');
+    } else if (name == 'delay') {
+        disabledButtonParam2('delay', 'interval');
+    } else if (inp.value != defaultValue) {
+        disabledButton(name, true);
+    } else {
+        disabledButton(name, false);
+    }
+}
+function checkChanges() {
+    for (var i in params) {
+        checkField(i, params[i]);        
+    }
+}
+/* проверка на валидность данных */
+var errorResolution = false;
+function init() {
+    var area = setAreaObjects();
+    byId('err_mess').innerHTML = '&nbsp';
+    errorResolution = false;
+    changeBorder(area.x, false);
+    changeBorder(area.y, false);
+    changeBorder(area.w, false);
+    changeBorder(area.h, false);
+}
+function checkAllArea() {
+    var area = setAreaObjects();
+    var x = area.x;
+    var y = area.y;
+    var w = area.w;
+    var h = area.h;
+    if (x.value) {        
+        if (!checkInt(x)) {
+            byId('err_mess').innerHTML = '{% trans "Значение должно содержать только цифры" %}';
+            errorResolution = true;
+            return;
+        }    
+        if (!checkAreaX(x)) {
+            errorResolution = true;
+            return;
+        }
+    } else {
+        x.value = 0;
+        errorResolution = false;
+        return;
+    }
+    if (y.value) {
+        if (!checkInt(y)) {
+            byId('err_mess').innerHTML = '{% trans "Значение должно содержать только цифры" %}';
+            errorResolution = true;
+            return;
+        }
+        if (!checkAreaY(y)) {
+            errorResolution = true;
+            return;
+        }
+    } else {
+        y.value = 0;
+        errorResolution = false;
+        return;
+    }
+    if (w.value) {
+        if (!checkInt(w)) {
+            byId('err_mess').innerHTML = '{% trans "Значение должно содержать только цифры" %}';
+            errorResolution = true;
+            return;
+        }
+        if (!checkAreaWidth(w)) {
+            errorResolution = true;
+            return;
+        }
+    } else {
+        w.value = 320;
+        errorResolution = false;
+        return;
+    }
+    if (h.value) {
+        if (!checkInt(h)) {
+            byId('err_mess').innerHTML = '{% trans "Значение должно содержать только цифры" %}';
+            errorResolution = true;
+            return;
+        }
+        if (!checkAreaHeight(h)) {
+            errorResolution = true;
+            return;
+        }
+    } else {
+        h.value = 240;
+        errorResolution = false;
+        return;
+    }
+}
+function checkArea(obj) {
+    if (!checkInt(obj)) {
+        changeBorder(obj, true);
+        errorResolution = true;
+        return;
+    }
+    if (obj.id == 'areaX') {
+        if (!checkAreaX(obj)) {
+            errorResolution = true;
+            return;
+        }
+    }
+    if (obj.id == 'areaY') {
+        if (!checkAreaY(obj)) {
+            errorResolution = true;
+            return;
+        }
+    }
+    if (obj.id == 'areaWidth') {
+        if (!checkAreaWidth(obj)) {
+            errorResolution = true;
+            return;
+        }        
+    }
+    if (obj.id == 'areaHeight') {
+        if (!checkAreaHeight(obj)) {
+            errorResolution = true;
+            return;
+        }
+    }
+    changeBorder(obj, false);
+    errorResolution = false;
+    byId('err_mess').innerHTML = '&nbsp';
+}
+function checkAreaHeight(obj) {
+    if (getInt(obj.value) > getSizeParams(getSelectedElem('selectPermission').text).h) {
+        byId('err_mess').innerHTML = '{% trans "Введена слишком большая высота для области захвата" %}';
+        changeBorder(obj, true);
+        return false;    
+    }
+    var value = 0;
+    var areaY = byId('areaY');
+    if (areaY.value) {
+        value = getInt(areaY.value);
+    }
+    if (getInt(obj.value) < 240) {
+        obj.value = 240;
+    }    
+    var s = getInt(obj.value) + value;
+    if (s > getSizeParams(getSelectedElem('selectPermission').text).h) {
+        byId('err_mess').innerHTML = '{% trans "Введено слишком большое смещение по координате" %} "y"';
+        changeBorder(areaY, true);
+        return false;
+    }
+    return true;
+}
+function checkAreaWidth(obj) {
+    if (getInt(obj.value) > getSizeParams(getSelectedElem('selectPermission').text).w) {
+        byId('err_mess').innerHTML = '{% trans "Введена слишком большая ширина для области захвата" %}';
+        changeBorder(obj, true);
+        return false;    
+    }
+    var value = 0;
+    var areaX = byId('areaX');
+    if (areaX.value) {
+        value = getInt(areaX.value);
+    }
+    if (getInt(obj.value) < 320) {
+        obj.value = 320;
+    }    
+    var s = getInt(obj.value) + value;
+    if (s > getSizeParams(getSelectedElem('selectPermission').text).w) {
+        byId('err_mess').innerHTML = '{% trans "Введено слишком большое смещение по координате" %} "x"';
+        changeBorder(areaX, true);
+        return false;            
+    }
+    return true;
+}
+function checkAreaY(obj) {
+    var value = 0;
+    var areaHeight = byId('areaHeight');
+    if (byId('areaHeight').value) {
+        if (getInt(areaHeight.value) > getSizeParams(getSelectedElem('selectPermission').text).h) {
+            byId('err_mess').innerHTML = '{% trans "Введена слишком большая высота для области захвата" %}';
+            changeBorder(obj, false);
+            changeBorder(areaHeight, true);
+            return false;            
+        }    
+        value = getInt(areaHeight.value);
+    }
+    var s = getInt(obj.value) + value;
+    if (s > getSizeParams(getSelectedElem('selectPermission').text).h) {
+        byId('err_mess').innerHTML = '{% trans "Введено слишком большое смещение по координате" %} "y"';
+        changeBorder(obj, true);
+        changeBorder(areaHeight, false);
+        return false;
+    }
+    return true;
+}
+function checkAreaX(obj) {
+    var value = 0;
+    var areaWidth = byId('areaWidth');
+    if (areaWidth.value) {
+        if (getInt(areaWidth.value) > getSizeParams(getSelectedElem('selectPermission').text).w) {
+            byId('err_mess').innerHTML = '{% trans "Введена слишком большая ширина для области захвата" %}';
+            changeBorder(obj, false);
+            changeBorder(areaWidth, true);
+            return false;            
+        }
+        value = getInt(byId('areaWidth').value);
+    }
+    var s = getInt(obj.value) + value;
+    if (s > getSizeParams(getSelectedElem('selectPermission').text).w) {
+        byId('err_mess').innerHTML = '{% trans "Введено слишком большое смещение по координате" %} "x"';
+        changeBorder(obj, true);
+        changeBorder(areaWidth, false);
+        return false;
+    }
+    return true;    
+}
+function applayClick(id, defaultValue, param, numcamera) {
+    if (id == 'shortexposures') {
+        byId('highspeed').checked = true;
+        executeMethod('setLowLight', numcamera, 'highspeed');
+        if (checkBlockLowLightMode(id, defaultValue)) {
+            executeMethod(param, numcamera, byId(id).value);
+            params[id] = byId(id).value;
+            disabledButton(id, false);            
+        }
+    } else if (checkBlockPicture(id, defaultValue)) {
+        executeMethod(param, numcamera, byId(id).value);
+        params[id] = byId(id).value;
+        disabledButton(id, false);
+    }
+}
+function applayAreaClick() {
+    var res = applyResolution();
+    executeMethod('setCaptureRectCamera', {{ numcamera }}, res.x, res.y, res.w, res.h);
+    executeMethod('setResolutionCamera', {{ numcamera }}, res.maxW, res.maxH);
+    executeMethod('setCaptureRectCamera', {{ numcamera }}, res.x, res.y, res.w, res.h);
+    executeMethod('setResolutionCamera', {{ numcamera }}, res.maxW, res.maxH);
+    params['areaX'] = byId('areaX').value = res.x;
+    params['areaY'] = byId('areaY').value = res.y;
+    params['areaWidth'] = byId('areaWidth').value = res.w;
+    params['areaHeight'] = byId('areaHeight').value = res.h;
+    disabledButton('area', false);                              
+}
+function applayModeHighspeed(param, numcamera, id) {
+    byId(id).checked = true;
+    executeMethod(param, numcamera, id);
+}
+function setResolution(objSel) {
+    var perm_elem;
+    var act_perm_value = '';
+    var perm_size = [];    
+
+    var area_list = byId('selectArea');
+    var area_elem = getSelectedElem('selectArea');
+    var act_area_value = area_elem.value;
+    var area_size = getSizeParams(area_elem.text);    
+
+    var area = setAreaObjects();
+    var selectedIndex = objSel.selectedIndex;
+
+    if (selectedIndex != -1) {
+        perm_elem = objSel.options[selectedIndex];
+        act_perm_value = perm_elem.value;
+        disabledOption(area_list, objSel.selectedIndex);
+        perm_size = getSizeParams(perm_elem.text);
+        if (act_perm_value >= act_area_value) {
+            var dx = 32;
+            var dy = 16;
+            var minResolutionWidth = 320;
+            var minResolutionHeight = 240;    
+            var x = area.x.value;
+            var y = area.y.value;
+            var maxResolution = getMaxResolution(); 
+            x = Math.max(0, x);
+            x = Math.min(maxResolution.w - minResolutionWidth, x); 
+            y = Math.max(0, y);
+            y = Math.min(maxResolution.h - minResolutionHeight, y);  
+            x = Math.floor(x / dx) * dx;
+            y = Math.floor(y / dy) * dy;                                                     
+            area.x.value = x;
+            area.y.value = y;
+            area.w.value = area_size.w;
+            area.h.value = area_size.h;            
+        } else {
+            area_list.selectedIndex = objSel.selectedIndex;
+            area.w.value = perm_size.w;
+            area.h.value = perm_size.h;
+            area.x.value = 0;
+            area.y.value = 0;
+        }
+        init();        
+    }
+}
+function setArea(objSel) {
+    var area_elem;
+    var area_size = [];
+
+    var perm_elem = getSelectedElem('selectPermission');
+    var perm_size = getSizeParams(perm_elem.text);
+
+    var area = setAreaObjects();
+    if (objSel.selectedIndex != -1) {
+        area_elem = objSel.options[objSel.selectedIndex];
+        area_size = getSizeParams(area_elem.text);
+        area.w.value = area_size.w;
+        area.h.value = area_size.h;
+        area.x.value = (perm_size.w - area_size.w) / 2;
+        area.y.value = (perm_size.h - area_size.h) / 2;
+        init();
+    }
+}
+function applyFrames(camera) {
+    executeMethod('setParamsScheduler', camera, document.getElementsByName('interval')[0].value, document.getElementsByName('delay')[0].value, -1, -1, -1);
+    params['interval'] = byId('interval').value;
+    params['delay'] = byId('delay').value;
+    disabledButton('time', false);
+}
+function applyDetect(camera) {
+    executeMethod('setParamsScheduler', camera, -1, -1,document.getElementsByName('limit_fd')[0].value, -1, -1);
+    params['limit_fd'] = byId('limit_fd').value; 
+    disabledButton('limit_fd', false);                        
+}
+function applyIdent(camera) {
+    executeMethod('setParamsScheduler', camera, -1, -1, -1,document.getElementsByName('limit_fr')[0].value, -1);
+    params['limit_fr'] = byId('limit_fr').value; 
+    disabledButton('limit_fr', false);      
+}
+function applyTeach(camera) {
+    executeMethod('setParamsScheduler', camera, -1, -1, -1, -1, document.getElementsByName('limit_fl')[0].value);
+    params['limit_fl'] = byId('limit_fl').value; 
+    disabledButton('limit_fl', false);      
+}
+function applyDistortion(source, type) {
+    executeMethodBalancer('setCameraParameter', source, type, byId('distr1').value, byId('distr2').value, byId('distr3').value, byId('distr4').value);
+    params['distr1'] = byId('distr1').value;
+    params['distr2'] = byId('distr2').value;
+    params['distr3'] = byId('distr3').value;
+    params['distr4'] = byId('distr4').value;
+    disabledButton('distr', false);                      
+}
+function applyResolution() {
+    if (!errorResolution) {
+        var dx = 32;
+        var dy = 16;
+        var minResolutionWidth = 320;
+        var minResolutionHeight = 240;
+
+        var area = setAreaObjects();
+        var x = area.x.value;
+        var y = area.y.value;
+        var w = area.w.value;
+        var h = area.h.value;
+
+        var maxResolution = getMaxResolution();
+
+        x = Math.max(0, x);
+        x = Math.min(maxResolution.w - minResolutionWidth, x);
+
+        y = Math.max(0, y);
+        y = Math.min(maxResolution.h - minResolutionHeight, y);
+
+        x = Math.floor(x / dx) * dx;
+        y = Math.floor(y / dy) * dy;
+        
+        w = Math.max(minResolutionWidth, w);
+        w = Math.min(maxResolution.w - x, w);
+
+        h = Math.max(minResolutionHeight, h);
+        h = Math.min(maxResolution.h - y, h);
+
+        w = Math.floor(w / dx) * dx;
+        if (h != 600 && h != 240) {
+            h = Math.floor(h / dy) * dy;
+        }
+        return {x: x, y: y, w: w, h: h, maxW: maxResolution.w, maxH: maxResolution.h};
+    }
+}
+function getMaxResolution() {
+    var perm_list = byId('selectPermission');
+    var selectedIndex = perm_list.selectedIndex;
+    var perm_elem;
+    var perm_size = [];
+
+    if (selectedIndex != -1) {
+        perm_elem = perm_list.options[selectedIndex];
+        perm_size = getSizeParams(perm_elem.text);
+        return {w: perm_size.w, h: perm_size.h}
+    }
+}
+function getSizeParams(value) {
+    var delimiter = 'x';
+    var array = value.split(delimiter);
+    return {w: array[0], h: array[1]};    
+}
+function setAreaObjects() {
+    var areaX = byId('areaX');
+    var areaY = byId('areaY');
+    var areaWidth = byId('areaWidth');
+    var areaHeight = byId('areaHeight');
+
+    return {x: areaX, y: areaY, w: areaWidth, h: areaHeight};
+}
+function checkBlockPicture(id, defaultValue) {
+    var inp = byId(id);
+    var max_value = 255;
+    if (!inp.value) {
+        inp.value = defaultValue;
+        return false;
+    }    
+    if (!checkInt(inp)) {
+        changeBorder(inp, true);
+        byId('err_mess').innerHTML = '{% trans "Значение должно содержать только цифры" %}';
+        return false;
+    }
+    if (id == 'sharpness') {
+        max_value = 16;
+    } 
+    if (parseInt(inp.value) > max_value) {
+        changeBorder(inp, true);
+        byId('err_mess').innerHTML = msgErrorBlockPicture(id);
+        return false;
+    }
+    changeBorder(inp, false);
+    byId('err_mess').innerHTML = "&nbsp;";    
+    return true;
+}
+function checkBlockLowLightMode(id, defaultValue) {
+    var inp = byId(id);
+    var max_value = 10;
+    var min_value = 1;
+    if (!inp.value) {
+        inp.value = defaultValue;
+        return false;
+    }    
+    if (!checkInt(inp)) {
+        changeBorder(inp, true);
+        byId('err_mess').innerHTML = '{% trans "Значение должно содержать только цифры" %}';
+        return false;
+    }
+    if ((parseInt(inp.value) > max_value) || (parseInt(inp.value) < min_value)) {
+        changeBorder(inp, true);
+        byId('err_mess').innerHTML = msgErrorBlockPicture(id);
+        return false;
+    }
+    changeBorder(inp, false);
+    byId('err_mess').innerHTML = "&nbsp;";    
+    return true;    
+}
+function showBlockSettings(num) {
+    var count = getCountChilds('list_settings', 'LI');
+    var el;
+    var inp;
+    for (var i = 1; i <= count; i++) {
+        el = byId('settings' + i);
+        inp = byId('btn_arrow' + i);
+        if (i == num) {
+            el.style.display = (el.style.display == 'none') ? '' : 'none';
+            inp.className = (inp.className == 'btn_set_left') ? 'btn_set_bottom': 'btn_set_left';        
+        } else {
+            el.style.display = 'none';
+            inp.className = 'btn_set_left';
+        }
+    }
+}
+</script>

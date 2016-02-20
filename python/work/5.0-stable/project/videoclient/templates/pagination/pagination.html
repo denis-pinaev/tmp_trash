@@ -1,0 +1,24 @@
+{% load i18n %}
+{% load templatetags %}
+{% if is_paginated %}
+						
+	<div class="block_navigation">
+		
+		<a href="?page=1{{ getvars }}" class="page" title="{% trans "Первая страница" %}">{% trans "Начало" %}</a>
+		<a href="?page={% for page in pages %}{% if page %}{% if forloop.last %}{{page}}{% endif %}{% endif %}{% endfor %}{{ getvars }}" class="page" title="{% trans "Последняя страница" %}">{% trans "Конец" %}</a>
+		<a href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% else %}?page={{ page_obj.number }}{% endif %}{{ getvars }}" class="page" title="{% trans "Предыдущая страница" %}">&#8592;&nbsp;{% trans "Назад" %}</a>
+		<a href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% else %}?page={{ page_obj.number }}{% endif %}{{ getvars }}" class="page" title="{% trans "Следующая страница" %}">{% trans "Вперёд" %}&nbsp;&#8594;</a>
+		
+		{% for page in pages %}
+	        {% if page %}
+	            {% ifequal page page_obj.number %}
+					<span class="page active">{{ page }}</span>
+	            {% else %}
+					<a href="?page={{ page }}{{ getvars }}" class="page" title="">{{ page }}</a>
+	            {% endifequal %}
+	        {% else %}
+				<span class="page" style="border: none;">...</span>
+	        {% endif %}
+    	{% endfor %}
+	</div>
+{% endif %}

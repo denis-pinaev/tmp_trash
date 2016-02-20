@@ -1,0 +1,21 @@
+﻿.menu_products {
+	width: 100%;
+	overflow: hidden;
+}
+.menu_products li.bl_products {
+	margin-bottom: 20px;
+	margin-left: 20px;
+}
+.menu_products li .nomer {
+	margin-right: 10px;
+}
+.menu_products a {
+	text-decoration: underline;
+	color: #0088CC;
+}
+.sub_menu_products {
+	margin-left: 40px;
+}
+.sub_menu_products li {
+	margin-top: 5px;
+}

@@ -1,0 +1,131 @@
+{% load a_templatetags %}
+<script type="text/javascript">
+	function deletePhotos(photos) {
+		showIndicator(true);
+		$.ajax({
+			type: "POST",
+			url: "/person/delete_person/",
+			data: {persons: {% if allpersonsid %}'{{allpersonsid}}'{% else %}{{ allphotos.id }}{% endif %}, photos: photos},
+			success: function(msg){
+				closeChangeWindow('win_del');
+				setTimeout('location.reload(true)', 1000);
+			},
+			error:  function(){
+				closeChangeWindow('win_del');
+			}
+		});
+	}
+	function deletePersons(persons) {
+		showIndicator(true);
+		$.ajax({
+			type: "POST",
+			url: "/person/delete_person/",
+			data: {persons: persons},
+			success: function(msg){
+				closeChangeWindow('win_del');
+				setTimeout('location.reload(true)', 1000);
+			},
+			error:  function(){
+				closeChangeWindow('win_del');
+			}
+		});
+	}	
+
+	function changePersonName(){
+		showIndicator(true);
+		num = byId('newname_id').value;
+		name = byId('newname_person').value;
+		$.ajax({
+			type: "POST",
+			url: "/person/changepersonname/",
+			data: {person: num, name: name},
+			success: function(msg){
+				closeChangeWindow('win_del');
+				setTimeout('location.reload(true)', 1000);
+			},
+			error:  function(){
+				closeChangeWindow('win_del');
+			}
+		});
+	}	
+
+	function exportPhotos(photos) {
+		closeChangeWindow('win_export');
+		showIndicator(true);
+		$.ajax({
+			type: "POST",
+			url: "/person/export/",
+			data: {persons: {% if allpersonsid %}'{{allpersonsid}}'{% else %}{{ allphotos.id }}{% endif %}, photos: photos},
+			success: function(msg){
+				//alert(msg);
+				showIndicator(false);
+				location.replace(msg)
+				//saveArchive(msg);
+			},
+			error:  function(){
+				closeChangeWindow('win_del');
+			}			
+		});
+	}	
+</script>
+
+<div id="win_editname" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_editname');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Редактирование имени персоны" %}</div>
+		</div>
+		<div class="contWF" id="win_editname_contWF"><div class="bl_edit_name">{% trans "Имя" %}: 
+			<input type="text" name="" value="" id="newname_person" class="inp_txt" style="width: 200px;" />
+			<input type="hidden" name="" value="" id="newname_id"/>
+			</div>            
+		</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Изменить" %}" class="btn_wf_blue" onClick="javascript: changePersonName(); closeChangeWindow('win_editname');" />
+			<input type="button" name="" value="{% trans "Назад" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_editname');" />
+		</div>
+	</div>
+</div>
+<div id="win_del" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_del');" /></div>
+			<div class="headWF_txt">{% trans "Удаление" %}</div>
+		</div>
+		<div class="contWF_add" id="win_del_contWF">&nbsp;</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Да" %}" class="btn_wf_blue" onClick="
+				javascript: {% if allpersonsid %}deletePersons(clickDelete({{ persons|length }}{% else %}deletePhotos(clickDelete({{ allphotos.photos|length }}{% endif %}));" />		
+			<input type="button" name="" value="{% trans "Нет" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_del');" />
+		</div>
+	</div>
+</div>
+<div id="win_export" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_export');" /></div>
+			<div class="headWF_txt">{% trans "Экспорт фотографий" %}</div>
+		</div>
+		<div class="contWF_add" id="win_export_contWF">&nbsp;</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Да" %}" class="btn_wf_blue" onClick="javascript: exportPhotos(clickDelete({{ allphotos.photos|length }}));" />		
+			<input type="button" name="" value="{% trans "Нет" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_export');" />
+		</div>
+	</div>
+</div>
+<div id="win_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF_add" id="win_mess_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />	
+		</div>
+	</div>
+</div>
+<div class="indicator" id="indicator" style="display: none;">
+	<img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+	<div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>

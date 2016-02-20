@@ -1,0 +1,795 @@
+{% extends "base_tab.html" %}
+{% load i18n %}
+{% load templatetags %}
+{% block title %}{% trans 'Графики коммуникаторов' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4settingsus.css?v=v{{ version }}" />
+{% include "control_settings_strings.html" %}
+<script type="text/javascript" src="/files/control_settings/js/js_settings.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/control_settings/js/funcs.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/flot/jquery.flot.js?v=v{{ version }}"></script>
+{% endblock %}
+{% block submenu %}{% include "monitoring_menu.html" %}{% endblock %}
+{% block subcontent %}
+<script>
+function clickCommunicator(id, inpId, count, ip, port) {
+	var el = document.getElementById(id);
+	var inp = document.getElementById(inpId);
+	if (el.style.display == 'none') {
+		el.style.display = 'block';
+		inp.className = 'btn_balan_bottom';
+		showGraph(count, ip, port);
+	} else {
+		el.style.display = 'none';
+		{% if show_flash %}
+		byId('video'+count).innerHTML = '';
+		{% endif %}
+		inp.className = 'btn_balan_left';
+	}
+}
+</script>
+					<h2>{% trans "Графики коммуникаторов" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Управляющая_система" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+					{% include "current_time.html" %}
+					{% include "system_blocks/system_cameras.html" %}          
+                    {% if selected_camera and all_active_cameras|length > 0 %}      
+                        <div class="head_graph">{% trans "График &quot;Время получения кадров с камеры&quot;" %}</div>                   
+                        <div class="block_graph">
+                            <div id="camera_graph_js_1" style="width: {% if res_interface == "0" %}1230{% else %}1860{% endif %}px; height: 300px;"></div>
+                            <div class="axisX">{% trans "Время (мс)" %}</div>
+                            <div class="axisY">{% trans "Кадры" %}</div>
+                        </div>
+                        <div id="camera_graph_legend_1"></div>
+                    {% endif %}
+                    {% if not selected_camera %}
+						{% trans "Камера выключена или недоступна" %}
+                    {% endif %}
+					
+
+<script type="text/javascript">
+$(document).ready(function() {
+    //JS graphs
+    Array.prototype.max_frames_statistic = function() {
+        var max = this[0][1];
+        var len = this.length;
+        for (var i = 1; i < len; i++) if (this[i][1] != -1 && this[i][1] > max) max = this[i][1];
+        return max;
+    }
+    Array.prototype.min_frames_statistic = function() {
+        var min = this[0][1];
+        var len = this.length;
+        for (var i = 1; i < len; i++) if (this[i][1] != -1 && this[i][1] < min ) min = this[i][1];
+        return min;
+    }
+    Array.prototype.avg_frames_statistic = function() {
+        var av = 0;
+        var cnt = 0;
+        var len = this.length;
+        for (var i = 0; i < len; i++) {
+            av += this[i][1];
+            cnt++;
+        }
+        return av/cnt;
+    }
+    Array.prototype.info_frames_statistic = function() {
+        var min = this[0][1];
+        var max = this[0][1];
+        var sum = 0;
+        var len = this.length;
+        for(var i = 0; i < len; i++) {
+            sum = sum + this[i][1];
+            if (this[i][1] < min){
+                min = this[i][1];
+            } else {
+                if (this[i][1] > max) {
+                    max = this[i][1];
+                }
+            }
+        }
+        return {min: min, max: max, avg: sum/this.length}
+    }
+    var orangeLine = "#ff6600";
+    var orangeLineDark = "#cc3300";
+    var blueLine = "#0099ff";
+    var blueLineDark = "#0066cc";
+    var greenLine = "#00ff00";
+    var greenLineDark = "#00cc00";
+    //show camera graph
+    function showCameraGraphFramesStatistic() {
+        var result = [[]];
+        var p = [], p_avg = [], res_tmp = [];
+        var colors = ['CC3300', '0066CC', '00CC00', 'FF9900', '33CC00', '00CC66', '99FF00', 'FF0099'];     
+        function getDiagramDataFramesStatistic() {
+            var res_avg = [], res1_avg = [];
+            var dateObj = new Date;
+            var unixtime_ms = dateObj.getTime();
+            var col, col_d, d;
+            $.ajax({
+                type: "GET",
+                url: "{% url monitoring_get_camera_frames_statistics_js %}?uuid={{ selected_camera.uuid }}&rand=" + unixtime_ms,
+                data: {},
+                success: function(msg){
+                    new_result = [[], [], []];
+                    obj = msg;
+                    //obj = eval('('+msg+')');
+                    if(obj.status = 'success'){
+                        try {
+                            for (var j = 0; j < obj.data.length; j++){
+                            	var graphics = obj.data[j].value
+                            	var legend = [];
+	                            for (var z = 0; z < graphics.length; z++){
+	                                d = graphics[z].value;
+	                                name = graphics[z].name
+	                                
+	                                var info = d.info_frames_statistic();
+			                        var avg = d.avg_frames_statistic();
+			                        var d_avg = Math.round(avg * 100) / 100;
+			                        var avg_line = []
+	                                
+	                                for (var m = 0; m < 601; m++){
+	                                	avg_line.push([600-m, d_avg]);
+	                                }
+                         
+	                                var color = colors[z%colors.length];
+	                                var legend_name = name;
+									var legend_index = z+100;
+	                                switch(name)
+	                                {
+	                                    case 'time':
+	                                    	legend_name = '{% trans "Время получения кадра" %}';
+											color = "FF6600";
+											legend_index = 0;
+	                                    break;
+	                                }
+									
+									var p = { color: '#' + color + '', data: d, lines: { show: true }, points: { show: true, radius: 1}};
+	                                var p_avg = { color: '#' + color + '', data: avg_line, points: { show: false }, lines: { lineWidth: 2 }};
+
+	                                if(typeof info.min !== 'undefined' && typeof d_avg !== 'undefined' && typeof info.max !== 'undefined' && !isNaN(info.min) && !isNaN(d_avg) && !isNaN(info.max))
+	                                {
+	                                    legend[legend_index] = '<div class="block_legenda"><div class="graph_color" style="background-color: #' + color + ';"></div><div class="graph_delim">-</div><div class="graph_text">' + legend_name + ' ({% trans "минимальное значение" %}: ' + info.min + ', {% trans "среднее значение" %}: ' + d_avg+ ', {% trans "максимальное значение" %}: ' + info.max + ')</div></div>';
+	                                } else {
+	                                	//alert(info.min+','+d_avg+','+info.max+','+info.min+','+d_avg+','+info.max);	
+	                                }
+	
+	                                new_result[j].push(p);
+	                                new_result[j].push(p_avg);
+									
+	                            }
+								legend_str = '';
+								for( var l = 0; l < legend.length; l++){
+									if (typeof legend[l] !== 'undefined') {
+										legend_str += legend[l];
+									}
+								}
+								$('#camera_graph_legend_'+(j+1)).html(legend_str);
+	                    	}
+	                    	result = new_result;
+                        } catch(e){
+							//alert(e);
+                        }
+                    }
+                    //update();
+                },
+                error: function(msg){
+                	//update();
+                }
+            });
+        }
+
+        var updateInterval = 1000;
+        var options = [{
+            series: { shadowSize: 0,
+                     lines: { lineWidth: 1 },
+                            },
+            yaxis: { min: 0,
+                     tickFormatter: function (v) { return parseFloat(v.toFixed(3)); } },
+            xaxis: { ticks: 2,
+                     tickSize: 10,
+                     max: 99,
+                     tickFormatter: function (v) { return parseInt(v); } },
+            lines: { show: true },
+            points: { show: true }
+        },
+        {
+            series: { shadowSize: 0,
+                     lines: { lineWidth: 1 },
+                            },
+            yaxis: { min: 0,
+                     tickFormatter: function (v) { return parseFloat(v.toFixed(3)); } },
+            xaxis: { ticks: 2,
+                     tickSize: 10,
+                     max: 100,
+                     tickFormatter: function (v) { return parseInt(v); } },
+            lines: { show: true },
+            points: { show: true }
+        },
+        {
+            series: { shadowSize: 0,
+                     lines: { lineWidth: 1 },
+                            },
+            yaxis: { min: 0,
+                     tickFormatter: function (v) { return parseFloat(v.toFixed(3)); } },
+            xaxis: { ticks: 2,
+                     tickSize: 60,
+                     max: 600,
+                     tickFormatter: function (v) { return parseInt(v); } },
+            lines: { show: true },
+            points: { show: true }
+        }
+        ]
+        
+        ;
+
+        getDiagramDataFramesStatistic();
+
+        try{
+        	var plot = []
+        	for(var j = 0; j<result.length; j++) {
+            	plot.push($.plot($("#camera_graph_js_"+(j+1)), result[j], options[j]));
+            }
+        } catch(e) {
+			//alert(e);
+        }
+
+
+        function updateFramesStatistic() {
+            getDiagramDataFramesStatistic();
+            try{
+            	for(var j = 0; j<plot.length; j++){
+	                plot[j].setData(result[j]);
+	                plot[j].setupGrid();
+	                plot[j].draw();
+	            }
+            } catch(e) {
+				//alert(e);
+            }
+            setTimeout(updateFramesStatistic, updateInterval);
+        }
+        updateFramesStatistic();
+    }
+    showCameraGraphFramesStatistic();
+    //end camera graph
+});
+</script>
+					
+					
+<script type="text/javascript">
+function addFlash2(ip, port) {
+	var lang = readCookie('django_language');
+	var nameX = '{% trans "Время (сек.)" %}';
+	var nameY = '{% trans "Время обработки (мс.)" %}';
+	var graphsNames = '{% trans "минимальное время за секунду" %}*{% trans "максимальное время за секунду" %}*{% trans "среднее время за секунду" %}';
+	var valuesNames = '{% trans "минимальное значение" %}:*{% trans "среднее значение" %}:*{% trans "максимальное значение" %}:';
+	return ('<object id="flash-app" name="flash-app" width="{% if res_interface == "0" %}1260{% else %}1870{% endif %}" height="350" data="/files/swf/graph/flash.swf" type="application/x-shockwave-flash">'+
+	'<param value="/files/swf/graph/flash.swf" name="movie">'+
+	'<param value="always" name="AllowScriptAccess">'+
+	'<param value="all" name="allowNetworking">'+
+	'<param value="true" name="allowFullScreen">'+
+	'<param name="quality" value="hight" />'+
+	'<param name="bgcolor" value="#ffffff" />'+
+	'<param name="wmode" value="opaque" />'+
+	'<param name="FlashVars" value="'+
+		'Width={% if res_interface == "0" %}1260{% else %}1870{% endif %}'+
+		'&Height=350'+
+		'&NameX='+nameX+
+		'&NameY='+nameY+
+		'&StepX=60'+
+		'&StepY=100'+
+		'&Refresh=1000'+
+		'&DX=30'+
+		'&DY=30'+
+		'&graphsNames='+graphsNames+
+		'&valuesNames='+valuesNames+
+		'&avgColors=0xCC3300*0x0066CC*0x00CC00'+
+		'&url_data='+encodeURIComponent('/get_communicator_statistics?ip='+ip+'&port='+port+'&index=min,max,avg&colors=0xFF6600,0x0099FF,0x00FF00')+
+		'" />'+
+	'<embed src="/files/swf/graph/flash.swf" FlashVars="'+
+		'Width={% if res_interface == "0" %}1260{% else %}1870{% endif %}'+
+		'&Height=350'+
+		'&NameX='+nameX+
+		'&NameY='+nameY+
+		'&StepX=60'+
+		'&StepY=100'+
+		'&Refresh=1000'+
+		'&DX=30'+
+		'&DY=30'+
+		'&graphsNames='+graphsNames+
+		'&valuesNames='+valuesNames+
+		'&avgColors=0xCC3300*0x0066CC*0x00CC00'+
+		'&url_data='+encodeURIComponent('/get_communicator_statistics?ip='+ip+'&port='+port+'&index=min,max,avg&colors=0xFF6600,0x0099FF,0x00FF00')+	
+	+'" wmode="opaque" quality="best" bgcolor="#ffffff" width="{% if res_interface == "0" %}1260{% else %}1870{% endif %}" height="350" name="flash-app" align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer" />'+
+	'</object>'
+	);			
+}
+function showGeneralGraph(ip, port) {
+	if (flashVersion()) {
+		byId('video_general').innerHTML = addFlash2(ip, port);
+	} else {
+		byId('video_general').innerHTML = '<div class="noFlash">{% if not show_js %}{% trans "У Вас отсутствует или установлена старая версия flash плеера. Новую версию плеера можно скачать" %} <a target="_blank" href="http://get.adobe.com/flashplayer/">{% trans "здесь" %}</a>{% endif %}</div>';        
+	}
+}
+</script>				
+						{% if communicators|length > 1 and False %}		
+							<div class="head_graph">{% trans "Графики для всех серверов" %}</div>
+							<div class="cont_graph">
+								<div id="video_general"></div>
+								<script type="text/javascript">showGeneralGraph('{% for communicator in communicators %}{{ communicator.host }}*{% endfor %}', '{% for communicator in communicators %}{{ communicator.port }}*{% endfor %}');</script>
+							</div>						
+						{% endif %}
+<script type="text/javascript">
+function addFlash(ip, port) {
+	var lang = readCookie('django_language');
+	var nameX = '{% trans "Время (сек.)" %}';
+	var nameY = '{% trans "Время обработки (мс.)" %}';
+	var graphsNames = '{% trans "минимальное время обработки кадра" %}*{% trans "максимальное время обработки кадра" %}*{% trans "среднее время обработки кадра" %}';
+	var valuesNames = '{% trans "минимальное значение" %}:*{% trans "среднее значение" %}:*{% trans "максимальное значение" %}:';
+	return ('<object id="flash-app" name="flash-app" width="{% if res_interface == "0" %}1240{% else %}1850{% endif %}" height="350" data="/files/swf/graph/flash.swf" type="application/x-shockwave-flash">'+
+	'<param value="/files/swf/graph/flash.swf" name="movie">'+
+	'<param value="always" name="AllowScriptAccess">'+
+	'<param value="all" name="allowNetworking">'+
+	'<param value="true" name="allowFullScreen">'+
+	'<param name="quality" value="hight" />'+
+	'<param name="bgcolor" value="#ffffff" />'+
+	'<param name="wmode" value="opaque" />'+
+	'<param name="FlashVars" value="'+
+		'Width={% if res_interface == "0" %}1240{% else %}1850{% endif %}'+
+		'&Height=350'+
+		'&NameX='+nameX+
+		'&NameY='+nameY+
+		'&StepX=60'+
+		'&StepY=100'+
+		'&Refresh=1000'+
+		'&DX=30'+
+		'&DY=30'+
+		'&graphsNames='+graphsNames+
+		'&valuesNames='+valuesNames+
+		'&avgColors=0xCC3300*0x0066CC*0x00CC00'+
+		'&url_data='+encodeURIComponent('/get_communicator_statistics?ip='+ip+'&port='+port+'&index=min,max,avg&colors=0xFF6600,0x0099FF,0x00FF00')+
+		'" />'+
+	'<embed src="/files/swf/graph/flash.swf" FlashVars="'+
+		'Width={% if res_interface == "0" %}1240{% else %}1850{% endif %}'+
+		'&Height=350'+
+		'&NameX='+nameX+
+		'&NameY='+nameY+
+		'&StepX=60'+
+		'&StepY=100'+
+		'&Refresh=1000'+
+		'&DX=30'+
+		'&DY=30'+
+		'&graphsNames='+graphsNames+
+		'&valuesNames='+valuesNames+
+		'&avgColors=0xCC3300*0x0066CC*0x00CC00'+
+		'&url_data='+encodeURIComponent('/get_communicator_statistics?ip='+ip+'&port='+port+'&index=min,max,avg&colors=0xFF6600,0x0099FF,0x00FF00')+
+	+'" wmode="opaque" quality="best" bgcolor="#ffffff" width="{% if res_interface == "0" %}1240{% else %}1850{% endif %}" height="350" name="flash-app" align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer" />'+
+	'</object>'
+	);			
+}
+function addFlash3(ip, port) {
+	var lang = readCookie('django_language');
+	var nameX = '{% trans "Время (сек.)" %}';
+	var nameY = '{% trans "Количество кадров" %}';
+	var graphsNames = '{% trans "Пропущенные кадры" %}*{% trans "Ошибки обработки кадров" %}';
+	var valuesNames = '{% trans "минимальное значение" %}:*{% trans "среднее значение" %}:*{% trans "максимальное значение" %}:';
+	return ('<object id="flash-app" name="flash-app" width="{% if res_interface == "0" %}1240{% else %}1850{% endif %}" height="350" data="/files/swf/graph/flash.swf" type="application/x-shockwave-flash">'+
+	'<param value="/files/swf/graph/flash.swf" name="movie">'+
+	'<param value="always" name="AllowScriptAccess">'+
+	'<param value="all" name="allowNetworking">'+
+	'<param value="true" name="allowFullScreen">'+
+	'<param name="quality" value="hight" />'+
+	'<param name="bgcolor" value="#ffffff" />'+
+	'<param name="wmode" value="opaque" />'+
+	'<param name="FlashVars" value="'+
+		'Width={% if res_interface == "0" %}1240{% else %}1850{% endif %}'+
+		'&Height=350'+
+		'&NameX='+nameX+
+		'&NameY='+nameY+
+		'&StepX=60'+
+		'&StepY=2'+
+		'&Refresh=1000'+
+		'&DX=30'+
+		'&DY=30'+
+		'&graphsNames='+graphsNames+
+		'&valuesNames='+valuesNames+
+		'&avgColors=0xCC3300*0x0066CC*0x00CC00'+
+		'&url_data='+encodeURIComponent('/get_communicator_statistics?ip='+ip+'&port='+port+'&index=missed,errors&colors=0xFF6600,0x0099FF,0x00FF00')+
+		'" />'+
+	'<embed src="/files/swf/graph/flash.swf" FlashVars="'+
+		'Width={% if res_interface == "0" %}1240{% else %}1850{% endif %}'+
+		'&Height=350'+
+		'&NameX='+nameX+
+		'&NameY='+nameY+
+		'&StepX=60'+
+		'&StepY=2'+
+		'&Refresh=1000'+
+		'&DX=30'+
+		'&DY=30'+
+		'&graphsNames='+graphsNames+
+		'&valuesNames='+valuesNames+
+		'&avgColors=0xCC3300*0x0066CC*0x00CC00'+
+		'&url_data='+encodeURIComponent('/get_communicator_statistics?ip='+ip+'&port='+port+'&index=missed,errors&colors=0xFF6600,0x0099FF,0x00FF00')+
+	+'" wmode="opaque" quality="best" bgcolor="#ffffff" width="{% if res_interface == "0" %}1240{% else %}1850{% endif %}" height="350" name="flash-app" align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer" />'+
+	'</object>'
+	);			
+}
+function showGraph(count, ip, port) {
+	{% if show_flash %}
+	if (flashVersion()) {
+		//byId('video'+count).innerHTML = '<div>'+addFlash2(ip, port)+'</div><div>'+addFlash(ip, port)+'</div>';
+		/*byId('video'+count).innerHTML = '<div>'+addFlash2(ip, port)+'</div>';
+		byId('video'+count).innerHTML = byId('video'+count).innerHTML + '<div>'+addFlash(ip, port)+'</div>';*/
+		//var content = addFlash3(ip, port);
+		//content = content + addFlash3(ip, port);
+		byId('video1'+count).innerHTML = addFlash(ip, port);
+		byId('video2'+count).innerHTML = addFlash3(ip, port);
+	} else {
+		byId('video'+count).innerHTML = '<div class="noFlash">{% if not show_js %}{% trans "У Вас отсутствует или установлена старая версия flash плеера. Новую версию плеера можно скачать" %} <a target="_blank" href="http://get.adobe.com/flashplayer/">{% trans "здесь" %}</a>{% endif %}</div>';        
+	}
+	{% endif %}
+}
+</script>
+
+						<ul class="list_balans" style="margin-top:10px;">						
+							{% for communicator in communicators %}
+								<li class="name_balan">
+									<div class="head_balan">
+										<span>{{ forloop.counter }}.</span>
+										<div>
+											<input type="button" name="" value="" class="btn_balan_bottom" id="btn_arrow{{ forloop.counter }}" onClick="javascript: clickCommunicator('info_balan{{ forloop.counter }}', this, '{{ forloop.counter }}', '{{ communicator.host }}', '{{ communiocator.port }}');" />
+										</div>
+										<a href="#" onClick="javascript: clickCommunicator('info_balan{{ forloop.counter }}', 'btn_arrow{{ forloop.counter }}', '{{ forloop.counter }}', '{{ communicator.host }}', '{{ communicator.port }}'); return false;">{% trans "Коммуникатор" %} {{ communicator.host }}:{{ communicator.port }}</a>
+									</div>
+									<div style="display: block;" id="info_balan{{ forloop.counter }}">
+										<div class="head_graph">{% trans "График" %} "{% trans "Время обработки кадра" %}"</div>
+										<div class="cont_graph">
+											{% if show_flash %}<div id="video1{{ forloop.counter }}"></div>{% endif %}
+											{% if show_js %}
+												<div class="block_graph">
+													<div id="time_js_graph_{{ forloop.counter }}" style="width: {% if res_interface == "0" %}1230{% else %}1840{% endif %}px; height: 300px;"><!--  --></div>
+													<div class="axisX">{% trans "Время обработки (мс)" %}</div>
+													<div class="axisY">{% trans "Время (сек.)" %}</div>													
+												</div>
+												<div id="time_legend_js_graph_{{ forloop.counter }}"></div>
+											{% endif %}
+										</div>
+										<div class="head_graph">{% trans "Графики" %} "{% trans "Ошибки обработки кадров" %}", "{% trans "Пропущенные кадры" %}" - {% trans "суммарно по всем камерам" %}</div>
+										<div class="cont_graph">
+											{% if show_flash %}<div id="video2{{ forloop.counter }}"></div>{% endif %}
+											{% if show_js %}
+											<div class="block_graph">
+												<div id="errors_js_graph_{{ forloop.counter }}" style="width: {% if res_interface == "0" %}1230{% else %}1840{% endif %}px; height: 300px;"></div>
+												<div class="axisX">{% trans "Количество кадров" %}</div>
+												<div class="axisY">{% trans "Время (сек.)" %}</div>
+											</div>
+											<div id="errors_legend_js_graph_{{ forloop.counter }}"><!--  --></div>{% endif %}
+										</div>
+										{% if show_flash %}<script type="text/javascript">showGraph('{{ forloop.counter }}', '{{ communicator.host }}', '{{ communicator.port }}');</script>{% endif %}
+									</div>
+								</li>
+							{% endfor %}
+						</ul>
+{% if show_js %}
+<script type="text/javascript">
+$(document).ready(function() {
+	//JS graphs
+	Array.prototype.max = function() {
+		var max = this[0];
+		var len = this.length;
+		for (var i = 1; i < len; i++) if (this[i] > max) max = this[i];
+		return max;
+	}
+
+	Array.prototype.min = function() {
+		var min = this[0];
+		var len = this.length;
+		for (var i = 1; i < len; i++) if (this[i] < min) min = this[i];
+		return min;
+	}
+	Array.prototype.avg = function() {
+		var av = 0;
+		var cnt = 0;
+		var len = this.length;
+		for (var i = 0; i < len; i++) {
+			var e = +this[i];
+			if(!e && this[i] !== 0 && this[i] !== '0') e--;
+			if (this[i] == e) {av += e; cnt++;}
+		}
+		return av/cnt;
+	}
+
+	Array.prototype.info = function() {
+		var min = this[0];
+		var max = this[0];
+		var sum = 0;
+		var len = this.length;
+		for(var i = 0; i < len; i++) {
+			sum = sum + this[i];
+			if (this[i] < min){
+				min = this[i];
+			} else {
+				if (this[i] > max) {
+					max = this[i];
+				}
+			}
+		}
+		return {min: min, max: max, avg: sum/this.length}
+	}
+
+	//time graphs
+	function showTimeGraphs() {
+		{% for communicator in communicators %}
+		var result_time{{ forloop.counter }} = [];
+		var result_errors{{ forloop.counter }} = [];
+		{% endfor %}
+
+		function getDiagramData() {
+			var dateObj = new Date;
+			var unixtime_ms = dateObj.getTime();
+
+			$.ajax({
+				type: "GET",
+				url: "{% url get_communicator_statistics_js %}?rand=" + unixtime_ms,
+				data: {},
+				success: function(msg){
+					obj = msg;
+
+					{% for communicator in communicators %}
+					result_time{{ forloop.counter }} = [];
+					result_errors{{ forloop.counter }} = [];
+
+					var res{{ forloop.counter }} = [];
+					var min{{ forloop.counter }} = [];
+					var max{{ forloop.counter }} = [];
+					var avg{{ forloop.counter }} = [];
+					var min_avg{{ forloop.counter }} = [];
+					var max_avg{{ forloop.counter }} = [];
+					var avg_avg{{ forloop.counter }} = [];
+
+					var errors{{ forloop.counter }} = [];
+					var missed{{ forloop.counter }} = [];
+					{% endfor %};
+
+
+					//main sum graph
+
+
+						{% for communicator in communicators %}
+						for (var z = 0; z < obj.length; z++)
+						{
+							try {
+								if(obj[z] != null && (z == {{ forloop.counter }} - 1))
+								{
+									//график времени
+									//минимальное время
+									res{{ forloop.counter }} = [];
+									var _min = obj[z].min;
+									for (var i = 0; i < _min.length; ++i)
+									{
+										res{{ forloop.counter }}.push([_min.length-1-i, _min[i]]);
+									}
+
+									min{{ forloop.counter }} = { color: '#FF6600', data: res{{ forloop.counter }}};
+
+									//максимальное время
+									res{{ forloop.counter }} = [];
+									var _max = obj[z].max;
+									for (var i = 0; i < _max.length; ++i)
+									{
+										res{{ forloop.counter }}.push([_max.length-1-i, _max[i]]);
+									}
+
+									max{{ forloop.counter }} = { color: '#0099FF', data: res{{ forloop.counter }}};
+
+									//среднее время
+									res{{ forloop.counter }} = [];
+									var _avg = obj[z].avg;
+									for (var i = 0; i < _avg.length; ++i)
+									{
+										res{{ forloop.counter }}.push([_avg.length-1-i, _avg[i]]);
+									}
+
+									avg{{ forloop.counter }} = { color: '#00FF00', data: res{{ forloop.counter }}};
+
+									//средние значения
+									res{{ forloop.counter }} = [];
+									var mininfo = _min.info();
+									var min_val = _min.avg();
+									var min_avg_val = Math.round(min_val * 100) / 100;
+
+									for (var n = 0; n < 601; n++)
+									{
+										res{{ forloop.counter }}.push([600-n, min_avg_val]);
+									}
+
+									min_avg{{ forloop.counter }} = { color: '#CC3300', data: res{{ forloop.counter }}, lines: { lineWidth: 2 }};
+
+									res{{ forloop.counter }} = [];
+									var maxinfo = _max.info();
+									var max_val = _max.avg();
+									var max_avg_val = Math.round(max_val * 100) / 100;
+
+									for (var n = 0; n < 601; n++)
+									{
+										res{{ forloop.counter }}.push([600-n, max_avg_val]);
+									}
+
+
+									max_avg{{ forloop.counter }} = { color: '#0066CC', data: res{{ forloop.counter }}, lines: { lineWidth: 2 }};
+
+									res{{ forloop.counter }} = [];
+									var avginfo = _avg.info();
+									var avg_val = _avg.avg();
+									var avg_avg_val = Math.round(avg_val * 100) / 100;
+
+									for (var n = 0; n < 601; n++)
+									{
+										res{{ forloop.counter }}.push([600-n, avg_avg_val]);
+									}
+
+
+									avg_avg{{ forloop.counter }} = { color: '#00CC00', data: res{{ forloop.counter }}, lines: { lineWidth: 2 }};
+									//end график времени
+
+									//график ошибок
+									res{{ forloop.counter }} = [];
+									var _errors = obj[z].errors;
+									for (var i = 0; i < _errors.length; ++i)
+									{
+										res{{ forloop.counter }}.push([_errors.length-1-i, _errors[i]]);
+									}
+
+									errors{{ forloop.counter }} = { color: '#0099FF', data: res{{ forloop.counter }}};
+
+									res{{ forloop.counter }} = [];
+									var _missed = obj[z].missed;
+									for (var i = 0; i < _missed.length; ++i)
+									{
+										res{{ forloop.counter }}.push([_missed.length-1-i, _missed[i]]);
+									}
+
+									missed{{ forloop.counter }} = { color: '#FF6600', data: res{{ forloop.counter }}};
+
+									//средние значения
+									res{{ forloop.counter }} = [];
+									var missedinfo = _missed.info();
+									var missed_val = _missed.avg();
+									var missed_avg_val = Math.round(missed_val * 100) / 100;
+
+									for (var n = 0; n < 601; n++)
+									{
+										res{{ forloop.counter }}.push([600-n, missed_avg_val]);
+									}
+									missed_avg{{ forloop.counter }} = { color: '#FF6600', data: res{{ forloop.counter }}, lines: { lineWidth: 2 }};
+
+									res{{ forloop.counter }} = [];
+									var errorsinfo = _errors.info();
+									var errors_val = _errors.avg();
+									var errors_avg_val = Math.round(errors_val * 100) / 100;
+
+									for (var n = 0; n < 601; n++)
+									{
+										res{{ forloop.counter }}.push([600-n, errors_avg_val]);
+									}
+									errors_avg{{ forloop.counter }} = { color: '#0099FF', data: res{{ forloop.counter }}, lines: { lineWidth: 2 }};
+									//end график ошибок
+
+									var legend = '';
+									if(z == {{ forloop.counter }} - 1){
+										legend += '<div class="block_legenda"><div class="graph_color" style="background-color: #FF6600;"></div><div class="graph_delim">-</div><div class="graph_text">{% trans "Минимальное время обработки кадра" %} ({% trans "минимальное значение" %}: ' + mininfo.min + ', {% trans "среднее значение" %}: ' + min_avg_val  + ', {% trans "максимальное значение" %}: ' + mininfo.max + ')</div></div>';
+										legend += '<div class="block_legenda"><div class="graph_color" style="background-color: #0099FF;"></div><div class="graph_delim">-</div><div class="graph_text">{% trans "Максимальное время обработки кадра" %} ({% trans "минимальное значение" %}: ' + maxinfo.min + ', {% trans "среднее значение" %}: ' + max_avg_val  + ', {% trans "максимальное значение" %}: ' + maxinfo.max + ')</div></div>';
+										legend += '<div class="block_legenda"><div class="graph_color" style="background-color: #00FF00;"></div><div class="graph_delim">-</div><div class="graph_text">{% trans "Среднее время обработки кадра" %} ({% trans "минимальное значение" %}: ' + avginfo.min + ', {% trans "среднее значение" %}: ' + avg_avg_val  + ', {% trans "максимальное значение" %}: ' + avginfo.max + ')</div></div>';
+									}
+									$('#time_legend_js_graph_{{ forloop.counter }}').html(legend);
+
+									legend = '';
+									if(z == {{ forloop.counter }} - 1){
+										legend += '<div class="block_legenda"><div class="graph_color" style="background-color: #FF6600;"></div><div class="graph_delim">-</div><div class="graph_text">{% trans "Пропущенные кадры" %} ({% trans "минимальное значение" %}: ' + missedinfo.min + ', {% trans "среднее значение" %}: ' + missed_avg_val  + ', {% trans "максимальное значение" %}: ' + missedinfo.max + ')</div></div>';
+										legend += '<div class="block_legenda"><div class="graph_color" style="background-color: #0099FF;"></div><div class="graph_delim">-</div><div class="graph_text">{% trans "Ошибки обработки кадров" %} ({% trans "минимальное значение" %}: ' + errorsinfo.min + ', {% trans "среднее значение" %}: ' + errors_avg_val  + ', {% trans "максимальное значение" %}: ' + errorsinfo.max + ')</div></div>';
+									}
+									$('#errors_legend_js_graph_{{ forloop.counter }}').html(legend);
+								}
+							}
+							catch(e){	
+							}	
+						}
+					{% endfor %}
+
+					//end main sum graph
+					{% for communicator in communicators %}
+					try {
+						result_time{{ forloop.counter }}.push(min{{ forloop.counter }});
+						result_time{{ forloop.counter }}.push(max{{ forloop.counter }});
+						result_time{{ forloop.counter }}.push(avg{{ forloop.counter }});
+						result_time{{ forloop.counter }}.push(min_avg{{ forloop.counter }});
+						result_time{{ forloop.counter }}.push(avg_avg{{ forloop.counter }});
+						result_time{{ forloop.counter }}.push(max_avg{{ forloop.counter }});
+
+						result_errors{{ forloop.counter }}.push(missed{{ forloop.counter }});
+						result_errors{{ forloop.counter }}.push(errors{{ forloop.counter }});
+						result_errors{{ forloop.counter }}.push(missed_avg{{ forloop.counter }});
+						result_errors{{ forloop.counter }}.push(errors_avg{{ forloop.counter }});
+					}catch(e){
+
+					}
+
+					{% endfor %}
+				},
+				error: function(msg){
+				}
+			});
+		}
+
+		var updateInterval = 1000;
+		var options = {
+			series: { shadowSize: 0,
+					 lines: { lineWidth: 1 },
+							},
+			yaxis: { min: 0,
+					 tickFormatter: function (v) { return parseInt(v); } },
+			xaxis: { ticks: 10,
+					 tickSize: 60,
+					 max: 600,
+					 tickFormatter: function (v) { return parseInt(v); } }
+		};
+
+		var options2 = {
+				series: { shadowSize: 0,
+						 lines: { lineWidth: 1 },
+								},
+				yaxis: { min: 0,
+						 tickFormatter: function (v) { return parseInt(v); } },
+				xaxis: { ticks: 10,
+						 tickSize: 60,
+						 max: 600,
+						 tickFormatter: function (v) { return parseInt(v); } }
+			};
+
+		getDiagramData();
+		{% for communicator in communicators %}
+		try{
+			var plot{{ forloop.counter }} = $.plot($("#time_js_graph_{{ forloop.counter }}"), result_time{{ forloop.counter }}, options);
+		} catch(e) {
+
+		}
+		try{
+			var plot_errors{{ forloop.counter }} = $.plot($("#errors_js_graph_{{ forloop.counter }}"), result_errors{{ forloop.counter }}, options2);
+		} catch(e) {
+
+		}
+		{% endfor %}
+
+		function update() {
+			getDiagramData();
+			{% for communicator in communicators %}
+			try{
+				plot{{ forloop.counter }}.setData(result_time{{ forloop.counter }});
+				plot{{ forloop.counter }}.setupGrid();
+				plot{{ forloop.counter }}.draw();
+			} catch(e) {
+
+			}
+			try{	
+				plot_errors{{ forloop.counter }}.setData(result_errors{{ forloop.counter }});
+				plot_errors{{ forloop.counter }}.setupGrid();
+				plot_errors{{ forloop.counter }}.draw();
+			} catch(e) {
+
+			}
+			{% endfor %}
+
+			setTimeout(update, updateInterval);
+		}
+		update();
+	}
+	showTimeGraphs();
+	//end time graphs
+
+});
+</script>
+{% endif %}
+{% endblock %}
+{% block windows %}
+{% include "execute.html" %}
+{% include "window_settingsus.html"%}
+{% include "control_settings_window_settings.html" %}
+{% endblock %}

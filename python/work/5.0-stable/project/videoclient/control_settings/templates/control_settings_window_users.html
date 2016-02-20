@@ -1,0 +1,18 @@
+{% load i18n %}
+{% load templatetags %}
+<div id="win_mess" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt" id="win_mess_headWF">{% trans "Предупреждение" %}</div>
+        </div>
+        <div class="contWF" id="win_mess_contWF"></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />    
+        </div>
+    </div>
+</div>
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/smedia/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>

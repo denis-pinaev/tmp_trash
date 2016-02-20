@@ -1,0 +1,392 @@
+{% extends "base_archive_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% if copy %}{% trans "Создание дубликата задачи" %} "{% trans  task.name  %}"{% else %}{% if task %}{% trans "Редактирование задачи" %} "{{ task.name }}"{% else %}{% trans "Добавление задачи" %}{% endif %}{% endif %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/addtask.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/spinbox.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="{{ root_path }}/files/js/addtask.js?v=v{{ version }}"></script>
+{% include "js/js_task.html" %}
+<script type="text/javascript">
+	$(function() {
+		init();
+	});
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu/menu_planner.html" %}{% endblock %}
+{% block subcontent %}
+	<h2><a href="{% url archive_page "tasks" %}">{% trans "Задачи" %}</a> - {% if copy %}{% trans "Создание дубликата задачи" %} "{% trans  task.name  %}"{% else %}{% if task %}{% trans "Редактирование задачи" %} "{{ task.name }}"{% else %}{% trans "Добавление задачи" %}{% endif %}{% endif %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Видеоархив Создание задачи" %}');" /></h2>
+	{% include "current_time.html" %}	
+	{% if all_cameras|length > 0 %}				
+	<form method="post" action="" id="frm_add_task">
+		<div>{% trans 'Поля, отмеченные звёздочкой' %} (<span class="req">*</span>), {% trans 'являются обязательными для заполнения' %}.</div>
+		<div class="bl_param">
+			<div class="bl_error">{% if errors.name %}{% trans  errors.name  %}{% endif %}</div>
+			<div class="block">
+				<label for="name" class="bl_txt"><span class="req">*</span>{% trans 'Название' %}:</label>
+				<div class="bl_enter">
+					<input type="text" name="name" value="{{ task.name }}" class="inp_txt inp_name el_enter{% if errors.name %} err_forms{% endif %}" id="name" maxlength="128" />
+				</div>
+			</div>
+		</div>
+		<div class="bl_param">
+			<div class="bl_error" id="error_source">{% if errors.camera %}{% trans  errors.camera  %}{% endif %}</div>
+			<div class="block">
+				<label for="source" class="bl_txt"><span class="req">*</span>{% trans "Источник" %}:</label>
+				<div class="bl_enter">
+					<div class="block_ie"> 
+						{% if all_cameras|length > 0 %}
+						<ul class="block list_cameras" id="list_cameras">
+							{% for camera in all_cameras %}
+								<li{% if not camera.available %} class="lc_dis short_descr" title='{% trans "Камера" %} "{% if camera.name %}{{ camera.name }} ({{ camera.ip }} {{ camera.type }}){% else %}{{ camera.ip }} {{ camera.type }}{% endif %}" <strong>{% trans "недоступна" %}</strong>'{% endif %}>   
+									<input type="radio" name="source" id="source{{ camera.id }}" value="{{ camera.id }}" class="inp_check" {% if camera.id == task.camera.id or not task and forloop.first %} checked="checked"{% endif %} onClick="javascript: getResolution(this.value);"/>
+									<label for="source{{ camera.id }}" id="lablesource{{ camera.id }}">{{ camera.display_name|truncchar:22 }}</label>
+									<input type="hidden" id="cam_lablesource{{ camera.id }}" value="{'info': '{{ camera.full_name }}', 'ip': '{{ camera.ip }}', 'type': '{{ camera.type }}', 'uuid': '{{ camera.uuid }}'}"/>
+								</li>
+							{% endfor %}
+							{% if task and not task.camera.active %}
+								<li title='{% trans "Камера" %} "{% if task.camera.name %}{{ task.camera.name }} ({{ task.camera.ip }} {{ task.camera.type }}){% else %}{{ task.camera.ip }} {{ task.camera.type }}{% endif %}" <strong>{% trans "удалена" %}</strong>' class="{% if not camera.active %}lc_del{% endif %} short_descr">   
+									{% with task.camera as camera %}
+									<input type="radio" name="source" id="source{{ camera.id }}" value="no_active" class="inp_check" {% if camera.id == task.camera.id or not task and forloop.first %} checked="checked"{% endif %} disabled="disabled" />
+									<span>{{ camera.display_name|truncchar:22 }}</span>
+									<input type="hidden" id="cam_lablesource{{ camera.id }}" value="{'info': '{{ camera.full_name }}', 'ip': '{{ camera.ip }}', 'type': '{{ camera.type }}', 'uuid': '{{ camera.uuid }}'}"/>	    										    
+									{% endwith %}
+								</li>
+							{% endif %}
+						</ul>
+						<input type="hidden" id="id_camera" name="camera" value="{% if not task %}{{ all_cameras.0.id }}{% else %}{{ task.camera.id }}{% endif %}">
+						{% endif %}
+					</div>	
+				</div>
+			</div>
+		</div>
+		<div class="bl_param">
+			<div class="bl_error" id="error_signal">{% if errors.signal %}{% trans  errors.signal  %}{% endif %}</div>
+			<div class="block">
+				<label for="signal" class="bl_txt no_dist_top"><span class="req">*</span>{% trans "Запуск задачи" %}:</label>
+				<div class="bl_enter">
+					{% comment %}
+					<select name="signal" class="select select_signal el_enter{% if errors.signal %} err_forms{% endif %}" id="signal">
+						{% for signal in all_signals %}
+							<option value="{{ signal.id }}"{% if signal.id == task.signal.id %} selected="selected"{% endif %}>{% trans signal.name %}</option>
+						{% endfor %}
+					</select>
+					{% endcomment %}
+					<input type="radio" name="signal_type" id="record_const" value="" class="inp_check" {% if not task or task.signal.str_id == "simple" %}checked="checked"{% endif %} /><label for="record_const">{% trans "По расписанию" %}</label>
+					<input type="radio" name="signal_type" id="record_detectors" value="" class="inp_check dist_left" {% if task and task.signal.str_id != "simple" %}checked="checked"{% endif %} /><label for="record_detectors">{% trans "По детектору" %}</label>								
+					<ul id="list_detectors" class="block list_detectors" {% if not task or task.signal.str_id == "simple" %}style="display: none;"{% endif %}>
+						{% for signal in all_signals %}									 	
+							<li class="{% if signal.id != task.signal.id %}det_noact {% endif %}short_descr" title="{% if signal.str_id == "facedetect" %}{% trans "По детектору распознавания лиц" %}{% else %}{% if signal.str_id == "identification" %}{% trans "По детектору идентификации лиц" %}{% else %}{% if signal.str_id == "motion" %}{% trans "По детектору движения" %}{% endif %}{% endif %}{% endif %}" {% if signal.str_id == "simple" %}style="display:none;"{% endif %} >
+								<input type="radio" class="inp_check check_detector" name="signal" value="{{ signal.id }}" id="signal_{{ signal.str_id }}" {% if signal.id == task.signal.id or signal.str_id == "simple" and not task %} checked="checked"{% endif %}/>
+								<a href="#" class="det_{{ signal.str_id }}"></a>
+							</li>
+						{% endfor %}
+						{% comment %}    
+						<li class="det_noact short_descr" title="{% trans "Детектор распознавания лиц" %}"><input type="checkbox" class="inp_check check_detector" name="signal" value="" /><a href="#" class="det_face"></a></li>
+						<li class="det_noact short_descr" title="{% trans "Детектор идентификации лиц" %}"><input type="checkbox" class="inp_check check_detector" name="signal" value="" /><a href="#" class="det_person"></a></li>
+						<li class="det_noact short_descr" title="{% trans "Детектор скопления людей" %}"><input type="checkbox" class="inp_check check_detector" name="signal" value="" /><a href="#" class="det_people"></a></li>
+						<li class="det_noact short_descr" title="{% trans "Детектор движения" %}"><input type="checkbox" class="inp_check check_detector" name="signal" value="" /><a href="#" class="det_motion"></a></li>
+						<li class="det_noact short_descr" title="{% trans "Детектор подсчёта пассажиропотока" %}"><input type="checkbox" class="inp_check check_detector" name="signal" value="" /><a href="#" class="det_stream"></a></li>
+						<li class="det_noact short_descr" title="{% trans "Детектор оставленных вещей" %}"><input type="checkbox" class="inp_check check_detector" name="signal" value="" /><a href="#" class="det_things"></a></li>
+						<li class="det_noact short_descr" title="{% trans "Детектор дыма" %}"><input type="checkbox" class="inp_check check_detector" name="signal" value="" /><a href="#" class="det_smoke"></a></li>
+						<li class="det_noact short_descr" title="{% trans "Детектор огня" %}"><input type="checkbox" class="inp_check check_detector" name="signal" value="" /><a href="#" class="det_fire"></a></li>
+						<li class="det_noact short_descr" title="{% trans "Детектор вспышки" %}"><input type="checkbox" class="inp_check check_detector" name="signal" value="" /><a href="#" class="det_explosion"></a></li>
+						<input type="hidden" name="signal" value="" />
+						{% endcomment %}
+					</ul>
+				</div>
+			</div>
+		</div>
+					 
+		<div class="bl_delim"></div>
+		<div class="bl_param">
+			<div class="bl_error"></div>
+			<div class="block">
+				<label for="repeat_task" class="bl_txt no_dist_top">{% trans "Повторяющаяся задача" %}:</label>
+				<div class="bl_enter">
+					<input type="radio" name="repeat_task" id="repeat_task_yes" value="1" class="inp_check"{% if not task or task.repeat_task %} checked="checked"{% endif %}/><label for="repeat_task_yes">{% trans "Да" %}</label>
+					<input type="radio" name="repeat_task" id="repeat_task_no" value="0" class="inp_check dist_left"{% if task and not task.repeat_task %} checked="checked"{% endif %}/><label for="repeat_task_no">{% trans "Нет" %}</label>
+				</div>
+			</div>
+		</div>
+		<div id="bl_repeat_task_no" style="display: {% if task and not task.repeat_task %}block{% else %}none{% endif %};">
+			<div class="bl_param">
+				<div class="bl_error" id="error_start_date"></div>
+				<div class="block">							
+					<label for="task_date_time" class="bl_txt"><span class="req">*</span>{% trans "Начало" %}:</label>
+					<div class="bl_enter">
+						<div class="block_ie">
+							<div class="block">
+								<div class="bl_date">
+									<input type="text" name="start_date" value="" id="start_date" class="inp_txt inp_date" maxlength="10" />
+									<input type="button" name="" value="" class="btn_calend" />												    
+								</div>
+								<div class="bl_time" id="bl_time_start"><input type="text" name="start_time" id="time_start" value="{{ task.start_time|time:"H:i" }}" class="inp_txt" maxlength="5" /></div>
+								<div class="bl_all_day"><input type="checkbox" name="all_day" id="all_day" value="1" class="inp_check" {% if task.all_day %}checked="checked"{% endif %} /><label for="all_day">Целый день</label></div>
+								<input type="hidden" name="" value="{{ task.start_time|time:"H:i" }}" id="current_time_start" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="bl_param">
+				<div class="bl_error" id="error_stop_date"></div>
+				<div class="block">							
+					<label for="task_date_time" class="bl_txt"><span class="req">*</span>{% trans "Окончание" %}:</label>
+					<div class="bl_enter">
+						<div class="block_ie">
+							<div class="block">
+								<div class="bl_date">
+									<input type="text" name="stop_date" id="stop_date" value="" class="inp_txt inp_date" maxlength="10" />
+									<input type="button" name="" value="" class="btn_calend" />
+								</div>
+								<div class="bl_time" id="bl_time_stop"><input type="text" name="stop_time" id="time_stop" value="{{ task.stop_time|time:"H:i" }}" class="inp_txt" maxlength="5" /></div>
+								<input type="hidden" name="" value="{{ task.stop_time|time:"H:i" }}" id="current_time_stop" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="bl_param">
+				<div class="bl_error"></div>
+				<div class="block">
+					<div class="bl_txt no_dist_top"><strong>{% trans "Запись" %}:</strong></div>
+					<div class="bl_enter"><strong id="note_repeat_task_no"></strong></div>
+				</div>
+			</div>			
+		</div>
+		<div id="bl_repeat_task_yes" style="display: {% if not task or task.repeat_task %}block{% else %}none{% endif %};">
+			<div class="bl_param">
+				<div class="bl_error" id="error_time"></div>
+				<div class="block">							
+					<label for="" class="bl_txt"><span class="req">*</span>{% trans "Время" %}:</label>
+					<div class="bl_enter">
+						<div class="block_ie">
+							<div class="block">
+								<label for="repeat_start_time" class="bl_txt2">{% trans "начало" %}:</label>
+								<input type="text" name="repeat_start_time" value="17:00" class="inp_txt inp_time el_enter" id="repeat_start_time" onChange="javascript: calculateDuration();" onkeyup="javascript: calculateDuration();" maxlength="5" />
+							</div>
+							<div class="block bl_param_inner">
+								<label for="repeat_stop_time" class="bl_txt2">{% trans "окончание" %}:</label>
+								<input type="text" name="repeat_stop_time" id="repeat_stop_time" value="18:00" class="inp_txt inp_time el_enter" onChange="javascript: calculateDuration();" onkeyup="javascript: calculateDuration();" maxlength="5" />
+							</div>
+							<div class="block bl_param_inner">
+								<label for="repeat_duration" class="bl_txt2">{% trans "длительность" %}:</label>
+								<input type="text" name="duration" id="duration" value="{{ task.duration }}" class="inp_txt inp_time el_enter" onChange="javascript: calculateStopDate();" onkeyup="javascript: calculateStopDate();" maxlength="7" />
+								<select name="duration_type" class="select sel_time el_enter" id="duration_type" onChange="javascript: calcDuration(this.value);">
+									<option value="0"{% if task.duration_type == 0 %} selected="selected"{% endif %}>{% trans "мин." %}</option>
+									<option value="1"{% if not task or task.duration_type == 1 %} selected="selected"{% endif %}>{% trans "час." %}</option>
+									<option value="2"{% if task.duration_type == 2 %} selected="selected"{% endif %}>{% trans "дн." %}</option>
+								</select>
+								<input type="hidden" id="last_duration" value="{% if not task %}1{% else %}{{ task.duration_type }}{% endif %}">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="bl_param">
+				<div class="bl_error"></div>
+				<div class="block">							
+					<label for="" class="bl_txt"><span class="req">*</span>{% trans "Повтор задачи" %}:</label>
+					<div class="bl_enter">
+						<select name="repeat" class="select select_repeat el_enter" id="repeat_select">
+							<option value="{{ all_repeats.always }}"{% if not task or task.repeat = all_repeats.always %} selected="selected"{% endif %}>{% trans "Всегда" %}</option>
+							<option value="{{ all_repeats.every }}"{% if task.repeat = all_repeats.every %} selected="selected"{% endif %} >{% trans "Ежедневно" %}</option>
+							<option value="{{ all_repeats.work }}"{% if task.repeat = all_repeats.work %} selected="selected"{% endif %} >
+								{% trans "По рабочим дням" %} ({% for w in work_days %}{% trans w.short_name %}{% if not forloop.last %}, {% endif %}{% endfor %})
+							<option value="{{ all_repeats.week_end }}"{% if task.repeat = all_repeats.week_end %} selected="selected"{% endif %} >
+								{% trans "По выходным дням" %} ({% for w in not_work_days %}{% trans w.short_name %}{% if not forloop.last %}, {% endif %}{% endfor %})
+							</option>
+							<option value="{{ all_repeats.days }}"{% if task.repeat = all_repeats.days %} selected="selected"{% endif %} >{% trans "Еженедельно" %}</option>
+						</select>									
+					</div>
+				</div>
+			</div>
+			<div class="bl_param" id="bl_repeat_list_days" style="display: {% if task.repeat = all_repeats.days %}block{% else %}none{% endif %};">
+				<div class="bl_error" id="error_days_repeat"></div>
+				<div class="block">
+					<label for="repeat_days" class="bl_txt"><span class="req">*</span>{% trans "Дни повторения" %}:</label>
+					<div class="bl_enter">
+						<div class="block_ie">
+							<div class="block">
+								<ul class="list_days" id="repeat_list_days">
+									{% for w in all_weeks %}
+										<li class="change_day{% if forloop.last %} last{% endif %}">
+											<input type="checkbox" name="{{ w.str_id }}" id="day_{{ w.str_id }}" value="{{ w.number }}" class="inp_check"{% if task.repeat = all_repeats.days and w.number|tostr in task.days %} checked="checked"{% endif %}/>
+											<label for="day_{{ w.str_id }}" id="txt_day_{{ w.str_id }}">{% trans w.short_name %}</label>
+										</li>
+									{% endfor %}													
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="bl_repeat_period" style="display: {% if task and task.repeat != all_repeats.always %}block{% else %}none{% endif %};">
+				<div class="bl_param">
+					<div class="bl_error" id="error_repeat_start_date"></div>
+					<div class="block">
+						<label for="repeat_start_date" class="bl_txt"><span class="req">*</span>{% trans "Дата начала" %}:</label>
+						<div class="bl_enter">
+							<div class="block_ie">
+								<div class="block">
+									<div class="bl_date">
+										<input type="text" name="repeat_start_date" value="" id="repeat_start_date" class="inp_txt inp_date" maxlength="10" />
+										<input type="button" name="" value="" class="btn_calend" />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="bl_param">
+					<div class="bl_error" id="error_repeat_stop_date"></div>
+					<div class="block">
+						<label for="" class="bl_txt no_dist_top"><span class="req">*</span>{% trans "Дата окончания" %}:</label>
+						<div class="bl_enter">
+							<div class="block_ie">
+								<div class="block">
+									<input type="radio" name="interval" id="repeat_permanent_record" value="0" class="inp_check"{% if not task.interval %} checked="checked"{% endif %} /><label for="repeat_permanent_record">{% trans "постоянная запись" %}</label>
+								</div>
+								<div class="block bl_param_inner">
+									<input type="radio" name="interval" value="1" class="inp_check check_repeat_date" id="repeat_interval_record"{% if task.interval %} checked="checked"{% endif %} />													
+									<div class="bl_date">
+										<input type="text" name="repeat_stop_date" value="" id="repeat_stop_date" class="inp_txt inp_date{% if not task.interval %} inp_txt_dis{% endif %}" maxlength="10" />
+										<input type="button" name="" value="" class="btn_calend" id="repeat_stop_date_calend" />
+									</div>													
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="bl_param">
+				<div class="bl_error"></div>
+				<div class="block">
+					<div class="bl_txt no_dist_top"><strong>{% trans "Повторение" %}:</strong></div>
+					<div class="bl_enter"><strong id="note_repeat_task_yes"></strong></div>
+				</div>
+			</div>							
+		</div>
+		<div class="bl_delim"></div>
+		<div><a href="#" class="link_more_set" id="link_more_set">{% trans "Настройки параметров записи" %}</a></div>
+		<div id="bl_advanced_params" style="display: none;">
+			<div class="dist_top">{% trans "Запись может состоять из одного или нескольких видеороликов." %}</div>
+			<div class="bl_param">
+			<div class="bl_error" id="error_video_duration">{% if errors.video_delimiter %}{{ errors.video_delimiter }}{% endif %}</div>
+				<div class="block">
+					<label for="video_time" class="bl_txt">{% trans "Продолжительность одного видеоролика" %}:</label>
+					<div class="bl_enter">                                
+						<select name="" class="select select_video el_enter{% if errors.video_delimiter %} err_forms{% endif %}" id="video_time" onChange="javascript: setDelimiter(this.value)">
+							<option value="600"{% if  task.video_delimiter == 600 %} selected="selected"{% endif %}>10 {% trans "мин." %}</option>
+							<option value="1200"{% if task.video_delimiter == 1200 %} selected="selected"{% endif %}>20 {% trans "мин." %}</option>
+							<option value="1800"{% if task.video_delimiter == 1800 %} selected="selected"{% endif %}>30 {% trans "мин." %}</option>
+							<option value="2400"{% if task.video_delimiter == 2400 %} selected="selected"{% endif %}>40 {% trans "мин." %}</option>
+							<option value="3000"{% if task.video_delimiter == 3000 %} selected="selected"{% endif %}>50 {% trans "мин." %}</option>
+							<option value="3600"{% if not task or task.video_delimiter == 3600 %} selected="selected"{% endif %}>60 {% trans "мин." %}</option>
+							<option value="0"{% if task and task.video_delimiter != 600 and task.video_delimiter != 1200 and task.video_delimiter != 1800 and task.video_delimiter != 2400 and task.video_delimiter != 3000 and task.video_delimiter != 3600 %} selected="selected"{% endif %}>{% trans "Другая" %}</option>
+						</select>
+						<div class="bl_video" id="bl_video_time_other"{% if not task or task.video_delimiter == 600 or task.video_delimiter == 1200 or task.video_delimiter == 1800 or task.video_delimiter == 2400 or task.video_delimiter == 3000 or task.video_delimiter == 3600 %} style="display: none;"{% endif %}>
+							<div class="bl_arrow">&rarr;</div>
+							<div class="bl_time_other">
+								<label for="video_time_hour">{% trans "часы" %}:</label>
+								{% spinbox "video_time_hour" "hour_video" delimiter_hour "38" "0" "23" "1" %}
+							</div>
+							<div class="bl_time_other dist_left">
+								<label for="video_time_min">{% trans "минуты" %}:</label>
+								{% spinbox "video_time_min" "minute_video" delimiter_minute "38" "0" "59" "1" %}
+							</div>
+							<div class="bl_time_other dist_left">
+								<label for="video_time_sec">{% trans "секунды" %}:</label>
+								{% spinbox "video_time_sec" "second_video" delimiter_second "38" "0" "59" "1" %}
+							</div>
+						</div>                                 
+					</div>                            
+				<input type="hidden" name="video_delimiter" value="{% if task %}{{ task.video_delimiter }}{% else %}3600{% endif %}" id="value_time_video" />                                                            
+				</div>                        
+			</div>								
+			<div class="bl_param">
+				<div class="bl_error" id="error_video_resolution">{% if errors.resolution %}{{ errors.resolution }}{% endif %}</div>                                
+				<div class="block">
+					<label for="permit_video" class="bl_txt">{% trans "Разрешение" %}:</label>
+					<div class="bl_enter">
+						<span id="block_resolutions">
+						{% include "page_camera_resolution.html" %}
+						</span>
+						<div class="bl_video" id="bl_video_resolution_other" style="display: {% if enother_resolution %}block{% else %}none{% endif %};">
+							<div class="bl_arrow">&rarr;</div>
+							<label for="video_width">{% trans "ширина" %}:</label><input type="text" name="width" id="video_width" value="{{ width }}" class="inp_txt inp_size el_enter" maxlength="4" />{% trans "пикс." %}
+							<label for="video_height" class="dist_left">{% trans "высота" %}:</label><input type="text" name="height" id="video_height" value="{{ height }}" class="inp_txt inp_size el_enter" maxlength="4" />{% trans "пикс." %}
+						</div>                                        
+					</div>
+					<input type="hidden" name="resolution" id="resolution" value="{% if not task %}{{ all_resolutions.0.name }}{% else %}{{ task.resolution }}{% endif %}">
+				</div>
+			</div>					
+			{% for c in all_codecs %}
+				{% if c.number == default_codec %}
+					<input type="hidden" name="codec" value="{{ c.id }}" />
+				{% endif %}
+			{% endfor %}	
+			<div class="bl_param">
+				<div class="bl_error">{% if errors.fps %}{{ errors.fps }}{% endif %}</div>
+				<div class="block">
+					<label for="video_fps" class="bl_txt">{% trans "Частота кадров" %}:</label>
+					<div class="bl_enter">
+						<div class="block_ie">
+							<div class="block">{% spinbox "video_fps" "fps" fps "38" "1" "30" "1" %}</div>
+						</div>										
+					</div>
+				</div>
+			</div>
+			<div class="bl_param">
+				<div class="bl_error">{% if errors.gop %}{{ errors.gop }}{% endif %}</div>
+				<div class="block">
+					<label for="video_fps_main" class="bl_txt">{% trans "Частота ключевых кадров" %}:</label>
+					<div class="bl_enter">  
+						<div class="block_ie">
+							<div class="block">{% spinbox "video_fps_main" "gop" gop "38" "1" "20" "1" %}</div>
+						</div>
+					</div>                             
+				</div>
+			</div>
+		</div>
+		<div class="bl_delim"></div>                   
+		<!-- <input type="hidden" name="process" value="{% if task %}{{ task.process }}{% else %}0{% endif %}" /> -->
+		<input type="hidden" name="active" value="{% if task %}{{ task.active }}{% else %}1{% endif %}" />
+		{% if not copy and task and task.process %}<input type="hidden" name="process" value="{{ task.process.id }}" />{% endif %}
+		{% if not copy and task and task.last_kill_process %}<input type="hidden" name="last_kill_process" value="{{ task.last_kill_process|date:"d.m.Y" }}" />{% endif %}
+		{% comment %}
+		{% if not copy and task and task.last_run %}<input type="hidden" name="last_run" value="{{ task.last_run|date:"d.m.Y" }}" />{% endif %}
+		{% if not copy and task and task.last_error %}<input type="hidden" name="last_error" value="{{ task.last_error|date:"d.m.Y" }}" />{% endif %}
+		{% if not copy and task and task.error %}<input type="hidden" name="error" value="{{ task.error }}" />{% endif %}
+		{% endcomment %}
+		<input type="hidden" name="{{ action }}" value="1" />                        
+		<div class="bl_btn">
+			{% if perms.user_perms.perm_videoarchive_add_task %}
+				<input type="submit" name="" value="{% if not copy and task %}{% trans "Сохранить" %}{% else %}{% trans "Добавить" %}{% endif %}" class="inp_btn btn_save" />
+				<input type="button" name="" value="{% trans "Отменить" %}" class="inp_btn btn_cancel dist_left" onClick="goBack();" />
+			{% else %}                                
+				<input type="button" name="" value="{% trans "Назад" %}" class="inp_btn btn_cancel dist_left" onClick="goBack();" />
+			{% endif %}
+		</div>
+	</form>
+	{% else %}
+		{% if task %}{% trans "Редактирование задачи невозможно, по причине отсутствия камер." %}
+		{% else %}{% trans "Создание задачи невозможно, по причине отсутствия камер." %}
+		{% endif %}
+	{% endif %}
+{% endblock %}
+{% block windows %}
+<div id="easyTooltip_camera" class="video" style="display: none;">
+	<div class="indicator_camera" style="display: none;"><div>{% trans "Идёт загрузка данных." %}<br />{% trans "Пожалуйста, подождите..." %}</div></div>
+	<div class="camera" style="display: block;">
+		<div id="camera_name"></div>
+		<div id="camera_frame"><img src="" width="200px" alt="" /></div>
+	</div>
+</div>
+<div class="indicator" id="indicator" style="display: none;">                                                                                                                                                
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />                                                                                                                                          
+    <div>{% trans "Пожалуйста, подождите" %}...</div>                                                                                                                                                                       
+</div> 
+{% endblock %}

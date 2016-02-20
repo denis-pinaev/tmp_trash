@@ -1,0 +1,112 @@
+{% load i18n templatetags %}
+{% include "js/js_viewphotos.html" %}
+{% include "js/js_update_left_photos.html" %}
+<h2><a href="/lists/">{% trans "Списки" %}</a> - {% trans name_group %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Список посетителей' %}');" /></h2>
+{% include "current_time.html" %}
+<form method="get" action="" name="" id="mainForm">
+	<input type="hidden" value="0" name="delo" id="delid">
+	<div class="frm_block">
+		{% if all_visitors > 0 %}
+			{% include "search.html" %}
+			{% if group %}<input type="hidden" name="group" value="{{ group }}" />{% endif %}
+		{% endif %}
+		<div>{% trans "Общее количество посетителей" %}: <span class="info_important" id="all_persons">0</span></div>
+		<div>{% trans "Общее количество фотографий" %}: <span class="info_important" id="all_photos">0</span></div>
+		<script type="text/javascript">
+			updatePersonPhotosCount({{ group }});
+		</script>
+		<div class="short_descr" title="{% trans 'Сколько фотографий Вы можете еще добавить' %}">{% trans "Ограничение на добавление фотографий" %}: <span class="info_important" id="left_photos"><span class="loader_count"><img src="/files/images/loader20x20.gif" alt="" /></span></span></div>
+		{% if filter %}			
+			{% if all_users > 0 %}<div class="frm_block">{% trans "Количество отфильтрованных записей" %}: <span class="info_important">{{ filter_visitors }}</span></div>{% endif %}
+		{% endif %}
+	</div>					
+	<div class="frm_block">
+		{% if all_users > 0 %}
+			<div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all" /><label for="choose_all">{% trans "Выделить всё" %}</label></div></div>
+		{% endif %}
+		<a href="{{ project_url }}/anketavisitor/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel dist_btn_group2"><span>{% trans "Добавить" %}</span></a>
+		{% if all_users > 0 %}
+			<input type="button" name="" value="{% trans "Экспорт персон" %}" onClick="javascript: showMessageExport()" class="inp_btn inp_btn140" />
+		{% endif %}
+		<input type="button" name="" value="{% trans "Импорт персон" %}" onClick="javascript: importPerson();" class="inp_btn inp_btn140 dist_left" />
+		{% if all_users > 0 %}
+			<input type="button" name="" value="{% trans "Удалить выделенные" %}" onClick="javascript: showMessageDelete()" class="inp_btn inp_btn170 dist_btn_group" />
+		{% endif %}
+	</div>
+				
+	{% if all_users > 0 %}
+		<!--<div class="frm_block">
+			Просмотр записей: с <span style="margin-right: 10px;"><input class="inp_txt" type="text" value="{{ dateBegin|date:"d.m.Y" }}" name="dateBegin"/><input type="button" onclick="javascript: displayDatePicker('dateBegin', false, 'dmy', '.');" title="Выбрать дату" class="btn_calend" value="" name=""/></span>
+			по <span style="margin-left: 10px;"><input type="text" class="inp_txt" value="{{ dateEnd|date:"d.m.Y" }}" name="dateEnd" /><input type="button" onclick="javascript: displayDatePicker('dateEnd', false, 'dmy', '.');" title="Выбрать дату" class="btn_calend" value="" name=""/></span>
+			<input type="button" onclick="javascript: document.getElementById('mainForm').submit();" onmouseup="javascript: buttonStatus(this, 'over');" onmousedown="javascript: buttonStatus(this, 'down');" onmouseout="javascript: buttonStatus(this, 'up');" onmouseover="javascript: buttonStatus(this, 'over');" class="inp_btn inp_btn90 dist_left" value="{% trans "Применить" %}" name="" style="background-image: url(/files/images/button90x24_up.gif);"/>
+		</div> -->
+		{% include "po4NavigationBlock.html" %}
+		<div class="cont_table">
+			<div class="views">
+				<a href="?start={{ page }}{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if group %}&group={{ group }}{% endif %}&view={% if view %}{{ view }}{% else %}5{% endif %}" id="view2" class="view view2{% if view %} act{% endif %} short_descr" title="{% trans "Просмотр списка с фотографиями" %}" onClick="setCookie('view', 5, 9999);"></a>
+				<a href="?start={{ page }}{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if group %}&group={{ group }}{% endif %}" title="{% trans "Просмотр списка без фотографий" %}" id="view1" class="view view1{% if not view %} act{% endif %} short_descr" onClick="setCookie('view', 0, 9999);"></a>				
+			</div>						
+			<table cellspacing="0" cellpadding="0" class="list_users" id="table">
+				<tr>
+					<th class="first">&nbsp;</th>
+					<th>ID</th>
+					<th><a href="?start={{start}}&sorto=2&up={% if sorto == 2 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if group %}&group={{ group }}{% endif %}" class="btn_arrow {% if sorto == 2 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "ФИО" %}</a></th>
+					{% if view %}<th colspan="2">{% trans "Фотографии" %}</th>{% else %}<th>{% trans "Фотографии" %}</th>{% endif %}
+					{% comment %}
+					<th class="th_status"><a href="?start={{start}}&sorto=3&up={% if sorto == 3 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if group %}&group={{ group }}{% endif %}" class="btn_arrow {% if sorto == 3 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "Статус" %}</a></th>																		
+					{% endcomment %}
+					<th class="th_doc"><a href="?start={{start}}&sorto=4&up={% if sorto == 4 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if group %}&group={{ group }}{% endif %}" class="btn_arrow {% if sorto == 4 and up == 1  %}up{% else %}down{% endif %}">{% trans "Документ" %}</a></th>
+				</tr>
+				{% for user in users %}
+						<tr {% cycle '' 'class="odd"' %}>
+							<td class="td_check2 first"><input type="checkbox" name="pi{{ forloop.counter }}" value="{{ user.id }}" class="inp_check" id="check{{ forloop.counter }}" /></td>
+							<td class="td_id">{{ user.id }}</td>
+							<td><a href="{{ project_url }}/anketavisitor/{{ user.person.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.person.first_name }} {{ user.person.last_name }} {{ user.person.middle_name }}</a></td>
+							{% if view %}
+								<td class="td_list">
+										{% if user.photos.photos|length > 0 %}
+											<ul class="list_photos">
+											{% for photo in user.photos.photos %}
+												<li>
+													<div>
+														<a href="/image/?id={{ user.photos.id }}&photo={{ photo.num }}&big=.jpg" target="_blank"><img src="/image/?id={{ user.photos.id }}&photo={{ photo.num }}&width=60&height=60" class="photo" alt="" /></a>
+														<a href="/image/?id={{ user.photos.id }}&photo={{ photo.num }}&big=.jpg" class="btn_loupe"><span></span></a>
+													</div>
+												</li>
+											{% endfor %}
+											</ul>
+										{% else %}
+											<img src="/files/images/no_photo60x60.gif" width="60px" height="60px" alt="" />
+										{% endif %}												
+								</td>
+								<td class="td_photos">{% trans "всего" %}: {{ user.photos.count }}</td>
+							{% else %}
+								<td class="td_photos">{{ user.photos.count }}</td>												
+							{% endif %}	
+							{% comment %}
+							<td class="td_status">{% if user.person.status %}{% trans  user.person.status  %}{% else %}&nbsp;{% endif %}</td>
+							{% endcomment %}
+							<td class="td_doc">{% if user.person.document %}{% trans  user.person.document  %}{% else %}&nbsp;{% endif %}</td>
+						</tr>
+				{% endfor %}
+			</table>
+		</div>
+
+		{% include "po4NavigationBlock.html" %}
+
+		
+		<div class="frm_block">
+			<div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all2" /><label for="choose_all2">{% trans "Выделить всё" %}</label></div></div>
+			<a href="{{ project_url }}/anketavisitor/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel dist_btn_group2"><span>{% trans "Добавить" %}</span></a>
+			{% if all_users > 0 %}
+				<input type="button" name="" value="{% trans "Экспорт персон" %}" onClick="javascript: showMessageExport()" class="inp_btn inp_btn140" />
+			{% endif %}
+			<input type="button" name="" value="{% trans "Импорт персон" %}" onClick="javascript: importPerson();" class="inp_btn inp_btn140 dist_left" />
+			{% if all_users > 0 %}
+				<input type="button" name="" value="{% trans "Удалить выделенные" %}" onClick="javascript: showMessageDelete()" class="inp_btn inp_btn170 dist_btn_group" />
+			{% endif %}
+		</div>
+	{% else %}
+		<div class="message_action dist_top">{% trans "Не найдены записи, соответствующие заданным условиям поиска" %}.</div>
+	{% endif %}					
+</form>

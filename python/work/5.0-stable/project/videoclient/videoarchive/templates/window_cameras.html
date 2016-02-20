@@ -1,0 +1,83 @@
+{% load i18n %}
+{% load a_templatetags %}
+<div id="win_add" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_add');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Добавление камер" %}</div>
+        </div>
+        <div class="contWF1"><div class="contWF" id="win_add_contWF">
+			{% if addCameras|length > 0 %}
+            <div class="info_add_cameras">            
+				<div class="bl_btn_check">
+					<input type="button" name="" value="{% trans "Выделить всё" %}" class="inp_btn inp_btn120" onClick="javascript: checkAllCameras($('#choose_all'), true);" />
+					<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAllCameras($(this));" id="choose_all" />
+				</div>                   
+                <div class="info_cameras">{% trans "Всего камер для добавления" %}: <span class="info_important" id="allAddCameras"></span></div>
+            </div>
+            <div class="block_error_add" id="block_error_add" style="display: none;"></div>
+            <div class="block_add_cameras" id="block_add_cameras">
+				<table cellpadding="0px" cellspacing="0px" class="table" id="table_add_cameras">
+					<tr class="tdtdtddt">
+						<th class="th_first">№</th>
+						<th>{% trans 'Камера' %}</th>
+						<th>{% trans 'Коммуникатор' %}</th>
+					</tr>	
+				</table>
+            </div>
+			{% else %}
+				{% trans 'Нет камер для добавления' %}.
+			{% endif %}
+        </div></div>
+        <div class="footerWF">
+            {% if addCameras|length > 0 %}
+                <input type="button" name="" value="{% trans "Добавить" %}" class="btn_wf_blue" onClick="javascript: checkAddCameras(getCountAddCameras());" />
+                <input type="button" name="" value="{% trans "Отменить" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_add');" />
+            {% else %}
+                <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_add');" />
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+<div id="win_add2" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_add2');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Добавление камер" %}</div>
+        </div>
+        <div class="contWF1"><div class="contWF" id="win_add2_contWF"></div></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_add2'); window.location.reload(true);" />    
+        </div>
+    </div>
+</div>
+<div id="win_del" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_del');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Удаление камер" %}</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_del_contWF"></div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Удалить" %}" class="btn_wf_blue" onClick="javascript: delSelectCameras();" />
+			<input type="button" name="" value="{% trans "Отменить" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_del');" />
+		</div>
+	</div>
+</div>
+<div id="win_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF" id="win_mess_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />	
+		</div>
+	</div>
+</div>
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>

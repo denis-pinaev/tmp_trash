@@ -1,0 +1,177 @@
+{% load i18n %}
+{% include "a_header.html" %}
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/video_day.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2><a href="{{ root_path }}/page_calendar1/">Календарь</a> - Видеоролики за 06.01.2011<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				{% include "current_time.html" %}
+				<form method="post" action="">
+					<div class="frm_block">
+						<div class="search">
+							<span class="left"></span>
+							<span class="center">
+								<input type="text" name="filter" value="Поиск" value="" class="txt_search" onFocus="javascript: search(this, true, 'Поиск');" onBlur="javascript: search(this, false, 'Поиск');" />
+								<div class="filter"><div>источники</div></div>
+							</span>
+							<input type="submit" name="" value="" class="btn_search" title="Найти" />
+						</div>
+						<div class="block_time">Время: <span class="dist_time">c</span>
+						<select name="" class="select sel_time">
+							<option value="" selected="">09</option>
+							<option value="">10</option>
+							<option value="">11</option>
+						</select>:<select name="" class="select sel_time">
+							<option value="" selected="">10</option>
+							<option value="">20</option>
+							<option value="">30</option>
+						</select>					
+						<span class="dist_time">по</span>
+						<select name="" class="select sel_time">
+							<option value="" selected="">09</option>
+							<option value="">10</option>
+							<option value="">11</option>
+						</select>:<select name="" class="select sel_time">
+							<option value="" selected="">10</option>
+							<option value="">20</option>
+							<option value="">30</option>
+						</select></div>
+						<input type="button" name="" value="Найти" class="inp_btn inp_btn80 dist_time" />
+					</div>
+					<div class="frm_block">
+						<div class="bl_btn_check">
+							<input type="button" name="" value="Выделить всё" class="inp_btn inp_btn120" />
+							<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAll(this, 1);" id="choose_all" />
+						</div>
+						<input type="button" name="" value="Экспорт видео" class="inp_btn inp_btn140 dist_left" onClick="javascript: showMessageExport(1, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						<input type="button" name="" value="Удалить выделенные" class="inp_btn inp_btn170 dist_left" onClick="javascript: showMessageDelete(1, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+					</div>				
+					<ul class="list_videos">
+						<li>
+							<div class="video">
+								<div><a href="/#"><img src="{{ root_path }}/files/images/video3.jpg" width="200" height="150" alt="" /></a></div>
+								<div class="time">1:0:48</div>
+								<input name="" value="" type="button" class="play_video">
+							</div>
+							<div class="info">
+								<div><span>Источник:</span> 192.168.0.13 AV1300</div>
+								<div><span>Период:</span> с 9.00 до 10.00</div>
+								<div><span>Формат:</span> AVI</div>
+								<div><span>Размер:</span> 120Мб</div>
+								<div><span>Запуск задачи:</span> служебная запись</div>
+								<div><span>Частота кадров:</span> 5 кадр/сек</div>
+								<div><a href="{{ root_path }}/page_video_faces/">Найденные лица (6)</a></div>
+							</div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check1" />
+						</li>
+						<li>
+							<div class="video">
+								<div><a href="/#"><img src="{{ root_path }}/files/images/video4.jpg" width="200" height="150" alt="" /></a></div>
+								<div class="time">1:0:48</div>
+								<input name="" value="" type="button" class="play_video">
+							</div>
+							<div class="info">
+								<div><span>Источник:</span> 192.168.0.13 AV1300</div>
+								<div><span>Период:</span> с 9.00 до 10.00</div>
+								<div><span>Формат:</span> AVI</div>
+								<div><span>Размер:</span> 120Мб</div>
+								<div><span>Сигнал:</span> служебная запись</div>
+								<div><span>Частота кадров:</span> 5 кадр/сек</div>
+								<div><a href="/#">Найденные лица (20)</a></div>
+							</div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check1" />
+						</li>
+						<li>
+							<div class="video">
+								<div><a href="/#"><img src="{{ root_path }}/files/images/video5.jpg" width="200" height="150" alt="" /></a></div>
+								<div class="time">1:0:48</div>
+								<input name="" value="" type="button" class="play_video">
+							</div>
+							<div class="info">
+								<div><span>Источник:</span> 192.168.0.13 AV1300</div>
+								<div><span>Период:</span> с 9.00 до 10.00</div>
+								<div><span>Формат:</span> AVI</div>
+								<div><span>Размер:</span> 120Мб</div>
+								<div><span>Сигнал:</span> служебная запись</div>
+								<div><span>Частота кадров:</span> 5 кадр/сек</div>
+								<div><a href="/#">Найденные лица (5)</a></div>
+							</div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check1" />
+						</li>
+						<li>
+							<div class="video">
+								<div><a href="/#"><img src="{{ root_path }}/files/images/video6.jpg" width="200" height="150" alt="" /></a></div>
+								<div class="time">1:0:48</div>
+								<input name="" value="" type="button" class="play_video">
+							</div>
+							<div class="info">
+								<div><span>Источник:</span> 192.168.0.13 AV1300</div>
+								<div><span>Период:</span> с 9.00 до 10.00</div>
+								<div><span>Формат:</span> AVI</div>
+								<div><span>Размер:</span> 120Мб</div>
+								<div><span>Сигнал:</span> служебная запись</div>
+								<div><span>Частота кадров:</span> 5 кадр/сек</div>
+								<div><a href="/#">Найденные лица (1)</a></div>
+							</div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check1" />
+						</li>
+						<li>
+							<div class="video">
+								<div><a href="/#"><img src="{{ root_path }}/files/images/video7.jpg" width="200" height="150" alt="" /></a></div>
+								<div class="time">1:0:48</div>
+								<input name="" value="" type="button" class="play_video">
+							</div>
+							<div class="info">
+								<div><span>Источник:</span> 192.168.0.13 AV1300</div>
+								<div><span>Период:</span> с 9.00 до 10.00</div>
+								<div><span>Формат:</span> AVI</div>
+								<div><span>Размер:</span> 120Мб</div>
+								<div><span>Сигнал:</span> служебная запись</div>
+								<div><span>Частота кадров:</span> 5 кадр/сек</div>
+								<div><a href="/#">Найденные лица (2)</a></div>
+							</div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check1" />
+						</li>
+						<li>
+							<div class="video">
+								<div><a href="/#"><img src="{{ root_path }}/files/images/video8.jpg" width="200" height="150" alt="" /></a></div>
+								<div class="time">1:0:48</div>
+								<input name="" value="" type="button" class="play_video">
+							</div>
+							<div class="info">
+								<div><span>Источник:</span> 192.168.0.13 AV1300</div>
+								<div><span>Период:</span> с 9.00 до 10.00</div>
+								<div><span>Формат:</span> AVI</div>
+								<div><span>Размер:</span> 120Мб</div>
+								<div><span>Сигнал:</span> служебная запись</div>
+								<div><span>Частота кадров:</span> 5 кадр/сек</div>
+								<div><a href="/#">Найденные лица (3)</a></div>
+							</div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check1" />
+						</li>
+					</ul>
+					<div class="btn_result"><input type="button" name="" value="Ещё результаты" class="inp_btn inp_btn170" /></div>
+					<div class="frm_block">
+						<div class="bl_btn_check">
+							<input type="button" name="" value="Выделить всё" class="inp_btn inp_btn120" />
+							<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAll(this, 1);" id="choose_all" />
+						</div>
+						<input type="button" name="" value="Экспорт видео" class="inp_btn inp_btn140 dist_left" onClick="javascript: showMessageExport(1, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						<input type="button" name="" value="Удалить выделенные" class="inp_btn inp_btn170 dist_left" onClick="javascript: showMessageDelete(1, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "a_footer.html" %}
+
+</body>
+</html>

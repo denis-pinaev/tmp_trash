@@ -1,0 +1,95 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Тестирование системы' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/system_events.css?v=v{{ version }}" />
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+{% endblock %}
+{% block submenu %}{% include "monitoring_menu.html" %}{% endblock %}
+{% block subcontent %}
+<h2>{% trans "Тестирование системы" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Тестирование_системы" %}');" /></h2>
+{% include "current_time.html" %}
+{% if events|length == 0 and not values_exists %}
+	<div class="message_action" id="message_test_current">{% trans "Для получения результатов тестирования используйте опции" %} <strong>{% trans "Проверка целостности" %}</strong> {% trans "и" %} <strong>{% trans "Тестирование производительности" %}</strong>.</div>
+	<div class="dist_top"><input type="button" name="" value="{% trans "Проверка целостности" %}" class="inp_btn inp_btn170" onClick="javascript: createMessageTestFr();" /></div>
+	<div class="dist_top"><input type="button" name="" value="{% trans "Тестирование производительности" %}" class="inp_btn inp_btn230" onClick="javascript: showSettingsTest();" /></div>
+{% else %}
+{% if events|length == 0 %}
+	<div class="message_action">{% trans "Для получения результатов тестирования проверки целостности нажмите на кнопку" %} <strong>{% trans "Проверка целостности" %}</strong>.</div>
+	<div><input type="button" name="" value="{% trans "Проверка целостности" %}" class="inp_btn inp_btn170" onClick="javascript: createMessageTestFr();" /></div>                 
+{% else %}
+	 <div><input type="button" name="" value="{% trans "Проверка целостности" %}" class="inp_btn inp_btn170" onClick="javascript: createMessageTestFr();" /><!--<span class="dist_left">{% trans "Результат последнего тестирования" %} (15.11.2011 16:42:00)</span>--></div>
+	{% include "monitoring_events_data.html" %}
+{% endif %}
+{% if not values_exists %}
+	<div class="message_action" style="margin-top: 10px;">
+		{% trans "Для получения результатов тестирования производительности нажмите на кнопку" %} <strong>{% trans "Тестирование производительности" %}</strong>.
+	</div>
+	<div><input type="button" name="" value="{% trans "Тестирование производительности" %}" class="inp_btn inp_btn230" onClick="javascript: showSettingsTest();" /></div>    
+{% else %}                    
+	<div class="dist_top"><input type="button" name="" value="{% trans "Тестирование производительности" %}" class="inp_btn inp_btn230" onClick="javascript: showSettingsTest();" /><!--<span class="dist_left">{% trans "Результат последнего тестирования" %} (15.11.2011 16:42:00, {% trans "количество итераций" %}: 5, {% trans "количество потоков" %}: 5)</span>--></div>
+{% endif %}
+{% endif %}                                  
+<script type="text/javascript">
+	function refreshPage() {
+		window.location.reload();
+	}
+	setInterval('refreshPage()', 600000);  // перезагрузка страницы раз в 10 мин.
+
+	var params = new Array();
+	// выделение при наведении
+	function overRow(tr) {
+		$(tr).addClass("act");
+	}
+	function outRow(tr) {
+		$(tr).removeClass("act");
+	}
+	function showSettingsTest() {
+		changeWindow({
+			id: 'win_test_fr2', 
+			css: {width: '300px', height: '200px'}
+		});
+	}  
+	function createMessageTestFr(name_block) {
+	   var txt = '<span class="info_important">{% trans "Внимание!" %}</span> {% trans "Выполнение теста может занять несколько минут" %}.'
+	   changeWindow({id: 'win_test_fr', css: {width: '300px', height: '200px'}, txt: txt});
+	}	
+	function reloadContent() {
+		$.ajax({
+				type: "POST",
+				url: "{% url monitoring_testfr %}",
+				data: {resault: "True"},
+				success: function(msg) {
+					var isTable = $("#table_performance_testing").size() > 0;        
+					$('#detectTestResault').html(msg);
+					if (!isTable && $("#table_performance_testing").size() > 0) {
+						window.location.reload(true);                                                                                         
+					}
+				}
+		});
+	}
+	setInterval('reloadContent()', 5000);
+	function startTesting() {
+		$.ajax({
+				type: "POST",
+				url: "{% url monitoring_testfr_start_test %}",
+				data: {max_thread: $("#thread").val(), max_iteration: $("#iteration").val()},
+				success: function(msg){
+					if (msg == "True") {
+						reloadContent();
+					} else {
+						showMessage("{% trans 'Запрос на тестирование производительности не выполнился. Попробуйте ещё раз.' %}");
+					}
+				},
+				error: function() {
+					showMessage("{% trans 'Запрос на тестирование производительности не выполнился. Попробуйте ещё раз.' %}");
+				}
+		});
+	}
+</script>                     
+<div id="detectTestResault">
+	{% include "monitoring_testfr_resault.html" %}
+</div>                         
+{% endblock %}
+{% block windows %}{% include "window_settings_testfr.html" %}{% endblock %}

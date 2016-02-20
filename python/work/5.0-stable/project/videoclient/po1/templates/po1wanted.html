@@ -1,0 +1,134 @@
+﻿{% load i18n %}
+{% load templatetags %}
+{% include "po1header.html" %}
+<link rel="stylesheet" type="text/css" href="/files/css/po1/po1wanted.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_wanted">
+		<ul class="menu_vkl">
+			<li class="menu_vkl_act">
+				<div>
+					<div>
+						<a href="base">База разыскиваемых лиц</a>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div>
+					<div>
+						<a href="report">Отчёт за день</a>
+					</div>
+				</div>
+			</li>
+		</ul>
+		<div class="block_cont">
+			<div class="block_cont_top2">
+				<div class="block_cont_bottom min_height">
+					<h2>База разыскиваемых лиц<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+					<form method="post" action="" name="">
+						<div class="frm_block">
+							<div class="search">
+								<span class="left"></span>
+								<span class="center"><input type="text" name="filter" value="Введите имя" value="" class="txt_search" /></span>
+								<input type="submit" name="" value="" class="btn_search" title="Найти" />
+							</div>
+							<div>Всего людей в розыске: <span class="info_important">3</span></div>
+						</div>				
+						<div class="frm_block">
+							<div class="bl_btn_check">
+								<input type="button" name="" value="" class="inp_btn inp_btn40" />
+								<input type="checkbox" name="" value="" class="inp_check" />
+							</div>					
+							<input type="button" class="inp_btn inp_btn170" name="" value="Удалить выделенные" />
+							<input type="button" class="inp_btn inp_btn140" name="" value="Обнулить базу" />
+							<input type="button" class="inp_btn inp_btn90" style="margin-left: 30px;" name="" value="Добавить" />
+						</div>
+						<div class="frm_block">
+							<table cellspacing="0" cellpadding="0" class="list_wanted_head">
+								<tr>
+									<th rowspan="2" class="th_check">№</th>
+									<th rowspan="2" class="th_photo">Фото</th>
+									<th rowspan="2" class="th_fio">ФИО</th>
+									<th colspan="3">Где и когда были зафиксированы похожие индивиды</th>
+								</tr>
+								<tr>
+									<th class="th_kpp">КПП</th>
+									<th class="th_cam">Камера</th>
+									<th>Дата, время</th>
+								</tr>
+							</table>
+							<table cellspacing="0" cellpadding="0" class="list_wanted">
+								<tr>
+									<td class="td_check"><span>1.</span><input type="checkbox" name="" value="" class="inp_check" /></td>
+									<td class="td_photo"><img src="/files/images/image_test2.jpg" width="50" height="50" alt="50" /></td>
+									<td class="td_fio"><a href="anketa">Иванов Иван Иванович</a></td>
+									<td class="td_kpp">
+										<div>КПП №1</div>
+									</td>
+									<td class="td_cam">
+										<div>Камера №1 вход</div>
+										<div>Камера №2 выход</div>
+									</td>
+									<td>
+										<div>30.02.2010 14.00</div>
+										<div>30.02.2010 14.15</div>
+									</td>
+								</tr>
+								<tr class="odd">
+									<td class="td_check"><span>2.</span><input type="checkbox" name="" value="" class="inp_check" /></td>
+									<td class="td_photo"><img src="/files/images/image_test2.jpg" width="50" height="50" alt="50" /></td>
+									<td class="td_fio"><a href="anketa">Петров Иван Иванович</a></td>
+									<td class="td_kpp">
+										<div>КПП №2</div>
+									</td>
+									<td class="td_cam">
+										<div>Камера №3 схема</div>
+									</td>
+									<td>
+										<div>30.02.2010 13.10</div>
+									</td>
+								</tr>
+								<tr>
+									<td class="td_check"><span>3.</span><input type="checkbox" name="" value="" class="inp_check" /></td>
+									<td class="td_photo"><img src="/files/images/image_test2.jpg" width="50" height="50" alt="50" /></td>
+									<td class="td_fio"><a href="anketa">Сидоров Иван Иванович</a></td>
+									<td class="td_kpp">
+										<div>КПП №2</div>
+									</td>
+									<td class="td_cam">
+										<div>Камера №4 вход</div>
+									</td>
+									<td>
+										<div>30.02.2010 15.10</div>
+									</td>
+								</tr>								
+							</table>					
+						</div>
+						<div class="frm_block">
+							<div class="bl_btn_check">
+								<input type="button" name="" value="" class="inp_btn inp_btn40" />
+								<input type="checkbox" name="" value="" class="inp_check" />
+							</div>					
+							<input type="button" class="inp_btn inp_btn170" name="" value="Удалить выделенные" />
+							<input type="button" class="inp_btn inp_btn140" name="" value="Обнулить базу" />
+							<input type="button" class="inp_btn inp_btn90" style="margin-left: 30px;" name="" value="Добавить" />
+						</div>						
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po1footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+{% include "window_help.html" %}
+
+</body>
+</html>

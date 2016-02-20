@@ -1,0 +1,17 @@
+{% extends "base_archive_notab.html" %}
+{% load i18n a_templatetags %}
+{% block title %}{% trans 'Мониторинг' %}{% endblock %}
+{% block subcontent %}
+	<h2>{% trans "Мониторинг" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Видеоархив Мониторинг' %}');" /></h2>
+	{% include "current_time.html" %}					
+	{% if space %}
+		<div>
+			{% trans "Свободного места на диске" %}: {{ space }}%
+		</div>
+	{% endif %}
+	{% if raid_status %}
+		<div>
+			{% trans "Статус RAID" %}: {{ raid_status }}
+		</div>
+	{% endif %}
+{% endblock %}

@@ -1,0 +1,224 @@
+﻿.btn_list {
+	padding: 0px;
+	margin: 0px;
+	border: 0px;
+	width: 25px;
+	height: 15px;
+	background-color: #ededed;
+}
+.btn_calend {
+	padding: 0px;
+	margin: 0px;
+	border: none;
+	height: 16px;
+	width: 16px;
+	cursor: pointer;
+	background: url('/files/images/calend.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/calend.png', sizingMethod='crop');
+	margin-left: 1px;
+}
+.inp_btn80 {
+	width: 80px;
+	background: url('/files/images/button80x24_up.gif') top left no-repeat;
+}
+.inp_btn140 {
+	background: url("/files/images/button140x24_up.gif") left top no-repeat;
+	width: 140px;
+}
+.filter {
+	vertical-align: middle;
+	float: left;
+}
+.filter .inp_txt {
+	width: 75px;
+}
+.inp_txt.err_forms {
+	border-color: #ff0000;
+}
+.filter_sources {
+	margin-left: 300px;
+}
+.cal_block {
+	position: relative;
+	border: 1px solid #DDDDDD;
+	padding: 3px 10px 10px 10px;
+	background-color: #F2F2F2;
+	margin: 10px auto 0px auto;
+	width: 1183px;
+}
+.name_year {
+	text-align: center;
+	font-weight: bold;
+}
+.cal_cont_month4 {
+	width: 100%;
+	overflow: hidden;
+	padding: 7px 0px 0px 0px;
+	margin: 0px auto;
+}
+.cal_cont_month4 .cal_cont {
+	float: left;
+	padding-right: 7px;
+}
+.cal_cont_month4 .cal_cont.last {
+	padding-right: 0px;
+}
+.cal_month_name {
+	text-align: center;
+	font-weight: bold;
+	padding: 3px 0px;
+	/*background-color: #999999;*/
+	background-color: #b6b6b6;
+	color: #ffffff;
+}
+.cal_month_name.blue,
+.cal_month_name.blue:hover  {
+	background-color: #849ac1;
+	text-decoration: none;
+	color: #ffffff;
+}
+.cal_month {
+	font-family: arial,helvetica,sans-serif;
+	font-size: 13px;
+	border-bottom: 1px solid #cccccc;
+	border-left: 1px solid #cccccc;
+}
+.cal_month th {
+	text-align: center;
+	/*width: 29px;*/
+	width: 36px;
+	font-weight: normal;
+	color: #767676;
+	height: 27px;
+}
+.cal_month th.last {
+	border-right: 1px solid #cccccc;
+}
+.cal_month td {
+	background-color: #FFFFFF;
+	border-top: 1px solid #cccccc;
+	border-right: 1px solid #cccccc;
+	text-align: center;
+	white-space: nowrap;
+	height: 27px;
+}
+.cal_month td a,
+.cal_month td span {
+	color: #000000;
+	margin: 0px 1px;
+	display: block;
+}
+.cal_month td a:hover {
+	text-decoration: none;
+	color: #000000;
+	cursor: pointer;
+}
+.cal_month td span {
+	cursor: default;
+}
+.cal_month td.first {
+	border-left: 1px solid #cccccc;
+}
+.cal_month td.video {
+	background-color: #DBE2F0;
+	/*background-color: #F0E9DB;*/
+}
+.cal_month td.dayoff a,
+.cal_month td.dayoff span {
+	color: #FF6600;
+}
+.cal_month td.daycur a,
+.cal_month td.daycur span {
+	border: 1px solid #505050;
+}
+.cal_month td.weeknum {
+	background-color: #F2F2F2;
+	border-top: 1px solid #F2F2F2;
+	border-right: 1px solid #F2F2F2;
+	color: #767676;
+}
+.cal_month td.td_over {
+	background-color: #849ac1;
+}
+.cal_month td.td_over a,
+.cal_month td.td_over a:hover {
+	color: #ffffff;
+}
+.cal_month td.noact {
+	background-color: #dddddd;
+	color: #A6A6A6;
+	cursor: default;
+}
+.cal_month td.noact span {
+	color: #A6A6A6;
+}
+.cal_month td.td_select {
+	background-color: #767676;
+	color: #ffffff;
+}
+.cal_month td.td_select span,
+.cal_month td.td_select a,
+.cal_month td.td_select a:hover {
+	color: #ffffff;
+}
+/* search */
+.bl_btn_check {
+	position: relative;
+	float: right;
+	-height: 1px;
+}
+.bl_btn_check .inp_check {
+	position: absolute;
+	top: 6px;
+	left: 6px;
+	-top: 2px;
+	-left: 2px;
+}
+.inp_btn120 {
+	background: url("/files/images/button120x24_up.gif") no-repeat left top;
+	padding-left: 15px;
+	width: 120px;
+}
+.info_cameras {
+	margin-top: 2px;
+}
+.block_error_add {
+	color: #FF6600;
+	text-align: center;
+	margin-top: 5px;
+}
+.block_add_cameras {
+	height: 198px; 
+	overflow: auto;
+	margin-top: 5px;
+}
+.block_add_cameras ul li {
+	padding: 5px 0px;
+}
+.block_add_cameras ul li span {
+	margin-right: 10px;
+	margin-left: 5px;
+}
+.block_add_cameras ul li.odd {
+	background-color: #DBE2F0;
+}
+.block_add_cameras ul li.act {
+	background-color: #849ac1;
+	color: #ffffff;
+}
+.tooltip {
+	max-width: 320px;
+	max-height: 320px;
+	padding: 5px;
+	background-color: #ffffff;
+	border: 1px solid #999999;
+	display: none;
+	position: absolute;
+	z-index: 3101;
+	border-radius: 4px;
+	moz-border-radius: 4px;
+	box-shadow: 2px 2px 5px rgba(122,122,122,0.3);
+	overflow: hidden;
+	word-wrap: break-word;
+}

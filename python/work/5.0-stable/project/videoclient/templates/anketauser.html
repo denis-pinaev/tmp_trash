@@ -1,0 +1,62 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Добавление пользователя' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+{% include "js/js_user.html" %}
+<script type="text/javascript">
+// при изменении статуса пользователя отображать или нет выбор КПП
+function changeStatus(upload_page) {
+	var active_status = $("#status option:selected").text();
+	var kpp = $("#block_kpp");
+	
+	if (active_status == "{% trans 'Охранник' %}") {
+		if (upload_page) {
+			kpp.show();
+		} else {
+			kpp.slideDown(100);
+		}
+	} else {
+		if (upload_page) {
+			kpp.hide();
+		} else {
+			kpp.slideUp(100);
+		}
+	}
+}
+$(function() {
+	changeStatus(true);
+	checkFormUser("formAnketaUser", false);
+});
+</script>
+{% endblock %}
+{% block submenu %}{% if select_page == "kpp" %}{% include "menu_journal.html" %}{% else %}{% include "menu_insert.html" %}{% endif %}{% endblock %}
+{% block subcontent %}
+	<h2>
+		{% if select_page == "anketauser" %}
+			<a href="{% url settings_user %}">{% trans "Список пользователей" %}</a>
+		{% endif %}
+		{% if select_page == "kpp" %}
+			<a href="{{ project_url }}/kpp/">{% trans "Журнал сессий" %}</a>
+		{% endif %}
+		{% if select_page == "historychange" %}
+			<a href="{{ project_url }}/historychange/">{% trans "История" %}</a>
+		{% endif %}
+		{% if user.id != None %} - {{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}{% else %} - {% trans "Добавление пользователя" %} {% endif %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Анкета пользователя' %}');" />{% if save %} <b style="color:#0088CC; margin-left:5px;">{% trans "Изменения сохранены" %}</b>{% endif %}</h2>
+		{% include "current_time.html" %}
+	<form method="post" action="" id="formAnketaUser">					
+		{% include "content/anketauser_content.html" %}
+		<div class="block bl_btn">
+			<input type="submit" name="{{ action }}" value="{% trans "Сохранить" %}" class="inp_btn btn_blue" />
+			{% if select_page == "anketauser" %}
+				<a href="{% url settings_user %}" class="link_btn_cancel"><span>{% trans "Отменить" %}</span></a>
+			{% endif %}
+			{% if select_page == "kpp" %}
+				<a href="{{ project_url }}/kpp/" class="link_btn_cancel"><span>{% trans "Отменить" %}</span></a>
+			{% endif %}
+			{% if select_page == "historychange" %}
+				<a href="{{ project_url }}/historychange/" class="link_btn_cancel"><span>{% trans "Отменить" %}</span></a>
+			{% endif %}
+		</div>					
+	</form>
+{% endblock %}

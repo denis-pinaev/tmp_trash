@@ -1,0 +1,292 @@
+﻿/* page settings current */
+#easyTooltip {
+	width: 250px;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.block {
+	width: 100%;
+	overflow: hidden;
+}
+.block_set_user {
+	float: right;
+}
+.activeButton {
+	background: url("/files/images/btn_blue_90.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_90.png', sizingMethod='crop');
+	color: #ffffff;		
+}
+.link_btn140 {
+	width: 140px;
+	height: 24px;
+	line-height: 24px;
+	vertical-align: middle;
+	background: url('/files/images/button140x24_up.gif') top left no-repeat;
+	display: block;
+	cursor: pointer;
+	text-align: center;
+	color: #333333;
+}
+.link_btn140:hover {
+	color: #333333;
+	text-decoration: none;
+}
+.link_btn140.dis {
+    color: #9b9b9b;
+    cursor: default;
+}
+/* camera */
+.inp_btn170 {
+	width: 170px;
+	background: url('/files/images/button170x24_up.gif') top left no-repeat;
+}
+.inp_btn140 {
+	width: 140px;
+	background: url('/files/images/button140x24_up.gif') top left no-repeat;
+}
+.inp_btn120 {
+	width: 120px;
+	background: url('/files/images/button120x24_up.gif') top left no-repeat;
+}
+.video {
+	float: right;
+	width: 640px;	
+}
+.video .video_add {
+	background-color: #bababa;
+	position: relative;
+	min-height: 480px;
+}
+.video img {
+	display: block;
+	padding: 0px;
+	margin: 0px;
+}
+.video .info_camera div{
+	margin-top: 5px;
+}
+.txt_no_image {
+	font-weight: bold;
+	position: absolute;
+	bottom: 45px;
+	left: 0px;
+	width: 640px;
+	font-size: 140%;
+	text-align: center;
+}
+.video .ico_active {
+	width: 19px;
+	height: 19px;
+	background: url("/files/images/ico_active.png") top left no-repeat;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 11;
+}
+.video .ico_noactive {
+	width: 100%;
+	height: 100%;
+	background: url("/files/images/ico_noactive_296.png") center center no-repeat;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+.video .params_time {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	padding: 0px 2px;
+	font-size: 85%;
+	text-align: left;
+	color: #ff0000;
+	line-height: 1.2;
+}
+.block_list_settings {
+	margin-right: 650px;
+}
+.list_settings {
+	width: 100%;
+	margin-bottom: 10px;
+}
+.list_settings li {
+	padding: 5px 0px;
+	border-top: 1px solid #E6E6E6;
+	border-left: 1px solid #E6E6E6;
+	border-right: 1px solid #E6E6E6;
+}
+.list_settings li.ls_last {
+	border-bottom: 1px solid #E6E6E6;
+}
+.list_settings li .head_setting {
+	overflow: hidden;
+	width: 100%;
+}
+.list_settings li .head_setting span {
+	padding-left: 10px;
+	float: left;
+}
+.list_settings li .head_setting a {
+	background: url("/files/images/arrowB_left.gif") left 5px no-repeat;
+	padding-left: 12px;
+	margin-left: 34px;
+	display: block;
+	cursor: pointer;
+}
+.list_settings li .head_setting a.hs_bottom {
+	background: url("/files/images/arrowB_bottom.gif") left 5px no-repeat;
+}
+.list_settings li .head_dis,
+.list_settings li .head_dis a {
+	color: #9B9B9B;
+}
+.list_settings li .head_dis a,
+.list_settings li .head_dis a:hover {
+	cursor: default;
+	text-decoration: none;
+	background-image: url("/files/images/arrowB_left_dis.gif");
+}
+.list_settings li .cont_settings {
+	margin-left: 30px;
+	margin-right: 5px;
+	margin-top: 5px;
+	padding: 5px;	
+}
+.list_settings li .param_area {
+	position: relative;
+	width: 100%;
+}
+.list_settings li .param_area input.inp_btn120 {
+	position: absolute;
+	top: 12px;
+	left: 385px;
+}
+.list_settings li .param {
+	width: 100%;
+	overflow: hidden;
+	margin-bottom: 5px;
+}
+.list_settings li .param.last {
+	margin-bottom: 0px;
+}
+.list_settings li .param .inp_check {
+	margin-right: 5px;
+}
+.list_settings li .param .bl_txt,
+.list_settings li .param .bl_txt2,
+.list_settings li .param .bl_txt3,
+.list_settings li .param .bl_txt4,
+.list_settings li .param .bl_txt5,
+.list_settings li .param .bl_txt6,
+.list_settings li .param .bl_txt7 {
+	float: left;
+	margin-top: 1px;
+}
+.list_settings li .param .bl_txt {
+	width: 170px;
+}
+.list_settings li .param .bl_txt2 {
+	margin-left: 18px;
+}
+.list_settings li .param .bl_txt3 {
+	width: 245px;
+}
+.list_settings li .param .bl_txt4 {
+	width: 215px;
+}
+.list_settings li .param .bl_txt5 {
+	width: 140px;
+	margin-right: 10px;
+	white-space: nowrap;
+}
+.list_settings li .param .bl_txt6 {
+	width: 60px;
+}
+.list_settings li .param .bl_txt7 {
+	margin-right: 10px;
+}
+.list_settings li .param.high_speed .spinbox {
+	margin-left: 10px;
+}
+.list_settings li .param.btn_distortion .link_btn140,
+.list_settings li .param.btn_distortion .inp_btn90 {
+	float: left;
+}
+.list_settings li .param .param_coords {
+	float: left;
+	margin-right: 20px;
+}
+.list_settings li .param .param_coords_last {
+	margin-right: 0px;
+}
+.list_settings li .param_dis {
+	color: #9B9B9B; 
+}
+.list_settings li .param_dis .spinbox .inp_txt {
+	border: 1px solid #cccccc;
+	color: #9B9B9B;
+}
+.list_settings li .param_dis .spinbox .btnSpUp,
+.list_settings li .param_dis .spinbox .btnSpDown {
+	cursor: default;
+}
+.list_settings li .param_dis .spinbox .btnSpUp {	
+	background: url('/files/images/spinboxUp_dis.gif') top left no-repeat;
+}
+.list_settings li .param_dis .spinbox .btnSpDown {
+	background: url('/files/images/spinboxDown_dis.gif') top left no-repeat;						
+}
+.err_mess_settings {
+	color: #FF0000;
+	margin-top: 10px;
+}
+.block_flash {
+	margin: 10px auto 0px auto;
+	width: 980px;
+}
+/* profile */
+.frm_profile {
+	margin-bottom: 10px;
+}
+.frm_profile label.txt_param {
+	float: left;
+	width: 120px;
+}
+.frm_profile label.txt_param2 {
+	float: left;
+}
+.frm_profile .bl_enter {
+	float: left;
+	margin-left: 10px;
+}
+.frm_profile .bl_enter .inp_txt {
+	width: 174px;
+}
+.inp_txt.err_forms {
+	border-color: #ff0000;
+}
+.block_nav {
+	width: 400px;
+	overflow: hidden;
+}
+.block_error {
+	color: #ff0000;
+}
+.error_border {
+	border-color: #ff0000;
+}
+.resolution_win_param{
+   text-align: left;
+   margin-bottom: 5px;
+}
+.btn_profile_delete {
+    width: 22px;
+    height: 22px;
+	line-height: 22px;
+    background: url("/files/images/btn22x22_up.gif") top left no-repeat;
+    margin-left: 2px;
+    padding: 0px;
+}

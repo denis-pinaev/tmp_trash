@@ -1,0 +1,12 @@
+﻿.frm_block {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 10px;
+}
+.frm_block .inp_check {
+    margin-right: 5px;
+}
+.frm_block_txt {
+    float: left;
+    margin-top: 2px;
+}

@@ -1,0 +1,162 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+var maxHeightSystemWindow = 400; // максимальная высота у окна
+var countFlashing = 7; // количество миганий
+// окно сообщений системы
+function systemWindow(params) {
+	var html = addInfoSystemWindow(params);
+	showSystemWindow(html);
+}
+// инициализация функций
+function initFuncsSystemWindow() {
+	$("#winSystem .headWS").click(function() {
+		setMinMaxWindow($("#winSystem .btn_min"));
+	});
+	$("#winSystem .btn_min").click(function() {
+		setMinMaxWindow($(this));
+	});
+}
+// свернуть - развернуть окно
+function setMinMaxWindow(obj_btn) {
+	flashing(false);
+	var btn = obj_btn;
+	var h_head = $("#winSystem .headWS").height();
+	var h_cont = $("#winSystem .contWS").height();
+	if (btn.attr("class").indexOf("max") < 0) {			
+		$("#winSystem").animate(
+			{ height: h_head + 'px' }, "normal", function() { 
+				btn.addClass("btn_max");
+				btn.attr("title", "Развернуть окно");
+			}
+		);
+	} else {
+		$("#winSystem").animate(
+			{ height: h_head + h_cont + 'px' }, "normal", function() { 
+				btn.removeClass("btn_max");
+				btn.attr("title", "Свернуть окно");
+			}
+		);			
+	}
+}
+// сортировка массива по убыванию
+function sortDescendingArray(params) {
+	var resultErrors = [];
+	var i = 0;
+	for (var j = params.length - 1; j > -1; j--) {
+		resultErrors[i] = params[j]
+		i++;
+	}
+	return resultErrors;	
+}
+// добавить системную информацию
+function addInfoSystemWindow(params) {
+	var resultErrors = sortDescendingArray(params);
+	var exist_ul = $("#winSystem .contWS ul.list_system_problem").size();
+	if (exist_ul == 0) {
+		var html = '<ul class="list_system_problem">';
+		for (var i = 0; i < resultErrors.length; i++) {
+			html += '<li>';
+			html += '<div class="date_time">' + resultErrors[i].date +'</div>'
+			html += '<div class="info_problem">' + resultErrors[i].content +'</div>';
+			html += '</li>';
+		}
+		html += '</ul>';	
+	} else {
+		var content = $("#winSystem .contWS .contWS_add ul.list_system_problem");
+		var html = '';
+		var html_add = content.html();
+		for (var i = 0; i < resultErrors.length; i++) {
+			html += '<li>';
+			html += '<div class="date_time">' + resultErrors[i].date +'</div>'
+			html += '<div class="info_problem">' + resultErrors[i].content +'</div>';
+			html += '</li>';
+		}
+		var html = '<ul class="list_system_problem">' + html + html_add + '</ul>';
+	}
+	return html;
+}
+// показать окно сообщения системы
+function showSystemWindow(html) {
+	var win = $("#winSystem");	
+	$("#winSystem .contWS .contWS_add").html(html); // добавили содержимое
+	$("#winSystem .contWS .contWS_add ul li:last").addClass("lsp_li_last"); // убрали груницу у последнего блока
+	flashing(false); // остановили анимацию
+	$("#winSystem .headWS_txt span").html($("#winSystem .contWS ul.list_system_problem li").size()); // обновили количество сообщений	
+	if (win.css("display") == "none") {
+		if (checkBrowserOldIE()) {
+			win.css("position", "absolute");
+		} else {
+			win.css("position", "fixed");
+		}
+		win.css("opacity", "0");
+		win.show();
+		checkMaxHeightSystemWindow(win);
+		win.hide();
+		win.css("opacity", "1");
+		win.slideDown("normal", function() {
+			initFuncsSystemWindow();
+			flashing(true, countFlashing);
+		});	
+	} else {
+		checkMaxHeightSystemWindow(win);
+		var btn = $("#winSystem .btn_min");
+		var h_head = $("#winSystem .headWS").height();
+		var h_cont = $("#winSystem .contWS").height();		
+		$("#winSystem").animate(
+			{ height: h_head + h_cont + 'px' }, "normal", function() { 
+				btn.removeClass("btn_max");
+				btn.attr("title", "Свернуть окно");
+			}
+		);
+		flashing(true, countFlashing);
+	}
+}
+// проверка на максимальную высоту
+function checkMaxHeightSystemWindow(obj_win) {
+	var win = obj_win;
+	var cur_height = win.find(".contWS").height();
+	if (cur_height > maxHeightSystemWindow) {
+		var h_cont = maxHeightSystemWindow;
+		$("#winSystem .contWS").css("height", h_cont + "px");
+	}
+}
+// проверка на браузер ie6.0 и ie7.0
+function checkBrowserOldIE() {
+	var b = $.browser;
+	if (b.msie)  {
+		if ((b.version == '6.0') || (b.version == '7.0')) {			
+			return true;
+		}
+	}
+	return false;
+}
+// мигание
+function flashing(animate, count_flashing) {
+	if (animate) {
+		flashingPlay($("#winSystem .bodyWS .headWS .headWS_txt"), 1, count_flashing);
+	} else {		
+		flashingStop($("#winSystem .bodyWS .headWS .headWS_txt"));			
+	}
+}
+// добавление анимации
+function flashingPlay(obj, value_opacity, count) {
+	obj.animate({
+		opacity: value_opacity
+		}, 300, function() {
+			if (value_opacity == 1) { value_opacity = 0	} 
+			else { value_opacity = 1 }
+			if (count > 0) {
+				flashingPlay(obj, value_opacity, count-1);
+			} else {
+				flashingStop(obj);
+			}
+		}
+	);
+}
+// удаление анимации
+function flashingStop(obj) {
+	obj.stop();
+	obj.css("opacity", "1");
+}
+</script>

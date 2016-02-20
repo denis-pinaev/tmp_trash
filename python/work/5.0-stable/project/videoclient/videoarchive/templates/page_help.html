@@ -1,0 +1,7 @@
+{% extends "base_archive_notab.html" %}
+{% load i18n a_templatetags %}
+{% block title %}{% trans 'Помощь' %}{% endblock %}
+{% block subcontent %}
+	<h2>{% trans "Помощь" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Видеоархив Помощь' %}');" /></h2>
+	{% include "current_time.html" %}
+{% endblock %}

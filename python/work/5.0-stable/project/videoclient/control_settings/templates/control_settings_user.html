@@ -1,0 +1,44 @@
+﻿{% extends "control_settings_base.html" %}
+{% load i18n %}
+{% load templatetags %}
+﻿{% load control_settings_templatetags %}
+{% block page_content %}
+<!--<link rel="stylesheet" type="text/css" href="/files/control_settings/css/settings.css?v=v{{ version }}" />-->
+<link rel="stylesheet" type="text/css" href="/files/control_settings/css/user.css?v=v{{ version }}" />
+<script type="text/javascript">var params=new Array();</script>
+{% include "control_settings_strings.html" %}
+<script type="text/javascript" src="/files/control_settings/js/spinbox.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/control_settings/js/js_settings.js?v=v{{ version }}"></script>
+{% include "menu_control_settings.html" %}  
+		<h2><a href="/control_settings/">{% trans "Пользователи управляющей системы" %} {{HOST}}:{{PORT}}</a> - {{ ulogin }}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Пользователь управляющей системы" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+		<form method="post" action="" class="frm">			
+			<div class="head">{% trans "Данные пользователя" %}</div>
+			{% if params.full_name %}
+			<div class="field">
+				<div class="label_txt">{% trans "Имя" %}:</div>
+				<div class="enter">{{params.full_name}}</div>
+			</div>
+			{% endif %}
+			<div class="field">
+				<div class="label_txt">{% trans "Логин" %}:</div>
+				<div class="enter">{{ ulogin }}</div>
+			</div>
+		</form>
+			<div class="head">{% trans "Настройки для пользователя" %}</div>
+			<ul class="list_settings">
+				{% for base in params.bases %}
+				<li class="out">
+					<div class="name"><span>{{ forloop.counter }}.</span><a href="#" onClick="showSettings(this, 'settings_base{{ forloop.counter }}'); return false;" {% if forloop.counter > 1 %}class="arrow_left"{% endif %}>{% trans "База" %} №{{ forloop.counter }}: "{{ base.name }}"</a></div>
+					<form method="post" action="" class="frm">
+						<div id="settings_base{{ forloop.counter }}" style="display: {% if forloop.counter > 1 %}none{% else %}block{% endif %};">
+							{% with base as inf %}
+								{% include "control_settings_for_params.html" %}
+							{% endwith %}
+							<div class="block_btn"><input type="submit" value="{% trans "Сохранить" %}" class="inp_btn btn_blue" name="" /><input type="hidden" name="save" value="1" /></div>					
+						</div>					
+					</form>
+				</li>
+				{% endfor %}
+			</ul>			
+{% endblock page_content %}
+{% block window %}{% include "control_settings_window_settings.html" %}{% endblock window %}

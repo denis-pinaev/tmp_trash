@@ -1,0 +1,309 @@
+.inp_btn120 {
+	background: url("/files/images/button120x24_up.gif") top left no-repeat;
+	width: 120px;
+}
+.inp_btn170 {
+	background: url("/files/images/button170x24_up.gif") top left no-repeat;
+	width: 170px;
+}
+.inp_btn170blue {
+	background: url('/files/images/btn_blue_170.png') top left no-repeat;
+	-background: none;
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_170.png', sizingMethod='scale');
+	width: 170px;
+	color: #ffffff;
+}
+.inp_btn210blue {
+	background: url('/files/images/btn_blue210.png') top left no-repeat;
+	-background: none;
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue210.png', sizingMethod='scale');
+	width: 210px;
+	color: #ffffff;
+}
+.message_warning {
+	padding: 5px;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	border: 1px solid #CCCCCC;
+	background: url("/files/images/action.png") #f2f2f2 5px 50% no-repeat;
+	padding-left: 35px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+}
+.block_video_fon {
+	text-align: center;
+	width: 600px;
+	margin: 0px auto;
+	background-color: #666666;
+	border-radius: 3px;
+	moz-border-radius: 3px;
+	padding: 3px;
+}
+.block_video_fon div img {
+	max-width: 600px;
+	max-height: 400px;
+}
+.block_video_fon .name_camera {
+	font-weight: bold;
+	color: #ffffff;
+	margin-bottom: 3px;
+	text-align: center;
+	white-space: pre-wrap;
+	white-space: -moz-pre-wrap; /* Mozilla */
+	white-space: -o-pre-wrap; /* Opera */
+	word-wrap: break-word; /* Internet Explorer 6+ */	
+}
+.block_loader_fon {
+	text-align: center;
+	margin-top: 5px;
+}
+.block_loader_fon .loader_count img {
+	width: 16px;
+	height: 16px;
+	vertical-align: text-top;
+}
+/* form */
+.form {
+	width: 100%;
+	overflow: hidden;
+}
+.inp_txt,
+.select,
+.textarea {
+	padding: 2px;
+	border-width: 1px;
+	border-style: solid;
+	border-top-color: #939393;
+	border-right-color: #cccccc;
+	border-bottom-color: #cccccc;
+	border-left-color: #939393;	
+	background-color: #ffffff;	
+}
+.inp_check {
+	margin-right: 5px;
+}
+.form .block_req {
+	margin-bottom: 5px;
+}
+.form .req {
+	color: #ff0000;
+	font-weight: bold;
+}
+.form .delim_block {
+	border-top: 1px dotted #cccccc;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	width: 100%;
+	font-size: 0px;
+}
+.form .unit {
+	margin-left: 5px;
+	color: #666666;
+}
+.form .form_block_head {
+	font-size: 100%;
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+.form .inp_txt,
+.form .textarea {
+	width: 270px;
+	padding: 2px 6px;
+}
+.form .select {
+	width: 284px;
+	padding: 2px 6px;
+}
+.form .textarea {
+	height: 60px;
+}
+.form .form_block {
+	overflow: hidden;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+	padding-left: 10px;
+}
+.form .form_block .fb_content {
+	width: 100%;
+	overflow: hidden;
+}
+.form .form_block .fb_content .fbc_text {
+	float: left;
+	width: 300px;
+	text-align: left;
+	margin-top: 2px;
+}
+.form .form_block .fbc_help {
+	color: #666666;
+	font-size: 95%;
+	clear: both;
+	margin-left: 265px;
+	display: block;
+	line-height: 1.2;
+	margin-top: 5px;
+}
+.form .form_block .fbc_help2 {
+	line-height: 1.2;
+	display: block;
+	color: #666666;
+	font-size: 95%;
+	margin-top: 3px;
+}
+.form .form_block .fb_content .fb_enter {
+	margin-left: 320px;
+}
+.form .form_block .fb_content .fb_block {
+	width: 100%;
+	overflow: hidden;
+}
+.form .form_block .fb_content .fb_radio {
+	margin-top: 3px;
+}
+.fbc_text_inner {
+	float: left;
+	width: 220px;
+}
+.fbc_text_inner2 {
+	float: left;
+	margin-right: 5px;
+}
+.fbc_text_inner3 {
+	float: left;
+	margin-right: 5px;
+	width: 290px;
+}
+.fbc_text_inner4 {
+	float: left;
+	width: 140px;
+}
+.form .form_block_btn {
+	/*background-color: #f3f3f3;
+	padding-bottom: 10px;
+	border-top: 1px solid #ededed;
+	border-radius: 3px;
+	moz-border-radius: 3px;*/	
+	padding-top: 10px;
+}
+.formButton {
+	width: 90px;
+	height: 24px;
+	background: url('/files/images/btn_blue_90.png') top left no-repeat;
+	-background: none;
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_90.png', sizingMethod='scale');
+	font-family: arial,helvetica,sans-serif;	
+	color: #ffffff;
+	cursor: pointer;
+	border: none;
+	padding-bottom: 2px;
+}
+.formButton.noact_btn {
+	background: url("/files/images/btns_noact5.png") top left no-repeat;
+	color: #9b9b9b;
+	cursor: default;
+}
+.block_note {
+	color: #777777;
+}
+.form .form_block.active_block {
+	background-color: #f2f2f2;
+}
+.form .form_block .inp_txt.active,
+.form .form_block .select.active,
+.form .form_block .textarea.active {
+	border-top-color: #0088CC;
+	border-left-color: #0088CC;
+	border-right-color: #0088CC;
+	border-bottom-color: #0088CC;
+}
+.form .form_block.active_block .fbc_help {
+	color: #333333;
+}
+.form .dist_inner {
+	margin-bottom: 5px;
+}
+.form .dist_inner2 {
+	margin-top: 5px;
+}
+.form_error {
+	background-color: #E3F3FF;
+	border: 1px solid #0088CC;
+	margin-bottom: 5px;
+	padding: 5px;
+	display: none;
+}
+.form .block_sensors {
+	/*border: 1px solid #AAAAAA;
+	width: 442px;
+	height: 100px;
+	overflow: auto;
+	margin-top: 5px;*/
+}
+/* form error */
+.form .form_block .inp_txt.error,
+.form .form_block .select.error,
+.form .form_block .textarea.error {
+	border: 1px solid #ff0000;
+	color: #ff0000;
+}
+.error_field {
+	margin-left: 10px;
+	color: #ff0000;
+	margin-top: 2px;
+	float: left;
+}
+.error_field label {
+	cursor: default;
+}
+.success_message {
+	background-color: #E3F3FF;
+	border: 1px solid #0088CC;
+	margin-bottom: 5px;
+	padding: 5px;
+	display: none;
+}
+.error_message {
+	border: 1px solid #ff0000;
+	padding: 5px;
+	margin-bottom: 5px;
+	background-color: #fee7e7;
+	display: none;
+}
+.inp_txt.err_forms,
+.form .form_block .inp_txt.active.err_forms {
+	border: 1px solid #ff0000;
+}
+.detector {
+	float: left;
+	width: 300px;
+	margin-top: 2px;
+}
+.detector.on {
+	background: url("/files/images/power_on.png") left center no-repeat;
+	padding-left: 20px;
+}
+.detector.off {
+	background: url("/files/images/power_off.png") left center no-repeat;
+	padding-left: 20px;
+}
+/* video */
+.block_video {
+	margin-left: 570px;
+}
+.block_video .video {
+	/*width: 690px;
+	height: 525px;
+	background-color: #999999;*/
+}
+.message_warning {
+    background: url("/files/images/error2.png") no-repeat scroll 5px 50% #FFFFFF;
+    border: 1px solid #FF0000;
+    border-radius: 5px 5px 5px 5px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    padding: 5px 5px 5px 30px;
+}
+
+.message_warning span {
+    color: #FF0000;
+}

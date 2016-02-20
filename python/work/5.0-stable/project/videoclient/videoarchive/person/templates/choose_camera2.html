@@ -1,0 +1,132 @@
+{% include "header.html" %}
+{% load a_templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/person/learn.css?v=v{{ version }}" />
+<script src="/files/js/person/funcs.js?v=v{{ version }}" type="text/javascript"></script>
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>
+						<a href="/page_persons">{% trans "Персоны" %}</a> - <a href="{{ project_url }}/anketa/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{% trans "Анкета персоны" %}: {{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a>
+						
+					 - {% trans "Выбор камеры" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Выбор_камеры_для_обучения" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				<div class="frm_block">
+					<!--<input type="button" name="" value='{% trans "Назад" %}' class="inp_btn inp_btn90" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" 
+						onClick="location.replace('/learn/?person={{ person }}')"/>-->
+					<a href="{{ project_url }}/anketa/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn" onMouseOver="javascript: linkStatus(this, 'over', 90);" onMouseOut="javascript: linkStatus(this, 'up', 90);" onMouseDown="javascript: linkStatus(this, 'down', 90);" onMouseUp="javascript: linkStatus(this, 'over', 90);"><span>{% trans "Назад" %}</span></a>
+				</div>
+				<form method="POST" action="" name="frm_learn">
+					<div class="frm_block">
+						<div class="mini_camera_name" id="nameCamera">&nbsp;</div>
+						<div class="frm_block_txt">{% trans "Выберите коммуникатор" %}:</div>
+						<div>
+							<input id="communicator" type="hidden" name="communucator" value="{{ index }}" >
+							<select id="select" name="index" class="select" onChange="location.replace('{{ project_url }}/choose_camera/{% if select_page != "lists" %}{{ select_page }}{% else %}{{ select_sub_page }}{% endif %}/{{ id }}/{% if group %}?group={{ group }}{% endif %}&index='+document.getElementById('select').selectedIndex)">
+								{% for com in communicators %}
+									{% if forloop.counter0 == index %}
+										<option value="{{ forloop.counter0 }}" selected>{{ com.host }}:{{ com.port }}</option>
+									{% else %}
+										<option value="{{ forloop.counter0 }}">{{ com.host }}:{{ com.port }}</option>
+									{% endif %}
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					{% if error %}
+						<div class="info_important dist_top">
+							{% trans "Ошибка подключения!" %} {% trans "Коммуникатор" %} <b>{{ name }}</b> {% trans "недоступен" %}. {% trans "Пожалуйста, попробуйте подключиться позднее" %}.
+							<input type="button" class="inp_btn inp_btn140 dist_left" name="" onClick="javascript: location.reload(true);" value='{% trans "Подключиться" %}' onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						</div>
+					{% else %}
+					
+						<div class="frm_block">
+						<script type="text/javascript">
+							function addFlash(numcamera, host, port){
+								var lang = readCookie('django_language');
+								return '<object id="flash-app" name="flash-app" width="400" height="300" data="/files/swf/settings/flash.swf" type="application/x-shockwave-flash">'+
+										'<param value="/files/swf/settings/flash.swf" name="movie">'+
+										'<param value="always" name="AllowScriptAccess">'+
+										'<param value="all" name="allowNetworking">'+
+										'<param value="true" name="allowFullScreen">'+
+										'<param name="quality" value="high" />'+
+										'<param name="bgcolor" value="#ffffff" />'+
+										'<param name="wmode" value="opaque" />'+
+										'<param name="FlashVars" value="server=/&port='+port+'&camera='+numcamera+'&locale='+lang+'" />'+
+										'<embed src="/files/swf/settings/flash.swf" wmode="opaque" FlashVars="server=/&port='+port+'&camera='+numcamera+'&locale='+lang+'" quality="high" bgcolor="#ffffff" width="400" height="300" name="flash-app" align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer" />'+
+									'</object>';									
+							}
+						</script>						
+							<div class="mini_camera">
+								<div class="mini_camera_info" id="mini_camera_info">{% trans "Камера не выбрана" %}.</div>
+								<div id="mini_camera" style="display: none;"></div>
+							</div>	
+							{% include "po4NavigationBlock.html" %}				
+							<table class="table_cameras" cellspacing="0" cellpadding="0">
+								<tr>
+									<th>{% trans "Список камер" %}</th>
+									<th class="th_radio">{% trans "Выбор" %}</th>
+								</tr>
+							</table>
+							<table class="table_cameras_list" cellspacing="0" cellpadding="0">
+								{% for camera in cameras %}
+									{% if forloop.counter >= start and forloop.counter < finish %}
+										{% if camera.active  == '1'%}
+											{% if forloop.counter|odd %}
+												<tr class="odd" onMouseOver="javascript: selectRow(this, {{ forloop.counter }});" onMouseOut="javascript: unselectRow(this, {{ forloop.counter }});" onClick="javascript: chooseCamera({{ forloop.counter }}, '{{ camera.info }}', {{ camera.numcamera }});">
+											{% else %}
+												<tr onMouseOver="javascript: selectRow(this, {{ forloop.counter }});" onMouseOut="javascript: unselectRow(this, {{ forloop.counter }});" onClick="javascript: chooseCamera({{ forloop.counter }}, '{{ camera.info }}', {{ camera.numcamera }});">
+											{% endif %}
+													<td class="td_num"><span>{{ camera.numcamera|add:1 }}</span></td>
+													<td id="info{{ forloop.counter }}">{{ camera.info }}</td>
+										{% else %}
+												<tr class="noact" >
+													<td class="td_num"><span>{{ camera.numcamera|add:1 }}</span><div><img src="/files/images/lock.png" width="11" height="16" alt="" title="{% trans "Камера недоступна" %}" /></div></td>
+													<td id="info{{ forloop.counter }}">{{ camera.info }}</td>
+										{% endif %}
+											
+											{% if camera.active  == '1'%}
+													<td class="td_radio"><input type="radio" name="video" id="choose{{ forloop.counter }}" value="{{ camera.numcamera }}" class="inp_check" 
+														{% if forloop.counter0 == firstActive %} checked="checked"  {% endif %} />
+													</td>
+											{% else %}
+													<td class="td_radio dis"><input type="radio" name="video" id="choose{{ forloop.counter }}" value="{{ camera.numcamera }}" class="inp_check" disabled="disabled"/></td>
+											{% endif %}
+										</tr>
+									{% endif %}
+
+								{% endfor %}
+							</table>
+							{% include "po4NavigationBlock.html" %}
+							<script type="text/javascript">showChooseCamera();</script>
+						</div>
+					{% endif %}
+				</form>
+				{% if not error %}
+				<div class="frm_block">
+				    <div class="frm_btn">
+						<a href="{{ project_url }}/anketa/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn" onMouseOver="javascript: linkStatus(this, 'over', 90);" onMouseOut="javascript: linkStatus(this, 'up', 90);" onMouseDown="javascript: linkStatus(this, 'down', 90);" onMouseUp="javascript: linkStatus(this, 'over', 90);">{% trans "Назад" %}</a>
+					</div>
+					{% if cameras and cameras|length > 0 %}
+					<div class="frm_btn">
+						<a href="javascript:void(0);" class="link_btn" onClick="javascript: showLearnCamera(this, '{{ project_url }}/learn_camera/{% if select_page != "lists" %}{{ select_page }}{% else %}{{ select_sub_page }}{% endif %}/{{ index }}/', '/{{ id }}/{% if group %}?group={{ group }}{% endif %}');" onMouseOver="javascript: linkStatus(this, 'over', 90);" onMouseOut="javascript: linkStatus(this, 'up', 90);" onMouseDown="javascript: linkStatus(this, 'down', 90);" onMouseUp="javascript: linkStatus(this, 'over', 90);">{% trans "Далее" %}</a>
+					</div>
+					{% endif %}
+				</div>
+				{% endif %}				
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% include "window_help.html" %}
+
+</body>
+</html>			

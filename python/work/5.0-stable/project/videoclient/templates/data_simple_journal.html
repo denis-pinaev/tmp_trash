@@ -1,0 +1,179 @@
+{% load i18n %}
+{% load templatetags %}
+{% if all_users > 0 %}
+	<div class="block block_results">
+		<div class="block_detect"><input type="checkbox" name="" value="" class="inp_check" id="check_detect" onClick="javascript: setEyes();" /><label for="check_detect">{% trans "Отображать результаты детектирования" %}</label></div>
+		{% if all_pages %}{% trans "Отфильтровано" %} <strong id="search_data_journal">{{ all_users }}</strong> {% trans "из" %} <strong id="search_all_data_journal">{{ journals_count }}</strong> {% trans "записей" %}, {% trans "из них идентифицировано" %} <strong id="search_ident_data_journal">{{ all_ident_users }}</strong>{% endif %}
+	</div>	
+{% endif %}
+{% if journals_count > 0 %}
+{% if faces %}
+<script type="text/javascript">
+	
+	function drawFaces() {
+		var faces = {{ faces }};
+		var i=1
+		for (face in faces) {
+			drawFace('canvas_'+i,faces[face]);
+			i++;
+		}
+	}
+
+	function drawFace(id_canvas,  face){
+		var params = face;
+		var original_width = params[21];
+		var original_height = params[22];
+		var imgSize = 120;
+		var dx = 0;
+		var dy = 0;
+		var coef = 1;
+		if (original_width > original_height) {
+			coef = imgSize/original_width;
+			dy = (imgSize - original_height*coef)/2;
+		} else {
+			coef = imgSize/original_height;
+			dx = (imgSize - original_width*coef)/2;
+		}
+		var canvas = document.getElementById(id_canvas);
+		if (canvas) {
+			var ctx = canvas.getContext('2d');
+			var list = [];
+			var res = [];
+			if (params.length >= 14){
+				res['face'] = [params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7]];
+				res['is_face'] = parseInt(params[8]);
+				
+				if(params[9]<=1 && params[10]<=1 && params[12]<=1 && params[13]<=1){
+					params[9] = params[0]+params[9]*(params[2]-params[0]);
+					params[10] = params[1]+params[10]*(params[7]-params[1]);
+					params[12] = params[0]+params[12]*(params[2]-params[0]);
+					params[13] = params[1]+params[13]*(params[7]-params[1]);
+				}
+				res['eye1'] = [params[9], params[10]];
+				res['is_eye1'] = parseInt(params[11]);
+				res['eye2'] = [params[12], params[13]];
+				res['is_eye2'] = parseInt(params[14]);
+				list = ['eye1', 'eye2']
+				if (params.length >= 17){
+					res['nouse'] = [params[15], params[16]];
+					res['is_nouse'] = parseInt(params[17]);
+					list.push('nouse')
+					if(params[15]<=1 && params[16]<=1){
+						params[15] = params[0]+params[15]*(params[2]-params[0]);
+						params[16] = params[1]+params[16]*(params[7]-params[1]);
+					}
+					if (params.length >= 21){
+						res['chin'] = [params[18], params[19]];
+						res['is_chin'] = parseInt(params[20]);
+						list.push('chin')
+						if(params[18]<=1 && params[19]<=1){
+							params[18] = params[0]+params[18]*(params[2]-params[0]);
+							params[19] = params[1]+params[19]*(params[7]-params[1]);
+						}
+					}
+				}
+				var color = '#ff9900';
+				ctx.strokeStyle = color;
+				ctx.lineWidth   = 2;
+				for (var i in list){
+					ctx.beginPath();				
+					ctx.arc(res[list[i]][0]*coef+dx, res[list[i]][1]*coef+dy, 3, 0, Math.PI*2, false); 
+					ctx.closePath();
+					ctx.stroke();
+				}
+				ctx.beginPath();
+				drawLine(ctx,res['face'][0]*coef+dx,res['face'][1]*coef+dy,res['face'][2]*coef+dx,res['face'][3]*coef+dy,0.3)
+				drawLine(ctx,res['face'][2]*coef+dx,res['face'][3]*coef+dy,res['face'][4]*coef+dx,res['face'][5]*coef+dy,0.3)
+				drawLine(ctx,res['face'][4]*coef+dx,res['face'][5]*coef+dy,res['face'][6]*coef+dx,res['face'][7]*coef+dy,0.3)
+				drawLine(ctx,res['face'][6]*coef+dx,res['face'][7]*coef+dy,res['face'][0]*coef+dx,res['face'][1]*coef+dy,0.3)
+				ctx.closePath();
+				ctx.stroke();
+			}
+		}
+	}
+	
+	function drawLine(ctx,x1,y1,x2,y2,k){
+		var p1x = x1 + (x2-x1)*k;
+		var p1y = y1 + (y2-y1)*k;
+		var p2x = x1 + (x2-x1)*(1-k);
+		var p2y = y1 + (y2-y1)*(1-k);
+		ctx.moveTo(x1,y1);
+		ctx.lineTo(p1x,p1y);
+		ctx.moveTo(p2x,p2y);
+		ctx.lineTo(x2,y2);
+	}
+	
+	$(function() {
+		drawFaces();
+		checkEyes();
+		setEyes();
+	});
+</script>
+{% endif %}
+	{% if all_users == 0 %}	
+		<div class="message_action dist_top">{% trans "Не найдены записи, соответствующие заданным условиям поиска" %}.</div>
+	{% else %}
+		<input type="hidden" id="all_data_journal_i" value="{{ journals_count }}" />
+		<input type="hidden" id="all_ident_data_journal_i" value="{{ journals_ident_count }}" />
+		<input type="hidden" id="search_data_journal_i" value="{{ all_users }}" />
+		<input type="hidden" id="search_ident_data_journal_i" value="{{ all_ident_users }}" />
+		{%  if all_pages = 'True' %}
+			<input type="hidden" name="all_pages" value="{{ all_pages }}" id="cameras" />
+		{% endif  %}		
+		<div class="block">
+			
+			{% if perms.user_perms.perm_logs_clear %}<input type="button" name="" value="{% trans 'Очистить журнал' %}..." class="inp_btn inp_btn140 btn_clear" onClick="javascript: clearJournal();" />{% endif %}
+			<a href="#" class="btnAuto" id="btnAuto" onClick="javascript: autorefreshLog(this); return false;"><span>{% trans "Автообновление" %}</span></a>
+			{% if perms.user_perms.perm_lists or perms.user_perms.perm_logs_export %}	
+				<div class="bl_btn_check short_descr" onClick="javascript: selectedAllRow('choose_all');" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all" onClick="javascript: selectedAllRow('choose_all');" /><label for="choose_all">{% trans "Выделить всё" %}</label></div></div>
+				{% if perms.user_perms.perm_lists %}
+					<input type="button" name="" value="{% trans "Обучить персону" %}" onClick="javascript: learnJournal({{ users|length }});" class="inp_btn inp_btn140" />
+				{% endif %}
+				{% if perms.user_perms.perm_logs_export %}					
+					<input type="button" name="" value="{% trans "Экспорт..." %}" onClick="javascript: exportJournal();" class="inp_btn inp_btn140" style="margin-left: 30px;" />
+				{% endif %}
+			{% endif %}		
+		</div>	
+		{% include "page_navigation/main_ext.html" %}
+		<div class="block">
+			<ul class="block list_photos" id="list_records">
+			{% for journal in users %}
+				<li {% if journal.person %}class="face_ident"{% endif %} {% cycle '' '' '' '' '' '' '' '' 'style="margin-right: 0px;"' %}>
+					<div class="block_photo">
+						{% if journal.person %} 
+							<div class="block_name short_descr" title="{{ journal.person.person.first_name }} {{ journal.person.person.last_name }} {{ journal.person.person.middle_name }}">{{ journal.person.person.first_name }} {{ journal.person.person.last_name }}</div>
+						{% endif %}
+						<a href="#" onClick="javascript: showJournalPhoto('{{ journal.id }}', {{ forloop.counter }}); return false;" class="short_descr" title="{% if journal.get_found_distance %}{% trans 'Расcтояние между глазами на вырезанном изображении' %}: {{ journal.get_found_distance|floatformat:0 }}<br />{% endif %}{% if journal.get_distance %}{% trans 'Расcтояние между глазами на оригинальном изображении' %}: {{ journal.get_distance|floatformat:0 }}{% endif %}{% if journal.original %}<br />{% trans 'Разрешение' %}: {{ journal.get_original_info.resol }}{% endif %}"><img src="{% if not journal.original %}/files/images/no_photo40x40.gif{% else %}{% url get-journal-photo journal.pk 'original' %}{% endif %}" alt="" id="img_id_{{ forloop.counter }}" ident="{% if journal.person %}1{% else %}0{% endif %}" /></a>						
+						<div class="block_ident"><canvas id="canvas_{{ forloop.counter }}" width="120px" height="120px" onClick="javascript: showJournalPhoto('{{ journal.id }}', {{ forloop.counter }}); return false;"></canvas></div>
+					</div>
+					<div class="block_period">
+						{{ journal.dt_first_fixed|date:"d.m.Y" }}{% if journal.dt_first_fixed|date:"Y.m.d" != journal.dt_last_fixed|date:"Y.m.d" %}-{{ journal.dt_last_fixed|date:"d.m.Y" }}{% endif %}<br />
+						<span class="short_descr" title="{% trans 'Период времени детектирования может изменяться из-за сбора статистики, обновляемой каждые 15 сек.' %}">{{ journal.dt_first_fixed|date:"H:i:s" }} - {{ journal.dt_last_fixed|date:"H:i:s" }}*</span>
+					</div>					
+					{% if perms.user_perms.perm_lists or perms.user_perms.perm_logs_export %}<div class="block_check"><input type="checkbox" name="pi{{forloop.counter}}" value="{{ journal.pk }}" id="check{{ forloop.counter }}" class="inp_check" onClick="javascript: stopTimeRefresh(); selectedRow(this);" /></div>{% endif %}
+					<input type="button" title="{% trans "Посмотреть подробную информацию" %}" name="" value="" class="btn_loupe short_descr" onClick="javascript: showJournalPhoto('{{ journal.id }}', {{ forloop.counter }});" id="photo{{ forloop.counter }}" />
+					{% if journal.coeff >= 99 %}<div class="param_learn short_descr" title="{% trans "Лицо добавлено в базу" %}"></div>{% endif %}
+					<div class="param_count union_count short_descr" title="{% trans 'Количество фотографий' %}: {{ journal.photos_count }}<br />{% trans 'Результат может изменяться из-за сбора статистики, обновляемой каждые 15 сек.' %}">{{ journal.photos_count }}<span>*</span></div>
+					{% if journal.id|get_video %}
+						<a href="{{ root_path }}/archive/page_view_detail_video/{{ journal.id }}/" class="param_show_video short_descr" target="_blank" title="{% trans "Просмотреть видеоролик" %}"></a>
+					{% endif %}
+				</li>
+			{% endfor %}	
+			</ul>
+		</div>
+		{% include "page_navigation/main_bottom.html" %}
+		
+		{% if perms.user_perms.perm_lists or perms.user_perms.perm_logs_export %}
+			<div class="block" style="margin-top: 5px;">
+				<div class="bl_btn_check short_descr" onClick="javascript: selectedAllRow('choose_all2');" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all2" onClick="javascript: selectedAllRow('choose_all2');" /><label for="choose_all2">{% trans "Выделить всё" %}</label></div></div>
+				{% if perms.user_perms.perm_lists %}
+					<input type="button" name="" value="{% trans "Обучить персону" %}" onClick="javascript: learnJournal({{ users|length }});" class="inp_btn inp_btn140" />
+				{% endif %}
+				{% if perms.user_perms.perm_logs_export %}
+					<input type="button" name="" value="{% trans "Экспорт..." %}" onClick="javascript: exportJournal();" class="inp_btn inp_btn140" style="margin-left: 30px;" />
+				{% endif %}
+			</div>
+		{% endif %}	
+	{% endif %}
+{% endif %}
+{% if space %}<input type="hidden" value="{{ space }}" name="" id="info_space" />{% endif %}

@@ -1,0 +1,48 @@
+﻿.req {
+    color: #ff0000;
+    font-weight: bold;
+}
+.req_hid {
+    font-weight: bold;
+    visibility: hidden;
+}
+.btn_blue {
+    color: #ffffff;
+    width: 90px;
+    background: url("/files/images/btn_blue_90.png") top left no-repeat;
+    -background: none;  
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_90.png', sizingMethod='crop');    
+}
+.btn_calend {
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    height: 16px;
+    width: 16px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: arial,helvetica,sans-serif;
+    background: url('/files/images/calend.png') top left no-repeat;
+    -background: none;  
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/calend.png', sizingMethod='crop');
+    margin-left: 5px;
+}
+.bl_param {
+    margin-top: 10px;
+}
+.bl_param .bl_txt {
+    float: left;
+    margin-right: 10px;
+    width: 170px;
+}
+.bl_param .bl_enter {
+    margin-left: 180px;
+}
+.bl_param .bl_enter .unit {
+    margin-left: 5px;
+    float: left;
+}
+.bl_error {
+    color: #ff0000;
+    margin-left: 180px;
+}

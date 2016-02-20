@@ -1,0 +1,92 @@
+{% load i18n %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/list_cameras.css?v=v{{ version }}" />
+<div class="message_warning" id="message_warning" {% if not communicator_errors_info %}style="display: none;"{% endif %}><span>{% trans "Внимание" %}!</span> <span>{% trans "Проверьте коммуникаторы." %} {% if communicator_errors_info %}{% trans "Следующие коммуникаторы:" %} {% for com_failed in communicator_errors_info %}{{ com_failed.host }}:{{ com_failed.port }}{% if not forloop.last %},{% endif %} {% endfor %}{% trans "не вернули список камер." %}{% if all_active_cameras|length < 1 %} {% trans "Добавьте камеры." %}{% endif %}{% endif %}</span></div>				
+<div class="message_warning" id="message_warning_live" style="display: none;"><span>{% trans "Внимание" %}!</span> <span id="message_warning_content"></span></div>
+<div class="success_message" id="success_message"></div>
+<div class="error_message" id="error_message"></div>
+<div class="frm_block">
+	{% if all_active_cameras|length > show_cameras_count %}<div class="view_all"><a href="#" id="link_all" onClick="javascript: showListCameras($(this)); return false;">{% trans 'Показать все' %}</a></div>{% endif %}			
+	<div class="list_cameras" id="cameras" style='width: {% if res_interface == "1" %}1770{% else %}1130{% endif %}px;'>
+	{% for camera in all_active_cameras %}
+	{% if all_active_cameras|length > show_cameras_count %}
+	{% ifequal forloop.counter show_cameras_count_ex %}
+	<div style="display: none;" id="all_cameras">
+	{% endifequal %}
+	{% endif %}
+	{% if camera.active %}
+		<a href="{{ camera.url_reverse_name }}" class="camera {% if selected_camera.uuid == camera.uuid %}act{% endif %}" title="{% trans 'Камера' %}: {{ camera.full_name }}<br />{% trans 'Коммуникатор' %}: {{ camera.commun.host }}:{{ camera.commun.port }}">
+			<span class="camera_img"><img id="camera_icon_{{ camera.uuid }}" src="/files/images/camera_no72x54.jpg" alt="" /></span>
+			<span class="camera_name">{{ camera.display_name|truncchar:28 }}</span>
+		</a>
+	{% else %}
+		<a href="#" class="camera noact" title="{% trans "Камера неактивна" %}">
+			<span class="camera_img"><img src="/files/images/camera_no72x54.jpg" alt="" /></span>
+			<span class="camera_name">{{ camera.display_name|truncchar:28 }}</span>
+		</a>
+	{% endif %}
+		{% if all_active_cameras|length > show_cameras_count and forloop.last %}
+		</div>
+		{% endif %}
+	{% endfor %}						
+	</div>
+</div>
+
+<div id="uuid" style="display: none;">{{ selected_camera.uuid }}</div>
+<div id="selected_camera_ip" style="display: none;">{{ selected_camera.ip }}</div>
+<div id="host" style="display: none;">{{ selected_camera.commun.host }}</div>
+<div id="port" style="display: none;">{{ selected_camera.commun.port }}</div>
+<div id="mjpeg_port" style="display: none;">{{ selected_camera.commun.mjpeg_port }}</div>
+<script type="text/javascript">
+var sys_cameras = "[{% for camera in all_active_cameras %}{'uuid': '{{ camera.uuid }}'}{% if not forloop.last %}, {% endif %}{% endfor %}]";
+//получаем изображения для всех камер
+function getAllFrames() {
+	var show_cameras = readCookie('show_cameras');
+	if (show_cameras && (show_cameras == 'true')) {
+		$("#all_cameras").show();
+		$("#link_all").html('{% trans "Скрыть" %}');
+		$("#link_all").addClass("link_bottom");
+	}
+	var d = new Date();
+	$.ajax({
+		type: "GET",
+		url: "{% url get-all-video-frames %}",
+		data: {'sys_cameras': sys_cameras, 'rnd': d.getTime(), 'width': 72, 'height': 54},
+		cache: false,
+		dataType: "json",
+		success: function(frame_data){
+			for (var i = 0; i < frame_data.length; i++){
+				var frame = frame_data[i].result;
+				var uuid = frame_data[i].uuid;
+
+				if(frame.res != 'success') {
+					$("#camera_icon_" + uuid).attr("src", "/files/images/camera_no72x54.jpg");
+				}else{
+					var tmpbuffer = "data:image/jpeg;base64," + frame.image;
+					$("#camera_icon_" + uuid).attr("src", tmpbuffer);
+				}
+			}
+		},
+		error: function(data) {
+		}
+	});
+	$("#cameras a.camera").easyTooltip();
+}
+// показать все камеры
+function showListCameras(obj_link) {
+	var block = $("#all_cameras");
+	if (block.css("display") == "none") {
+		obj_link.html('{% trans "Скрыть" %}');
+		obj_link.addClass("link_bottom");
+		block.show();
+		setCookie('show_cameras', 'true');
+	} else {
+		obj_link.html('{% trans "Показать всё" %}');
+		obj_link.removeClass("link_bottom");
+		block.hide();
+		setCookie('show_cameras', 'false');
+	}
+}
+getAllFrames();
+setInterval('getAllFrames()', 60000);
+</script>

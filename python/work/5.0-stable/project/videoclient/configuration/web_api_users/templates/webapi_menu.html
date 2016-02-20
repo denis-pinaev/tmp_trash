@@ -1,0 +1,7 @@
+{% load i18n %}
+{% load templatetags %}                    
+<ul class="block menu_vkl_inner">
+    <li><a href="{% url user_ip %}{% if user_login %}?user_login={{ user_login }}{% endif %}" class="first{% if page = 'user_ip' %} act{% endif %}">{% trans "IP-адреса" %}</a></li>
+    <li><a href="{% url user_restrictions %}{% if user_login %}?user_login={{ user_login }}{% endif %}"{% if page = 'user_restrictions' %} class="act" {% endif %}>{% trans "Ограничения" %}</a></li>
+    <li><a href="{% url user_security %}{% if user_login %}?user_login={{ user_login }}{% endif %}" class="last{% if page = 'user_security' %} act{% endif %}">{% trans "Ключ доступа" %}</a></li>
+</ul>

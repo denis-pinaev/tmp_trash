@@ -1,0 +1,287 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+var DEFAULT_WIDTH = '300px';
+var DEFAULT_HEIGHT = '200px';
+function removeEvent(obj, e) {
+    obj.unbind(e);
+}
+function screenSize() {
+    return { width: $(window).width(), height: $(window).height() }
+}
+function getBodyScrollTop() {
+	return $(window).scrollTop();
+}
+function positionScreen(param) {
+	var elem = param.obj;
+	var pos_elem = elem.offset();
+	var top = pos_elem.top - param.distY;
+	var left = pos_elem.left + elem.width() + param.distX;
+	var scr = screenSize();
+	if ( ( left + param.win_width ) > scr.width ) {
+		left = pos_elem.left - param.win_width - param.distX;
+	}
+	if (param.win_height) {
+		if ( ( top + param.win_height ) > scr.height ) {
+			top = scr.height - param.win_height - param.distY;
+		}
+	}
+	return { top: top, left: left };
+}
+// создание диалогового окна
+function changeWindow(param) {
+	if ($("#datepicker").size() > 0) $("#datepicker").hide();
+	var win = $("#" + param.id);
+	win.css("width", DEFAULT_WIDTH);
+	win.css("height", DEFAULT_HEIGHT);
+	if (param.head) {
+		win.find("div.headWF_txt").html(param.head);
+	}
+	if (param.txt) {
+		if (win.find("div.contWF").size() == 0) {
+			win.find("div.contWF_add").html(param.txt);
+		} else {
+			win.find("div.contWF").html(param.txt);
+		}		
+	}
+	if (param.css) {
+		for (var i in param.css) {
+			win.css(i, param.css[i])
+		}
+	}		
+	var scr = screenSize();	
+	var t = (scr.height - parseInt(win.css("height")))/ 2*0.8;
+	if (t < 0) { t = 0 }
+	t = t + 'px';
+	win.css("top", t);
+	win.css("left", (scr.width - parseInt(win.css("width"))) / 2 + 'px');
+	var fon = $("#block_fon");	
+	if ($.browser.msie && $.browser.version == "6.0") {
+		win.css("top", parseInt(t)+ document.documentElement.scrollTop +'px')
+		fon.css("height", document.body.offsetHeight + 'px');
+	}		
+	fon.show();	
+	win.show();
+}
+function changeWindow2(param) {
+	if ($("#datepicker").size() > 0) $("#datepicker").hide();
+    var win = $("#" + param.id);
+    win.css("width", DEFAULT_WIDTH);
+    win.css("height", DEFAULT_HEIGHT);
+    if (param.css) {
+        for (var i in param.css) {
+            win.css(i, param.css[i])
+        }
+    }    
+    if (param.head) {
+        win.find("div.headWF_txt").html(param.head);
+    }
+	var dist = 9;
+	win.css("opacity", 0);
+	win.show();
+	var header = win.find("div.headWF");
+	var footer = win.find("div.footerWF");
+    if (win.find("div.contWF").size() == 0) {
+        var content = win.find("div.contWF_add");
+        content.parent().css("height", win.height() - dist - header.height() - footer.height() + 'px');
+    } else {
+        var content = win.find("div.contWF");
+    }
+	win.hide();	
+	win.css("opacity", 1);
+    if (param.txt) {
+        content.html(param.txt);
+    }
+    var scr = screenSize();    
+    var t = (scr.height - parseInt(win.css("height")))/ 2*0.8;
+    if (t < 0) { t = 0 }
+    t = t + 'px';
+    win.css("top", t);
+    win.css("left", (scr.width - parseInt(win.css("width"))) / 2 + 'px');
+    var fon = $("#block_fon");    
+    if ($.browser.msie && $.browser.version == "6.0") {
+        win.css("top", parseInt(t)+ document.documentElement.scrollTop +'px')
+        fon.css("height", document.body.offsetHeight + 'px');
+    }
+	if (param.css) {
+		if (param.css.top && param.css.left) {
+			 win.css("top", param.css.top);
+			 win.css("left", param.css.left);
+		}
+	}
+    if (param.noblock) fon.hide();
+    else fon.show();
+    win.show();
+    var btn_cancel = win.find("div.bodyWF div.footerWF .close")
+    var btn_close = win.find("div.bodyWF div.btnCloseWF input[type=button]");
+    removeEvent(btn_close, 'click');
+    removeEvent(btn_cancel, 'click'); 
+    if (param.close) {
+        btn_close.click(function() {
+            eval(param.close);
+        }); 
+        btn_cancel.click(function() {
+            eval(param.close);
+        });                                  
+    } else {
+        btn_close.click(function() {
+            closeChangeWindow(param.id);
+        });
+        btn_cancel.click(function() {
+            closeChangeWindow(param.id);    
+        });             
+    }      
+}
+// окно помощи
+function showHelp(inp, txt) {
+	createInfoWindow({distX: 10, width: 400, height: 300, obj: $(inp), id: 'win_help', txt: txt})
+}
+function showMessage(txt) {
+	changeWindow2({id: 'win_mess', txt: txt});
+}
+// создание информационного окна
+function createInfoWindow(param) {
+	var distX = param.distX ? param.distX : 0; 
+	var distY = param.distY ? param.distY : 0; 
+	var w1 = param.width;
+	var h1 = param.height;
+	var win = $("#" + param.id);
+	var content = win.find("div.contWF_add");
+	if (param.txt) {
+		content.html(param.txt);
+	}
+	content.parent().css("height", h1 - 62 + 'px');
+	var fon = $("#block_fon");
+
+	var pos_win = positionScreen({obj: param.obj, win_width: w1, win_height: h1, distX: distX, distY: distY});
+	var coord_left = pos_win.left + "px";
+	var coord_top = pos_win.top + "px";
+	win.css("width", w1);
+	win.css("height", h1);
+	win.css("left", coord_left);
+	win.css("top", coord_top);
+	if ($.browser.msie && $.browser.version == "6.0") {
+		win.css("top", parseInt(coord_top) + getBodyScrollTop() +'px')
+		fon.css("height", document.body.offsetHeight + 'px');
+	}
+	fon.show();
+	win.show();
+}
+// индикатор загрузки
+function showIndicator(show) {
+	var win = $('#indicator');
+	var fon = $('#block_fon');
+	if (show) {
+		var w = 200;
+		var h = 60;
+		var scr = screenSize();
+		win.css("top", (100 - h * 100 / scr.height) / 3 / 100 * scr.height + 'px');
+		win.css("left", (scr.width - w) / 2 + 'px')
+		fon.show();
+		win.show();
+	} else {
+		fon.hide();
+		win.hide();
+	}
+}
+// окно идентификации
+function checkJournal(){
+	if ({{ show_ident_window|default:1 }} == 0) {
+		return false;
+	}
+	$.ajax({
+		type: "GET",
+		url: "/checkjournal",
+		data: {},
+		success: function(msg) {
+			var obj = msg;
+			if  (obj && obj.status){
+				windowJournal({id: 'win_journal', css: {width: '600px', height: '600px'}, txt:obj.content, pos: '{{ ident_window_position|default_if_none:1 }}'}); 
+				delayCheckJournal();
+			} else {
+				setTimeout('checkJournal()', 3000);
+			}
+		},
+		error: function(msg){
+			setTimeout('checkJournal()', 3000);
+		}
+	});
+}
+function delayCheckJournal() {
+	if ($("#win_journal").css("display") == 'none') {
+		checkJournal();
+	} else {
+		setTimeout('delayCheckJournal()', 1000);
+	}
+}
+function windowJournal(param) {
+	var border_top = 20;
+	var dist_ie6 = 10;
+	var win = $("#" + param.id);
+	var fon = $("#block_fon"); 
+	if (param.css) {
+		for (var i in param.css) {
+			win.css(i, param.css[i])
+		}
+	}
+	if (param.head) {
+		win.find("div.headWF_txt").html(param.head);
+	} 
+	var content = win.find("div.contWF_add");
+	if (param.txt) {
+		content.html(param.txt);
+	}
+	content.parent().css("height", win.height() - 32 + 'px');
+	var scr = screenSize();
+	if (param.pos == 0) {
+		var t = (scr.height - win.height()) / 2 * 0.8;
+		if (t < 0) { t = 0 }
+		t = t + 'px';
+		win.css("top", t);
+		win.css("left", (scr.width - win.width()) / 2 + 'px');
+		if ($.browser.msie && (($.browser.version == "6.0") || ($.browser.version == "7.0"))) {
+			win.css("position", "absolute");
+			win.css("top", parseInt(t)+ document.documentElement.scrollTop +'px')
+			fon.css("height", document.body.offsetHeight + 'px');			
+		} else {
+			win.css("position", "fixed")
+		}	
+	} else {
+		var t = scr.height - win.height() - border_top;
+		if (t < 0) { t = 0 }
+		t = t + 'px';
+		win.css("top", t);
+		win.css("right", '5px');
+		if ($.browser.msie && (($.browser.version == "6.0") || ($.browser.version == "7.0"))) {
+			win.css("position", "absolute");
+			win.css("top", parseInt(t)+ document.documentElement.scrollTop - dist_ie6 +'px');
+			fon.css("height", document.body.offsetHeight + 'px');
+		} else {
+			win.css("position", "fixed")
+		}
+	}
+	win.show();
+	fon.show();	
+}
+function closeChangeWindow(id) {
+    $("#" + id).hide();
+    $("#block_fon").hide();
+}
+// закрытие окна на esc
+function closeWindowOnEsc(e, cls, f) {
+	var code = e.keyCode;
+	if ( code == 27 ) {
+		if (cls) {
+			var wins = $("body").find("." + cls)
+		} else {
+			var wins = $("body").find(".winFloating")
+		}
+		$.each(wins, function() {
+			if ($(this).css("display") == "block") {
+				closeChangeWindow($(this).attr("id"));
+				if (f) f.call();
+			}
+		});
+	}
+}
+</script>

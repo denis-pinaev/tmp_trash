@@ -1,0 +1,90 @@
+{% load i18n %}
+{% load templatetags %}
+{% include "po1header.html" %}
+
+<link rel="stylesheet" type="text/css" href="/files/css/po1/po1kpp.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>Контрольно-пропускные пункты<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				<form method="post" action="" name="">
+					<div class="frm_block">
+						<div class="search">
+							<span class="left"></span>
+							<span class="center"><input type="text" name="filter" value="Введите название КПП" value="" class="txt_search" /></span>
+							<input type="submit" name="" value="" class="btn_search" title="Найти пользователя" />
+						</div>
+						<div>Всего КПП: <span class="info_important">45</span></div>
+					</div>				
+					<div class="frm_block">
+						<div class="bl_btn_check">
+							<input type="button" name="" value="" class="inp_btn inp_btn40" />
+							<input type="checkbox" name="" value="" class="inp_check" />
+						</div>
+						<input type="button" name="" value="Удалить выделенные" class="inp_btn inp_btn170" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						<input type="button" name="" value="Обнулить базу" class="inp_btn inp_btn140" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						<input type="button" name="" value="Добавить" class="inp_btn inp_btn90" style="margin-left: 30px;" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" onClick="location.replace('add')"/>
+					</div>
+					<div class="frm_block">
+						<table cellspacing="0" cellpadding="0" class="list_users_head">
+							<th class="th_check">№</th>
+							<th class="th_name">Название КПП</th>
+							<th>Месторасположение</th>
+							<th class="th_fio">ФИО всех охранников</th>
+						</table>					
+						<table cellspacing="0" cellpadding="0" class="list_users">
+							<tr>
+								<td class="td_check"><span>1.</span><input type="checkbox" name="" value="" class="inp_check" /></td>
+								<td class="td_name"><a href="edit">КПП №1</a></td>
+								<td>Местрасположение КПП №1</td>
+								<td class="td_fio">Петров А.А, Иванов И.И</td>
+							</tr>
+							<tr class="odd">
+								<td class="td_check"><span>1.</span><input type="checkbox" name="" value="" class="inp_check" /></td>
+								<td class="td_name"><a href="edit">КПП №2</a></td>
+								<td>Местрасположение КПП №2</td>
+								<td class="td_fio">Петров А.А, Иванов И.И</td>
+							</tr>
+							<tr>
+								<td class="td_check"><span>1.</span><input type="checkbox" name="" value="" class="inp_check" /></td>
+								<td class="td_name"><a href="edit">КПП №3</a></td>
+								<td>Местрасположение КПП №3</td>
+								<td class="td_fio">Петров А.А, Иванов И.И</td>
+							</tr>
+							<tr class="odd">
+								<td class="td_check"><span>1.</span><input type="checkbox" name="" value="" class="inp_check" /></td>
+								<td class="td_name"><a href="edit">КПП №4</a></td>
+								<td>Местрасположение КПП №4</td>
+								<td class="td_fio">Петров А.А, Иванов И.И</td>
+							</tr>														
+						</table>
+					</div>
+					<div class="frm_block">
+						<div class="bl_btn_check">
+							<input type="button" name="" value="" class="inp_btn inp_btn40" />
+							<input type="checkbox" name="" value="" class="inp_check" />
+						</div>
+						<input type="button" name="" value="Удалить выделенные" class="inp_btn inp_btn170" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						<input type="button" name="" value="Обнулить базу" class="inp_btn inp_btn140" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						<input type="button" name="" value="Добавить" class="inp_btn inp_btn90" style="margin-left: 30px;" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+					</div>					
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po1footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+{% include "window_help.html" %}
+
+</body>
+</html>

@@ -1,0 +1,142 @@
+{% load i18n %}
+{% include "po4header.html" %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/settings.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+
+	<div class="block_settings">
+
+		{% include "po4menu_insert.html" %}
+
+		<div class="block_cont">
+			<div class="block_cont_top2">
+				<div class="block_cont_bottom min_height"> 
+					<h2>{% trans "Настройка сервера" %} "{{ name }}"<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Настройки_камер" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+					{% if not error %}
+					<div class="settings_btns">
+						<input type="button" name="" value="{% trans "Сохранить профиль" %}" class="inp_btn inp_btn140" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');"
+							onClick="javascript: executeMethodBalancer2('saveCameras')" title="{% trans "Для сохранения настроек для всех камер выбранного коммуникатора" %}" />
+						<input type="button" name="" value="{% trans "Загрузить настройки" %}" class="inp_btn inp_btn140" style="margin-left: 5px;" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');"
+							onClick="javascript: executeMethodBalancer2('configureCameras')" title="{% trans "Для загрузки сохранённых настроек для всех камер выбранного коммуникатора" %}" />
+					</div>
+					{% endif %}
+					<form method="" action="" name="">
+						<div class="frm_block">
+							<div class="mini_camera_name" id="nameCamera">&nbsp;</div>
+							<div class="frm_block_txt">{% trans "Выберите коммуникатор" %}:</div>
+							<div>
+								<input id="communicator" type="hidden" name="communucator" value="{{ index }}" >
+								<select id="select" name="index" class="select" onChange="location.replace('/po4/settingspage/?index='+document.getElementById('select').selectedIndex)">
+									{% for com in communicators %}
+										{% if forloop.counter0 == index %}
+											<option value="{{ forloop.counter0 }}" selected>{{ com.host }}:{{ com.port }}</option>
+										{% else %}
+											<option value="{{ forloop.counter0 }}">{{ com.host }}:{{ com.port }}</option>
+										{% endif %}
+									{% endfor %}
+								</select>
+								{% if not error %}
+									<input type="button" name="" value='{% trans "Обновить список" %}' class="inp_btn inp_btn110 dist_left" title='{% trans "Обновить список камер для данного коммуникатора" %}' onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" onClick="javascript: showUpdateWindow();" />
+									<input type="button" name="" value='{% trans "Добавить" %}' class="inp_btn inp_btn90 dist_left" onClick="javascript: addCamera();" title='{% trans "Добавить камеру вручную" %}'/>
+								{% endif %}
+							</div>
+						</div>
+	
+						{% if error %}
+							<div class="info_important dist_top">
+								{% trans "Ошибка подключения!" %} {% trans "Коммуникатор" %} <b>{{ name }}</b> {% trans "недоступен" %}. {% trans "Пожалуйста, попробуйте подключиться позднее" %}.
+								<input type="button" class="inp_btn inp_btn140 dist_left" name="" onClick="javascript: location.reload(true);" value='{% trans "Подключиться" %}' onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+							</div>
+						{% else %}
+							<div class="frm_block">
+						<script type="text/javascript">
+
+							function addFlash(numcamera, host, port){
+								var lang = readCookie('django_language');
+								return '<object id="flash-app" name="flash-app" width="400" height="300" data="/files/swf/settings/flash.swf" type="application/x-shockwave-flash">'+
+										'<param value="/files/swf/settings/flash.swf" name="movie">'+
+										'<param value="always" name="AllowScriptAccess">'+
+										'<param value="all" name="allowNetworking">'+
+										'<param value="true" name="allowFullScreen">'+
+										'<param name="quality" value="high" />'+
+										'<param name="bgcolor" value="#ffffff" />'+
+										'<param name="wmode" value="opaque" />'+
+										'<param name="FlashVars" value="server='+host+'&port='+port+'&camera='+numcamera+'&locale='+lang+'" />'+
+										'<embed src="/files/swf/settings/flash.swf" wmode="opaque" FlashVars="server='+host+'&port='+port+'&camera='+numcamera+'&locale='+lang+'" quality="high" bgcolor="#ffffff" width="400" height="300" name="flash-app" align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer" />'+
+									'</object>';									
+							}
+						</script>							
+								<div class="mini_camera">
+									<div class="mini_camera_info" id="mini_camera_info">{% trans "Камера выключена" %}.</div>
+									<div id="mini_camera" style="display: none;"></div>
+								</div>
+								{% include "po4NavigationBlock.html" %}
+								<table class="table_cameras" cellspacing="0" cellpadding="0">
+									<tr>
+										<th colspan="2">{% trans "Список камер" %}</th>
+										<th colspan="4">{% trans "Режим сервера" %}</th>
+										<th rowspan="2" class="th_btn">{% trans "Просмотр видео" %}</th>
+									</tr>
+									<tr>
+										<th colspan="2">{% trans "Название камеры" %}</th>
+										<th class="th_radio">{% trans "Видео режим" %}</th>
+										<th class="th_radio">{% trans "Детект. лиц" %}</th>
+										<th class="th_radio">{% trans "Идент. лиц" %}</th>
+										<th class="th_radio">{% trans "Камера выкл." %}</th>
+									</tr>
+								</table>
+								<table class="table_cameras_list" cellspacing="0" cellpadding="0">
+
+									{% for camera in cameras %}
+										{% if forloop.counter >= start and forloop.counter < finish %}
+											{% if camera.active  == '1'%}
+												{% if forloop.counter|odd %}
+													<tr class="odd" onMouseOver="javascript: selectRow(this, {{ forloop.counter }});" onMouseOut="javascript: unselectRow(this, {{ forloop.counter }});">
+												{% else %}
+													<tr onMouseOver="javascript: selectRow(this, {{ forloop.counter }});" onMouseOut="javascript: unselectRow(this, {{ forloop.counter }});">
+												{% endif %}
+													<td class="td_num"><span>{{ camera.numcamera|add:1 }}</span></td>
+													<td class="td_name"><a href="/po4/settingspage/{{ index }}/{{ camera.numcamera }}/" title="{% trans "Редактирование" %}" class="action_edit"></a><a href="/po4/settingspage/{{ index }}/{{ camera.numcamera }}/">{{ camera.info }}</a></td>
+											{% else %}
+													<tr class="noact" >
+													<td class="td_num"><span>{{ camera.numcamera|add:1 }}</span><div><img src="/files/images/lock.png" width="11" height="16" alt="" title="{% trans "Камера недоступна" %}" /></div></td>
+													<td class="td_name"><a href="#" onClick="javascript: return false;">{{ camera.info }}</a></td>
+											{% endif %}
+												{% for mod in modes %}
+													{% if mod == camera.mode %} 
+														<td {% if mod == 2 %} class="td_radio_ident" {% else %} class="td_radio" {% endif %}><input type="radio" name="camera{{ camera.numcamera }}" value="{{ mod }}" class="inp_check" onClick="executeMethod('setModeScheduler', {{ camera.numcamera }}, {{ mod }})" checked/></td>
+													{% else %}
+														<td {% if mod == 2 %} class="td_radio_ident" {% else %} class="td_radio" {% endif %}><input type="radio" name="camera{{ camera.numcamera }}" value="{{ mod }}" class="inp_check" onClick="executeMethod('setModeScheduler', {{ camera.numcamera }}, {{ mod }})"/></td>
+													{% endif %}
+												{% endfor %}
+												
+												{% if camera.active  == '1'%}
+												<td class="td_btn"><input type="button" name="" value="" id="btn_play{{ forloop.counter }}" class="btn_camera play" onClick="javascript: showCamera(this, {{ cameras|length }}, '{{ camera.info }}', {{ camera.numcamera }});" /></td>
+												{% else %}
+												<td class="td_btn"><input type="button" name="" value="" id="btn_play{{ forloop.counter }}" class="btn_camera play_dis" /></td>
+												{% endif %}
+											</tr>
+										{% endif %}
+									{% endfor %}
+								</table>
+							</div>
+							{% include "po4NavigationBlock.html" %}
+						{% endif %}					
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po4footer.html" %}
+{% include "execute.html" %}
+{% include "window_settings.html"%}
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+function successFunc() {
+	location.reload(true);
+}
+
+function successFuncVideo() {
+	successFunc();
+}
+
+function errorMessage() {
+	alert('{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}');
+	location.reload(true);
+}
+
+function setDefaultParams(param, value, strSuccessFunc, strErrorFunc, strUndefindedFunc) {
+	$.ajax({
+        type: "POST",
+        url: "{% url set_default_params %}",
+        data: {param: param, value: value},
+        success: function(msg){
+        	if(msg && msg.status) {
+        		eval(strSuccessFunc);
+        	} else if (msg && !msg.status) {
+        		eval(strErrorFunc);
+        	} else {
+        		eval(strUndefindedFunc);
+        	}
+        },
+        error: function(msg) {
+        	eval(strUndefindedFunc);
+        }
+ 	});
+}
+</script>

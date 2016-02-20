@@ -1,0 +1,125 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans "Настройки турникетов" %} - {% if turn.name %}{{turn.name}}{% else %}{{turn.address}}{% endif %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/configuration/turnstiles/turnstile_form.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/configuration/turnstiles/turnstile_form.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+var MESSAGES = {
+	'camera_noact': "{% trans 'недоступна' %}"
+}
+$(function() {
+	init();
+});	
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}{% if turn %}
+<h2><a href="{% url turnstiles_list %}">{% trans "Настройки турникетов" %}</a> - {% if turn.name %}{{turn.name}}{% else %}{{turn.address}}{% endif %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Турникеты' %}');" /></h2>
+{% include "current_time.html" %}	
+<form method="post" action="{% url turnstile_edit %}">
+	<input type="hidden" name="cameras_in" id="cameras_in" value=""/>
+	<input type="hidden" name="cameras_out" id="cameras_out" value=""/>
+	<input type="hidden" name="id" id="id" value="{{turn.id}}"/>
+	<div>{% trans 'Поля, отмеченные звёздочкой (<span class="req">*</span>), являются обязательными для заполнения.' %}</div>
+	<div class="bl_param">
+		<div class="bl_error"></div>
+		<div class="block">
+			<label for="name" class="bl_txt no_dist_top">IP-адрес:</label>
+			<div class="bl_enter">{{turn.address}}</div>
+		</div>
+	</div>						
+	<div class="bl_param">
+		<div class="bl_error"></div>
+		<div class="block">
+			<label for="name" class="bl_txt">{% trans 'Название' %}:</label>
+			<div class="bl_enter">
+				<input type="text" name="name" value="{{turn.name}}" class="inp_txt" id="name" maxlength="128" />
+			</div>
+		</div>
+	</div>
+	<div class="bl_param">
+		<div class="bl_error"></div>
+		<div class="block">
+			<label for="" class="bl_txt">{% trans 'Выбор камер' %}:</label>
+			<div class="bl_enter">
+				<div class="block_ie">
+					<div>{% trans 'Доступные камеры' %}</div>
+					<div class="block">
+						<div id="cameras_templates" style="display: none;"></div>
+						<div class="bl_cameras">
+							<div class="bl_cameras_add">
+								<ul class="list_cameras" id="list_cameras_accesses">
+							    {% for camera in cameras %}						
+	    							<li class="{% cycle '' 'lc_odd'%}{% if not camera.active %} lc_noact{% endif %} short_descr" title="{% if camera.name %}{{ camera.name }}{% else %}{{ camera.ip }} {{ camera.type }}{% endif %}{% if not camera.active %} <strong>{% trans 'недоступна' %}</strong>{% endif %}">   
+	    							    <input type="checkbox" name="source" id="source{{ camera.id }}" value="{{ camera.id }}" class="inp_check"/>
+	    							    <label for="source{{ camera.id }}" id="lablesource{{ camera.id }}">{% if camera.name %}{{ camera.name }}{% else %}{{ camera.ip }} {{ camera.type }}{% endif %}</label>
+	   								    <input type="hidden" id="cam_lablesource{{ camera.id }}" value="{'info': '{% if camera.name %}{{ camera.name }}{% else %}{{ camera.ip }} {{ camera.type }}{% endif %}', 'ip': '{{ camera.ip }}', 'type': '{{ camera.type }}', 'uuid': '{{ camera.uuid }}', 'state': '{% if not camera.active %}off{% else %}on{% endif %}'}"/>
+	   								</li>
+								{% endfor %}
+								</ul>
+							</div>
+						</div>
+						<div class="bl_cameras in_out">
+							<div class="block">
+								<div class="bl_cameras_btns">
+									<div><input type="button" name="" value="" class="inp_btn btn_arrow_right accesses" onClick="javascript: addToCameras('in');" /></div>
+									<div><input type="button" name="" value="" class="inp_btn btn_arrow_left in" onClick="javascript: deleteCameras('in');" /></div>												
+								</div>
+								<div class="bl_cameras_in_out">
+									<div>{% trans 'Камера(-ы) на вход' %}</div>
+									<div class="bl_cameras_add_small">
+										<ul class="list_cameras" id="list_cameras_in">
+									    {% for camera in turn.cameras %}{% if camera.inside %}
+			    							<li class="{% cycle '' 'lc_odd'%}{% if not camera.camera.active %} lc_noact{% endif %} short_descr" title="{% if camera.camera.name %}{{ camera.camera.name }}{% else %}{{ camera.camera.ip }} {{ camera.camera.type }}{% endif %}{% if not camera.camera.active %} <strong>{% trans 'недоступна' %}</strong>{% endif %}">   
+			    							    <input type="checkbox" name="source" id="source{{ camera.camera.id }}" value="{{ camera.camera.id }}" class="inp_check"/>
+			    							    <label for="source{{ camera.camera.id }}" id="lablesource{{ camera.camera.id }}">{% if camera.camera.name %}{{ camera.camera.name }}{% else %}{{ camera.camera.ip }} {{ camera.camera.type }}{% endif %}</label>
+			   								    <input type="hidden" id="cam_lablesource{{ camera.camera.id }}" value="{'info': '{% if camera.camera.name %}{{ camera.camera.name }}{% else %}{{ camera.camera.ip }} {{ camera.camera.type }}{% endif %}', 'ip': '{{ camera.camera.ip }}', 'type': '{{ camera.camera.type }}', 'uuid': '{{ camera.camera.uuid }}', 'state': '{% if not camera.camera.active %}off{% else %}on{% endif %}'}"/>
+			   								</li>
+										{% endif %}{% endfor %}
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class="block" style="margin-top: 5px;">
+								<div class="bl_cameras_btns">
+									<div><input type="button" name="" value="" class="inp_btn btn_arrow_right accesses" onClick="javascript: addToCameras('out');" /></div>	
+									<div><input type="button" name="" value="" class="inp_btn btn_arrow_left out" onClick="javascript: deleteCameras('out');" /></div>																							
+								</div>											
+								<div class="bl_cameras_in_out">
+									<div>{% trans 'Камера(-ы) на выход' %}</div>
+									<div class="bl_cameras_add_small">
+										<ul class="list_cameras" id="list_cameras_out">
+									    {% for camera in turn.cameras %}{% if not camera.inside %}
+			    							<li class="{% cycle '' 'lc_odd'%}{% if not camera.camera.active %} lc_noact{% endif %} short_descr" title="{% if camera.camera.name %}{{ camera.camera.name }}{% else %}{{ camera.camera.ip }} {{ camera.camera.type }}{% endif %}{% if not camera.camera.active %} <strong>{% trans 'недоступна' %}</strong>{% endif %}">   
+			    							    <input type="checkbox" name="source" id="source{{ camera.camera.id }}" value="{{ camera.camera.id }}" class="inp_check"/>
+			    							    <label for="source{{ camera.camera.id }}" id="lablesource{{ camera.camera.id }}">{% if camera.camera.name %}{{ camera.camera.name }}{% else %}{{ camera.camera.ip }} {{ camera.camera.type }}{% endif %}</label>
+			   								    <input type="hidden" id="cam_lablesource{{ camera.camera.id }}" value="{'info': '{% if camera.camera.name %}{{ camera.camera.name }}{% else %}{{ camera.camera.ip }} {{ camera.camera.type }}{% endif %}', 'ip': '{{ camera.camera.ip }}', 'type': '{{ camera.camera.type }}', 'uuid': '{{ camera.camera.uuid }}', 'state': '{% if not camera.camera.active %}off{% else %}on{% endif %}'}"/>
+			   								</li>
+										{% endif %}{% endfor %}
+										</ul>												
+									</div>	
+								</div>
+							</div>																				
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>											
+	<div class="bl_param no_dist_top">
+		<div class="bl_error"></div>
+		<div class="block">
+			<label for="description" class="bl_txt">{% trans 'Описание' %}:</label>
+			<div class="bl_enter">
+				<textarea name="description" id="description" class="textarea" maxlength="255">{{turn.description}}</textarea>
+			</div>
+		</div>
+	</div>						
+	<div class="block bl_btns">
+		<input type="submit" name="" value="{% trans 'Сохранить' %}" class="inp_btn btn_save" onClick="javascript: saveSettingsTurn();" />
+		<a href="{% url turnstiles_list %}" class="link_btn btn_cancel dist_left">{% trans 'Отменить' %}</a>
+	</div>
+</form>					
+{% endif %}{% endblock %}

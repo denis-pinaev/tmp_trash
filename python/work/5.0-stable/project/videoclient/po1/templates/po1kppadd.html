@@ -1,0 +1,77 @@
+﻿{% load i18n %}
+{% load templatetags %}
+{% include "po1header.html" %}
+<link rel="stylesheet" type="text/css" href="/files/css/po1/po1kpp.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2><a href="base">Контрольно-пропускные пункты</a> - Добавление КПП<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				<form method="post" action="" name="">
+					<div class="frm_block">
+						<div class="txt_kpp">Название КПП:</div>
+						<div class="action_kpp">
+							<input type="text" name="test" value="" class="inp_txt" />
+						</div>
+					</div>
+					<div class="frm_block">
+						<div class="txt_kpp">Операция:</div>
+						<div class="action_kpp">
+							<span><input type="checkbox" name="" value="" class="inp_check" checked="checked" />Вход</span>
+							<span><input type="checkbox" name="" value="" class="inp_check" />Выход</span>
+						</div>
+					</div>
+					<div class="frm_block">
+						<div class="txt_kpp">Местрасположение камеры:</div>
+						<div class="action_kpp"><textarea name="" class="textarea"></textarea></div>
+					</div>
+					<div class="frm_block">
+						<div class="txt_kpp">Минимальная достоверность:</div>
+						<div class="min_trust"><input type="text" name="test" value="" class="inp_txt" /><span>%</span></div>
+					</div>
+					<div class="frm_block">
+						<div class="txt_kpp">Управление входом:</div>
+						<div class="action_kpp">
+							<span><input type="radio" name="control" value="" class="inp_check" checked="checked" />Да</span>
+							<span><input type="radio" name="control" value="" class="inp_check" />Нет</span>
+						</div>
+					</div>
+
+					<div class="bl_key dist_top">
+						<div class="txt_kpp">Ключ записи 1:</div>
+						<div class="action_kpp"><input type="text" name="" value="" class="inp_txt" /></div>
+					</div>
+					<div class="bl_key">
+						<div class="txt_kpp">Ключ записи 2:</div>
+						<div class="action_kpp"><input type="text" name="" value="" class="inp_txt" /></div>
+					</div>
+					<div class="bl_key">
+						<div class="txt_kpp">Ключ записи 3:</div>
+						<div class="action_kpp"><input type="text" name="" value="" class="inp_txt" /></div>
+					</div>
+					<div class="bl_key">
+						<div class="link_add_key"><a href="#">Добавить ключ записи</a></div>
+					</div>
+
+					<div class="frm_block">
+						<input type="button" name="" value="Добавить" class="inp_btn inp_btn90" />
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po1footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+{% include "window_help.html" %}
+
+</body>
+</html>

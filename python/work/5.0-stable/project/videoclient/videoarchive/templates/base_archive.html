@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n templatetags %}    
+{% block menu_top %}
+	<ul class="top_menu">
+		<li id="archive">
+			<a id="archive_link" href="{% url archive_page "calendar" %}" {% if select_page == "page_calendar" or select_page == "page_tables_video" or select_page == "page_video" or select_page == "page_view_video" or select_page == "page_view_detail_video" or select_page == "page_faces" or select_page == "page_roller_persons" or select_page == "page_video_persons" or select_page == "page_video_faces" %} class="tm_active first"{% else %} class="first"{% endif %}>{% trans "Архив" %}</a>
+		</li>
+		<li id="planner">
+			<a id="planner_link" href="{% url archive_page "tasks" %}" {% if select_page == 'page_records' or select_page == 'page_tasks' or select_page == 'page_task' %} class="tm_active"{% endif %}>{% trans "Планировщик" %}</a>
+		</li>
+		{% if perms.user_perms.perm_videoarchive_analysis %}
+		    <li class="tm_block">
+			    <a href="{% url archive_page "analysis" %}" class="tm_link {% if select_page == 'page_analysis' %}tm_active{% endif %}" id="planner_link">{% trans "Анализ видео" %}</a>
+		    </li>
+		{% endif %}		
+		<li>
+			<a href="{% url archive_page "journal" %}" {% if select_page == 'page_journal' %} class="tm_active"{% endif %}>{% trans "Журнал" %}</a>
+		</li>				
+		{% if perms.user_perms.perm_videoarchive_settings %}
+		    <li id="settings"><a href="{% url archive_settings_archive "" %}" id="settings_link" {% if 'archive_settings' in select_page or select_page == 'page_cameras' or select_page == 'page_communicators' or select_page == 'page_users' or select_page == 'page_user' or select_page == 'page_interface' %} class="tm_active"{% endif %}>{% trans "Настройки" %}</a></li>
+		{% else %}
+		    <li id="settings"><a href="{% url archive_page "interface" %}" id="settings_link" {% if select_page == 'page_interface' %} class="tm_active"{% endif %} >{% trans "Настройки" %}</a></li>
+		{% endif %}
+		<li>
+			<a href="{% url archive_page "monitor" %}" {% if select_page == "page_monitor" %} class="tm_active"{% endif %}>{% trans "Мониторинг" %}</a>
+		</li>			
+		<li>
+			<a href="{% url archive_page "help" %}" class="last{% if select_page == "page_help" %} tm_active{% endif %}">{% trans "Помощь" %}</a>
+		</li>
+	</ul>
+{% endblock %}
+{% block menu_bottom %}
+	<ul class="bottom_menu">
+		<li><a {% if select_page == "page_calendar" or select_page == "page_tables_video" or select_page == "page_video" or select_page == "page_view_video" or select_page == "page_view_detail_video" or select_page == "page_faces" or select_page == "page_roller_persons" or select_page == "page_video_persons" or select_page == "page_video_faces" %}class="act first" {% else %}class="first" {% endif %}href="{% url archive_page "calendar" %}">{% trans "Архив" %}</a></li>
+		<li><a {% if select_page == "page_records" or select_page == "page_tasks" %}class="act" {% endif %}href="{% url archive_page "records" %}">{% trans "Планировщик" %}</a></li>
+		<li><a href="{% url archive_page "analysis" %}"{% if select_page == 'page_analysis' %} class="act"{% endif %}>{% trans "Анализ видео" %}</a></li>
+		<li><a {% if select_page == "page_journal" %}class="act" {% endif %}href="{% url archive_page "journal" %}">{% trans "Журнал" %}</a></li>	
+		{% if not root_path %}<li><a {% if 'archive_settings' in select_page or select_page == "page_users" or select_page == "page_user" or select_page == "page_cameras" or select_page == "page_communicators" or select_page == "page_interface" %}class="act" {% endif %}href="{% url archive_settings_archive "" %}">{% trans "Настройки" %}</a></li>{% else %}<li><a {% if 'archive_settings' in select_page or select_page == "page_users" or select_page == "page_user" or select_page == "page_cameras" or select_page == "page_communicators" or select_page == "page_interface" %}class="act" {% endif %}href="{% url archive_settings_archive "" %}">{% trans "Настройки" %}</a></li>{% endif %}
+		<li><a {% if select_page == "page_monitor" %}class="act" {% endif %}href="{% url archive_page "monitor" %}">{% trans "Мониторинг" %}</a></li>				
+		<li><a {% if select_page == "page_help" %}class="act last" {% else %}class="last" {% endif %}href="{% url archive_page "help" %}">{% trans "Помощь" %}</a></li>
+	</ul>
+{% endblock %}

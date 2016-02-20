@@ -1,0 +1,48 @@
+﻿/* menu settings */
+.block_settings {
+	padding-top: 28px;
+	position: relative;
+}
+.menu_vkl{
+	width: 100%;
+	overflow: hidden;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+.menu_vkl li{
+	float: left;
+	height: 29px;
+	margin-right: 2px;	
+	background: url('/files/images/mv_m.gif') top left repeat-x;
+}
+.menu_vkl li div{
+	background: url('/files/images/mv_l.gif') top left no-repeat;
+}
+.menu_vkl li div div{
+	background: url('/files/images/mv_r.gif') top right no-repeat;
+	padding: 5px 8px 5px 8px;
+}
+.menu_vkl li a{
+	font-weight: bold;
+	text-shadow: transparent 0px 0px 0px, #ffffff 0px 1px 1px;
+	color: #333333;
+}
+.menu_vkl li a:hover {
+	text-decoration: none;
+	color: #333333;
+}
+.menu_vkl .menu_vkl_act{
+	background: url('/files/images/mv_act_m.gif') top left repeat-x;
+}
+.menu_vkl .menu_vkl_act div{
+	background: url('/files/images/mv_act_l.gif') top left no-repeat;
+}
+.menu_vkl .menu_vkl_act div div{
+	background: url('/files/images/mv_act_r.gif') top right no-repeat;
+}
+.menu_vkl .menu_vkl_act a:hover {
+	text-decoration: none;
+	cursor: default;
+	color: #333333;
+}

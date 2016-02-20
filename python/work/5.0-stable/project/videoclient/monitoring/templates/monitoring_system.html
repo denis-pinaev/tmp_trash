@@ -1,0 +1,945 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Аналитика управляющей системы' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4settingsus.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/lib/flot/jquery.flot.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+var sendObject = {} // текущий объект
+var clearCameraResult = false;
+// окно для включения/выключения балансировщика
+function switchBalancer(balan, param) {
+	var txt = '';
+	var head = $("#win_balan div.bodyWF div.headWF div.headWF_txt");
+	var btn_ok = $("#win_balan div.bodyWF div.footerWF input.btn_wf_blue");
+	sendObject = param
+	if (param.stateUsed == 1) {
+		head.html('{% trans "Включение балансировщика" %}');
+		btn_ok.html('{% trans "Включить" %}');
+		txt += '{% trans "Вы действительно хотите включить балансировщик" %} "' + balan + '"?';
+	} else {
+		head.html('{% trans "Выключение балансировщика" %}');
+		btn_ok.html('{% trans "Выключить" %}');
+		txt += '{% trans "Вы действительно хотите выключить балансировщик" %} "' + balan + '"?';
+	}
+	changeWindow({id: 'win_balan', css: {width: '300px', height: '200px'}, txt: txt});
+}
+// включение/выключение балансировщика, демона
+function setBalancerState(){
+	showIndicator(true);
+	$.ajax({
+		type: "GET",
+		url: "/set_balancer_state",
+		data: sendObject,
+		success: function(msg) {
+			showIndicator(false);  
+			if (msg == "True") window.location.reload(true);
+			else showMessage('{% trans "Ошибка обращения к управляющей системе" %}.');
+		},
+		error: function(msg) {
+			showIndicator(false);
+			showMessage('{% trans "Ошибка обращения к управляющей системе" %}.');
+		}
+	});                
+}
+// окно для перезапуска демона
+function restartDemon(id) {
+	var inp_id_daemon = $("#reboot_obj"); // скрытый инпут, нужен для сохранения id демона
+	if (inp_id_daemon.size() > 0) inp_id_daemon.val(id);	
+	var txt = '{% trans "Перезапустить демона" %} "' + $("#" + id).html() + '"?';
+	changeWindow({id: 'win_restart_daemon', css: {width: '300px', height: '200px'}, txt: txt}); 
+}
+// перезапуск демона
+function rebootDaemon(){
+	var inp_id_daemon = $("#reboot_obj");
+	if (inp_id_daemon.size() > 0)
+		var id_daemon = inp_id_daemon.val();
+	else return false;
+    
+	if ($("#" + id_daemon + "_balancerip"))
+		var balancerIp = $("#" + id_daemon + "_balancerip").val();
+	else return false;
+	
+	if ($("#" + id_daemon + "_balancerport")) 
+		var balancerPort = $("#" + id_daemon + "_balancerport").val();
+	else return false;
+	
+	if ($("#" + id_daemon).size() > 0) 
+		var daemonType = $("#" + id_daemon).html();
+	else return false;
+	
+	if ($("#" + id_daemon + "_ip").size() > 0) 
+		var daemonIp = $("#" + id_daemon + "_ip").html();
+	else return false;
+	
+	if ($("#" + id_daemon + "_port").size() > 0) 
+		var daemonPort = $("#" + id_daemon + "_port").html();
+	else return false;
+	
+	showIndicator(true);
+	$.ajax({
+		type: "GET",
+		url: "/rebootdaemon",
+		data: { balancerIp: balancerIp, balancerPort: balancerPort, daemonType: daemonType, daemonIp: daemonIp, daemonPort: daemonPort },
+		success: function(msg){
+			showIndicator(false);                                        
+			if (msg == "True") 
+				showMessage('{% trans "Перезапущен" %} "' + daemonType+ '"');
+			else 
+				showMessage('{% trans "Ошибка при перезапуске" %} "' + daemonType+ '"');
+		},
+		error: function(msg){
+			showIndicator(false);
+			showMessage('{% trans "Ошибка при перезапуске" %} "' + daemonType+ '"');
+		}
+	});                
+}
+// окно для вкл./выкл. демона
+function switchDaemon(daemon, param) {
+	var txt = '';
+	var head = $("#win_switch div.bodyWF div.headWF div.headWF_txt");
+	var btn_ok = $("#win_switch div.bodyWF div.footerWF input.btn_wf_blue");	
+	sendObject = param
+	if (param.stateUsed == 1) {
+		head.html('{% trans "Включение демона" %}');
+		btn_ok.html('{% trans "Включить" %}');
+		txt += '{% trans "Вы действительно хотите включить демона" %} "' + daemon + '"?';
+	} else {
+		head.html('{% trans "Выключение демона" %}');
+		btn_ok.html('{% trans "Выключить" %}');	
+		txt += '{% trans "Вы действительно хотите выключить демона" %} "' + daemon + '"?';
+	}
+	changeWindow({id: 'win_switch', css: {width: '300px', height: '200px'}, txt: txt});                    
+}
+$(document).ready(function() {
+    //JS graphs
+    Array.prototype.max = function() {
+        var max = this[0];
+        var len = this.length;
+        for (var i = 1; i < len; i++) if (this[i] > max) max = this[i];
+        return max;
+    }
+
+    Array.prototype.min = function() {
+        var min = this[0];
+        var len = this.length;
+        for (var i = 1; i < len; i++) if (this[i] < min) min = this[i];
+        return min;
+    }
+    Array.prototype.avg = function() {
+        var av = 0;
+        var cnt = 0;
+        var len = this.length;
+        for (var i = 0; i < len; i++) {
+            var e = +this[i];
+            if(!e && this[i] !== 0 && this[i] !== '0') e--;
+            if (this[i] == e) {av += e; cnt++;}
+        }
+        return av/cnt;
+    }
+
+    Array.prototype.info = function() {
+        var min = this[0];
+        var max = this[0];
+        var sum = 0;
+        var len = this.length;
+        for(var i = 0; i < len; i++) {
+            sum = sum + this[i];
+            if (this[i] < min){
+                min = this[i];
+            } else {
+                if (this[i] > max) {
+                    max = this[i];
+                }
+            }
+        }
+		min = Math.round(min * 1000) / 1000;
+		max = Math.round(max * 1000) / 1000;
+        return {min: min, max: max, avg: sum/this.length}
+    }
+
+    var orangeLine = "#ff6600";
+    var orangeLineDark = "#cc3300";
+    var blueLine = "#0099ff";
+    var blueLineDark = "#0066cc";
+    var greenLine = "#00ff00";
+    var greenLineDark = "#00cc00";
+
+    function showGeneralJsGraph() { 
+        var data = [];
+        var result = [];
+        var p = [], p_avg = [];
+        {% for balancer in balancers.balancer %}
+        {% if balancer.stateUsed == "true" %}
+        var result{{ forloop.counter }} = [];
+        var data{{ forloop.counter }} = [];
+        {% endif %}
+        {% endfor %}
+
+        function getDiagramData() {
+            var res = [], res_avg = [], res1 = [], res1_avg = [], res2 = [], res2_avg = [];
+            if (data.length > 0)
+                data = data.slice(1);
+            var dateObj = new Date;
+            var unixtime_ms = dateObj.getTime();
+            var col, col_d, d;
+
+            $.ajax({
+                type: "GET",
+                url: "/get_balancers_statistics?&rand=" + unixtime_ms,
+                data: {},
+                success: function(msg){
+                    _obj = msg;
+                    obj = _obj.main_graph;
+                    result = [];
+
+                     {% for balancer in balancers.balancer %}
+                     {% if balancer.stateUsed == "true" %}
+                     result{{ forloop.counter }} = [];
+                     {% endif %}
+                     {% endfor %}
+
+                    //main sum graph
+                    try{
+                    for (var z = 0; z < obj.length; z++){
+                        res = [];
+                        res_avg = [];
+
+                        d = obj[z].data;
+
+                        for(e = 0; e < d.length; e++){
+                            d[e] = parseInt(d[e]);
+                        }
+                        var info = d.info();
+                        var avg = d.avg();
+                        $("#min_general_js" + z).html("" + info.min);
+                        var d_avg = Math.round(avg * 1000) / 1000;
+                        $("#avg_general_js" + z).html("" + d_avg);
+                        $("#max_general_js" + z).html("" + info.max);
+                        for (var i = 0; i < d.length; ++i)
+                        {
+                            res.push([d.length-1-i, d[i]]);
+                            res_avg.push([d.length-1-i, d_avg]);
+                        }
+                        switch(z){
+                            case 0:
+                                col = orangeLine;
+                                col_d = orangeLineDark;
+                            break;
+                            case 1:
+                                col = blueLine;
+                                col_d = blueLineDark;
+                            break;
+                            case 2:
+                                col = greenLine;
+                                col_d = greenLineDark;
+                            break;
+                        }
+
+                        p[z] = { color: col, data: res};
+                        p_avg[z] = { color: col_d, data: res_avg, lines: { lineWidth: 2 }};
+                    }
+
+                    for (var z = 0; z < obj.length; ++z)
+                        result.push(p[z]);
+                    for (var z = 0; z < obj.length; ++z)
+                        result.push(p_avg[z]);
+                    }
+                    catch(e)
+                    {
+
+                    }
+                    //end main sum graph
+
+                    //ballancer graphs
+                    obj = _obj.bal_graph;
+
+                    {% for balancer in balancers.balancer %}
+                    {% if balancer.stateUsed == "true" %}
+                    try{
+                        if(typeof obj[{{ forloop.counter }}-1] != "undefined"){
+                            for (var z = 0; z < obj[{{ forloop.counter }}-1].b_data.length; z++){
+                                res = [];
+                                res_avg = [];
+
+                                d = obj[{{ forloop.counter }}-1].b_data[z];
+                                var info = d.info();
+                                var avg = d.avg();
+                                $("#min_general_js" + z + "_{{ forloop.counter }}").html("" + info.min);
+                                var d_avg = Math.round(avg * 1000) / 1000;
+                                $("#avg_general_js" + z + "_{{ forloop.counter }}").html("" + d_avg);
+                                $("#max_general_js" + z + "_{{ forloop.counter }}").html("" + info.max);
+                                for (var i = 0; i < d.length; ++i)
+                                {
+                                    res.push([d.length-1-i, d[i]]);
+                                    res_avg.push([d.length-1-i, d_avg]);
+                                }
+                                switch(z){
+                                    case 0:
+                                        col = orangeLine;
+                                        col_d = orangeLineDark;
+                                    break;
+                                    case 1:
+                                        col = blueLine;
+                                        col_d = blueLineDark;
+                                    break;
+                                    case 2:
+                                        col = greenLine;
+                                        col_d = greenLineDark;
+                                    break;
+                                }
+
+                                p[z] = { color: col, data: res};
+                                p_avg[z] = { color: col_d, data: res_avg, lines: { lineWidth: 2 }};
+                            }
+
+                            for (var z = 0; z < obj[{{ forloop.counter }}-1].b_data.length; ++z)
+                                result{{ forloop.counter }}.push(p[z]);
+
+                            for (var z = 0; z < obj[{{ forloop.counter }}-1].b_data.length; ++z)
+                                result{{ forloop.counter }}.push(p_avg[z]);
+                        }
+                    }
+                    catch(e){
+
+                    }
+                    {% endif %}
+                    {% endfor %}
+                    //end ballancer graph
+
+                },
+                error: function(msg){
+                }
+            });
+        }
+
+        var updateInterval = 1000;
+        var options = {
+            series: { shadowSize: 0,
+                     lines: { lineWidth: 1 },
+                            },
+            yaxis: { min: 0,
+                     tickSize: 2,
+                     tickFormatter: function (v) { return parseInt(v); } },
+            xaxis: { ticks: 10,
+                     tickSize: 60,
+                     max: 600,
+                     tickFormatter: function (v) { return parseInt(v); } }
+        };
+
+        getDiagramData();
+        var plot = $.plot($("#general_js_graph"), result, options);
+
+        {% for balancer in balancers.balancer %}
+        {% if balancer.stateUsed == "true" %}
+        try{
+            var plot{{ forloop.counter }} = $.plot($("#general_js_graph_{{ forloop.counter }}"), result{{ forloop.counter }}, options);
+        } catch(e) {
+
+        }
+        {% endif %}
+        {% endfor %}
+
+        function update() {
+            if(result != "")
+            {
+                $("#general_js_graph").show();
+                $("#general_js_graph_info").show();
+                $("#general_js_graph_info_error").hide();
+            }else{
+                $("#general_js_graph").hide();
+                $("#general_js_graph_info").hide();
+                $("#general_js_graph_info_error").show();
+            }
+
+            {% for balancer in balancers.balancer %}
+            {% if balancer.stateUsed == "true" %}
+            if(result{{ forloop.counter }} != "")
+            {
+                $("#general_js_graph_{{ forloop.counter }}").show();
+                $("#general_js_graph_info_{{ forloop.counter }}").show();
+                $("#general_js_graph_info_error_{{ forloop.counter }}").hide();
+            }else{
+                $("#general_js_graph_{{ forloop.counter }}").hide();
+                $("#general_js_graph_info_{{ forloop.counter }}").hide();
+                $("#general_js_graph_info_error_{{ forloop.counter }}").show();
+            }
+            {% endif %}
+            {% endfor %}
+
+            getDiagramData();
+            try{
+                plot.setData(result);
+                plot.setupGrid();
+                plot.draw();
+            } catch(e) {
+
+            }
+
+            {% for balancer in balancers.balancer %}
+            {% if balancer.stateUsed == "true" %}
+            try{
+                plot{{ forloop.counter }}.setData(result{{ forloop.counter }});
+                plot{{ forloop.counter }}.setupGrid();
+                plot{{ forloop.counter }}.draw();
+            } catch(e) {
+
+            }
+            {% endif %}
+            {% endfor %}
+
+            setTimeout(update, updateInterval);
+        }
+        update();
+    }
+    showGeneralJsGraph();
+    //end graphs
+
+    //daemons graphs
+    function showDaemonGraphs() {
+        {% for balancer in balancers.balancer %}
+        {% if balancer.stateUsed == "true" %}
+        var data{{ forloop.counter }} = [];
+        var result{{ forloop.counter }} = [];
+        var p{{ forloop.counter }} = [], p_avg{{ forloop.counter }} = [], res_tmp{{ forloop.counter }} = [];
+        {% endif %}
+        {% endfor %}
+
+        {% for balancer in balancers.balancer %}
+        {% if balancer.stateUsed == "true" %}
+        var param_string = '';
+        var sum_res_string = '';
+        var avg_res_string = '';
+        for (var z = 0; z < 20; z++){
+            param_string += 'res{{ forloop.counter }}' + z + ' = [];';
+            avg_res_string += 'avg_res{{ forloop.counter }}' + z + ' = [];';
+            sum_res_string += 'sum_res{{ forloop.counter }}' + z + ' = [];';
+        }
+        eval(param_string);
+        eval(sum_res_string);
+        eval(avg_res_string);
+        {% endif %}
+        {% endfor %}
+
+        function getDiagramData() {
+            var res_avg = [], res1_avg = [];
+            var dateObj = new Date;
+            var unixtime_ms = dateObj.getTime();
+            var col, col_d, d;
+
+            $.ajax({
+                type: "GET",
+                url: "/get_balancer_daemons_statistics_js?rand=" + unixtime_ms,
+                data: {},
+                success: function(msg){
+                    obj = msg;
+
+                    {% for balancer in balancers.balancer %}
+                    {% if balancer.stateUsed == "true" %}
+                    result{{ forloop.counter }} = [];
+                    var info{{ forloop.counter }} = [];
+                    var avg{{ forloop.counter }} = [];
+                    var d_avg{{ forloop.counter }} = [];
+                    {% endif %}
+                    {% endfor %};
+
+                    //main sum graph
+                    {% for balancer in balancers.balancer %}
+                    {% if balancer.stateUsed == "true" %}
+                    try {
+                        for (var z = 0; z < obj[{{ forloop.counter }}-1].length; z++){
+                            eval('avg_res{{ forloop.counter }}' + z + ' = [];');
+                            d = obj[{{ forloop.counter }}-1][z].v;
+                            res_tmp{{ forloop.counter }} = [];
+
+                            var r = eval('res{{ forloop.counter }}'+z);
+                            res_tmp{{ forloop.counter }} = r;
+
+                            res_tmp{{ forloop.counter }}.push([res_tmp{{ forloop.counter }}.length, d]);
+                            eval('sum_res{{ forloop.counter }}' + z + '.push(parseInt(d));');
+                            for (var k = res_tmp{{ forloop.counter }}.length-1; k >= 1; k--) {
+                                res_tmp{{ forloop.counter }}[k] = [res_tmp{{ forloop.counter }}[k][0], res_tmp{{ forloop.counter }}[k-1][1]];
+                            }
+                            res_tmp{{ forloop.counter }}[0] = [0, d];
+
+                            eval('res{{ forloop.counter }}'+z+ '=res_tmp{{ forloop.counter }};')
+                            r = eval('res{{ forloop.counter }}'+z);
+                            if(r.length > 600)
+                            {
+                                eval('res{{ forloop.counter }}' + z + '.pop();');
+                                eval('sum_res{{ forloop.counter }}' + z + '.pop();');
+                            }
+
+                            info{{ forloop.counter }}[z] = eval('sum_res{{ forloop.counter }}' + z + '.info();');
+                            avg{{ forloop.counter }}[z] = eval('sum_res{{ forloop.counter }}' + z + '.avg();');
+                            d_avg{{ forloop.counter }}[z] = Math.round(avg{{ forloop.counter }}[z] * 1000) / 1000;
+
+                            for (var m = 0; m < 600; m++)
+                            {
+                                eval('avg_res{{ forloop.counter }}' + z + '.push([599-m, d_avg{{ forloop.counter }}[' + z + ']]);');
+                            }
+
+
+                            p{{ forloop.counter }}[z] = { color: '#' + obj[{{ forloop.counter }}-1][z].color + '', data: eval('res{{ forloop.counter }}' + z)};
+                            p_avg{{ forloop.counter }}[z] = { color: '#' + obj[{{ forloop.counter }}-1][z].color + '', data: eval('avg_res{{ forloop.counter }}' + z), lines: { lineWidth: 2 }};
+                        }
+                        var legend = '';
+                        for (var z = 0; z < obj[{{ forloop.counter }}-1].length; ++z)
+                        {
+                            legend += '<div class="block_legenda"><div class="graph_color" style="background-color: #' + obj[{{ forloop.counter }}-1][z].color + ';"></div><div class="graph_delim">-</div><div class="graph_text">{% trans "Очередь" %} ' + obj[{{ forloop.counter }}-1][z].name + ' ({% trans "минимальное значение" %}: ' + info{{ forloop.counter }}[z].min + ', {% trans "среднее значение" %}: ' + d_avg{{ forloop.counter }}[z]+ ', {% trans "максимальное значение" %}: ' + info{{ forloop.counter }}[z].max + ')</div></div>';
+                            result{{ forloop.counter }}.push(p{{ forloop.counter }}[z]);
+                            result{{ forloop.counter }}.push(p_avg{{ forloop.counter }}[z]);
+                        }
+
+                        $('#js_daemon_graph_info_{{ forloop.counter }}').html(legend);
+                    }
+                    catch(e){
+
+                    }
+                    {% endif %}
+                    {% endfor %}
+                    //end main sum graph
+                },
+                error: function(msg){
+                }
+            });
+        }
+
+        var updateInterval = 1000;
+        var options = {
+            series: { shadowSize: 0,
+                     lines: { lineWidth: 1 },
+                            },
+            yaxis: { min: 0,
+                     tickSize: 2,
+                     tickFormatter: function (v) { return parseInt(v); } },
+            xaxis: { ticks: 10,
+                     tickSize: 60,
+                     max: 600,
+                     tickFormatter: function (v) { return parseInt(v); } }
+        };
+
+        getDiagramData();
+        {% for balancer in balancers.balancer %}
+        {% if balancer.stateUsed == "true" %}
+        try{
+            var plot{{ forloop.counter }} = $.plot($("#js_daemon_graph_{{ forloop.counter }}"), result{{ forloop.counter }}, options);
+        } catch(e) {
+
+        }
+        {% endif %}
+        {% endfor %}
+
+        function update() {
+            getDiagramData();
+            {% for balancer in balancers.balancer %}
+            {% if balancer.stateUsed == "true" %}
+            try{
+                plot{{ forloop.counter }}.setData(result{{ forloop.counter }});
+                plot{{ forloop.counter }}.setupGrid();
+                plot{{ forloop.counter }}.draw();
+            } catch(e) {
+
+            }
+            {% endif %}
+            {% endfor %}
+
+            setTimeout(update, updateInterval);
+        }
+        update();
+    }
+    showDaemonGraphs();
+    //end daemons graphs
+
+    //show camera graph
+    function showCameraGraph() {
+        var result = [];
+        var p = [], p_avg = [], res_tmp = [];
+
+        var param_string = '';
+        var sum_res_string = '';
+        var avg_res_string = '';
+        for (var z = 0; z < 10; z++){
+            param_string += 'res' + z + ' = [];';
+            avg_res_string += 'avg_res' + z + ' = [];';
+            sum_res_string += 'sum_res' + z + ' = [];';
+        }
+        eval(param_string);
+        eval(sum_res_string);
+        eval(avg_res_string);
+
+        function getDiagramData() {
+            var res_avg = [], res1_avg = [];
+            var dateObj = new Date;
+            var unixtime_ms = dateObj.getTime();
+            var col, col_d, d;
+
+            $.ajax({
+                type: "GET",
+                url: "{% url get_camera_statistics_js %}?uuid={{ selected_camera.uuid }}&rand=" + unixtime_ms,
+                data: {},
+                success: function(msg){
+                    result = [];
+                    obj = msg;
+                    //obj = eval('('+msg+')');
+                    if(obj.status = 'success'){
+                        var info = [];
+                        var avg = [];
+                        var d_avg = [];
+
+                        if(clearCameraResult)
+                        {
+                            param_string = '';
+                            sum_res_string = '';
+                            avg_res_string = '';
+                            for (var z = 0; z < 10; z++){
+                                param_string += 'res' + z + ' = [];';
+                                avg_res_string += 'avg_res' + z + ' = [];';
+                                sum_res_string += 'sum_res' + z + ' = [];';
+                            }
+                            eval(param_string);
+                            eval(sum_res_string);
+                            eval(avg_res_string);
+                            result = [];
+                            p = [];
+                            p_avg = [];
+                            res_tmp = [];
+                            clearCameraResult = false;
+                        }else{
+                            try {
+                                var legend = '';
+                                for (var z = 0; z < obj.data.length; z++){
+                                    eval('avg_res' + z + '=[];');
+                                    d = obj.data[z].v;
+                                    res_tmp = [];
+
+                                    var r = eval('res'+z);
+                                    res_tmp = r;
+
+                                    res_tmp.push([res_tmp.length, d]);
+                                    if(d != 'Null'){
+                                        eval('sum_res' + z + '.push(parseFloat(d));');
+                                    }
+
+                                    for (var k = res_tmp.length-1; k >= 1; k--) {
+                                        res_tmp[k] = [res_tmp[k][0], res_tmp[k-1][1]];
+                                    }
+                                    res_tmp[0] = [0, d];
+
+                                    eval('res'+z+ '=res_tmp;')
+                                    r = eval('res'+z);
+                                    if(r.length > 121)
+                                    {
+                                        eval('res' + z + '.pop();');
+                                        eval('sum_res' + z + '.pop();');
+                                    }
+
+                                    info[z] = eval('sum_res' + z + '.info();');
+                                    avg[z] = eval('sum_res' + z + '.avg();');
+                                    d_avg[z] = Math.round(avg[z] * 1000) / 1000;
+
+                                    for (var m = 0; m < 121; m++)
+                                    {
+                                        eval('avg_res' + z + '.push([120-m, d_avg[' + z + ']]);');
+                                    }
+
+
+                                    p[z] = { color: '#' + obj.data[z].color + '', data: eval('res' + z), lines: { show: true }, points: { show: true, radius: 1}};
+                                    p_avg[z] = { color: '#' + obj.data[z].color + '', data: eval('avg_res' + z), points: { show: false }, lines: { lineWidth: 2 }};
+                                    var legend_name = '';
+                                    switch(obj.data[z].name)
+                                    {
+                                        case 'detectDaemonTime':
+                                            legend_name = '{% trans "Чистое время детектирования лиц, время работы демона FaceDetection" %}';
+                                        break;
+                                        case 'detectTotalTime':
+                                            legend_name = '{% trans "Время детектирования лиц с учетом накладных расходов и очередей" %}';
+                                        break;
+                                        case 'recognitionDaemonTime':
+                                            legend_name = '{% trans "Чистое время идентификации лиц, время работы демона FaceRecognition" %}';
+                                        break;
+                                        case 'recognitionTotalTime':
+                                            legend_name = '{% trans "Суммарное время идентификации лиц на кадре (без детектирования) с учетом накладных расходов и очередей" %}';
+                                        break;
+                                    }
+
+                                    if(typeof info[z].min !== 'undefined' && typeof d_avg[z] !== 'undefined' && typeof info[z].max !== 'undefined' && !isNaN(info[z].min) && !isNaN(d_avg[z]) && !isNaN(info[z].max))
+                                    {
+                                        legend += '<div class="block_legenda"><div class="graph_color" style="background-color: #' + obj.data[z].color + ';"></div><div class="graph_delim">-</div><div class="graph_text">' + legend_name + ' ({% trans "минимальное значение" %}: ' + info[z].min + ', {% trans "среднее значение" %}: ' + d_avg[z]+ ', {% trans "максимальное значение" %}: ' + info[z].max + ')</div></div>';
+                                    }
+
+                                    result.push(p[z]);
+                                    result.push(p_avg[z]);
+                                }
+
+                                $('#camera_graph_legend').html(legend);
+                            }
+                            catch(e){
+
+                            }
+                        }
+                    }
+                },
+                error: function(msg){
+                }
+            });
+        }
+
+        var updateInterval = 1000;
+        var options = {
+            series: { shadowSize: 0,
+                     lines: { lineWidth: 1 },
+                            },
+            yaxis: { min: 0,
+                     tickFormatter: function (v) { return parseFloat(v.toFixed(3)); } },
+            xaxis: { ticks: 2,
+                     tickSize: 10,
+                     max: 120,
+                     tickFormatter: function (v) { return parseInt(v); } },
+            lines: { show: true },
+            points: { show: true }
+        };
+
+        getDiagramData();
+
+        try{
+            var plot = $.plot($("#camera_graph_js"), result, options);
+        } catch(e) {
+
+        }
+
+
+        function update() {
+            getDiagramData();
+            try{
+                plot.setData(result);
+                plot.setupGrid();
+                plot.draw();
+            } catch(e) {
+
+            }
+            setTimeout(update, updateInterval);
+        }
+        update();
+    }
+    showCameraGraph();
+    //end camera graph
+});
+</script>
+{% endblock %}
+{% block submenu %}{% include "monitoring_menu.html" %}{% endblock %}
+{% block subcontent %}
+<h2>{% trans "Аналитика управляющей системы" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Управляющая_система' %}');" /></h2>
+{% include "current_time.html" %}
+{% include "system_blocks/free_space_disk.html" %}
+<div class="frm_block">
+	<input type="hidden" value="" name="" id="reboot_obj" />
+	{% if raid_status %}<div>{% trans "Статус RAID" %}: {{ raid_status }}</div>{% endif %}
+</div>
+{% include "system_blocks/system_cameras.html" %}                 
+		
+<div class="frm_block">
+	{% if selected_camera and all_active_cameras|length > 0 %}
+		<div class="head_graph">{% trans "Временные затраты на обработку кадров" %} "{{ selected_camera.full_name }}"</div>
+		<div class="block_graph">
+			<div id="camera_graph_js" style="width: {% if res_interface == "0" %}1230{% else %}1860{% endif %}px; height: 300px;"></div>
+			<div class="axisX">{% trans "Время работы" %}</div>
+			<div class="axisY">{% trans "Время (сек.)" %}</div>
+		</div>
+		<div id="camera_graph_legend"></div>
+		<script type="text/javascript">clearCameraResult = true;</script>							
+	{% endif %}
+	{% if not selected_camera %}
+		{% trans "Камера выключена или недоступна" %}
+	{% endif %}					
+	<div class="head_graph">{% trans "Графики для всех серверов" %}</div>
+	<div class="cont_graph">
+		<div id="video_general"></div>
+		<div class="block_graph">
+			<div id="general_js_graph" style="width: {% if res_interface == "0" %}1230{% else %}1860{% endif %}px; height: 300px;"></div>
+			<div class="axisX">{% trans "Количество" %}</div>
+			<div class="axisY">{% trans "Время (сек.)" %}</div>                                
+		</div>
+		<div id="general_js_graph_info">
+			<div class="block_legenda"><div class="graph_color" style="background-color: #ff6600;"></div><div class="graph_delim">-</div><div class="graph_text">{% trans "Количество обнаруженных лиц за секунду" %} ({% trans "минимальное значение" %}: <span id="min_general_js0"></span>, {% trans "среднее значение" %}: <span id="avg_general_js0"></span>, {% trans "максимальное значение" %}: <span id="max_general_js0"></span>)</div></div>
+			<div class="block_legenda"><div class="graph_color" style="background-color: #0099ff;"></div><div class="graph_delim">-</div><div class="graph_text">{% trans "Количество обработанных кадров за секунду" %} ({% trans "минимальное значение" %}: <span id="min_general_js1"></span>, {% trans "среднее значение" %}: <span id="avg_general_js1"></span>, {% trans "максимальное значение" %}: <span id="max_general_js1"></span>)</div></div>
+			<div class="block_legenda"><div class="graph_color" style="background-color: #00ff00;"></div><div class="graph_delim">-</div><div class="graph_text">{% trans "Количество распознанных лиц за секунду" %} ({% trans "минимальное значение" %}: <span id="min_general_js2"></span>, {% trans "среднее значение" %}: <span id="avg_general_js2"></span>, {% trans "максимальное значение" %}: <span id="max_general_js2"></span>)</div></div>
+		</div>
+		<div id="general_js_graph_info_error">{% trans "Нет данных для отображения графика" %}</div>
+	</div>
+	<ul class="list_balans dist_top">                        
+		{% for balancer in balancers.balancer %}
+			<li class="name_balan">
+				<div class="head_balan">{{ forloop.counter }}.<strong style="margin-left: 5px;">{% trans "Балансировщик" %} {{ balancer.address }}:{{ balancer.port }}</strong>
+					{% if balancer.stateUsed == "true" %}
+						<input type="button" class="inp_btn inp_btn90 dist_left" name="" value="{% trans 'Выключить' %}" onClick="javascript: switchBalancer('{{ balancer.address }}:{{ balancer.port }}', {balancerIp:'{{ balancer.address }}', balancerPort:'{{ balancer.port }}', stateUsed: 0});" />
+					{% else %}
+						<input type="button" class="inp_btn inp_btn90 dist_left" name="" value="{% trans 'Включить' %}" onClick="javascript: switchBalancer('{{ balancer.address }}:{{ balancer.port }}', {balancerIp:'{{ balancer.address }}', balancerPort:'{{ balancer.port }}', stateUsed: 1});" />
+					{% endif  %}
+				</div>
+				<div style="display: block;" id="info_balan{{ forloop.counter }}">
+					<table cellpadding="0px" cellspacing="0px" border="0px" class="table_info_balan">
+						<tr>
+							<th class="th_head first">{% trans "IP-адрес" %}</th>
+							<th class="th_head">{% trans "Порт" %}</th>
+							{% if balancer.fdQueue|toint >= 0 %}<th class="th_head">{% trans "Очередь" %} FD</th>{% endif %}
+							{% if balancer.frQueue|toint >= 0 %}<th class="th_head">{% trans "Очередь" %} FR</th>{% endif %}
+							{% if balancer.fsQueue|toint >= 0 %}<th class="th_head">{% trans "Очередь" %} FS</th>{% endif %}
+							{% if balancer.sdQueue|toint >= 0 %}<th class="th_head">{% trans "Очередь" %} SD</th>{% endif %}
+							{% if balancer.ddQueue|toint >= 0 %}<th class="th_head">{% trans "Очередь" %} DD</th>{% endif %}
+							<th class="th_head">{% trans "Статус" %}</th>
+						</tr>
+						<tr>
+							<td class="first">{{ balancer.address }}</td>
+							<td>{{ balancer.port }}</td>
+							{% if balancer.fdQueue|toint >= 0 %}<td>{{ balancer.fdQueue }}</td>{% endif %}
+							{% if balancer.frQueue|toint >= 0 %}<td>{{ balancer.frQueue }}</td>{% endif %}
+							{% if balancer.fsQueue|toint >= 0 %}<td>{{ balancer.fsQueue }}</td>{% endif %}
+							{% if balancer.sdQueue|toint >= 0 %}<td>{{ balancer.sdQueue }}</td>{% endif %}
+							{% if balancer.ddQueue|toint >= 0 %}<td>{{ balancer.ddQueue }}</td>{% endif %}
+
+							<td>{% if balancer.active == "true" %}{% trans "Активен" %}{% else %}<span class="info_important">{% trans "Неактивен" %}</span>{% endif %}</td>
+						</tr>
+					</table>
+
+					{% if balancer.stateUsed == "true" and balancer.active = "true" %}
+						<table cellpadding="0px" cellspacing="0px" border="0px" class="table_info_balan dist_top width_demon">                                    
+							<tr>
+								<th rowspan="2" class="th_head first">№</th>
+								<th rowspan="2" class="th_head">{% trans "Тип" %}</th>
+								<th rowspan="2" class="th_head">{% trans "IP-адрес" %}</th>
+								<th rowspan="2" class="th_head">{% trans "Порт" %}</th>
+								<th rowspan="2" class="th_head">{% trans "Свободно памяти (КБ)" %}</th>
+								<th rowspan="2" class="th_head">{% trans "Всего памяти (КБ)" %}</th>
+								<th colspan="3" class="th_head">{% trans "Видеокарта" %}</th>
+								<th rowspan="2" class="th_head">{% trans "Окончание лицензии" %}</th>
+								<th rowspan="2" class="th_head">{% trans "Версия демона" %}</th>
+								<th rowspan="2" class="th_head">{% trans "Статус" %}</th>                                            
+								<th rowspan="2" class="th_head">{% trans "Вкл." %}</th>                                            
+							</tr>
+							<tr>
+								<th class="th_head">{% trans "Имя" %}</th>
+								<th class="th_head">{% trans "Номер" %}</th>
+								<th class="th_head" style="width: 97px;">{% trans "Температура" %} (&deg;C)</th>                                            
+							</tr>                                            
+							{% for daemons in balancer.daemons %}{% for daemon in daemons.daemon %}
+								<tr {% cycle '' 'class="odd"' %} onMouseOver="javascript: overRow(this);" onMouseOut="javascript: outRow(this);">
+									<td class="first">{{ forloop.counter }}.</td>
+									<td class="type_demon">
+										{% if daemon.type == None %}&nbsp;
+										{% else %}
+											<input type="button" name="" value="" class="btn_restart" title='{% trans "Перезапустить демона" %}' onClick="javascript: restartDemon('daemon{{ forloop.parentloop.parentloop.counter }}_{{ forloop.counter }}');" /><div><a href="#" onClick="javascript: restartDemon('daemon{{ forloop.parentloop.parentloop.counter }}_{{ forloop.counter }}'); return false;" id="daemon{{ forloop.parentloop.parentloop.counter }}_{{ forloop.counter }}">{{ daemon.type }}</a></div>
+											<input type="hidden" id="daemon{{ forloop.parentloop.parentloop.counter }}_{{ forloop.counter }}_balancerip" value="{{ balancer.address }}">
+											<input type="hidden" id="daemon{{ forloop.parentloop.parentloop.counter }}_{{ forloop.counter }}_balancerport" value="{{ balancer.port }}">
+										{% endif %}
+									</td>                                            
+									<td id="daemon{{ forloop.parentloop.parentloop.counter }}_{{ forloop.counter }}_ip">{% if daemon.address == None %}&nbsp;{% else %}{{ daemon.address }}{% endif %}</td>
+									<td id="daemon{{ forloop.parentloop.parentloop.counter }}_{{ forloop.counter }}_port">{% if daemon.port == None %}&nbsp;{% else %}{{ daemon.port }}{% endif %}</td>
+									<td class="td_memory">{% if daemon.free_memory_bytes == None %}&nbsp;{% else %}{{ daemon.free_memory_bytes|int_div:1024 }}{% endif %}</td>
+									<td class="td_memory_all">{% if daemon.total_memory_bytes == None %}&nbsp;{% else %}{{ daemon.total_memory_bytes|int_div:1024 }}{% endif %}</td>
+									<td>{% if daemon.name == None %}&nbsp;{% else %}{{ daemon.name }}{% endif %}</td>
+									<td class="td_card">{% if daemon.device == None %}&nbsp;{% else %}{{ daemon.device }}{% endif %}</td>
+									<td>{% if daemon.temperature == None %}&nbsp;{% else %}{{ daemon.temperature }}{% endif %}</td>
+									<td>{% if daemon.license_days == None %}&nbsp;{% else %}{{ daemon.license_days }}{% endif %}</td>
+									<td>{% if daemon.version == None %}&nbsp;{% else %}{{ daemon.version }}{% endif %}</td>
+									<td>{% if daemon.active == "true" %}{% trans "Активен" %}{% else %}<span class="info_important">{% trans "Неактивен" %}</span>{% endif %}</td>
+									{% if daemon.stateUsed == "true"%}
+										<td class="td_off_on"><input type="button" title="{{ daemon.type }} {% trans "включён" %}. {% trans "Нажмите, если хотите выключить" %}." class="swithOn" name="" value="" onClick="javascript: switchDaemon('{{ daemon.type }}', {balancerIp:'{{ balancer.address }}', balancerPort:'{{ balancer.port }}', daemonip: '{{ daemon.address }}', daemonport: '{{ daemon.port }}', type: '{{ daemon.type }}', stateUsed: 0});" /></td>
+									{% else %}
+										<td class="td_off_off"><input type="button" title="{{ daemon.type }} {% trans "выключен" %}. {% trans "Нажмите, если хотите выключить" %}." class="swithOff" name="" value="" onClick="javascript: switchDaemon('{{ daemon.type }}', {balancerIp:'{{ balancer.address }}', balancerPort:'{{ balancer.port }}', daemonip: '{{ daemon.address }}', daemonport: '{{ daemon.port }}', type: '{{ daemon.type }}', stateUsed: 1});" /></td>
+									{% endif %}
+								</tr>
+							{% endfor %}{% endfor %}
+						</table>
+						<div class="head_graph">{% trans "Графики очередей демонов" %}</div>
+						<div class="cont_graph">
+							<div id="video_daemons{{ forloop.counter }}"></div>
+							<div class="block_graph" style="height: 250px;">
+								<div id="js_daemon_graph_{{ forloop.counter }}" style="width: {% if res_interface == "0" %}1210{% else %}1860{% endif %}px; height: 250px;"></div>
+								<div class="axisX">{% trans "Количество" %}</div>
+								<div class="axisY">{% trans "Время (сек.)" %}</div>
+							</div>
+							<div id="js_daemon_graph_info_{{ forloop.counter }}"><!--  --></div>
+						</div>
+						<div class="head_graph">{% trans "Графики" %} "{% trans "Количество обнаруженных лиц за секунду" %}", "{% trans "Количество запросов за секунду" %}" {% trans "за последние 10 минут" %}</div>
+						<div class="cont_graph">
+							<div id="video{{ forloop.counter }}"></div>                            
+							<div class="block_graph">
+								<div id="general_js_graph_{{ forloop.counter }}" style="width: {% if res_interface == "0" %}1210{% else %}1860{% endif %}px; height: 300px;"></div>
+								<div class="axisX">{% trans "Количество" %}</div>
+								<div class="axisY">{% trans "Время (сек.)" %}</div>
+							</div>
+							<div id="general_js_graph_info_{{ forloop.counter }}">
+								<div class="block_legenda"><div class="graph_color" style="background-color: #ff6600;"></div><div class="graph_delim">-</div><div class="graph_text">{% trans "Количество обнаруженных лиц за секунду" %} ({% trans "минимальное значение" %}: <span id="min_general_js0_{{ forloop.counter }}"></span>, {% trans "среднее значение" %}: <span id="avg_general_js0_{{ forloop.counter }}"></span>, {% trans "максимальное значение" %}: <span id="max_general_js0_{{ forloop.counter }}"></span>)</div></div>
+								<div class="block_legenda"><div class="graph_color" style="background-color: #0099ff;"></div><div class="graph_delim">-</div><div class="graph_text">{% trans "Количество обработанных кадров за секунду" %} ({% trans "минимальное значение" %}: <span id="min_general_js1_{{ forloop.counter }}"></span>, {% trans "среднее значение" %}: <span id="avg_general_js1_{{ forloop.counter }}"></span>, {% trans "максимальное значение" %}: <span id="max_general_js1_{{ forloop.counter }}"></span>)</div></div>
+								<div class="block_legenda"><div class="graph_color" style="background-color: #00ff00;"></div><div class="graph_delim">-</div><div class="graph_text">{% trans "Количество распознанных лиц за секунду" %} ({% trans "минимальное значение" %}: <span id="min_general_js2_{{ forloop.counter }}"></span>, {% trans "среднее значение" %}: <span id="avg_general_js2_{{ forloop.counter }}"></span>, {% trans "максимальное значение" %}: <span id="max_general_js2_{{ forloop.counter }}"></span>)</div></div>
+							</div>
+							<div id="general_js_graph_info_error_{{ forloop.counter }}">{% trans "Нет данных для отображения графика" %}</div>
+						</div>
+					{% endif %}
+				</div>
+			</li>
+		{% endfor %}
+	</ul>
+</div>
+{% endblock %}
+{% block windows %}
+{% include "execute.html" %}
+{% include "window_reboot_us.html" %}
+<div id="win_mess" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" /></div>
+            <div class="headWF_txt">{% trans "Предупреждение" %}</div>
+        </div>
+        <div class="contWF" id="win_mess_contWF"></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" /> 
+        </div>
+    </div>
+</div>
+<div id="win_balan" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_balan');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Включение/Выключение балансировщика" %}</div>
+        </div>
+        <div class="contWF" id="win_balan_contWF">&nbsp;</div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Выключить" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_balan'); setBalancerState(); "/>           
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_balan');" />     
+        </div>
+    </div>
+</div>
+<div id="win_restart_daemon" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_restart_daemon');" /></div>
+            <div class="headWF_txt">{% trans "Перезапуск демона" %}</div>
+        </div>
+        <div class="contWF" id="win_restart_daemon_contWF"></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Перезапуск" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_restart_daemon'); rebootDaemon();" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_restart_daemon');" />    
+        </div>
+    </div>
+</div>
+<div id="win_switch" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_switch');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Включение/Выключение демона" %}</div>
+        </div>
+        <div class="contWF" id="win_switch_contWF">&nbsp;</div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Выключить" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_switch'); setBalancerState();"/>         
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_switch');" />       
+        </div>
+    </div>
+</div>
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>
+{% endblock %}

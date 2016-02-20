@@ -1,0 +1,10 @@
+{% load i18n %}
+{% load templatetags %}
+<div class="block nav">
+	{% if allpages > 1 %}
+		{% include "page_navigation/list_pages.html" %}
+	{% endif %}
+	{% block menu_right %}{% endblock %}
+	{% include "page_navigation/light.html" %}
+	{% block id_photo %}{% endblock %}
+</div>

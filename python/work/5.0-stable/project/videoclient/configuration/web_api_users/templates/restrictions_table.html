@@ -1,0 +1,24 @@
+{% load i18n %}
+{% load templatetags %}
+                {% if restrictions %}
+                        <table cellpadding="0px" cellspacing="0px" class="table dist_top">
+                            <tr>
+                                <th class="th_first">{% trans "Время" %}</th>
+                                <th>{% trans "Распознавание лиц" %}</th>
+                                <th>{% trans "Идентификация лиц" %}</th>
+                                <th>{% trans "Фоторедактор" %}</th>
+                            </tr>
+                            <tr>
+                                <td class="td_first td_time">{% trans "В секунду" %}</td>
+                                <td>{{ restrictions.detect.rpsec }}</td>
+                                <td>{{ restrictions.detect_and_identification.rpsec }}</td>
+                                <td>{{ restrictions.fanstudio.rpsec }}</td>
+                            </tr>
+                            <tr class="odd">
+                                <td class="td_first">{% trans "В минуту" %}</td>
+                                <td>{{ restrictions.detect.rpmin }}</td>
+                                <td>{{ restrictions.detect_and_identification.rpmin }}</td>
+                                <td>{{ restrictions.fanstudio.rpmin }}</td>                            
+                            </tr>
+                        </table>   
+                {% endif %}

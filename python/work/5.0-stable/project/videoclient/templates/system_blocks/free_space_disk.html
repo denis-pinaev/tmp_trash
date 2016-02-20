@@ -1,0 +1,20 @@
+{% load i18n templatetags %}
+<script type="text/javascript">
+// установить индикатор свободного места на диске
+function setFreeSpaceDisk() {
+	var data = $("#progress_bar_disk").size();
+	if (data > 0) {
+		var full_size = parseInt($("#info_space").val());
+		$("#full_size_disk").html(full_size);
+		var progress_bar = $("#progress_bar_disk");
+		var width_full = progress_bar.width() - parseInt(progress_bar.width() * full_size / 100);
+		progress_bar.find("div").css("width", width_full + "px");
+	}
+}
+</script>
+{% if space %}
+	<div class="info_disk">
+		<div class="info_disk_txt">{% trans "Свободного места на диске" %} <span id="full_size_disk">{{ space }}</span>%</div>
+		<div class="progress_bar" id="progress_bar_disk"><div></div></div>
+	</div>
+{% endif %}	

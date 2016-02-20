@@ -1,0 +1,246 @@
+﻿.btn_calend {
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    height: 16px;
+    width: 16px;
+    cursor: pointer;
+    font: 13px Tahoma;
+    background: url('/files/images/calend.png') top left no-repeat;
+    -background: none;  
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/calend.png', sizingMethod='crop');
+    margin-left: 2px;
+}
+.inp_btn120 {
+    width: 120px;
+    background: url('/files/images/button120x24_up.gif') top left no-repeat;
+    padding-left: 15px;
+}
+.inp_btn140 {
+    width: 140px;
+    background: url('/files/images/button140x24_up.gif') top left no-repeat;
+    margin-right: 30px;
+}
+.inp_btn170 {
+    width: 170px;
+    background: url('/files/images/button170x24_up.gif') top left no-repeat;
+}
+.bl_btn_check {
+	width: 120px; 
+	height: 24px; 
+	text-align: left; 
+	background: url('/files/images/button120x24_up.gif') top left no-repeat;
+	float: left;
+	margin-right: 30px;
+	position: relative;	
+}
+.bl_btn_check div {
+	display: table-cell; 
+	vertical-align: middle; 
+	width: 120px;
+	height: 24px;
+	cursor: pointer; 
+}
+.bl_btn_check div .inp_check {
+	margin-left: 5px;
+	margin-right: 5px;
+	vertical-align: middle;
+}
+.bl_btn_check div label {
+	vertical-align: middle; 
+	line-height: 24px;
+	cursor: pointer;
+}
+.frm_block {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 10px;
+}
+.inp_date {
+    width: 80px;
+}
+/* table */
+.table {
+    margin: 10px 0px 0px 0px;
+    padding: 0px;
+    width: 100%;
+    border-top: 1px solid #6e7d98;
+}
+.table tr.odd {
+    background-color: #DBE2F0;
+}
+.table th {
+    vertical-align:top;
+    text-align: center;
+    border-right: 1px solid #6e7d98;
+    border-bottom: 1px solid #6e7d98;
+    background-color: #d9dee7;
+    padding: 5px 5px;
+    font-weight: normal;
+}
+.table th.first {
+    border-left: 1px solid #6e7d98;
+}
+.table th a {
+    color: #505050;
+    display: block;
+    background: url('/files/images/arrow_down.gif') 100% 6px no-repeat;
+    padding-right: 15px;
+}
+.btn_arrow {
+	color: #505050;
+	display: block;
+	padding-right: 15px;	
+	cursor: pointer;	
+}
+.btn_arrow.down {
+	background: url('/files/images/arrow_down.gif') 100% 6px no-repeat;
+}
+.btn_arrow.up {
+	background: url('/files/images/arrow_up.gif') 100% 6px no-repeat;
+}
+.table td.name_list {
+    width: 250px;
+}
+.table td.type {
+    width: 120px;
+}
+.table td {
+    border-bottom: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;
+    vertical-align: top;
+    padding: 3px 5px;    
+}
+.table td.first {
+    border-left: 1px solid #cccccc;
+}
+.table td.td_act {
+    width: 30px;
+    text-align: center;
+}
+.table td.td_check {
+	text-align: center;
+	width: 20px;
+}
+.table td.td_check .inp_check {
+    margin-top: 3px;
+}
+.table td .name_list{
+    margin-right: 15px;
+}
+.table td.td_id {
+	width: 50px;
+}
+.table tr.act {
+    cursor: default;
+}
+.table tr.act td {
+    background-color: #849ac1;
+    color: #ffffff;
+}
+.table tr.act td a {
+    color: #ffffff;
+}
+/* filter */
+.btn_apply {
+	color: #ffffff;
+	width: 90px;
+	background: url("/files/images/btn_blue_90.png") top left no-repeat;
+}
+.block_filter {
+	padding: 5px;
+	border: 1px solid #dddddd;
+	margin-bottom: 10px;
+	background-color: #f7f7f7;
+	border-radius: 3px;
+	moz-border-radius: 3px;
+}
+.block_filter_param {
+	border-bottom: 1px dotted #999999;
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+}
+.block_filter_param .btn_calend {
+	margin-left: -22px;
+	margin-top: 3px;
+	vertical-align: top;
+}
+.block_filter_param .filter_param {
+	float: left;
+	margin-right: 30px;
+}
+.block_filter_param .filter_param .filter_param_enter {
+	margin-top: 3px;
+	white-space: nowrap;
+}
+.block_filter_param .filter_param .inp_check {
+	margin-right: 5px;
+}
+.block_filter_param .filter_param .select {
+	width: 250px;
+}
+.block_filter_param .filter_param .inp_txt.inp_time {
+	width: 30px;
+	text-align: center;
+}
+.block_filter_param .inp_txt.inp_date {
+	width: 90px;
+}
+.block_filter_param .dist_date {
+	margin: 0px 5px;
+}
+.block_filter_param .dist_time {
+	margin: 0px 2px;
+}
+.filter_param_search {
+	margin-top: 22px;
+}
+.link_ext_search {
+	padding-left: 15px;
+	background: url("/files/images/sort_arrow_down_blue.png") left 5px no-repeat;
+	margin-left: 30px;
+}
+.block_filter_param .filter_param.filter_param_dis .filter_param_enter {
+	color: #cccccc;
+}
+.block_filter_param .filter_param.filter_param_dis .filter_param_enter input,
+.block_filter_param .filter_param.filter_param_dis .filter_param_enter select {
+	color: #cccccc;
+	border-color: #cccccc;
+	background-color: #f2f2f2;
+}
+.block_filter_param .delim_time,
+.block_filter_param .delim_time2 {
+	margin: 0px 3px;
+	float: left;
+}
+.block_filter_param .delim_time2 {
+	margin: 0px 10px;						
+}
+.block_filter_param .inp_fio {
+	width: 268px;
+}
+.block_filter_param .filter_param.no_dist_right {
+	margin-right: 0px;
+}
+.bl_error {
+	color: #ff0000;
+}
+.inp_txt.err_forms {
+	border-color: #ff0000;
+}
+.block_results {
+	margin-bottom: 5px;
+}
+.block_results strong {
+	font-size: 110%;
+}
+.block_results .block_detect {
+	float: right;
+}
+.block_results .block_detect .inp_check {
+	margin-right: 5px;
+}
+.block_navigation {
+	margin-top: 5px;
+}

@@ -1,0 +1,54 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% load pagination_tags %}
+{% block title %}{% trans 'Настройки пользователя' %} {{user_login}}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/configuration/add_ip.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/jquery.json-1.3.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/configuration/ip_add.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+var ERROR_MESSAGE = "{% trans "Некорректный IP-адрес. Пожалуйста, введите ещё раз." %}";
+var ERROR_MESSAGE2 = "{% trans "Произошла ошибка сервера. Попробуйте ещё раз." %}";
+var ERROR_MESSAGE3 = "{% trans "Произошла ошибка. Попробуйте ещё раз." %}";
+var SUCCESS_MESSAGE = "{% trans "IP-адреса успешно добавлены" %}";
+var SUCCESS_MESSAGE2 = "{% trans "IP-адрес успешно добавлен" %}";
+var URL_ADD_IP = '{% url post_ip_add %}';
+var USER = '{{ user_login }}';
+var ERR = {
+	2 : "{% trans "Ошибка передачи данных. Пожалуйста, попробуйте ещё раз." %}",
+	3 : "{% trans "Некорректный логин пользователя" %}.",
+	4 : "{% trans "Отсутствуют новые IP-адреса для добавления" %}.",
+}
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+	<h2><a href="{% url web_api_users %}">{% trans "Пользователи WEB API" %}</a> - {% trans "Настройки пользователя" %} {{user_login}}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Настройки пользователя WEB API add IP' %}');" /></h2>
+	{% include "current_time.html" %}
+	{% include "webapi_menu.html" %}
+	<h3 class="dist_top"><a href="{% url user_ip %}{% if user_login %}?user_login={{ user_login }}{% endif %}">{% trans "Разрешённые IP-адреса" %}</a> - {% trans "Добавление IP-адресов" %}</h3>
+	<form method="post" action="" class="form dist_top">
+		<div class="block_req">{% trans "Поля, отмеченные звёздочкой" %} (<span class="req">*</span>), {% trans "являются обязательными для заполнения" %}.</div>
+		<div class="message_action" id="success_message" style="display: none;"></div>
+		<div class="message_warning" id="error_message" style="display: none;"></div>
+		<div id="content_ip">
+			<div class="form_block">
+				<div class="error_field"></div>
+				<div class="fb_content">
+					<label for="ip0" class="fbc_text"><span class="req">*</span>{% trans "IP-адрес" %}:</label>
+					<div class="fb_enter">
+						<input id="ip0" class="inp_txt" name="url" type="text" value="" /><span class="fbc_help">({% trans "например" %}, 192.168.0.1)</span>
+					</div>
+				</div>                
+			</div>
+		</div>
+		<div class="block_link_add">
+			<a href="#" id="link_add_ip">{% trans "Добавить ещё IP-адрес" %}</a>
+		</div>
+		<div class="block bl_btns">
+			<input class="inp_btn btn_blue dis" type="button" value="{% trans "Добавить" %}" name="" id="btn_add" disabled="disabled" />
+			<a href="{% url user_ip %}?user_login={{ user_login }}" class="link_btn_cancel dist_left"><span>{% trans "Отменить" %}</span></a>
+		</div>
+	</form> 
+{% endblock %}

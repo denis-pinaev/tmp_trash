@@ -1,0 +1,89 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+   var dperson = {{ division_person }};
+   var demployee = {{ division_employee }};
+</script>
+<input type="hidden" value="{{ visitingcard.id }}" name="vcid" />
+<input type="hidden" name="visitor" value="{{ user.id_person }}" />
+<!--<div class="head_block">{% trans "Карточка посещения" %}</div>-->
+<div class="bl_info">                            
+    <div class="bl_txt"><span class="req_hid">*</span>{% trans "К кому" %}:</div>
+    <div class="bl_enter">
+        <div>
+            <select name="statys" id="statys" class="select" onChange="javascript: changeWhom(this.value);">
+                <option {% if not visitingcard.active or visitingcard.person.person.status.division.id == division_person %} selected="selected"{% endif %} value="{{ division_person }}">{% trans "Персона" %}</option>
+                <option {% if visitingcard.person.person.status.division.id == division_employee %} selected="selected"{% endif %} value="{{ division_employee }}">{% trans "Сотрудник" %}</option>
+            </select>
+        </div>
+		<div class="dist_top">
+			<div class="error" id="error_persons"></div>
+			<div style="{% if visitingcard.active and not visitingcard.person.person.status.division.id == division_person %} display:none;{% endif %}" id="whom{{ division_person }}">
+				<select name="{% if visitingcard.active and not visitingcard.person.person.status.division.id == division_person %}person2{% else %}person{% endif %}" class="select"  id="swhom{{ division_person }}">
+					{% for v in person %}
+						<option {% if visitingcard.person.id == v.id %} selected="selected"{% endif %} value="{{ v.id }}">{{ v.person.get_fio|truncchar:50 }}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div style="{% if not visitingcard %} display:none;{% endif %}{% if not visitingcard.person.person.status.division.id == division_employee %} display:none;{% endif %}" id="whom{{ division_employee }}">
+				<select name="{% if not visitingcard.person.person.status.division.id == division_employee %}employee{% else %}person{% endif %}" class="select" id="swhom{{ division_employee }}">
+					{% for v in employee %}
+						<option {% if visitingcard.person.id == v.id %} selected="selected"{% endif %} value="{{ v.id }}" >{{ v.person.get_fio|truncchar:50 }}</option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+    </div>
+</div>
+<div class="bl_info">                        
+    <div class="bl_txt"><span class="req_hid">*</span>{% trans "Основание" %}:</div>
+    <div class="bl_enter">
+        <select name="ground" class="select">
+            {% for g in ground %}
+                <option {% if visitingcard.ground.id == g.id %} selected="selected"{% endif %} value="{{ g.id }}">{% trans g.name %}</option>                                            
+            {% endfor %}
+        </select>
+    </div>
+</div>
+<div class="bl_info">
+    <div class="block_error">{% if errors.dateVisit1 and post %}{{ errors.dateVisit1 }}{% else %}{% if errors.dateVisit2 and post %}{{ errors.dateVisit2 }}{% endif %}{% endif %}</div>
+    <div class="bl_txt"><span class="req_hid">*</span>{% trans "Срок действия" %}:</div>
+    <div class="bl_date"><span>{% trans "с" %}</span>
+        <input type="text"  value="{{ visitingcard.dt_enter|date:"d.m.Y" }}" class="inp_txt inp_date dist_left" name="dateVisit1" id="iddateVisit1" maxlength="10" /><input type="button" name="" value="" title="{% trans "Выберите дату" %}" class="btn_calend" />
+        <span class="dist_left">по</span><input type="text"  value="{{ visitingcard.dt_exit|date:"d.m.Y" }}" class="inp_txt inp_date dist_left" name="dateVisit2" id="iddateVisit2" maxlength="10" /><input type="button" name="" value="" title="{% trans "Выберите дату" %}" class="btn_calend" />                                
+    </div>
+</div>
+<div class="bl_info">
+    <div class="block_error" id="error_time">{% if errors.time22 and post %}{{ errors.time22 }}{% endif %}</div>
+    <div class="bl_txt"><span class="req_hid">*</span>{% trans "Время посещения" %}:</div>
+    <div class="bl_time">
+		<div class="block_ie">
+			<div class="block">
+				<span>{% trans "с" %}</span>
+				{% if dt_enter_hour %}
+					{% spinbox "time11" "time11" dt_enter_hour "25" "0" "23" "1" %}
+				{% else %}
+					{% spinbox "time11" "time11" "00" "25" "0" "23" "1" %}
+				{% endif %}
+				<span class="delim">:</span>
+				{% if dt_enter_min %}
+					{% spinbox "time12" "time12" dt_enter_min "25" "0" "59" "1" %}
+				{% else %}
+					{% spinbox "time12" "time12" "00" "25" "0" "59" "1" %}
+				{% endif %}
+				<span class="dist_left">{% trans "по" %}</span>
+				{% if dt_exit_hour %}
+					{% spinbox "time21" "time21" dt_exit_hour "25" "0" "23" "1" %}
+				{% else %}
+					{% spinbox "time21" "time21" "00" "25" "0" "23" "1" %}
+				{% endif %}
+				<span class="delim">:</span>
+				{% if dt_exit_min %}
+					{% spinbox "time22" "time22" dt_exit_min "25" "0" "59" "1" %}
+				{% else %}
+					{% spinbox "time22" "time22" "00" "25" "0" "59" "1" %}
+				{% endif %}
+			</div>
+		</div>
+    </div>                                                                                                                                                                               
+</div>    

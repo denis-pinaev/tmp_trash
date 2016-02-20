@@ -1,0 +1,16 @@
+{% extends "page_navigation/main.html" %}
+{% load i18n templatetags %}
+{% block menu_right %}
+<div class="block_views">
+	<input type="button" name="" value="" class="btn_view view_photos {% if version_journal == 'simple' %}view_act{% endif %} short_descr" title="{% trans 'Отобразить вид с фотографиями' %}" onClick="javascript: changeVersion(true);" />
+	<input type="button" name="" value="" class="btn_view view_table {% if version_journal != 'simple' %}view_act{% endif %} short_descr" title="{% trans 'Отобразить вид с таблицей' %}" onClick="javascript: changeVersion();"/>
+</div>	
+{% endblock %}
+{% comment %}
+{% block id_photo %}
+	<div class="block_id_photo" id="block_id_photo">
+		<label for="id_photo">ID:</label>
+		<input type="text" name="" class="inp_txt inp_id_photo short_descr" id="id_photo" maxlength="12" title="{% trans 'Перейти в окрестность заданной ID записи' %}" />
+	</div>
+{% endblock %}
+{% endcomment %}

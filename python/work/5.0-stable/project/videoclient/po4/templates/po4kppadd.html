@@ -1,0 +1,73 @@
+{% load i18n %}
+{% include "po4header.html" %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4kpp.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2><a href="/po4/kpp/">{% trans "Контрольно-пропускные пункты" %}</a> - {% trans "Добавление КПП" %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Добавление КПП" %}');" /></h2>
+				<form method="post" action="" name="">
+					<div class="frm_block">
+						<div class="txt_kpp">{% trans "Название КПП" %}:</div>
+						<div class="action_kpp">
+							<input type="text" name="test" value="" class="inp_txt" />
+						</div>
+					</div>
+					<div class="frm_block">
+						<div class="txt_kpp">{% trans "Операция" %}:</div>
+						<div class="action_kpp">
+							<span><input type="checkbox" name="" value="" class="inp_check" checked="checked" />{% trans "Вход" %}</span>
+							<span><input type="checkbox" name="" value="" class="inp_check" />{% trans "Выход" %}</span>
+						</div>
+					</div>
+					<div class="frm_block">
+						<div class="txt_kpp">{% trans "Местрасположение камеры" %}:</div>
+						<div class="action_kpp"><textarea name="" class="textarea"></textarea></div>
+					</div>
+					<div class="frm_block">
+						<div class="txt_kpp">{% trans "Минимальная достоверность" %}:</div>
+						<div class="min_trust"><input type="text" name="test" value="" class="inp_txt" /><span>%</span></div>
+					</div>
+					<div class="frm_block">
+						<div class="txt_kpp">{% trans "Управление входом" %}:</div>
+						<div class="action_kpp">
+							<span><input type="radio" name="control" value="" class="inp_check" checked="checked" />{% trans "Да" %}</span>
+							<span><input type="radio" name="control" value="" class="inp_check" />{% trans "Нет" %}</span>
+						</div>
+					</div>
+
+					<div class="bl_key dist_top">
+						<div class="txt_kpp">{% trans "Ключ записи" %} 1:</div>
+						<div class="action_kpp"><input type="text" name="" value="" class="inp_txt" /></div>
+					</div>
+					<div class="bl_key">
+						<div class="txt_kpp">{% trans "Ключ записи" %} 2:</div>
+						<div class="action_kpp"><input type="text" name="" value="" class="inp_txt" /></div>
+					</div>
+					<div class="bl_key">
+						<div class="txt_kpp">{% trans "Ключ записи" %} 3:</div>
+						<div class="action_kpp"><input type="text" name="" value="" class="inp_txt" /></div>
+					</div>
+					<div class="bl_key">
+						<div class="link_add_key"><a href="#">{% trans "Добавить ключ записи" %}</a></div>
+					</div>
+
+					<div class="frm_block">
+						<input type="button" name="" value="{% trans "Сохранить" %}" class="inp_btn inp_btn90" />
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+{% include "po4footer.html" %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% include "window_help.html" %}
+</body>
+</html>

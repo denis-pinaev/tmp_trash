@@ -1,0 +1,85 @@
+﻿{% load i18n %}
+{% include "po4header.html" %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4anketaperson.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2><a href="/po4/persons/">{% trans "Персоны" %}</a> - {% trans "Добавление персоны" %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Персоны Добавление персоны" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				<form method="post" action="" name="">
+					<div class="frm_block">
+						<div class="bl_photo_btn">
+							<div class="no_photo_user">
+								<div>{% trans "Фотография персоны" %}</div>
+							</div>
+						</div>
+						<div class="bl_info_all">
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Фамилия" %}:</div>
+								<div class="bl_enter"><input type="text" name="" value="" class="inp_txt" /></div>
+							</div>
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Имя" %}:</div>
+								<div class="bl_enter"><input type="text" name="" value="" class="inp_txt" /></div>
+							</div>
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Отчество" %}:</div>
+								<div class="bl_enter"><input type="text" name="" value="" class="inp_txt" /></div>
+							</div>														
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Дата рождения" %}:</div>
+								<div class="bl_enter"><input type="text" name="" value="" class="inp_txt" style="width: 90px;" /><input type="button" name="" value="" title="{% trans "Выберите дату" %}" class="btn_calend" /></div>
+							</div>
+							<div class="bl_passport">
+								<div class="bl_txt">{% trans "Паспорт" %}:</div>
+								<div class="info_passport">
+									<div class="passport_field">
+										<span>{% trans "Серия" %}:<input type="text" name="" class="inp_txt" value="" /></span>
+										<span>{% trans "Номер" %}:<input type="text" name="" class="inp_txt" value="" /></span>
+									</div>
+									<div>{% trans "Выдан" %}:</div>
+									<div class="passport_field"><textarea name="" class="textarea"></textarea></div>
+									<div>
+										{% trans "Дата выдачи" %}:<input type="text" name="" value="" class="inp_txt" style="width: 90px;" /><input type="button" name="" value="" title="{% trans "Выберите дату" %}" class="btn_calend" />
+									</div>									
+								</div>
+							</div>
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Регистрация" %}:</div>
+								<div class="bl_enter"><input type="text" name="test" value="" class="inp_txt" /></div>
+							</div>							
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Дополнительная информация" %}:</div>
+								<div class="bl_enter"><textarea name="" class="textarea"></textarea></div>
+							</div>
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Фотографии" %}:</div>
+								<div class="bl_btn">
+									<input type="button" name="" class="inp_btn inp_btn90" value="{% trans "Обучить" %}" />
+								</div>
+							</div>							
+						</div>					
+					</div>
+					<div class="frm_block">
+						<input type="button" name="" value="{% trans "Сохранить" %}" class="inp_btn inp_btn90" />
+					</div>					
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po4footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+{% include "window_help.html" %}
+
+</body>
+</html>

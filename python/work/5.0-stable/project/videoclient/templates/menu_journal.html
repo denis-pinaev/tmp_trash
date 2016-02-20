@@ -1,0 +1,38 @@
+{% load i18n %}
+{% load templatetags %}
+<ul class="menu_vkl">
+	{% if show_recognition == '1' %}
+    <li {% if select_page == "journal" or select_page == "noiselist_result" %}class="menu_vkl_act"{% endif %}>
+        <div>
+            <div>
+                <a href="/journal/">{% trans "Идентификации" %}</a>
+            </div>
+        </div>
+    </li>
+	{% endif %}
+     {% if show_videoanalitycs == '1' %}
+	<li {% if select_page == "journal_videoanalytics" %}class="menu_vkl_act"{% endif %}>
+        <div>
+            <div>
+                <a href="{% url journal-videoanalytics %}">{% trans "Видеоаналитика" %}</a>
+            </div>
+        </div>
+    </li>
+    {% endif %}
+    <li {% if select_page == "historychange" %}class="menu_vkl_act"{% endif %}>
+        <div>
+            <div>
+                <a href="/historychange/">{% trans "Изменения" %}</a>
+            </div>
+        </div>
+    </li>
+    {% if perms.user_perms.perm_logs_sessions %}
+    <li {% if select_page == "kpp" %}class="menu_vkl_act"{% endif %}>
+        <div>
+            <div>
+                <a href="/kpp/">{% trans "Сессии" %}</a>
+            </div>
+        </div>
+    </li>
+    {% endif %}               
+</ul>

@@ -1,0 +1,191 @@
+﻿.inp_btn180 {
+	background: url('/files/images/btn_blue_180.png') top left no-repeat;
+	width: 180px;
+	color: #ffffff;
+}
+.block_btn {
+	text-align: center;
+}
+
+.btn_loader {
+	width: 209px;
+	height: 24px;
+	text-align: left;
+	overflow: hidden;
+	margin: 0px auto;
+}
+.btn_loader input {
+	float: left;	
+}
+.btn_loader span.loader {
+	float: left;
+	margin-left: 5px;
+	width: 24px;
+	height: 24px;
+	line-height: 24px;
+	text-align: center;
+	vertical-align: middle;
+	background: url("/files/images/loader24x24.gif") top left no-repeat;
+	font-size: 11px;
+	font-weight: bold;
+}
+.btn_loader span.loader span {
+	vertical-align: middle;
+}
+.block_camera {
+	margin-top: 10px;
+	position: relative;
+}
+.block_camera .video {
+	padding: 3px;
+	border-radius: 3px;
+	moz-border-radius: 3px;
+	background-color: #666666;
+	width: 670px;
+	float: left;
+}
+.block_camera .video .name_camera {
+	color: #ffffff;
+	margin-bottom: 3px;
+	text-align: center;
+	white-space: pre-wrap;
+	white-space: -moz-pre-wrap; /* Mozilla */
+	white-space: -o-pre-wrap; /* Opera */
+	word-wrap: break-word; /* Internet Explorer 6+ */	
+}
+.block_camera .video .video_img {
+	position: relative;
+	width: 100%;
+	text-align: center;
+}
+.block_camera .video .video_img .bigcamera {
+	width: 670px;
+	height: 502px;
+	display: block;
+}
+.block_camera .video .video_img .txt_no_image {
+	font-weight: bold;
+	position: absolute;
+	bottom: 60px;
+	left: 0px;
+	width: 670px;
+	font-size: 140%;
+	text-align: center;
+}
+.block_camera .video .video_img .info_bigcamera {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	background-color: RGBA(000, 000, 000, 0.7);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#80000000,endColorstr=#80000000);
+	padding: 0px 3px;
+	color: #eeeeee;
+}
+.block_camera .video .video_img .ico_active {
+	width: 19px;
+	height: 19px;
+	background: url("/files/images/ico_active.png") top left no-repeat;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 11;
+}
+.block_camera .video .video_img .ico_noactive {
+	width: 100%;
+	height: 100%;
+	background: url("/files/images/ico_noactive_309.png") center center no-repeat;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+.block_camera .video .video_img .params_time {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	padding: 0px 2px;
+	font-size: 85%;
+	text-align: left;
+	color: #ff0000;
+	line-height: 1.2;
+}
+.block_camera .camera_panels {
+	margin-left: 678px;
+}
+.block_camera .camera_panels .block_message_faces {
+	color: #ffffff;
+	text-align: center;
+}
+.block_camera .camera_panels .count_faces {
+	color: #ffffff;
+	margin-bottom: 3px;
+}
+.block_camera .camera_panels .block_list_faces {
+	height: 502px;
+	overflow: auto;
+}
+.block_camera .camera_panels .block_faces {
+	border-radius: 3px;
+	moz-border-radius: 3px;
+	background-color: #666666;
+	height: 530px;
+}
+.block_camera .camera_panels .block_faces .block_faces_cont {
+	padding: 3px;
+}
+.block_camera .camera_panels .list_faces li {
+	float: left;
+	margin-right: 5px;
+	margin-bottom: 5px;
+	padding: 4px;
+	border: 1px solid #bbbbbb;
+	background-color: #777777;
+	border-radius: 3px;	
+	moz-border-radius: 3px;
+	position: relative;
+}
+.block_camera .camera_panels .list_faces li a {
+	display: table-cell;
+	text-align: center;
+	vertical-align: middle;	
+	width: 90px;
+	height: 90px;
+	line-height: 90px;
+	cursor: pointer;
+	background-color: #777777;	
+}
+.block_camera .camera_panels .list_faces li a img {
+	max-width: 90px;
+	max-height: 90px;
+}
+/* svg */
+.svgblock {
+	width: 670px;
+	height: 502px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+.svgblock.objects {
+	z-index: 1;
+}
+.svgblock.draw {
+	z-index: 2;
+}
+.svgDraw_text {
+	font-family: Arial;
+	font-size: 12px;
+}
+.success_message {
+	background-color: #E3F3FF;
+	border: 1px solid #0088CC;
+	margin-bottom: 5px;
+	padding: 5px;
+	display: none;
+}
+.error_message {
+	border: 1px solid #ff0000;
+	padding: 5px;
+	margin-bottom: 5px;
+	background-color: #fee7e7;
+	display: none;
+}

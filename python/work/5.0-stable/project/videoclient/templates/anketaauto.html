@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n templatetags %}
+{% block title %}{% if id %}{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}{% else %}{% trans 'Шум' %}{% endif %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4anketastaff.css?v=v{{ version }}" />
+{% endblock %}
+{% block content %}
+	{% if select_page == "historychange" or select_sub_page == "historychange" %}
+		<div class="block_settings">
+			{% include "menu_journal.html" %}
+			<div class="block_cont">
+				<div class="block_cont_top2">
+					<div class="block_cont_bottom min_height"> 
+						{% include "content/anketaauto_content.html" %}	
+					</div>
+				</div>
+			</div>
+		</div>		
+	{% else %}
+		<div class="block_cont">
+			<div class="block_cont_top">
+				<div class="block_cont_bottom min_height">
+					{% include "content/anketaauto_content.html" %}	
+				</div>
+			</div>
+		</div>	
+	{% endif %}
+{% endblock %}

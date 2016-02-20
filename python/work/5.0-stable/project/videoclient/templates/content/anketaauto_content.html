@@ -1,0 +1,41 @@
+{% load i18n %}
+{% load templatetags %}
+<h2>
+	{% if select_page == "anketaauto" or select_sub_page == "anketaauto" %}
+		<a href="/lists/">{% trans "Списки" %}</a> - <a href="{{ project_url }}/autolist/{% if group %}?group={{ group }}{% endif %}">{{ name_group }}</a>
+	{% endif %}
+	{% if select_page == "historychange" or select_sub_page == "historychange" %}
+		<a href="{{ project_url }}/historychange/">{% trans "Журнал изменений" %}</a>
+	{% endif %}
+	{% if id %} - {{ user.first_name }} {{ user.last_name }} {{ user.middle_name }} {% endif %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Автообученные" %}');" />{% if save %} <b style="color:#0088CC; margin-left:5px;">{% trans "Изменения сохранены" %}</b>{% endif %}</h2>
+{% include "current_time.html" %}
+<form method="post" action="" name="">					
+	<div class="frm_block">
+		<div class="bl_photo_btn">   
+			<div class="photo_user">
+				{% if user.id_person %}<div class="user_id">ID: {{ user.id_person }}</div>{% endif %}
+				{% if photoid == -1 %}<img src="/files/images/no_photo120x120.gif" alt="" />
+				{% else %}									
+					<a href="{{ project_url }}/photosperson/{{ user.id_person }}/{% if group %}?group={{ group }}{% endif %}"><img src="/image/?id={{ photoid }}&photo={{ photoname }}" alt="" /></a>
+				{% endif %}
+			</div>
+			
+			<ul class="menu_anketa">
+				<li><a href="{{ project_url }}/addphotoperson/auto/{{ user.id_person }}/{% if group %}?group={{ group }}{% endif %}" class="blue">{% trans 'Добавить фотографии с компьютера' %}</a></li>
+				<li><a href="{{ project_url }}/photosperson/{{ user.id_person }}/{% if group %}?group={{ group }}{% endif %}"{% if photoid == -1 %} class="blue dis" onClick="return false"{% else %} class="blue"{% endif %}>{% trans "Просмотреть фотографии" %} ({% if photocount > 0 %}{{ photocount }}{% else %}0{% endif %})</a></li>
+			</ul>
+			
+		</div>
+	</div>
+	<div class="frm_block">
+		<a href="{{ project_url }}/autolist/{% if group %}?group={{ group }}{% endif %}"
+			class="link_btn" onMouseOver="javascript: linkStatus(this, 'over', 90);" onMouseOut="javascript: linkStatus(this, 'up', 90);" onMouseDown="javascript: linkStatus(this, 'down', 90);" onMouseUp="javascript: linkStatus(this, 'over', 90);">{% trans "Назад" %}</a>
+			
+		<input type="hidden" name="id" value="{{ user.id }}"/>
+		{% if group or user.group.id %}<input type="hidden" name="group" value="{% if user.group.id %}{{ user.group.id }}{% else %}{{ group }}{% endif %}"/>{% endif %}
+		<input type="hidden" name="user" value="{{ user.user }}"/>
+		<input type="hidden" name="id_person" value="{{ user.id_person }}"/>
+		<input type="hidden" name="division" value="{{ user.division }}"/>
+		<input type="hidden" name="{{ action }}" value=""/>
+	</div>					
+</form>

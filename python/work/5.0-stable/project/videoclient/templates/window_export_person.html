@@ -1,0 +1,168 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+function exportPerson(persons, group) {
+	closeChangeWindow('win_export');
+	showIndicator(true);
+	var data = {persons: persons};
+	if($("#export_group_1").is(':checked')){
+		data = {persons: persons, group: $("#export_group").val()};
+	}
+	if(group != ''){
+		data = {persons: persons, group: group};
+	}
+	$.ajax({
+		type: "POST",
+		url: "{% url imp_exp_export %}",
+		data: data,
+		success: function(msg){
+			showIndicator(false);
+			obj = msg;
+			if (obj && obj.status) {
+				changeHash(obj.thread_id);
+				showProgressBar(0);
+				return true;
+			} else {
+				if (obj.message) {
+					changeWindow({id: 'win_mess_import', css: {width: '300px', height: '200px'}, txt: obj.message});
+				} else {
+					changeWindow({id: 'win_mess_import', css: {width: '300px', height: '200px'}, txt: "{% trans 'Ошибка экспорта' %}"});
+				}
+			}				
+		},
+		error: function(msg){
+			changeWindow({id: 'win_mess_import', css: {width: '300px', height: '200px'}, txt: "{% trans 'Ошибка экспорта' %}"});
+		}
+	});
+}
+function importPerson() {
+	$("#error_file").hide();
+	$("#file_import").val("");
+	changeWindow({id: 'win_import', css: {width: '500px', height: '360px'}});
+}
+function checkImport() {
+	var file = $("#file_import").val();
+	var format = "";
+	var correct_format = "zip";
+	if (file == "") {
+		$("#error_file").html("{% trans 'Пожалуйста, выберите файл для импорта.' %}");
+		$("#error_file").show("fast");
+		return;
+	}
+	$("#error_file").hide();
+	format = file.substring(file.length - 3, file.length);
+	if (format != correct_format)  {
+		$("#error_file").html("{% trans 'Необходимо выбрать файл с расширением' %} <strong>{% trans '*.zip' %}</strong>.");
+		$("#error_file").show("fast");
+		return;
+	}
+	$("#error_file").hide();
+	closeChangeWindow('win_import');
+	var ifile = document.getElementById("file_import");
+	if (ifile && ifile.value){
+		showIndicator(true);
+		var options = {
+			url: "{% url imp_exp_import %} ",
+			type: "POST",
+			success: function(msg) {
+				showIndicator(false);
+				if (msg.indexOf('<h1>') > 0 && msg.indexOf('</h1>') > 0){
+					cod_err = msg.substring(msg.indexOf('<h1>')+4, msg.indexOf('<h1>')+7);
+					if (cod_err = '413'){
+						changeWindow({id: 'win_mess_import', css: {width: '300px', height: '200px'}, txt: "{% trans 'Файл слишком большой.' %}"});
+						return false;
+					}
+				}
+				var msg = msg.substring(msg.indexOf('{'), msg.length-msg.split('').reverse().join('').indexOf('}'));
+				var obj = eval('('+msg+')');
+				if (obj && obj.status){
+					changeHash(obj.thread_id);
+					showProgressBar(0);
+					return true;
+				}else{
+					if (obj.message) {
+						changeWindow({id: 'win_mess_import', css: {width: '300px', height: '200px'}, txt: obj.message});
+					} else {
+						changeWindow({id: 'win_mess_import', css: {width: '300px', height: '200px'}, txt: "{% trans 'Процедура импорта была выполнена не для всех персон. Возможно, необходимо выбрать другой список.' %}"});
+					}
+					return false;
+				}
+			},
+			error: function(msg){
+				showIndicator(false);
+				changeWindow({id: 'win_mess_import', css: {width: '300px', height: '200px'}, txt: "{% trans 'Процедура импорта была выполнена не для всех персон. Возможно, необходимо выбрать другой список.' %}"});
+				return false;
+			}
+		};
+		$("#importForm").ajaxSubmit(options);      
+	}
+	return false;
+}
+</script>
+<div id="win_export" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_export');" /></div>
+			<div class="headWF_txt">{% trans "Экспорт персон" %}</div>
+		</div>
+		<div class="contWF" id="win_export_contWF">&nbsp;</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Экспорт" %}" class="btn_wf_blue" onClick="
+				javascript: exportPerson(clickDelete({{ users|length }}), '');" />		
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_export');" />
+		</div>
+	</div>
+</div>
+<div id="win_import" style="display: none;" class="winFloating">
+	<form method="post" action="/imp_exp/import/" id="importForm" enctype="multipart/form-data" class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_import');" /></div>
+			<div class="headWF_txt">{% trans "Импорт персон" %}</div>
+		</div>
+		<div class="contWF" id="win_import_contWF">
+			<input type="hidden" name="group" value="{{ group }}"/>
+			<div class="error" id="error_file" style="display: none; margin-bottom: 5px;"></div>
+			{% trans "Выберите архив с расширением " %} <strong>{% trans "*.zip" %}</strong>: <input type="file" id="file_import" name="file" value="" class="dist_left" />
+			<div class="dist_top">
+				<div class="dist_top">1. {% trans "Вы можете добавить ранее экспортированных персон. В таком случае структура архива должна быть такой же, как при экспорте персон." %}</div>
+				<div class="dist_top">2. {% trans "Вы можете использовать пакетное обучение из архива со следующим содержанием" %}:</div>
+				<ul class="list_formats_info" style="padding-left: 15px;">
+					<li>{% trans "Архив с папками (папки с фотографиями названы именами персон)" %}.</li>
+					<li>{% trans "Архив с фотографиями (фотографии названы именами персон)" %}.</li>
+				</ul>
+				<div>{% trans "Название папки или фото формируется по следующим образцам:" %} "{% trans "ФИО" %}", "{% trans "Фамилия Имя" %}" {% trans "или" %} "{% trans "Фамилия" %}".</div>
+				<div class="dist_top"><strong>{% trans "Внимание" %}</strong>: {% trans "фамилия, имя, отчество персоны длиной более 30 символов будет обрезаться" %}.</div>
+			</div>		
+		</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Импорт" %}" class="btn_wf_blue" onClick="javascript: checkImport();" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_import');" />
+		</div>
+	</form>
+</div>
+<div id="win_mess_import" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess_import');" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF" id="win_mess_import_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess_import'); location.reload();" />
+		</div>
+	</div>
+</div>
+<div id="win_mess_export_all" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess_export_all');" /></div>
+			<div class="headWF_txt">{% trans "Экспорт персон" %}</div>
+		</div>
+		<div class="contWF" id="win_mess_export_all_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Экспорт" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess_export_all'); exportPerson('', {{ group }});" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_mess_export_all');" />
+		</div>
+	</div>
+</div>
+{% include "status_thread_progress_bar_url.html" %}

@@ -1,0 +1,145 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Настройки протокола SMTP' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/settings_integration.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/settings_integration.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript">
+var ERROR1 = "{% trans "Обязательное поле для заполнения." %}";
+var ERROR2 = "{% trans "Некорректный электронный адрес получателя." %}";
+var ERROR3 = "{% trans "Некорректный электронный адрес отправителя." %}";
+var ERROR4 = "{% trans "Обязательное поле для заполнения, так как включена авторизация." %}";
+var ERROR_GLOBAL = "{% trans "Внимание! Произошла ошибка при сохранении настроек для протокола SMTP. Попробуйте ещё раз." %}";
+var SET_SAVE = "{% trans "Настройки для протокола SMTP успешно сохранены" %}.";
+var SET_SAVE_APPLY = "{% trans "Настройки для протокола SMTP успешно сохранены и применены" %}.";
+$(function() {
+    initSMTP();
+});
+// функция для сбрасывания настроек
+function resetParamsForm() {
+	var validator = $("#formIntegration").validate();
+	validator.resetForm();
+	checkAlertSMTP();
+	checkAuthSMTP();
+}
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+{% include "integration_menu.html" %}
+<h2>{% trans "Настройка параметров оповещения внешних систем по протоколу SMTP" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Настройки протокола SMTP' %}');" /></h2>
+{% include "current_time.html" %}
+{% if params.us_error %}
+	<div class="message_warning">{% trans "Управляющая система" %} <strong>"{{ params.HOST }}:{{ params.PORT }}"</strong> {% trans "недоступна." %}</div>	
+{% else %}
+<form method="post" action="" id="formIntegration">
+	<div class="block_form">{% trans "Поля, отмеченные звёздочкой" %} (<span class="req">*</span>), {% trans "являются обязательными для заполнения" %}.</div>
+	<div class="message_action" style="display: none;"></div>
+	<div class="message_warning" style="display: none;"></div>
+	<div class="bl_param">
+		<div class="block">
+			<label for="smtp_need_alert_yes" class="bl_txt">{% trans "Оповещения по SMTP" %}:</label>
+			<div class="bl_enter">
+				<input type="radio" name="system_control_smtp_need_alert" id="smtp_need_alert_yes" value="true" class="inp_check" {% if params.system_control_smtp_need_alert == 'true' %} checked="checked" {% endif %}/><label for="smtp_need_alert_yes">{% trans "Включить" %}</label>
+				<input type="radio" name="system_control_smtp_need_alert" id="smtp_need_alert_no" value="false" class="inp_check dist_left" {% if params.system_control_smtp_need_alert == 'false' or not params.system_control_smtp_need_alert %} checked="checked" {% endif %}/><label for="smtp_need_alert_no">{% trans "Выключить" %}</label>
+			</div>
+		</div>
+	</div>
+	<div id="settings_smtp" style="display: none;">
+		<div class="delim_block"></div>      
+		<div class="bl_param">
+			<div class="bl_error"></div>
+			<div class="block">
+				<label for="smtp_from" class="bl_txt"><span class="req">*</span>{% trans "Электронный адрес отправителя" %}:</label>
+				<div class="bl_enter">
+					<input type="text" name="default_control_smtp_from"{% if not params.default_control_smtp_from %} placeholder="test.mail.address@test_server.com"{% endif %} value="{{ params.default_control_smtp_from }}" class="inp_txt" id="smtp_from" />
+					<span class="bl_help">{% trans "поле письма FROM" %}</span>
+				</div>
+			</div>
+		</div>		
+		<div class="bl_param">
+			<div class="bl_error"></div>
+			<div class="block">
+				<label for="smtp_to" class="bl_txt"><span class="req">*</span>{% trans "Электронный адрес получателя" %}:</label>
+				<div class="bl_enter">
+					<input type="text" name="default_control_smtp_to"{% if not params.default_control_smtp_to %} placeholder="test.mail.address@test_server.com"{% endif %} value="{{ params.default_control_smtp_to }}" class="inp_txt" id="smtp_to" />
+					<span class="bl_help">{% trans "поле письма TO" %}</span>
+				</div>
+			</div>
+		</div>
+		<div class="delim_block"></div>
+		<div class="bl_param">
+			<div class="bl_error"></div>
+			<div class="block">
+				<label for="smtp_mail_server" class="bl_txt"><span class="req">*</span>{% trans "Почтовый сервер" %}:</label>
+				<div class="bl_enter">
+					<input type="text" name="system_control_smtp_mail_server"{% if not params.system_control_smtp_mail_server %} placeholder="smtp.test_server.com"{% endif %} value="{{ params.system_control_smtp_mail_server }}" class="inp_txt" id="smtp_mail_server" />
+					<span class="bl_help">{% trans "например" %}, smtp.smilart.com</span>
+				</div>
+			</div>
+		</div>
+		<div class="bl_param">
+			<div class="bl_error"></div>
+			<div class="block">
+				<label for="system_control_smtp_mail_port" class="bl_txt"><span class="req">*</span>{% trans "Порт" %}:</label>
+				{% spinbox "system_control_smtp_mail_port" "system_control_smtp_mail_port" params.system_control_smtp_mail_port "55" "0" "65535" "1" %}
+			</div>
+		</div>
+		<div class="bl_param">
+			<div class="block">
+				<label for="smtp_mail_auth_no" class="bl_txt">{% trans "Авторизация" %}:</label>
+				<div class="bl_enter">
+					<input type="radio" name="system_control_smtp_mail_auth" value="true" id="smtp_mail_auth_yes" class="inp_check" {% if params.system_control_smtp_mail_auth == "true" %}checked="checked" {% endif %}/><label for="smtp_mail_auth_yes">{% trans "Включить" %}</label>
+					<input type="radio" name="system_control_smtp_mail_auth" value="false" id="smtp_mail_auth_no" class="inp_check dist_left" {% if params.system_control_smtp_mail_auth == "false" or not params.system_control_smtp_mail_auth %}checked="checked" {% endif %}/><label for="smtp_mail_auth_no">{% trans "Выключить" %}</label>                                    
+				</div>
+			</div>
+		</div>                            
+		<div class="bl_param" id="smtp_password_block" style="display: none;">
+			<div class="bl_error"></div>
+			<div class="block">
+				<label for="smtp_password" class="bl_txt">{% trans "Пароль отправителя" %}:</label>
+				<div class="bl_enter">
+					<input type="password" name="default_control_smtp_password" value="{{ params.default_control_smtp_password }}" id="smtp_password" class="inp_txt" />
+					<span class="bl_help">{% trans "при выключенной авторизации пароль будет игнорироваться" %}</span>
+				</div>
+			</div>
+		</div>
+		<div class="delim_block"></div>
+		<div class="bl_param">
+			<div class="block">
+				<label for="system_control_smtp_identification_alert_timeout" class="bl_txt"><span class="req">*</span>{% trans "Время (в мс)" %}:</label>
+				{% spinbox "system_control_smtp_identification_alert_timeout" "system_control_smtp_identification_alert_timeout" params.system_control_smtp_identification_alert_timeout "55" "0" "20120000" "100" %}
+				<span class="bl_help">{% trans "минимальное время между последовательными оповещениями об идентификации одной персоны" %}</span>
+			</div>
+		</div>
+		<div class="delim_block"></div>
+		<div class="bl_param">
+			<div class="block">
+				<label for="smtp_ident_subject" class="bl_txt">{% trans "Тема письма для оповещений об идентификации" %}:</label>
+				<div class="bl_enter">
+					{% comment %}{% trans "Распознанное лицо" %} !!!КОММЕНТ НЕ УДАЛЯТЬ!!! {% endcomment %}
+					<input type="text" name="default_control_smtp_identification_alert_subject" value="{% trans params.default_control_smtp_identification_alert_subject %}" id="smtp_ident_subject" class="inp_txt" />
+					<span class="bl_help">{% trans "поле SUBJECT" %}</span>
+				</div>
+			</div>
+		</div>                            
+		<div class="bl_param">
+			<div class="block">
+				<label for="smtp_subject" class="bl_txt">{% trans "Тема письма для всех остальных типов оповещений" %}:</label>
+				<div class="bl_enter">
+					<input type="text" name="system_control_smtp_subject" value="{{ params.system_control_smtp_subject }}" id="smtp_subject" class="inp_txt" />
+					<span class="bl_help">{% trans "поле SUBJECT" %}</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="dist_top"><input type="submit" name="" value="{% trans "Применить" %}" class="inp_btn inp_btn_blue" /><input type="button" name="" value="{% trans "Отменить" %}" class="inp_btn inp_btn90 dist_left" onClick="javascript: resetParamsForm();" /></div>
+</form>
+{% endif %}                    
+{% endblock %}
+{% block windows %}
+{% include "window_integration.html" %}
+{% include "window_reboot_us.html" %}
+{% endblock %}

@@ -1,0 +1,117 @@
+{% load i18n %}
+{% load templatetags %}
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2><a href="/lists/">{% trans "Списки" %}</a> - {% trans "Карточки посещений" %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Посетители" %}');" /></h2>
+				{% include "current_time.html" %}
+				<form method="get" action="" name="" id="mainForm">
+					<input type="hidden" value="0" name="delo" id="delid">				    
+					<div class="frm_block">
+						<div class="search">
+							<span class="left"></span>
+							<span class="center"><input type="text" name="filter" value="{% if filter %}{{ filter }}{% else %}{% trans "Поиск" %}{% endif %}" value="" class="txt_search" onFocus="javascript: search(this, true, '{% trans "Поиск" %}');" onBlur="javascript: search(this, false, '{% trans "Поиск" %}');" /></span>
+							{% if group %}<input type="hidden" name="group" value="{{ group }}"/>{% endif %}
+							<input type="submit" name="" value="" class="btn_search" title="{% trans "{% trans "Найти" %}" %}" />
+						</div>
+						<div>{% trans "Всего посетителей в базе" %}: <span class="info_important">{{ visitor_count|default:0 }}</span></div>
+					</div>	
+
+					{% if filter or dateBegin1 or dateBegin2 %}			
+					<div class="frm_block">
+						<div>{% trans "Всего найдено карточек в базе" %}: <span class="info_important">{{ vc_count|default:0 }}</span></div>						
+					</div>		
+					{% endif %}
+					<div class="frm_block">
+						{% if visitingcard and visitingcard|length > 0 %}
+						<div class="bl_btn_check">
+							<input type="button" name="" value="{% trans "Выделить всё" %}" class="inp_btn inp_btn120" onMouseUp="javascript: buttonStatus(this, 'over');" onMouseDown="javascript: buttonStatus(this, 'down');" 
+							onMouseOut="javascript: buttonStatus(this, 'up');" onMouseOver="javascript: buttonStatus(this, 'over');" onClick="javascript: allRowBtn('choose_all', {{ visitingcard|length }}, {{ start }}, {{ finish }});" />
+							<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: allRow(this, {{ visitingcard|length }}, {{ start }}, {{ finish }});" id="choose_all" />
+						</div>
+						{% endif %}
+						{% if visitor_count > 0 %}
+							<a href="{{ project_url }}/visitorcard/{% if group %}?group={{ group }}{% endif %}" class="link_btn">{% trans "Добавить" %}</a>
+						{% endif %}	
+						{% if visitingcard and visitingcard|length > 0 %}<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170" onClick="javascript: showMessageDelete({{ visitingcard|length }}, 'visitingcards')" style="float: left; margin-right: 30px;"/>{% endif %}
+						{% if visitor_count > 0 %}
+							<a class="link_btn link_btn170" onmouseup="javascript: linkStatus(this, 'over', 170);" onmousedown="javascript: linkStatus(this, 'down', 170);" onmouseout="javascript: linkStatus(this, 'up', 170);" onmouseover="javascript: linkStatus(this, 'over', 170);" href="{{ project_url }}/visitorslist/{% if group %}?group={{ group }}{% endif %}" style="float: left; padding-right: 5px; background-image: url(/files/images/button170x24_up.gif);">{% trans "Список посетителей" %}</a>
+						{% else %}
+							<a class="link_btn link_btn90" onmouseup="javascript: linkStatus(this, 'over', 90);" onmousedown="javascript: linkStatus(this, 'down', 90);" onmouseout="javascript: linkStatus(this, 'up', 90);" onmouseover="javascript: linkStatus(this, 'over', 90);" href="{{ project_url }}/anketavisitor/{% if group %}?group={{ group }}{% endif %}" style="float: left; padding-right: 5px; background-image: url(/files/images/button90x24_up.gif);">{% trans "Добавить" %}</a>
+						{% endif %}						
+					</div>
+					{% if visitingcard and visitingcard|length > 0 %}
+
+					<div class="frm_block">
+						{% trans "Просмотр записей: с" %} <span style="margin-right: 10px;"><input class="inp_txt" type="text" value="{{ dateBegin|date:"d.m.Y" }}" name="dateBegin"/><input type="button" onclick="javascript: displayDatePicker('dateBegin', false, 'dmy', '.');" title="{% trans "Выбрать дату" %}" class="btn_calend" value="" name=""/></span>
+						 {% trans "по" %} <span style="margin-left: 10px;"><input type="text" class="inp_txt" value="{{ dateEnd|date:"d.m.Y" }}" name="dateEnd" /><input type="button" onclick="javascript: displayDatePicker('dateEnd', false, 'dmy', '.');" title="{% trans "Выбрать дату" %}" class="btn_calend" value="" name=""/></span>
+						 <input type="button" onclick="javascript: document.getElementById('mainForm').submit();" onmouseup="javascript: buttonStatus(this, 'over');" onmousedown="javascript: buttonStatus(this, 'down');" onmouseout="javascript: buttonStatus(this, 'up');" onmouseover="javascript: buttonStatus(this, 'over');" class="inp_btn inp_btn90 dist_left" value="{% trans "Применить" %}" name="" />
+					</div>
+
+					{% include "po4NavigationBlock.html" %}
+
+					<div class="frm_block dist_link">
+						<table cellspacing="0" cellpadding="0" class="list_users">
+							<tr>
+								<th rowspan="2" class="th_check first"><a href="?start={{start}}&sorto=1&up={% if sorto == 1 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if group %}&group={{ group }}{% endif %}"><input type="button" class="btn_arrow {% if sorto == 1 and up == 1  %}up{% else %}down{% endif %}" value="" name="" />№</a></th>
+								<th rowspan="2" class="th_fio"><a href="?start={{start}}&sorto=2&up={% if sorto == 2 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if group %}&group={{ group }}{% endif %}"><input type="button" class="btn_arrow {% if sorto == 2 and up == 1  %}up{% else %}down{% endif %}" value="" name="">{% trans "ФИО" %}</a></th>
+								<th rowspan="2" class="th_status"><a href="?start={{start}}&sorto=3&up={% if sorto == 3 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if group %}&group={{ group }}{% endif %}"><input type="button" class="btn_arrow {% if sorto == 3 and up == 1  %}up{% else %}down{% endif %}" value="" name="">{% trans "Статус" %}</a></th>
+								<th rowspan="2" class="th_doc"><a href="?start={{start}}&sorto=4&up={% if sorto == 4 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if group %}&group={{ group }}{% endif %}"><input type="button" class="btn_arrow {% if sorto == 4 and up == 1  %}up{% else %}down{% endif %}" value="" name="">{% trans "Документ" %}</a></th>
+								<th colspan="2">{% trans "Цель посещения" %}</th>
+								<th rowspan="2" class="th_date"><a href="?start={{start}}&sorto=7&up={% if sorto == 7 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if group %}&group={{ group }}{% endif %}"><input type="button" class="btn_arrow {% if sorto == 7 and up == 1  %}up{% else %}down{% endif %}" value="" name="">{% trans "Дата" %}</a></th>
+								<th colspan="2">{% trans "Время" %}</th>
+							</tr>
+							<tr>
+								<th class="th_name"><a href="?start={{start}}&sorto=5&up={% if sorto == 5 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if group %}&group={{ group }}{% endif %}"><input type="button" class="btn_arrow {% if sorto == 5 and up == 1  %}up{% else %}down{% endif %}" value="" name="">{% trans "К кому" %}</a></th>
+								<th><a href="?start={{start}}&sorto=6&up={% if sorto == 6 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if group %}&group={{ group }}{% endif %}"><input type="button" class="btn_arrow {% if sorto == 5 and up == 1  %}up{% else %}down{% endif %}" value="" name="">{% trans "Основание" %}</a></th>
+								<th class="th_timein"><a href="?start={{start}}&sorto=7&up={% if sorto == 7 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if group %}&group={{ group }}{% endif %}"><input type="button" class="btn_arrow {% if sorto == 7 and up == 1  %}up{% else %}down{% endif %}" value="" name="" >{% trans "Вход" %}</a></th>
+								<th class="th_timeout"><a href="?start={{start}}&sorto=8&up={% if sorto == 8 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if group %}&group={{ group }}{% endif %}"><input type="button" class="btn_arrow {% if sorto == 8 and up == 1  %}up{% else %}down{% endif %}" value="" name="" >{% trans "Выход" %}</a></th>
+							</tr>
+							{% for vc in visitingcard %}
+								{% if forloop.counter >= start and forloop.counter < finish %}
+									<tr {% cycle '' 'class="odd"' %} onMouseOver="javascript: overRow(this);" onMouseOut="javascript: outRow(this);">
+										<td class="td_check first"><span>{{ forloop.counter }}.</span><input type="checkbox" name="vc{{ forloop.counter }}" value="{{ vc.id }}" class="inp_check" id="check{{ forloop.counter }}" onClick="javascript: checkRow(this, {{ visitingcard|length }}, {{ start }}, {{ finish }});" /></td>
+										<td class="td_fio"><a href="{{ project_url }}/anketavisitor/{{ vc.visitor.person.id }}/{% if group %}?group={{ group }}{% endif %}">{{ vc.visitor.person.first_name }} {{ vc.visitor.person.last_name }} {{ vc.visitor.person.middle_name }}</a>  {% if vc.visitor.active == 0 %}<img title="{% trans "Посетитель удален" %}" src="/files/images/delete.png">{% endif %}</td>
+										<td class="td_status">{% trans  vc.visitor.person.status.name  %}</td>
+										<td class="td_doc">{% trans  vc.visitor.person.document.name  %}</td>
+										<td class="td_name">{{ vc.person.person.first_name }} {{ vc.person.person.last_name }} {{ vc.person.person.middle_name }}  {% if vc.person.active == 0 %}<img title="{% trans "Персона удалена" %}" src="/files/images/delete.png">{% endif %}</td>
+										<td>{{ vc.ground.name }}</td>
+										<td class="td_date">{{ vc.dt_enter|date:"d.m.Y" }}{% if vc.dt_enter|date:"Y.m.d" != vc.dt_exit|date:"Y.m.d" %} - {{ vc.dt_exit|date:"d.m.Y" }}{% endif %}</td>
+										<td class="td_timein">{{ vc.dt_enter|date:"H:i" }}</td>
+										<td class="td_timeout">{{ vc.dt_exit|date:"H:i" }}</td>
+									</tr>
+								{% endif %}
+							{% endfor %}
+						</table>
+					</div>
+
+					{% include "po4NavigationBlock.html" %}
+
+					<div class="frm_block">					    
+						<div class="bl_btn_check">
+							<input type="button" name="" value="{% trans "Выделить всё" %}" class="inp_btn inp_btn120" onMouseUp="javascript: buttonStatus(this, 'over');" onMouseDown="javascript: buttonStatus(this, 'down');" 
+							onMouseOut="javascript: buttonStatus(this, 'up');" onMouseOver="javascript: buttonStatus(this, 'over');" onClick="javascript: allRowBtn('choose_all2', {{ visitingcard|length }}, {{ start }}, {{ finish }});" />
+							<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: allRow(this, {{ visitingcard|length }}, {{ start }}, {{ finish }});" id="choose_all2" />
+						</div>
+						{% if visitingcard and visitingcard|length > 0 %}
+							{% if visitor_count > 0 %}
+								<a href="{{ project_url }}/visitorcard/{% if group %}?group={{ group }}{% endif %}" class="link_btn">{% trans "Добавить" %}</a>
+							{% endif %}					
+							<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170" onClick="javascript: showMessageDelete({{ visitingcard|length }}, 'visitingcards')" style="float: left; margin-right: 30px;"/>
+						{% endif %}
+						{% if visitor_count > 0 %}
+							<a class="link_btn link_btn170" onmouseup="javascript: linkStatus(this, 'over', 170);" onmousedown="javascript: linkStatus(this, 'down', 170);" onmouseout="javascript: linkStatus(this, 'up', 170);" onmouseover="javascript: linkStatus(this, 'over', 170);" href="{{ project_url }}/visitorslist/{% if group %}?group={{ group }}{% endif %}" style="float: left; padding-right: 5px; background-image: url(/files/images/button170x24_up.gif);">{% trans "Список посетителей" %}</a>
+						{% else %}
+							<a class="link_btn link_btn170" onmouseup="javascript: linkStatus(this, 'over', 170);" onmousedown="javascript: linkStatus(this, 'down', 170);" onmouseout="javascript: linkStatus(this, 'up', 170);" onmouseover="javascript: linkStatus(this, 'over', 170);" href="{{ project_url }}/anketavisitor/{% if group %}?group={{ group }}{% endif %}" style="float: left; padding-right: 5px; background-image: url(/files/images/button170x24_up.gif);">{% trans "Добавить посетителя" %}</a>
+						{% endif %}						
+					</div>	
+					{% endif %}
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->

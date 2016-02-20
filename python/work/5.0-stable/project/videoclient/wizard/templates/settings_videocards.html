@@ -1,0 +1,155 @@
+{% extends "wizard_base.html" %}
+{% load i18n %}
+{% load templatetags %}
+{% block wizard_content %}
+<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script>
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+{% include "js/js_wizard.html" %}
+{% include "javascript.html" %}
+<script type="text/javascript">
+var params = new Array();
+// одинаковое / разное количество потоков исполнения для всех CPU
+function checkCountStreams(obj) {
+	var check = $(obj);
+	var id = check.attr("id");
+	if (check.attr("checked")) {
+		$("#block_"+id+"_different").hide();
+		$("#block_"+id+"_equal").slideDown("normal");	
+	} else {
+		$("#block_"+id+"_equal").hide();
+		$("#block_"+id+"_different").slideDown("normal");
+	}
+}
+$(function() {
+    $(".link_head").click(function() {
+        headLinkWizard($(this));
+    });
+    setCookie('json_balancers', "{{ json_balancers }}");
+});
+</script>
+<div class="step"><strong>{% trans "Шаг 4 из" %} <span id="step_end">{{ all_steps }}</span>. <span class="dist_left">{% trans "Выбор демонов" %}.</span></strong></div>
+<div class="message_action dist_top" id="message_cpu_versions">{% trans 'Выполните необходимые настройки серверов и нажмите на кнопку' %} <strong>{% trans 'Далее' %}</strong>.</div>
+
+<div class="dist_top">{% trans 'Поля, отмеченные звездочкой' %} (<span class="req">*</span>), {% trans 'являются обязательными для заполнения' %}.</div>
+<script type="text/javascript">
+    function insertParameters(){
+        var options = {
+          url: "/wizard/balancer/",
+          type: "POST",
+          success: function(msg) {
+				showIndicator(false);
+                if (msg != ""){
+                    showMessage(msg);
+                }
+                else {
+                    {% if balancers.show_videoanalitycs %}
+                        var inputs = $("input[type=checkbox]:checked.videoanalytics_checkbox");
+                        if (inputs.size() == 0) {
+                            window.location.href = "/wizard/fin/";
+                        } else {
+                            window.location.href = "/wizard/globalparams/";
+                        }
+                    {% else %}
+                        alert("{% trans "Настройки успешно сохранены." %}");
+                        window.location.href = "/wizard/fin/";
+                    {% endif %}
+                }          
+          },
+            error: function(msg){
+				showIndicator(false);
+                showMessage("{% trans "Внимание! Произошла ошибка. Настройки не могут быть сохранены." %}");            
+            }      
+        };
+		showIndicator(true);
+        $("#ImportParamsForm").ajaxSubmit(options);
+    }
+</script>
+<form method="post" action="" id="ImportParamsForm" enctype="multipart/form-data">
+    <ul class="list_servers" id="list_servers">
+        {% for balancer in balancers.balancer %}
+            <li><div class="head"><span>{{ forloop.counter }}.</span><a href="#" class="link_head">{% trans "Сервер" %} "{{ balancer.address }}"</a></div>
+				<div>
+					<div class="bl_add_param">
+					    {% if forloop.first %}
+						<div class="frm" style="display: none;">
+							<input type="radio" name="record" id="record{{ forloop.counter }}" class="inp_check check_record" value="{{ forloop.counter }}" checked="checked"/><label for="record{{ forloop.counter }}">{% trans 'Запись видео' %}</label>
+						</div>
+						{% endif %}
+						{% if balancers.show_videoanalitycs %}
+						<div class="bl_param">
+							<input type="checkbox" id="videoanalytics{{ forloop.counter }}" class="inp_check videoanalytics_checkbox" name="videoanalytics{{ forloop.counter }}" {% if 'Videoanalytics Daemon' in balancer.daemons_type %}checked="checked"{% endif %}/><label for="videoanalytics{{ forloop.counter }}">{% trans 'Использовать Видеоаналитику' %}</label>
+						</div>
+						{% endif %}
+						{% comment %}
+                        <div class="frm" {% if not 'CPU DU Daemon' in balancer.daemons_type %}style="display:none;"{% endif %}>
+							<input type="checkbox" id="cpu{{ forloop.counter }}" class="inp_check cpu" name="cpu{{ forloop.counter }}" {% if 'CPU DU Daemon' in balancer.daemons_type %}checked="checked"{% endif %}/><label for="cpu{{ forloop.counter }}">{% trans 'Использовать версию CPU универсального демона' %}</label>
+					    </div>		
+					    {% endcomment %}
+						{% if 'CPU DU Daemon' in balancer.daemons_type and balancer.videocards|length > 0 %}
+							<div class="bl_param"><input type="checkbox" name="count_streams{{ forloop.counter }}" value="" class="inp_check" id="count_streams{{ forloop.counter }}" checked="checked" onClick="javascript: checkCountStreams(this);" /><label for="count_streams{{ forloop.counter }}">{% trans "Использовать одинаковое количество потоков исполнения для всех CPU версий универсального демона" %}</label></div>
+						{% endif %}						
+					</div>
+
+					{% if 'CPU DU Daemon' in balancer.daemons_type and balancer.videocards|length > 0 %}
+							<input type="hidden" name="cpu_on{{ forloop.counter }}" value="{{ balancer.videocards|length }}" >
+						<!-- одинаковое количество -->
+							<div class="bl_add_param" id="block_count_streams{{ forloop.counter }}_equal" style="display: block;">
+								<div class="block bl_param">
+									<label for="count_streams{{ forloop.counter }}_execut" class="bl_txt">{% trans "Количество потоков исполнения:" %}</label>
+									<div class="spinbox">
+										<input type="text" id="server{{ forloop.counter }}_videocard_du" name="server{{ forloop.counter }}_videocard_du" value="1" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 1, 1, 10000);" />
+										<div class="spinbtns">
+											<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 1, 10000, 1, 'server{{ forloop.counter }}_videocard_du');" onMouseUp="javascript: clearTimer();" />
+											<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 1, 10000, 1, 'server{{ forloop.counter }}_videocard_du');" onMouseUp="javascript: clearTimer();" />
+										</div>
+									</div>			
+								</div>
+							</div>
+						<!-- разное количество -->
+							<div id="block_count_streams{{ forloop.counter }}_different" style="display: none;">
+								<div class="head_info">{% trans 'CPU версии универсального демона' %}:</div>
+								<div class="info" style="margin-left: 30px;">
+								    {% for videocard in balancer.videocards %}
+									<div class="block bl_param">
+										<label for="videocard{{ forloop.counter }}" class="bl_txt"><strong class="req">*</strong>{% trans "Количество потоков исполнения" %} ({% trans "CPU демон" %} {{ forloop.counter }}):</label>
+										<div class="bl_enter2">	
+											<div class="block_ie">
+												<div class="spinbox">
+            										<input type="text" id="server{{ forloop.parentloop.counter }}_videocard{{ forloop.counter }}_du" name="server{{ forloop.parentloop.counter }}_videocard{{ forloop.counter }}_du" value="1" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 1, 1, 10000);" />
+			            							<div class="spinbtns">
+						            					<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 1, 10000, 1, 'server{{ forloop.parentloop.counter }}_videocard{{ forloop.counter }}_du');" onMouseUp="javascript: clearTimer();" />
+									            		<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 1, 10000, 1, 'server{{ forloop.parentloop.counter }}_videocard{{ forloop.counter }}_du');" onMouseUp="javascript: clearTimer();" />
+										            </div>
+									            </div>		
+											</div>
+										</div>
+									</div>
+									{% endfor %}
+								</div>
+							</div>
+					{% endif %}				
+					
+					{% if not 'CPU DU Daemon' in balancer.daemons_type and balancer.videocards|length > 0 %}
+					<div class="head_info">{% trans 'Видеокарты' %}:</div>
+					<div class="info" style="margin-left: 30px;" id="server{{ forloop.counter }}">
+						{% for videocard in balancer.videocards %}
+							<div class="frm">
+								<label for="server{{ forloop.parentloop.counter }}_videocard{{ forloop.counter }}" class="bl_txt"><span class="req">*</span>{% trans "Видеокарта" %} {{ forloop.counter }}:{% if videocard.name %}<span class="name_card">({{ videocard.name }})</span>{% endif %}</label>
+								<div class="bl_enter">
+									<span class="universal_daemon"><input type="checkbox" name="server{{ forloop.parentloop.counter }}_videocard{{ forloop.counter }}_du" value="" id="server{{ forloop.parentloop.counter }}_videocard{{ forloop.counter }}_du" class="inp_check du"{% if 'DU Daemon (FD-FR-FS)' in videocard.daemons_type %}checked="checked"{% endif %} /><label for="server{{ forloop.parentloop.counter }}_videocard{{ forloop.counter }}_du">{% if show_recognition == '1' %}{% trans "Использовать видеокарту для поиска лиц и идентификаций" %}{% else %}{% trans "Использовать видеокарту для детектора скопления людей" %}{% endif %}</label></span> 
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+					{% endif %}
+				</div>
+            </li>
+        {% endfor %}
+    </ul>
+    <div class="frm_btn">
+        <input type="hidden" name="action" value="next" id="inp_action" />
+        <input type="button" name="" value="{% trans "Назад" %}" class="inp_btn inp_btn90" onClick="javascript: checkForm('back');" />
+        <input type="button" name="" value="{% trans "Далее" %}" class="inp_btn btn_blue dist_left" onClick="javascript: insertParameters();" /> <!-- checkForm(); -->
+    </div>
+</form>
+{% endblock wizard_content %}

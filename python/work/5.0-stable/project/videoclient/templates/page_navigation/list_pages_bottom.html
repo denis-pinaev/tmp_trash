@@ -1,0 +1,5 @@
+{% extends "page_navigation/list_pages.html" %}
+{% load i18n templatetags %}
+{% block current_page %}
+	<input type="text" id="page_bottom" value="{{ p }}" class="inp_txt" onKeyUp="javascript: goToPage($(this));" onChange="javascript: goToPage($(this));" maxlength="8" />
+{% endblock %}

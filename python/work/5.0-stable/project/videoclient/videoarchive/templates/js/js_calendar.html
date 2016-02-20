@@ -1,0 +1,446 @@
+{% load i18n a_templatetags %}
+<script type="text/javascript">
+// проверка формы поиска на валидность дат
+function checkForm() {
+	$.validator.addMethod("checkDateReq", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) return true;
+		return false;
+	}, "{% trans 'Введите дату' %}" );
+	$.validator.addMethod("checkDateFormat", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			var regexp = /^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})$/;
+			if (regexp.test(val)) return true;
+			return false
+		}
+		return true;
+	}, "{% trans 'Некорректный формат даты (ДД.ММ.ГГГГ)' %}" );		
+	$.validator.addMethod("checkDate", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			if (checkDateValidator(val)) return true;
+			return false;
+		}
+		return true;
+	}, "{% trans 'Некорректное значение даты' %}" );
+	$.validator.addMethod("checkDateRangeReq", function(value, element) {
+		if (!$("#dateBegin").val() && !$("#dateEnd").val()) return false;
+		return true;
+	}, "{% trans 'Введите период' %}" );		
+	$.validator.addMethod("checkDateRange", function(value, element) {
+		var date1 = $("#dateBegin").val();
+		var date2 = $("#dateEnd").val();
+		if (date1 && (date1 != "") && date2 && (date2 != "")) {
+			if (checkDateValidator(date1) && checkDateValidator(date2)) { 
+				var dates = checkDateRangeValidator('dateBegin', 'dateEnd');
+				if (dates[0] <= dates[1]) return true;
+				return false;
+			}
+			return true;
+		}
+		return true;
+	}, "{% trans 'Дата окончания меньше даты начала' %}" );		
+	var validator = $("#mainForm").validate({
+		rules: {
+			dateBegin: {
+				checkDateRangeReq: true,
+				checkDateReq: true,
+				checkDateFormat: true,
+				checkDate: true
+			},
+			dateEnd: {
+				checkDateRangeReq: true,
+				checkDateReq: true,
+				checkDateFormat: true,
+				checkDate: true,
+				checkDateRange: true
+			}
+		},
+		messages: {
+			dateBegin: {
+				checkDateRangeReq: "{% trans 'Укажите период' %}",
+				checkDateReq: "{% trans 'Введите дату начала' %}",
+				checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+				checkDate: "{% trans 'Введено некорректное значение' %}"
+			},
+			dateEnd: {
+				checkDateRangeReq: "{% trans 'Укажите период' %}",
+				checkDateReq: "{% trans 'Введите дату окончания' %}",	
+				checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+				checkDate: "{% trans 'Введено некорректное значение' %}",
+				checkDateRange: "{% trans 'Указан некорректный период дат' %}"
+			}
+		},		
+		errorPlacement: function(error, element) {
+			var block_error = $("#date_warning");		
+			block_error.html("");
+			error.appendTo( block_error ); 
+		},	
+		submitHandler: function() {
+			document.getElementById("mainForm").submit();
+		}
+	});
+}
+// проверка на валидность периода при удалении
+function checkDataFields() {
+	var dateBegin = $("#dateBegin");
+	var dateEnd = $("#dateEnd");
+	var error = $("#date_warning");
+	if (dateBegin.val() && dateEnd.val()) {
+		var regexp = /^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})$/;
+		if (regexp.test(dateBegin.val()) && regexp.test(dateEnd.val())) {
+			if (checkDateValidator(dateBegin.val()) && checkDateValidator(dateEnd.val())) {
+				var dates = checkDateRangeValidator('dateBegin', 'dateEnd');
+				if (dates[0] <= dates[1]) {
+					dateBegin.removeClass("err_forms");
+					dateEnd.removeClass("err_forms");
+					error.html("");
+					return true;
+				} else {
+					dateEnd.addClass("err_forms");
+					error.html("{% trans 'Указан некорректный период дат' %}");
+					return false;				
+				}
+			} else {
+				if (!checkDateValidator(dateBegin.val())) {
+					dateBegin.addClass("err_forms");
+					error.html("{% trans 'Введено некорректное значение' %}");
+					return false;				
+				}
+				if (!checkDateValidator(dateEnd.val())) {
+					dateEnd.addClass("err_forms");
+					error.html("{% trans 'Введено некорректное значение' %}");
+					return false;					
+				}
+			}
+		} else {
+			if (!regexp.test(dateBegin.val())) {
+				dateBegin.addClass("err_forms");
+				error.html("{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}");
+				return false;
+			}
+			if (!regexp.test(dateEnd.val())) {
+				dateEnd.addClass("err_forms");
+				error.html("{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}");
+				return false;
+			}
+		}
+	} else {
+		if (!dateBegin.val() && !dateEnd.val()) {
+			dateBegin.addClass("err_forms");
+			dateEnd.addClass("err_forms");
+			error.html("{% trans 'Укажите период' %}");
+			return false;
+		}
+		if (!dateBegin.val()) {
+			dateBegin.addClass("err_forms");
+			error.html("{% trans 'Введите дату начала' %}");
+			return false;
+		} 
+		if (!dateEnd.val()) {
+			dateEnd.addClass("err_forms");
+			error.html("{% trans 'Введите дату окончания' %}");
+			return false;		
+		}
+	}
+}
+// окно для удаления роликов
+function deleteRoller() {
+	if (checkDataFields()) {
+		var source = $("#source option:selected");
+		if (source.attr("value") != 0) {
+			$("#win_sources").show();
+			$("#win_delsource").html('"' + source.text() + '"');
+		} else 
+			$("#win_sources").hide();
+		var dateBegin = $("#dateBegin").val();
+		var dateEnd = $("#dateEnd").val();
+		$("#win_datebegin").html(dateBegin);
+		$("#win_dateend").html(dateEnd);
+		changeWindow({id: 'win_delroller', css: {width: '300px', height: '200px'}});
+	}
+}	
+// удаление роликов
+function deletePeriodRoller() {
+    var options = {
+		url: "{{ root_path }}/command/delete_rollers_for_period/",
+		type: "POST",
+		success: function(msg) {
+			showIndicator(false);
+			if (msg.status) {
+				//showMessage("{% trans "Видеоролики успешно удалены" %}");
+				location.reload(true);
+			} else {
+				showMessage("{% trans "Произошла ошибка в процессе удаления видеороликов" %}.");
+			}
+		},
+		error: function(msg) {
+			showIndicator(false);		
+			showMessage("{% trans "Внимание! Произошла ошибка." %}");         
+		}      
+    };
+	closeChangeWindow('win_delroller'); 	
+    showIndicator(true);
+    $("#mainForm").ajaxSubmit(options);
+}
+/* shift */
+function preventSelection(element) {
+	var preventSelection = false;
+	function addHandler(element, event, handler) {
+		if (element.attachEvent) 
+			element.attachEvent('on' + event, handler);
+		else 
+			if (element.addEventListener) 
+				element.addEventListener(event, handler, false);
+	}
+	function removeSelection() {
+		if (window.getSelection) window.getSelection().removeAllRanges();
+		else if (document.selection && document.selection.clear)
+			document.selection.clear();
+	}
+	function killCtrlA(event) {
+		var event = event || window.event;
+		var sender = event.target || event.srcElement;
+
+		if (sender.tagName.match(/INPUT|TEXTAREA/i))
+		return;
+
+		var key = event.keyCode || event.which;
+		if (event.ctrlKey && key == 'A'.charCodeAt(0))  // 'A'.charCodeAt(0) можно заменить на 65
+		{
+			removeSelection();
+
+			if (event.preventDefault) 
+				event.preventDefault();
+			else
+				event.returnValue = false;
+		}
+	}
+	addHandler(element, 'mousemove', function(){
+		if(preventSelection)
+			removeSelection();
+	});
+	addHandler(element, 'mousedown', function(event){
+		var event = event || window.event;
+		var sender = event.target || event.srcElement;
+		preventSelection = !sender.tagName.match(/INPUT|TEXTAREA/i);
+	});
+	addHandler(element, 'mouseup', function(){
+		if (preventSelection)
+			removeSelection();
+		preventSelection = false;
+	});
+	addHandler(element, 'keydown', killCtrlA);
+	addHandler(element, 'keyup', killCtrlA);
+}
+preventSelection(document);
+function getEvent(event) {
+    var e;
+    if (!event) { e = window.event; return e; }
+    e = event;
+    return e;
+}
+var isShift = false;
+var dayStart = '';
+var dayStop = '';
+var direct = 'left';
+document.onkeyup=function(event) {
+    var e = getEvent(event);
+    if (e.keyCode == 16) {
+        isShift = false;
+    }
+}
+document.onkeydown=function(event) {
+    var e = getEvent(event);
+    if (e.keyCode == 16) {
+        isShift = true;
+    }
+}
+function browser() {
+	var browserType = navigator.userAgent.toLowerCase();
+	if (browserType.indexOf('msie') >= 0) {
+		if (browserType.indexOf('msie 8.0') > -1) {
+			return 'ie8';
+		}
+		if (browserType.indexOf('msie 7.0') > -1) {
+			return 'ie7';
+		}			
+		if (browserType.indexOf('msie 6.0') > -1) {
+			return 'ie6';
+		}		
+		return 'ie';
+	}
+	if (browserType.indexOf('firefox') >= 0) {
+		return 'firefox';
+	}
+	if (browserType.indexOf('opera') >= 0) {
+		return 'opera';
+	}	
+	if (browserType.indexOf('chrome') >= 0) {
+		return 'chrome';
+	}
+	if (browserType.indexOf('safari') >= 0) {
+		return 'safari';
+	}			
+	return 'other';
+}
+function rtrim(s) {
+	return s.replace(/\s+$/, '');
+}
+function parseDate(date, delimiter) {
+    var array = date.split(delimiter);
+    return {day: array[0], month: array[1], year: array[2]};
+}
+function get_DateStringBrowser(obj) {
+    var browserCurrent = browser();
+    if ((browserCurrent == 'firefox') || (browserCurrent == 'safari') || (browserCurrent == 'opera')) {
+        var str = obj['year'] + '/' + obj['month'] + '/' + obj['day'];
+    } else {
+        var str = obj['month'] + '-' + obj['day'] + '-' + obj['year'];
+    }
+    return str;
+}
+function getPeriod(elem, num) {
+    var date = getDateOfElem(elem);
+    if (!dayStart) {
+        dayStart = date;
+    }
+    if (!dayStop) {
+        dayStop = dayStart;
+        return;
+    }
+    var objDate = parseDate(date, '.');
+    var objStart = parseDate(dayStart, '.');
+    var objStop = parseDate(dayStop, '.');
+
+    var strStart = get_DateStringBrowser(objStart);
+    var strStop = get_DateStringBrowser(objStop);
+    var strDate = get_DateStringBrowser(objDate);    
+
+    var intStart = Date.parse(strStart);
+    var intStop = Date.parse(strStop);
+    var intDate = Date.parse(strDate);
+
+    if ((intDate >= intStart) && (intDate >= intStop)) {
+        dayStop = date;
+        direct = 'left';
+    }
+    if ((intStart < intDate) && (intDate < intStop)) {
+        dayStop = date;
+        direct = 'right';
+    }
+    if ((intDate <= intStart) && (intStart <= intStop)) {
+        dayStart = date;
+        direct = 'right';
+    }
+}
+function getDateOfElem(elem) {
+    return elem.id.substr(3, elem.id.length);
+}
+function getNextDate(date, num) {
+    var obj = parseDate(date, '.');
+    var str = obj['month']+'/'+obj['day']+'/'+obj['year'];
+    var d = new Date(str);
+    d.setDate(d.getDate()+num);
+    var day = ((String(d.getDate()).length == '1')) ? "0" + d.getDate() : d.getDate();
+    var month = ((String(d.getMonth() + 1).length == '1')) ? "0" + (d.getMonth() + 1) : (d.getMonth() + 1);
+    var year = d.getFullYear();
+    nextDate = day + '.' + month + '.' + year;
+    return nextDate;
+}
+function dateComparison(date1, date2) {
+    var objStart = parseDate(date1, '.');
+    var objStop = parseDate(date2, '.');
+    var strStart = get_DateStringBrowser(objStart);
+    var strStop = get_DateStringBrowser(objStop);
+    var intStart = Date.parse(strStart);
+    var intStop = Date.parse(strStop);
+    if (intStart < intStop) {
+        return true;
+    }
+    return false;
+}
+function selectDays(select, start, stop) {                                      
+    while (dateComparison(start, stop)) {
+        if (select) {
+            overElem(document.getElementById('day'+start), 'td_select');
+        } else {
+            outElem(document.getElementById('day'+start), 'td_select');
+        }
+        start = getNextDate(start, 1);
+    }
+}
+function overElem(elem, over_class) {
+	var cur_class = "";
+	if (elem.className) cur_class = rtrim(elem.className);
+	if (over_class)	elem.className = cur_class + " " + over_class;
+	else elem.className = cur_class + " act";	
+}
+function outElem(elem, over_class) {
+	var cur_class = elem.className;
+	if (cur_class) {
+		if (cur_class.indexOf(over_class) > -1) elem.className = replace_string(elem.className, over_class, '');
+	}
+}
+function setPeriod() {
+    document.getElementById('dateBegin').value = dayStart;
+    document.getElementById('dateEnd').value = dayStop;
+}
+function selectDay(elem) {
+    if (isShift) {
+        if (elem.className.indexOf('td_select') > -1) {
+            outElem(elem, 'td_select');
+            var nextDate = getDateOfElem(elem);
+            if (direct == 'left') {
+                var nextStop = getNextDate(dayStop, 1);
+                dayStop = getNextDate(nextDate, -1);
+                selectDays(false, nextDate, nextStop);
+            } else if (direct == 'right') {
+                var nextStart = dayStart;
+                dayStart = getNextDate(nextDate, 1);
+                selectDays(false, nextStart, nextDate);
+            }
+            var elemStart = document.getElementById('day'+dayStart);
+            var elemStop = document.getElementById('day'+dayStop);
+            if ((!elemStart) || (elemStart.className.indexOf('td_select') < 0) || (!elemStop) || (elemStop.className.indexOf('td_select') < 0)) {
+                dayStart = '';
+                dayStop = '';            
+            }
+        } else {
+            overElem(elem, 'td_select');
+            getPeriod(elem);
+            selectDays(true, dayStart, dayStop);
+        }
+    } else {
+        if (dayStart && dayStop) {
+            dayStop = getNextDate(dayStop, 1);
+            selectDays(false, dayStart, dayStop);    
+        }
+        dayStart = dayStop = getDateOfElem(elem);
+        overElem(elem, 'td_select');        
+    }
+    setPeriod();
+}
+// окно для камеры
+function createTitleWindow(param) {
+    var distX = param.distX ? param.distX : 0; 
+    var distY = param.distY ? param.distY : 0; 
+    var win = $("#" + param.id);
+	if (param.txt) win.html(param.txt);
+    var pos_win = positionScreen({obj: param.obj, win_width: parseInt(param.width), win_height: parseInt(win.height()), distX: distX, distY: distY});
+    var coord_left = pos_win.left + "px";
+    var coord_top = pos_win.top + "px";
+    win.css("left", coord_left);
+    win.css("top", coord_top);
+	
+    win.show();
+}
+function showTitleInfoDay(elem, param) {
+	var content = '<div><span>{% trans "Всего источников" %}:</span> '+param.source+'</div>';
+	content += '<div><span>{% trans "Всего видеороликов" %}:</span> '+param.video+'</div>';
+	//content += '<div><span>{% trans "Найдено лиц" %}:</span>'+param.faces+'</div>';
+	//content += '<div><span>{% trans "Найдено людей" %}:</span>'+param.persons+'</div>';
+	createTitleWindow({distX: 5, width: 180, obj: $(elem), id: 'win_infoDay', txt: content});
+}
+</script>

@@ -1,0 +1,138 @@
+/* content */
+.req {
+	color: #ff0000;
+	font-weight: bold;
+}
+.bl_param {
+	margin-top: 5px;
+	padding: 5px 0px;
+}
+.bl_param.no_dist_top {
+	margin-top: 0px;
+}
+.bl_param .bl_txt {
+	float: left;
+	margin-top: 2px;
+}
+.bl_param .bl_txt.no_dist_top {
+	margin-top: 0px;
+}
+.bl_param .bl_enter {
+	margin-left: 150px;
+}
+.bl_param .inp_txt,
+.bl_param .textarea {
+	width: 300px;
+}
+.bl_btns {
+	margin-top: 10px;
+}
+.bl_btns .btn_save {
+	color: #ffffff;
+	width: 90px;
+	background: url("/files/images/btn_blue_90.png") top left no-repeat;
+	float: left;
+}
+.bl_btns .btn_cancel {
+	float: left;
+}
+/* video */
+.video {
+	max-width: 320px;
+	max-height: 320px;
+	padding: 5px;
+	background-color: #ffffff;
+	border: 1px solid #999999;
+	display: none;
+	position: absolute;
+	z-index: 3101;
+	border-radius: 3px;
+	moz-border-radius: 3px;
+	box-shadow: 2px 2px 5px rgba(122,122,122,0.3);
+	overflow: hidden;
+	word-wrap: break-word;
+}
+.video .indicator_camera {
+	width: 200px;
+	height: 150px;
+	background: url("/files/images/loader.gif") center 40px no-repeat #ffffff;
+}
+.video .indicator_camera div {
+	text-align: center;
+	padding-top: 78px;
+}
+.video .camera {
+	text-align: center;
+	font-weight: bold;
+}
+/* blocks cameras */
+.bl_cameras {
+	float: left;
+	width: 420px;
+	margin-right: 20px;
+}
+.bl_cameras.in_out {
+	width: 476px;
+}
+.bl_cameras .bl_cameras_add,
+.bl_cameras .bl_cameras_add_small {
+	height: 194px;
+	overflow: auto;	
+	border: 1px solid #cccccc;
+	margin-top: 3px;
+	padding: 2px;
+}
+.bl_cameras .bl_cameras_add_small {
+	height: 70px;
+}
+.bl_cameras_in_out {
+	margin-left: 56px;
+}
+.bl_cameras_btns {
+	float: left;
+	width: 56px;
+	margin-right: 20px;
+	margin-top: 35px;
+}
+.bl_cameras_btns .btn_arrow_left,
+.bl_cameras_btns .btn_arrow_right {
+	width: 56px;
+	height: 18px;
+}
+.bl_cameras_btns .btn_arrow_left {
+	background: url("/files/images/arrow_gray_left.png") top left no-repeat;
+	margin-top: 10px;	
+}
+.bl_cameras_btns .btn_arrow_right {
+	background: url("/files/images/arrow_grey_right.png") top left no-repeat;
+}
+.bl_cameras_btns .btn_arrow_left.dis,
+.bl_cameras_btns .btn_arrow_right.dis {
+	cursor: default;
+}
+.bl_cameras_btns .btn_arrow_left.dis {
+	background: url("/files/images/arrow_gray_left_dis.png") top left no-repeat;
+}
+.bl_cameras_btns .btn_arrow_right.dis {
+	background: url("/files/images/arrow_grey_right_dis.png") top left no-repeat;
+}
+/* list cameras */
+.list_cameras li {
+	padding: 2px 0px;
+	border-bottom: 1px solid #dddddd;
+	overflow: hidden; 
+	white-space: nowrap;
+	text-overflow : ellipsis;	
+}
+.list_cameras li.lc_odd {
+	background-color: #DBE2F0;
+}
+.list_cameras li.lc_last {
+	border-bottom: 0px;
+}
+.list_cameras li .inp_check {
+	margin-left: 5px;
+}
+.list_cameras li.lc_noact {
+	color: #999999;
+}

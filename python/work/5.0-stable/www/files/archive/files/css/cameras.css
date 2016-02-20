@@ -1,0 +1,182 @@
+﻿.btn_add {
+    background: url("/files/images/button120x24_up.gif") no-repeat left top;
+    width: 120px;
+}
+.inp_btn170 {
+	width: 170px;
+	background: url("/files/images/button170x24_up.gif") no-repeat left top;
+	margin-left: 30px;
+}
+.inp_btn120 {
+    background: url("/files/images/button120x24_up.gif") no-repeat left top;
+    padding-left: 15px;
+    width: 120px;
+}
+.bl_btn_check2 {
+	float: left;
+	margin-right: 30px;
+}
+.bl_btn_check2 div {
+	width: 120px;
+	height: 24px;
+	line-height: 24px;
+	display: table-cell;
+	vertical-align: middle;
+	background: url("/files/images/button120x24_up.gif") top left no-repeat;
+	cursor: pointer;
+}
+.bl_btn_check2 div input,
+.bl_btn_check2 div label {
+	vertical-align: middle;
+	cursor: pointer;
+}
+.bl_btn_check2 div input {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+.bl_btn_check2 div label {
+	line-height: 1;
+}
+.inp_edit {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    width: 16px;
+    height: 16px;
+    background: url("/files/images/edit2.png") no-repeat left top;
+    -background: none;  
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/edit2.png', sizingMethod='crop');        
+    margin-top: 2px;
+    float: left;
+    cursor: pointer;
+}
+.frm_block {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 10px;
+}
+.bl_btn_check {
+    position: relative;
+    float: right;
+}
+.bl_btn_check .inp_check {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    -top: 2px;
+    -left: 2px;
+}
+.block_add_cameras {
+    height: 275px; 
+    overflow: auto;
+    margin-top: 5px;
+}
+.info_add_cameras {
+    width: 100%;
+    overflow: hidden;
+}
+.info_cameras {
+    margin-top: 2px;
+}
+.block_error_add {
+    color: #FF0000;
+    text-align: center;
+}
+/* таблица */
+.table {
+    margin: 0px 0px 0px 0px;
+    padding: 0px;
+    border: 0px;
+    width: 100%;
+    border-top: 1px solid #6e7d98;
+}
+.table.dist_top {
+	margin-top: 10px;
+}
+.table tr.odd {
+    background-color: #DBE2F0;
+}
+.table th {
+    vertical-align:top;
+    text-align: center;
+    border-right: 1px solid #6e7d98;
+    border-bottom: 1px solid #6e7d98;
+    background-color: #d9dee7;
+    padding: 3px 5px;
+    font-weight: normal;
+}
+.table th.th_first {
+    border-left: 1px solid #6e7d98;
+}
+.table th a {
+    color: #333333;
+    display: block;
+    background: url('../images/arrow_down.gif') 100% 6px no-repeat;
+    padding-right: 15px;
+}
+.table th.th_info  {
+    width: 120px;
+}
+.table td {
+    border-bottom: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;
+    vertical-align: top;
+    padding: 3px 5px;    
+}
+.table td.td_first {
+    border-left: 1px solid #cccccc;
+}
+.table td.td_check {
+	width: 52px;
+	overflow: hidden;
+}
+.table td.td_check .inp_check {
+	float: right;
+	margin-top: 3px;
+}
+.table .td_camera span,
+.table .td_camera .inp_txt {
+    margin-left: 5px;
+}
+.table td.td_comr label{
+	display: block;
+	cursor: default;
+}
+.table tr.act {
+    cursor: default;
+}
+.table tr.act td {
+    background-color: #849ac1;
+    color: #ffffff;
+}
+.table tr.act td a {
+    color: #ffffff;
+    text-decoration: underline;
+}
+/* form */
+.bl_param {
+	margin-top: 10px;
+}
+.bl_param .bl_txt {
+	float: left;
+}
+.bl_param .bl_enter {
+	margin-left: 50px;
+}
+.bl_param .bl_enter .inp_host {
+	width: 250px;
+}
+.bl_param .bl_enter .inp_port {
+	width: 50px;
+}
+.bl_param .bl_error {
+	color: #ff0000;
+	margin-left: 50px;
+}
+.bl_param .bl_enter .inp_txt.err_forms {
+	border-color: #ff0000;
+}
+.req {
+	color: #ff0000;
+	font-weight: bold;
+}

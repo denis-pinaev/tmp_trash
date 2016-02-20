@@ -1,0 +1,374 @@
+{% extends "base_archive_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Задачи' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/tasks.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/spinbox.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+var ERRORS = {
+	"delete": "{% trans 'Вы должны выбрать хотя бы одну запись' %}."
+}
+var MESSAGES = {
+	"delete": "{% trans 'Вы действительно хотите удалить выбранные списки' %} ({} {% trans 'шт' %}.)?"
+}
+// окно для дубликата задачи
+function dublicate(id, name) {
+	if (id) {
+		var d = $("#dublicate_id");
+		if (d.size() > 0){ 
+			d.val(id);
+			var txt = "{% trans "Создать дубликат задачи" %} \""+name+"\"?" ; 
+			changeWindow({id: 'win_copy', css: {width: '300px', height: '200px'}, txt: txt});
+		}
+	}
+}
+// создание дубликата задачи
+function createDublicat(){
+	var d = $("#dublicate_id");
+	if ((d.size() > 0) && d.val()){
+		window.location.href = "{% url archive_page "copy_task" %}/" + d.val() + "/";
+	} 
+}
+// показать информацию о задаче
+function showInfoTask(event, obj, status, nameProcess, param_error) {
+	var action = '';
+	if (status == 'error') {
+		action = '<span>{% trans "не запустилась" %}</span>';
+	} else if (status == 'run') {
+		action = '{% trans "запустилась" %}';
+	} else if (status == 'wait') {
+		action = '{% trans "ожидает выполнения" %}';
+	}
+	var content = "<div class='head_title'>{% trans 'Задача' %} \""+nameProcess+"\" "+action+"</div>";
+	if (param_error) {
+		for (var i in param_error) {
+			content += param_error[i];
+		}
+	}
+	createTitleWindow({obj: $(obj), id: 'title', txt: content, event: event});
+}
+// создать всплывающее окно
+function createTitleWindow(param) {
+	var distX = 10;
+	var distY = 10;
+	var padding = 12;
+	
+	var win = $("#" + param.id); 	
+	win.css("opacity", 0);
+	win.show();
+	if (param.txt) win.html(param.txt);	
+	
+	var left = param.event.pageX + distX;
+	var top = param.event.pageY + distY;
+	var width = win.width() + padding;
+	var height = win.height() + padding;
+	var scr = screenSize();
+	if ( ( left + width ) > scr.width ) {
+		left = scr.width - width;
+	}
+	if ( ( top + height ) > scr.height ) {
+		top = scr.height - height - distY;
+	}	
+		
+	var coord_left = left + "px";
+	var coord_top = top + "px";
+	win.css("left", coord_left);
+	win.css("top", coord_top);
+	win.css("opacity", 1);
+}
+
+// выделение всех строк
+function selectedAllRow(inp) {
+	var checks = $("#table td input[type=checkbox]");
+	var checks_all = $("input[type=checkbox].check_all");
+	if (inp.attr("checked")) {
+		$.each(checks, function() {
+			$(this).attr("checked", "checked");
+		});
+		checks_all.attr("checked", "checked");
+	} else {
+		$.each(checks, function() {
+			$(this).attr("checked", false);
+		});
+		checks_all.attr("checked", false);	
+	}
+}
+// выделение одной строки
+function selectedRow(inp) {
+	var checks_all = $("input[type=checkbox].check_all");
+	var count = $("#table tr td input[type=checkbox]").size();
+	var count_sel = 0;
+	if (inp.attr("checked")) {
+		count_sel = $("#table tr td input[type=checkbox]:checked").size();
+		if (count_sel == count) {
+			checks_all.attr("checked", "checked");
+		}
+	} else {	
+		checks_all.attr("checked", false);
+	}
+}
+
+// удалить выделенные
+function showMessageDelete() {
+	var count_sel = $("#table tr td input[type=checkbox]:checked").size();
+	if (count_sel > 0) {
+		changeWindow({id: 'win_del', css: {width: '300px', height: '200px'}, txt: replace_string(MESSAGES["delete"], '{}', count_sel)});
+	} else {
+		changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: ERRORS["delete"]});
+	}
+}
+function clickDelete(count) {
+	closeChangeWindow('win_del');
+	var obj = getValueIsChecked(count);
+	var res = '';
+	for(var i = 0; i<obj.c; i++){
+		if (i!=0){
+			res=res+',';
+		}
+		res = res + obj.array[i];
+	}
+	return res;
+}
+function getValueIsChecked(count) {
+	var c = 0;
+	var arr_value = new Array();
+	if (count > 0) {
+		var inps = $("#table tr td input[type=checkbox]:checked");
+		$.each(inps, function() {
+			arr_value[c] = $(this).val();
+			c++;
+		});
+	}
+	return {c: c, array: arr_value};
+}
+// удаление
+function del(tasks) {
+	showIndicator(true);
+	$.ajax({
+		type: "POST",
+		url: "{{ root_path }}/command/delete_tasks/",
+		data: {tasks: tasks},
+		success: function(msg){
+			var obj = msg;
+			if (obj.status) {
+				if(obj.deleted){
+					for(var i=0; i<obj.deleted.length; i++){
+						$("#task_"+obj.deleted[i]).empty();
+						all_tasks_count--;
+						$("#all_tasks_count").text(all_tasks_count);
+						if(all_tasks_count<=0){
+							$("#tasks_0").css("display","block");
+							$("#tasks_1").css("display","none");
+						}
+					}
+				}else{
+					location.reload(true);
+				}
+			} else{
+				showMessage('{% trans "Ошибка! Не удалось удалить задачу" %}');
+			}
+			showIndicator(false);		
+		}
+	});
+}
+
+// Запустить задачу
+function RestartTask(id) {
+    showIndicator(true);
+	if (id){	    
+	    $.ajax({
+    		type: "POST",
+	    	url: "{% url archive_command 'start_task/' %}"+id,
+		    success: function(msg){
+                obj = msg;
+			    if (obj.status) {
+				    location.reload(true);
+			    } else{
+				    alert('{% trans "Ошибка! Не удалось запустить задачу" %}');
+			    }
+			    showIndicator(false);
+		    },
+		    error: function(msg) {
+		        alert('{% trans "Ошибка! Не удалось запустить задачу" %}');
+		        showIndicator(false);
+		    }
+	    });
+	}
+}    
+
+$(function() {
+	initTooltip();
+	$("input.check_all").click(function() {
+		selectedAllRow($(this));
+	});	
+	$("#table tr td input[type=checkbox].inp_check").click(function() {
+		selectedRow($(this));
+	});		
+});
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu/menu_planner.html" %}{% endblock %}
+{% block subcontent %}
+					<h2>{% trans "Задачи" %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Видеоархив Задачи' %}');" /></h2>
+					{% include "current_time.html" %}
+					{% if tasks_error %}
+						<div class="message_warning">{% trans "Имеются ошибки при запуске задач." %}</div>               
+					{% endif %}
+					<form method="get" action="" class="frm_block" id="main_form">
+						<input type="hidden" name="sort" value="{{ sort|default:0 }}" id="id_sort">
+						<input type="hidden" name="order" value="{{ order|default:0 }}" id="id_order">
+						<div>{% trans "Общее количество задач" %}: <span class="info_important">{{ all_tasks }}</span> 
+						</div>
+						<div id="tasks_1">
+						<div class="frm_block">
+							{% include "navigation/light_top.html" %}							
+							{% if tasks|length > 0 and perms.user_perms.perm_videoarchive_delete_task %}
+							    <div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all" /><label for="choose_all">{% trans "Выделить всё" %}</label></div></div>                      
+							{% endif %}
+							{% if perms.user_perms.perm_videoarchive_add_task %}							
+							    <input {% if tasks|length == 0 %}style="margin-left:0px;" {% endif %}type="button" name="" value="{% trans "Добавить" %}" class="inp_btn inp_btn90" onClick="javascript: window.location.href='{% url archive_page "task" %}'" />
+							{% endif %}
+							{% if tasks|length > 0 and perms.user_perms.perm_videoarchive_delete_task %}                                            
+							   <input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_btn" onClick="javascript: showMessageDelete({{ tasks|length }}, 'tasks');" />
+							{% endif %}             
+						</div>
+						{% include "navigation/main.html" %}                
+						<div class="block">
+							{% if tasks|length > 0 %}
+								<div class="legenda">
+									<span>{% trans "Статус" %}:</span>
+									<span><img src="{{ root_path }}/files/images/circle_error.png" alt="error" /> - {% trans "ошибка запуска задачи" %}</span>
+									<span><img src="{{ root_path }}/files/images/circle_run.png" alt="run" /> - {% trans "выполнение задачи" %}</span>
+									<span><img src="{{ root_path }}/files/images/circle_wait.png" alt="wait" /> - {% trans "ожидание выполнения задачи" %}</span>
+								</div>
+							{% endif %}               
+						</div>					
+						{% if tasks|length > 0 %}
+							<table cellpadding="0px" cellspacing="0px" border="0px" class="table" id="table">
+								<tr>									
+									<th class="first"><a href="#" onclick="sort_journal(1, {% if sort == 1 %}{{ order }}{% else %}0{% endif %});" {% if sort == 1 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Название" %}</a></th>
+									<th><a href="#" onclick="sort_journal(2, {% if sort == 2 %}{{ order }}{% else %}0{% endif %});" {% if sort == 2 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Источник" %}</a></th>
+									<th><a href="#" onclick="sort_journal(10, {% if sort == 10 %}{{ order }}{% else %}0{% endif %});" {% if sort == 10 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Запуск задачи" %}</a></th>
+									<th><a href="#" onclick="sort_journal(3, {% if sort == 3 %}{{ order }}{% else %}0{% endif %});" {% if sort == 3 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Повторение" %}</a></th>                            
+									<th>{% trans "Интервал дат" %}</th>
+									<th>{% trans "Интервал времени" %}</th>
+									<th><a href="#" onclick="sort_journal(8, {% if sort == 8 %}{{ order }}{% else %}0{% endif %});" {% if sort == 8 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Создание" %}</a></th>
+									<th><a href="#" onclick="sort_journal(9, {% if sort == 9 %}{{ order }}{% else %}0{% endif %});" {% if sort == 9 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Пользователь" %}</a></th>											
+								</tr>
+								{% for task in tasks %}
+									<tr class="{% cycle '' 'odd' %}" onMouseOver="javascript: overRow(this);" onMouseOut="javascript: outRow(this);">
+										<td class="first">
+											{% if perms.user_perms.perm_videoarchive_delete_task %}
+												<input type="checkbox" name="" value="{{ task.id }}" class="inp_check" id="check{{ forloop.counter }}" />
+												<a href="{% url archive_page "copy_task" %}/{{ task.id }}/" onClick="javascript: dublicate('{{task.id}}', '{{task.name}}'); return false;" class="btn_duplicate short_descr" title='{% trans "Создать дубликат задачи" %} "{{ task.name }}"'></a>
+												{% if perms.user_perms.perm_videoarchive_add_task and task.stop %}
+												    <a href="#" onClick="javascript: RestartTask({{ task.id }});">
+												        <input type="button" name="" value="" class="btn_restart short_descr" title='{% trans "Повторный запуск задачи" %} "{{ task.name }}"' />
+												    </a>
+												{% endif %}
+											{% endif %}
+											{% if task.run %}
+												<input type="button" name="" value="" class="btn_run" onMouseOver="javascript: showInfoTask(event, this, 'run', '{{ task.name }}', { {% if task.last_run %}success_run: '<div><span>{% trans 'Последний успешный запуск' %}: </span>{{ task.last_run|date:"d.m.Y H:i:s" }}</div>' {% endif %} });" onMouseOut="javascript: closeChangeWindow('title');" />												
+											{% else %}
+											    {% if task.wait %}
+												    <input type="button" name="" value="" class="btn_wait" onMouseOver="javascript: showInfoTask(event, this, 'wait', '{{ task.name }}', { {% if task.last_run %}success_run: '<div><span>{% trans 'Последний успешный запуск' %}:</span>{{ task.last_run|date:"d.m.Y H:i:s" }}</div>' {% endif %} });" onMouseOut="javascript: closeChangeWindow('title');" />
+	    										{% else %}
+     											    {% if task.last_run and task.last_error and task.last_run > task.last_error or task.last_run and not task.last_error or not task.last_run and not task.last_error %}
+     											        {% if task.time_error %}
+     											            <input type="button" name="" value="" class="btn_error" onMouseOver="javascript: showInfoTask(event, this, 'error', '{{ task.name }}', { {% if task.last_run %}success_run: '<div><span>{% trans 'Последний успешный запуск' %}: </span>{{ task.last_run|date:"d.m.Y H:i:s" }}</div>', {% endif %}{% if task.last_error %}last_run: '<div><span>{% trans 'Последняя попытка запуска' %}: </span>{{ task.last_error|date:"d.m.Y H:i:s" }}</div>', {% endif %}error: '<div><span>{% trans 'Причина' %}: </span>{% trans 'Дата окончания запуска задачи меньше текущей даты' %}</div>'});" onMouseOut="javascript: closeChangeWindow('title');" />
+     											        {% else %} 
+												            <input type="button" name="" value="" class="btn_wait" onMouseOver="javascript: showInfoTask(event, this, 'wait', '{{ task.name }}', { {% if task.last_run %}success_run: '<div><span>{% trans 'Последний успешный запуск' %}:</span>{{ task.last_run|date:"d.m.Y H:i:s" }}</div>' {% endif %}{% if task.stop %}, error: '<div><span>{% trans 'Задача была остановлена' %}: </span>{{ task.last_kill_process|date:"d.m.Y" }}</div>'{% endif %} } });" onMouseOut="javascript: closeChangeWindow('title');" />
+												        {% endif %}
+	    										    {% else %}
+											    	    <input type="button" name="" value="" class="btn_error" onMouseOver="javascript: showInfoTask(event, this, 'error', '{{ task.name }}', { {% if task.last_run %}success_run: '<div><span>{% trans 'Последний успешный запуск' %}: </span>{{ task.last_run|date:"d.m.Y H:i:s" }}</div>', {% endif %}last_run: '<div><span>{% trans 'Последняя попытка запуска' %}: </span>{{ task.last_error|date:"d.m.Y H:i:s" }}</div>', error: '<div><span>{% trans 'Причина' %}: </span>{% if task.error == -1 %}{% trans 'Ошибка запуска' %}. {% if not task.camera.active %}<strong>{% trans 'Камера' %}</strong> &quot;{% if task.camera.name %}{{ task.camera.name }} ({{ task.camera.ip }} {{ task.camera.type }}){% else %}{{ task.camera.ip }} {{ task.camera.type }}{% endif %}&quot; <strong>{% trans 'удалена' %}</strong>.{% else %}{% if not task.camera.available %}<strong>{% trans 'Камера' %}</strong> &quot;{% if task.camera.name %}{{ task.camera.name }} ({{ task.camera.ip }} {{ task.camera.type }}){% else %}{{ task.camera.ip }} {{ task.camera.type }}{% endif %}&quot; <strong>{% trans 'недоступна' %}</strong>.{% endif %}{% endif %}{% else %}{% trans 'Ошибка подключения' %}.{% endif %}</div>'});" onMouseOut="javascript: closeChangeWindow('title');" />
+		    									    {% endif %}
+		    									{% endif %}
+		    								{% endif %}
+											<div class="{% if perms.user_perms.perm_videoarchive_add_task and stop_tasks %}name_restart_task{% else %}name_task{% endif %} short_descr {% if res_interface == 1 or res_interface == '1' %} fix_width_big{% endif %}"{% if not perms.user_perms.perm_videoarchive_delete_task %} style="margin-left: 0px;"{% endif %} title="{{ task.name }}"><a href="{% url archive_page "task" %}/{{ task.id }}/">{% if res_interface == 1 or res_interface == "1" %}{{ task.name|truncchar:56 }}{% else %}{{ task.name|truncchar:22 }}{% endif %}</a></div>
+										</td>
+										<td class="short_descr" title='{% trans 'Все видеоролики источника' %} "{{ task.camera.full_name }}" {% if not task.camera.active %}<strong>({% trans "камера удалена" %})</strong>{% else %}{% if not task.camera.available %}<strong>({% trans "камера недоступна" %})</strong>{% endif %}{% endif %}'>
+											<div class="fix_width camera{% if res_interface == 1 or res_interface == '1' %} fix_width_big{% endif %}">
+												<a href="{% url archive_page "video" %}/?source={{task.camera.id}}">	
+													{% if res_interface == 1 or res_interface == "1" %}
+														{{ task.camera.display_name|truncchar:56 }}
+													{% else %}
+														{{ task.camera.display_name|truncchar:22 }}
+													{% endif %}						
+												</a>
+											</div>
+										</td>
+										<td>{{ task.signal|sygnal_name }}</td>
+										<td>{% if task.repeat_task %}
+										    {% if task.repeat == 6 %}{% trans "Всегда" %}{% else %}
+										    {% if task.repeat == 0 %}{% trans "Один раз" %}{% else %}
+											{% if task.repeat == 1 %}{% trans "Ежедневно" %}{% else %}
+											{% if task.repeat == 2 %}
+												<ul class="list_days">	
+													{% for w in all_weeks %}<li class="{% if w.is_work %}act_day{% endif %}{% if not w.is_work %}holiday_day{% endif %}{% if forloop.counter == 7 %} last{% endif %}">{% trans w.short_name %}</li>{% endfor %}
+												</ul>
+												{% else %}
+											{% if task.repeat == 3 %}
+												<ul class="list_days">	
+												{% for w in all_weeks %}<li class="{% if not w.is_work %}act_day holiday_day{% endif %}{% if forloop.counter == 7 %} last{% endif %}">{% trans w.short_name %}</li>{% endfor %}
+												</ul>
+												{% else %}
+											{% if task.repeat == 4 %}
+												<ul class="list_days">	
+												{% for w in all_weeks %}<li class="{% if w.number|tostr in task.days %}act_day{% endif %}{% if not w.is_work %} holiday_day{% endif %}{% if forloop.counter == 7 %} last{% endif %}">{% trans w.short_name %}</li>{% endfor %}
+												</ul>
+											{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
+											{% else %}{% trans "Нет повторений" %}{% endif %}
+										</td>
+										<td class="td_time_date">
+											{% if task.start_date %}
+												{{ task.start_date|date:"d.m.Y" }}
+												{% if not task.repeat_task or task.interval %}
+													{% if task.stop_date %} - {{ task.stop_date|date:"d.m.Y" }}{% endif %}
+												{% else %}
+													<br />{% trans "Постоянная запись" %}
+												{% endif %}
+											{% else %}&nbsp;{% endif %}
+										</td>										
+										<td class="td_time_date">
+											{% if task.start_time %}{{ task.start_time|time:"H:i:s" }}{% else %}00:00:00{% endif %} - {% if task.stop_time %}{{ task.stop_time|time:"H:i:s" }}{% else %}00:00:00{% endif %}
+										</td>
+										<td class="td_time_date">
+											{% if task.dt_create %}{{ task.dt_create|date:"d.m.Y" }}{% endif %}
+											{% if task.dt_create %}{{ task.dt_create|time:"H:i:s" }}{% else %}00:00:00{% endif %}
+										</td>
+										<td><div class="fix_width{% if res_interface == 1 or res_interface == '1' %} fix_width_big{% endif %}">{% if task.user %}{{ task.user.first_name }} {{ task.user.last_name }} {{ task.user.middle_name }}{% else %}{% trans "Администратор" %}{% endif %}</div></td>
+									</tr>
+								{% endfor %}                      
+							</table>
+							<div class="block">
+								{% if tasks|length > 0 %}
+									<div class="legenda">
+										<span>{% trans "Статус" %}:</span>
+										<span><img src="{{ root_path }}/files/images/circle_error.png" alt="error" /> - {% trans "ошибка запуска задачи" %}</span>
+										<span><img src="{{ root_path }}/files/images/circle_run.png" alt="run" /> - {% trans "выполнение задачи" %}</span>
+										<span><img src="{{ root_path }}/files/images/circle_wait.png" alt="wait" /> - {% trans "ожидание выполнения задачи" %}</span>
+									</div>
+								{% endif %}               
+							</div>
+							{% include "navigation/main_buttom.html" %}
+							<div class="frm_block">
+							    {% if tasks|length > 0 and perms.user_perms.perm_videoarchive_delete_task %}
+							        <div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all" /><label for="choose_all">{% trans "Выделить всё" %}</label></div></div>                      
+							    {% endif %}
+							    {% if perms.user_perms.perm_videoarchive_add_task %}							
+							        <input {% if tasks|length == 0 %}style="margin-left:0px;" {% endif %}type="button" name="" value="{% trans "Добавить" %}" class="inp_btn inp_btn90" onClick="javascript: window.location.href='{% url archive_page "task" %}'" />
+							    {% endif %}
+							    {% if tasks|length > 0 and perms.user_perms.perm_videoarchive_delete_task %}                                            
+							        <input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_btn" onClick="javascript: showMessageDelete({{ tasks|length }}, 'tasks');" />
+							    {% endif %}
+							</div>
+							
+						{% endif %}
+						</div>	
+						<div id="tasks_0" style="display:none;">
+							<input style="margin-left:0px;" type="button" name="" value="{% trans "Добавить задачу" %}" class="inp_btn inp_btn140 dist_btn" onClick="javascript: window.location.href='{% url archive_page "task" %}'" />
+						</div>				
+					</form>
+{% endblock %}
+{% block windows %}{% include "window_tasks.html" %}{% endblock %}

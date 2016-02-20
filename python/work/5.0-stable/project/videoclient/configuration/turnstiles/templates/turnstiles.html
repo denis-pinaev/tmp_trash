@@ -1,0 +1,78 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Настройки турникетов' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/configuration/turnstiles/turnstiles.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/configuration/turnstiles/turnstiles.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+var MESSAGES = {
+	'warning': "{% trans 'Вы должны выбрать хотя бы один турникет' %}.",
+	'error': "{% trans 'Параметр не применён. Попробуйте ещё раз.' %}",
+	'delete': "{% trans 'Вы действительно хотите удалить выбранные турникеты' %} ({} {% trans 'шт' %}.)?",
+	'search': "{% trans 'Нет турникетов для добавления' %}.",
+	'on': "{% trans 'включён' %}",
+	'off': "{% trans 'выключен' %}",
+	'add': "{% trans 'Выберите хотя бы один турникет' %}"
+}
+$(function() {
+	init();
+});	
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+<h2>{% trans "Настройки турникетов" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Турникеты' %}');" /></h2>
+{% include "current_time.html" %}
+<div class="block_results">{% trans "Общее количество турникетов" %}: <strong id="count_turns">{{ turns|length }}</strong></div>
+{% if turns|length > 0 %}
+<div class="block dist_top">
+	<div class="bl_btn_check short_descr" title="{% trans 'Выделить все записи на данной странице' %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all" /><label for="choose_all">{% trans 'Выделить всё' %}</label></div></div>
+	<input type="button" name="" value="{% trans 'Найти турникеты' %}" class="inp_btn inp_btn140" onClick="javascript: searchTurnstiles();" /><input type="button" name="" value="{% trans 'Удалить выделенные' %}" class="inp_btn inp_btn170 dist_btns" onClick="javascript: deleteTurnstiles();" />
+</div>
+<table cellpadding="0px" cellspacing="0px" class="table" id="table">
+	<tr>
+		<th class="first">&nbsp;</th>
+		<th>ID</th>
+		<th>{% trans "Название" %}</th>
+		<th>{% trans "Камера(-ы) на вход" %}</th>
+		<th>{% trans "Камера(-ы) на выход" %}</th>
+		<th>{% trans "Описание" %}</th>
+	</tr>
+	
+	{% for turn in turns %} 
+	<tr class="{% cycle '' ' odd' %}{% if not turn.active %} tr_lock{% endif %} short_descr"{% if not turn.active %}title="{% if turn.name %}{{ turn.name }} ({% trans 'IP-адрес' %}: {{ turn.address }}) {% else %}{{ turn.address }}{% endif %} <strong>{% trans 'не доступен' %}</strong>"{% endif %}>
+		<td class="first"><input type="checkbox" name="" value="" class="inp_check" id="{{turn.id}}"/></td>
+		<td class="td_id">{{turn.id}}</td>
+		<td class="td_turn"><input type="button" name="" value="" id="btn_turn{{ turn.id }}" class="btn_turn {% if turn.active %}{% if turn.enable %}on{% else %}off{% endif %} {% else %}dis{% endif %}"{% if turn.active %} onClick="javascript: onOffTurn($(this), {{ turn.id }}, '{% if turn.name %}{{ turn.name }}{% else %}{{ turn.address }}{% endif %}');" onMouseOver="javascript: overSwitchTurn($(this), '{% if turn.name %}{{ turn.name }}{% else %}{{ turn.address }}{% endif %}')" onMouseOut="javascript: outSwitchTurn();"{% endif %} /><div class="turn_name">{% if turn.active %}<a href="{% url turnstile_edit %}?id={{turn.id}}" class="short_descr" title="{% if turn.address %}<strong>{% trans 'IP-адрес' %}</strong>: {{turn.address}}{% endif %}{% if turn.name %}<br /><strong>{% trans 'Название' %}</strong>: {{ turn.name }}{% endif %}">{% endif %}{% if turn.name %}{% if res_interface == "0" %}{{ turn.name|truncchar:32 }}{% else %}{{ turn.name|truncchar:64 }}{% endif %}{% else %}{{turn.address}}{% endif %}{% if turn.active %}</a>{% endif %}</div></td>
+		<td>
+			{% if turn.cameras %}
+			<ul>{% for camera in turn.cameras %}{% if camera.inside %}
+				<li>{% if turn.active %}<a href="/settings/{{camera.camera.uuid}}/" class="set_camera{% if not camera.camera.active %} noact{% endif %} short_descr" title="{% if camera.camera.name %}{{ camera.camera.name }} ({{camera.camera.ip}} {{camera.camera.type}}){% else %}{{camera.camera.ip}} {{camera.camera.type}}{% endif %}{% if not camera.camera.active %} <strong>{% trans 'недоступна' %}</strong>{% endif %}">{% endif %}{% if camera.camera.name %}{% if res_interface == "0" %}{{ camera.camera.name|truncchar:32 }}{% else %}{{ camera.camera.name }}{% endif %}{% else %}{{ camera.camera.ip }} {{ camera.camera.type }}{% endif %}{% if turn.active %}</a>{% endif %}</li>
+				{% endif %}{% endfor %}
+			</ul>
+			{% else %}&nbsp;{% endif %}
+		</td>
+		<td>
+			{% if turn.cameras %}
+			<ul>{% for camera in turn.cameras %}{% if not camera.inside %}
+				<li>{% if turn.active %}<a href="/settings/{{camera.camera.uuid}}/" class="set_camera{% if not camera.camera.active %} noact{% endif %} short_descr" title="{% if camera.camera.name %}{{ camera.camera.name }} ({{camera.camera.ip}} {{camera.camera.type}}){% else %}{{camera.camera.ip}} {{camera.camera.type}}{% endif %}{% if not camera.camera.active %} <strong>{% trans 'недоступна' %}</strong>{% endif %}">{% endif %}{% if camera.camera.name %}{% if res_interface == "0" %}{{ camera.camera.name|truncchar:32 }}{% else %}{{ camera.camera.name }}{% endif %}{% else %}{{ camera.camera.ip }} {{ camera.camera.type }}{% endif %}{% if turn.active %}</a>{% endif %}</li>
+				{% endif %}{% endfor %}
+			</ul>
+			{% else %}&nbsp;{% endif %}
+		</td>
+		<td class="short_descr" title="{{ turn.description }}">{% if turn.description %}{% if res_interface == "0" %}{{ turn.description|truncchar:32 }}{% else %}{{ turn.description|truncchar:64 }}{% endif %}{% else %}&nbsp;{% endif %}</td>
+	</tr>
+	{% endfor %}											
+</table>
+<div class="block dist_top">
+	<div class="bl_btn_check short_descr" title="{% trans 'Выделить все записи на данной странице' %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all2" /><label for="choose_all2">{% trans 'Выделить всё' %}</label></div></div>
+	<input type="button" name="" value="{% trans 'Найти турникеты' %}" class="inp_btn inp_btn140" onClick="javascript: searchTurnstiles();" /><input type="button" name="" value="{% trans 'Удалить выделенные' %}" class="inp_btn inp_btn170 dist_btns" onClick="javascript: deleteTurnstiles();" />
+</div>	
+{% else %}	
+<div class="block dist_top">
+	<input type="button" name="" value="{% trans 'Найти турникеты' %}" class="inp_btn inp_btn140" onClick="javascript: searchTurnstiles();" />
+</div>
+{% endif %}
+{% endblock %}
+{% block windows %}{% include "turnstiles_window.html" %}{% endblock %}

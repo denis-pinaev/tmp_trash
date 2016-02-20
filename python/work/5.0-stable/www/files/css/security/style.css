@@ -1,0 +1,187 @@
+@font-face {
+	font-family: "PT_SANS_wide"; /* Гарнитура шрифта */
+	src: url("/files/fonts/PTS55F_W.ttf"); /* Путь к файлу со шрифтом */
+}
+@font-face {
+	font-family: "PT_SANS_wide_bold"; /* Гарнитура шрифта */
+	src: url("/files/fonts/PTS75F_W.ttf"); /* Путь к файлу со шрифтом */
+}
+html {
+	height:100%;
+}
+body {
+	position: relative;
+	height: 100%;
+	padding: 0px;
+	margin: 0px;	
+	font-size: 13px !important;
+	font-family: "PT_SANS_wide", arial, helvetica, sans-serif;
+	color: #ffffff;
+	background-color: #353535;
+	line-height: 1.5;
+}
+.body1 {
+	width: 1024px;
+	position: relative;
+	margin: 0px auto 0px auto;
+}
+.body1 .fon {
+	height: 748px;
+	background-color: #393c41;	
+}
+img {
+	border: none;
+	padding: 0px;
+	margin: 0px;
+} 
+a img {
+	border: none;
+}
+ul {
+	margin: 0px;
+	padding: 0px;
+	list-style-type: none;
+}
+button,
+input {
+	padding: 0px;
+	margin: 0px;
+	border: 0px;
+	font-size: 13px;
+	font-family: "PT_SANS_wide", arial, helvetica, sans-serif;	
+}
+button::-moz-focus-inner { /* убираем внутренний отступ у кнопки в FF, который зарезервирован для рамки при фокусе */
+	padding: 0px;
+	border: 0px;
+}
+button {
+	text-align: center;
+	cursor: pointer;	
+}
+.inp_check {
+	margin-right: 5px;
+}
+.dist_left {
+	margin-left: 10px;
+}
+.block {
+	width: 100%;
+	overflow: hidden;
+}
+.block_ie {
+	float: left;
+	width: 100%;
+}
+/* header */
+.header {
+	width: 100%;
+	height: 50px;
+	background: url("/files/images/security/bg_head.gif") 0px 0px repeat-x; 
+	position: relative;	
+}
+.header .header_block {
+	margin: 0px 32px;
+	padding-top: 12px;
+}
+.header .logo {
+	float: left;
+}
+.header .logo img {
+	width: 91px;
+	height: 28px;
+}
+.header .product {
+	float: left;
+	text-transform: uppercase;
+	font-family: "PT_SANS_wide_bold", arial, helvetica, sans-serif;
+	font-size: 16px;
+	color: #f58345;
+	padding-left: 10px;
+	border-left: 2px solid #898c92;
+	margin-left: 10px;
+	line-height: 17px;
+	margin-top: 9px;
+}
+.header .add_info {
+	position: absolute;
+	left: 32px;
+	top: 26px;
+	width: 650px;
+	line-height: 1;
+}
+.header .add_info .time_date {
+	font-size: 12px;
+	width: 200px;
+	text-align: center;
+	position: absolute;
+	left: 225px;
+	top: 0px;	
+}
+.header .add_info .time_date span {
+	margin-left: 5px;
+}
+.header .add_info .operator {
+	font-size: 11px;
+	position: absolute;
+	right: 0px;
+	top: 1px;	
+}
+.header .menu_right,
+.header .menu_right li {
+	float: right;
+}
+.header .menu_right {
+	margin-top: 8px;
+}
+.header .menu_right li {
+	margin-left: 30px;
+}
+.header .menu_right li input {
+	padding: 0px;
+	margin: 0px;
+	border: 0px;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+}
+.header .menu_right li input.close {
+	background: url("/files/images/security/icons.png") 0px -40px no-repeat;
+}
+.header .menu_right li input.close.over {
+	background: url("/files/images/security/icons.png") -20px -40px no-repeat;
+}
+.header .menu_right li input.close.pressed {
+	background: url("/files/images/security/icons.png") -40px -40px no-repeat;
+}
+.header .menu_right li input.help {
+	background: url("/files/images/security/icons.png") 0px -20px no-repeat;
+}
+.header .menu_right li input.help.over {
+	background: url("/files/images/security/icons.png") -20px -20px no-repeat;
+}
+.header .menu_right li input.help.pressed {
+	background: url("/files/images/security/icons.png") -40px -20px no-repeat;
+}
+.header .menu_right li input.settings {
+	background: url("/files/images/security/icons.png") 0px 0px no-repeat;
+}
+.header .menu_right li input.settings.over {
+	background: url("/files/images/security/icons.png") -20px 0px no-repeat;
+}
+.header .menu_right li input.settings.pressed {
+	background: url("/files/images/security/icons.png") -40px 0px no-repeat;
+}
+/* end header */
+/* content */
+.content {
+	width: 100%;
+	height: 698px;
+	background: url("/files/images/security/fon.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/fon.png', sizingMethod='crop');	
+}
+.content .content_block {
+	margin: 0px 26px;
+	padding-top: 4px;	
+}
+/* end content */

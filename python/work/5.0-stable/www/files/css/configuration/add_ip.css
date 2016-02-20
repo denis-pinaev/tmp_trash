@@ -1,0 +1,86 @@
+﻿/* form */
+.form .block_req {
+	margin-bottom: 5px;
+}
+.form .req {
+	color: #ff0000;
+	font-weight: bold;
+}
+.form .delim_block {
+	border-top: 1px dotted #cccccc;
+	margin-bottom: 5px;
+	margin-top: 5px;
+}
+.form .inp_txt {
+	width: 270px;
+}
+.form .form_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.form .form_block .fb_content {
+	width: 100%;
+	overflow: hidden;
+}
+.form .form_block .fb_content .fbc_text {
+	float: left;
+	width: 100px;
+	text-align: left;
+	margin-right: 10px;
+	margin-top: 2px;
+}
+.form .form_block .fbc_help {
+	margin-left: 10px;
+	line-height: 1.2;
+}
+.form .form_block .fb_content .fb_enter {
+	float: left;
+}
+.form .block_link_add {
+	margin-bottom: 10px;
+	margin-top: 5px;
+}
+.form .block_link_add a {
+	margin-left: 110px;
+}
+.form .bl_btns .btn_blue {
+	width: 90px;
+	color: #ffffff;
+	background: url('/files/images/btn_blue_90.png') top left no-repeat;
+}
+.form .bl_btns .btn_blue.dis {
+	color: #9B9B9B;
+	cursor: default;
+	background: url('/files/images/button90x24_up.gif') top left no-repeat;
+}
+.form .bl_btns .link_btn_cancel, 
+.form .bl_btns .btn_blue {
+	float: left;
+}
+.form .btn_delete {
+	width: 16px;
+	height: 16px;
+	border: 0px;
+	background: url("/files/images/remove.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/remove.png', sizingMethod='crop');        
+	margin-left: 5px;
+	cursor: pointer;
+}
+.form .dist_left_form {
+	margin-left: 110px;
+}
+.form .form_block .inp_txt.error {
+	border: 1px solid #ff0000;
+	color: #ff0000;
+}
+.error_field {
+	margin-left: 110px;
+	color: #ff0000;
+	line-height: 1.2;
+	font-size: 95%;
+}
+.error_field label {
+	cursor: default;
+}

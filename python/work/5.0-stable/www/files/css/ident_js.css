@@ -1,0 +1,648 @@
+.inp_btn140 {
+	background: url('/files/images/button140x24_up.gif') top left no-repeat;
+	width: 140px;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.info_delim {
+	border-bottom: 1px dotted #999999;
+	padding: 1px 0px 0px 0px;
+}
+/* block video */
+.block_camera {
+	margin-top: 5px;
+	margin: 5px auto 0px auto;
+	width: 1230px;
+}
+.block_camera .video {
+	padding: 3px;
+	border-radius: 3px;
+	moz-border-radius: 3px;
+	background-color: #666666;
+	width: 670px;
+	float: left;
+}
+.block_camera .video .name_camera {
+	text-align: center;
+	color: #ffffff;
+	font-weight: bold;
+	margin-bottom: 3px;
+	white-space: pre-wrap;
+	white-space: -moz-pre-wrap; /* Mozilla */
+	white-space: -o-pre-wrap; /* Opera */
+	word-wrap: break-word; /* Internet Explorer 6+ */
+}
+.block_camera .video .video_img {
+	position: relative;
+	width: 100%;
+	text-align: center;
+}
+.block_camera .video .video_img .info_bigcamera {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	background-color: RGBA(000, 000, 000, 0.7);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#80000000,endColorstr=#80000000);
+	padding: 0px 3px;
+	color: #eeeeee;
+	z-index: 10;
+}
+.block_camera .video .video_img .info_bigcamera .info_bigcamera_load {
+	padding: 25px 5px 5px 5px;
+	background: url("/files/images/loader20x20.gif") center 5px no-repeat;
+}
+.block_camera .video .video_img .ico_active {
+	width: 19px;
+	height: 19px;
+	background: url("/files/images/ico_active.png") top left no-repeat;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 11;
+}
+.block_camera .video .video_img .ico_noactive {
+	width: 100%;
+	height: 100%;
+	background: url("/files/images/ico_noactive_309.png") center center no-repeat;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+.block_camera .video .video_img .params_time {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	padding: 0px 2px;
+	font-size: 85%;
+	text-align: left;
+	color: #33cc00;
+	color: #00ff00;
+	line-height: 1.2;
+	text-shadow: 1px 1px 1px #000000;
+}
+.block_camera .block_record {
+	margin-top: 3px;
+	text-align: center;
+	padding: 2px 0px;
+	background-color: #ffffff;
+	border-radius: 3px;
+	-moz-border-radius: 3px;	
+}
+/* list current */
+.list li {
+	float: left;
+	margin-right: 2px;
+	border: 1px solid #bbbbbb;
+	padding: 1px;
+	border-radius: 3px;	
+}
+.list li a {
+	display: block;
+	text-align: center;
+	cursor: pointer;
+	margin: 0px auto;
+	text-decoration: none;
+}
+/* list identification */
+.content_ident {
+	width: 544px;
+	overflow: hidden;
+	position: relative;
+	margin: 0px auto;
+}
+.content_ident .list_ident li {
+	width: 126px;
+	padding: 3px;
+}
+.content_ident .list_ident li .block_photo_cam,
+.content_ident .list_ident li .block_photo_base {
+	width: 120px;
+	height: 120px;
+	position: relative;
+	margin: 0px auto 3px auto;
+}
+.content_ident .list_ident li .block_photo_cam a,
+.content_ident .list_ident li .block_photo_base a {
+	text-align: center;
+	width: 120px;
+	height: 120px;
+	line-height: 120px;
+	vertical-align: middle;
+	display: table-cell;
+	background-color: #777777;	
+}
+.content_ident .list_ident li .block_photo_cam a img,
+.content_ident .list_ident li .block_photo_base a img {
+	max-height: 120px;
+	max-width: 120px;
+	vertical-align: middle;
+}
+.content_ident .list_ident li .block_photo_base {
+	margin-bottom: 0px;
+}
+.content_ident .list_ident li .sign_photo_cam,
+.content_ident .list_ident li .sign_photo_base {
+	position: absolute;
+	top: 0px;
+	left: 0px;	
+	width: 16px;
+	height: 16px;
+	background: url("/files/images/icons.png") -112px 0px no-repeat;
+}
+.content_ident .list_ident li .sign_photo_base { 
+	background: url("/files/images/icons.png") -96px 0px no-repeat;
+}
+/* list faces */
+.content_faces {
+	width: 544px;
+	overflow: hidden;
+	position: relative;
+	margin: 0px auto;
+}
+.content_faces .list_faces li {
+	width: 72px;
+	overflow: hidden;
+}
+.content_faces .list_faces li .photo {
+	width: 72px;
+	height: 72px;
+	text-align: center;
+	position: relative;
+	margin-top: 1px;
+}
+.content_faces .list_faces li .photo a {	
+	width: 72px;
+	height: 72px;
+	line-height: 72px;
+	text-align: center;
+	vertical-align: middle;
+	display: table-cell;
+	background-color: #777777;
+	cursor: default;
+}
+.content_faces .list_faces li .photo a img {
+	max-width: 72px;
+	max-height: 72px;
+	vertical-align: middle;
+}
+/* list things */
+.content_things {
+	width: 544px;
+	overflow: hidden;
+	position: relative;
+}
+.content_things .list_things li {
+	width: 72px;
+	overflow: hidden;
+}
+.content_things .list_things li .photo {
+	width: 72px;
+	height: 72px;
+	text-align: center;
+	position: relative;
+}
+.content_things .list_things li .photo a {	
+	width: 72px;
+	height: 72px;
+	line-height: 72px;
+	text-align: center;
+	vertical-align: middle;
+	display: table-cell;
+	background-color: #777777;
+	cursor: default;
+}
+.content_things .list_things li .photo a img {
+	max-width: 72px;
+	max-height: 72px;
+	vertical-align: middle;
+}
+/* window list ident */
+.list_ident2 li {
+	width: 245px;
+	margin-bottom: 2px;
+	height: 175px;
+}
+.list_ident2 .table_list_ident2 {
+	width: 241px;
+}
+.list_ident2 .table_list_ident2 td {
+	vertical-align: top;
+	text-align: center;
+}
+.list_ident2 .table_list_ident2 td .block_photo_cam,
+.list_ident2 .table_list_ident2 td .block_photo_base {
+	width: 120px;
+	height: 120px;
+	text-align: center;
+	position: relative;
+}
+.list_ident2 .table_list_ident2 td .block_photo_cam a,
+.list_ident2 .table_list_ident2 td .block_photo_base a {
+	text-align: center;
+	width: 120px;
+	height: 120px;
+	line-height: 120px;
+	vertical-align: middle;
+	display: table-cell;
+	background-color: #f2f2f2;
+}
+.list_ident2 .table_list_ident2 td .block_photo_cam a img,
+.list_ident2 .table_list_ident2 td .block_photo_base a img {
+	max-height: 120px;
+	max-width: 120px;
+	vertical-align: middle;														
+}													
+.list_ident2 .table_list_ident2 td .block_photo_base { 
+	margin-left: 1px;
+}
+.list_ident2 .info_photo {
+	color: #333333;
+}
+.list_ident2 .sign_photo {
+	font-size: 85%;
+	white-space: nowrap;
+	word-wrap: normal;	
+}
+/* window list faces */
+.list_faces2 li {
+	width: 72px;
+	margin-bottom: 2px;
+}
+.list_faces2 li .photo {
+	width: 72px;
+	height: 72px;
+	text-align: center;
+	position: relative;
+	margin-top: 1px;
+}
+.list_faces2 li .photo a {	
+	width: 72px;
+	height: 72px;
+	line-height: 72px;
+	text-align: center;
+	vertical-align: middle;
+	display: table-cell;
+	background-color: #f2f2f2;
+	cursor: default;
+}
+.list_faces2 li .photo a img {
+	max-width: 72px;
+	max-height: 72px;
+	vertical-align: middle;
+}
+.list_faces2 .info_photo {
+	color: #333333;
+}
+/* window list things */
+.list_things2 {
+	margin-top: 5px;
+}	
+.list_things2 li {
+	width: 72px;
+	margin-bottom: 2px;
+}
+.list_things2 li .photo {
+	width: 72px;
+	height: 72px;
+	text-align: center;
+	position: relative;
+	margin-top: 1px;
+}
+.list_things2 li .photo a {	
+	text-align: center;
+	width: 72px;
+	height: 72px;
+	line-height: 72px;
+	vertical-align: middle;
+	display: table-cell;
+	background-color: #f2f2f2;	
+}
+.list_things2 li .photo a  img{	
+	max-width: 72px;
+	max-height: 72px;
+	vertical-align: middle;
+}
+.list_things2 .info_photo {
+	color: #333333;
+}
+.list_faces2 li .photo {
+	width: 72px;
+	height: 72px;
+	text-align: center;
+	position: relative;
+}
+.list_faces2 li .photo a {	
+	width: 72px;
+	height: 72px;
+	line-height: 72px;
+	text-align: center;
+	vertical-align: middle;
+	display: table-cell;
+	background-color: #f2f2f2;
+	cursor: default;
+}
+.list_faces2 li .photo a img {
+	max-width: 72px;
+	max-height: 72px;
+	vertical-align: middle;
+}
+#win_things .select {
+	width: 300px;
+}
+/* current */
+.dist_top_small {
+	margin-top: 2px;
+}
+#easyTooltip{
+	width: 250px;
+	z-index: 4000;
+}
+.block_camera .camera_panels {
+	margin-left: 678px;
+}
+.block_camera .camera_panels .panel_period a {
+	float: right;
+}
+.block_camera .camera_panels .block_action {
+	border-radius: 3px;
+	moz-border-radius: 3px;
+	background-color: #666666;
+	padding: 0px 3px 3px 3px;
+}
+.block_camera .camera_panels .block_action .link_action_head {
+	color: #ffffff;
+	text-decoration: underline;
+	margin-left: 1px;
+	float: left;
+}
+.block_camera .camera_panels .block_action .link_action_head span.link_action_head_arrow {
+	background: url("/files/images/tr_white_down.png") 0px 0px no-repeat;
+	width: 12px;
+	height: 8px;
+	display: block;
+	float: left;
+	margin-right: 3px;
+	margin-top: 7px;
+}
+.block_camera .camera_panels .block_action .link_action_head.lah_turn span.link_action_head_arrow{
+	background-image: url("/files/images/tr_white_right.png");
+	width: 12px;
+	height: 12px;	
+	margin-top: 4px;
+}
+.block_camera .camera_panels .block_action .link_show_all {
+	float: right;
+	color: #ffffff;
+	text-decoration: underline;
+	margin-right: 4px;
+}
+.list li a.info_photo_name,
+.list li a.info_photo_name:hover {
+	display: block;
+	text-decoration: underline;
+	margin: 0px;
+	text-align: left;
+	color: #ffffff;
+}
+.info_photo,
+.info_photo_name {
+	clear: both;
+	width: 100%;
+	overflow: hidden;
+	font-size: 85%;
+	color: #ffffff;
+	white-space: nowrap;
+	word-wrap: normal;
+	text-overflow : ellipsis;	
+}
+.info_photo .param_photo {
+	float: left;
+	margin-right: 5px;
+	cursor: default;
+}
+.info_photo .time {
+	background: url("/files/images/time14x14.png") left center no-repeat;
+	padding-left: 16px;
+}
+.info_photo .count_ident {
+	background-color: #333333; 
+	color: #ffffff; 
+	padding: 0px 3px;
+	margin-right: 5px;
+}
+.info_photo .param_photo.eye {
+	background: url("/files/images/eye.png") left center no-repeat;
+	padding-left: 18px;
+}
+.koeff_ident {
+	background-color: RGBA(000, 000, 000, 0.8);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#90000000,endColorstr=#90000000);
+	color: #eeeeee;
+	padding: 0px 3px;
+	position: absolute;
+	bottom: 0px;
+	right: 0px;	
+	cursor: default;
+	font-size: 85%;
+}
+/* svg */
+.svgblock {
+	width: 670px;
+	height: 502px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+.svgblock.objects {
+	z-index: 1;
+}
+.svgblock.draw {
+	z-index: 2;
+}
+.svgDraw_text {
+ font-family: Arial;
+ font-size: 12px;
+}
+/* window warning */
+.window_message_warning {
+	border: 1px solid #bbbbbb;
+	width: 380px;
+	position: absolute;
+	top: 57px;
+	background-color: #F9F9F9;
+	border-radius: 0px 0px 5px 5px;
+	moz-border-radius: 0px 0px 5px 5px;
+	border-top: 0px;
+	display: none;
+	box-shadow: 0px 4px 5px rgba(122,122,122,0.4);	
+	padding: 10px 0px 25px 0px;
+	overflow: hidden;
+	z-index: 4;
+}
+.window_message_warning .window_message_warning_cont {
+	min-height: 72px;
+	height: auto !important;
+	height: 72px;
+	padding: 0px 10px;
+	max-height: 110px;
+	height: expression(this.scrollHeight > 110 ? "110px" : "auto"); 
+}
+.window_message_warning .window_message_warning_cont .window_message_warning_img {
+	float: left;
+	width: 72px;
+	background-color: #666666;
+	padding: 2px;
+	text-align: center;
+}
+.window_message_warning .window_message_warning_cont .window_message_warning_info {
+	margin-left: 84px;
+}
+.window_message_warning_close {
+	position: absolute;
+	bottom: 5px;
+	right: 10px;
+	cursor: pointer;
+}
+.window_message_warning_close a {
+	padding-right: 13px;
+	background: url("/files/images/close_win.gif") right 60% no-repeat;	
+}
+.danger {
+	box-shadow: 0px 3px 5px rgba(255,0,0,0.3);
+	color: #ff0000;
+	border-color: #ff0000;
+}
+.txt_no_image {
+	font-weight: bold;
+	position: absolute;
+	bottom: 60px;
+	left: 0px;
+	width: 670px;
+	font-size: 140%;
+	text-align: center;
+}
+.winDetector {
+	width: 420px; 
+	height: 380px;
+	box-shadow: 0px 0px 10px rgba(000,000,000,0.15);
+	top: 310px;
+	left: 762px;
+}
+.winDetector .headWF_txt {
+	font-size: 120%;
+}
+.winDetector .bodyWF div.count {
+	padding-top: 5px;
+}
+.winDetector .winDetector_img {
+	text-align: center;
+}
+.winDetector .winDetector_img .winDetector_img_block {
+	width: 364px;
+	margin: 3px auto 0px auto;
+	position: relative;	
+}
+.winDetector .winDetector_img .winDetector_img_block .koeff_time,
+.winDetector_ident .winDetector_photos  .photo .param {
+	background-color: RGBA(000, 000, 000, 0.8);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#90000000,endColorstr=#90000000);
+	color: #eeeeee;
+	padding: 0px 3px;
+	position: absolute;
+	bottom: 2px;
+	right: 2px;	
+	cursor: default;
+	display: block;
+	border-radius: 4px;
+	mox-border-radius: 4px;	
+}
+.winDetector .winDetector_img .winDetector_img_link {
+	width: 364px;
+	height: 274px;
+	line-height: 274px;
+	vertical-align: middle;
+	display: table-cell;
+	border: 1px solid #666666;
+	padding: 1px;
+	border-radius: 4px;
+	mox-border-radius: 4px;
+	margin: 2px auto 2px auto;
+	background-color: #f2f2f2;
+}
+.winDetector .winDetector_img .winDetector_img_link img {
+	max-width: 360px;
+	max-height: 270px;
+	vertical-align: middle;
+}
+.winDetector .winDetector_img .link_video {
+	font-size: 110%;
+}
+.winDetector_ident .preview_camera_ip {
+	text-align: center;
+}
+.winDetector_ident .fio {
+	margin-top: 5px;
+	width: 100%;
+	overflow: hidden; 
+	white-space: nowrap;
+	text-overflow : ellipsis;	
+}
+.winDetector_ident .winDetector_photos {
+	border: 1px solid #666666;
+	padding: 1px;
+	border-radius: 4px;
+	mox-border-radius: 4px;
+	width: 402px;
+	margin: 5px auto 5px auto;
+}
+.winDetector_ident .winDetector_photos .sign_photo {
+	font-size: 85%;
+	white-space: nowrap;
+}
+.winDetector_ident .winDetector_photos .photo {
+	float: left;
+	width: 200px;
+	text-align: center;
+	position: relative;
+}
+.winDetector_ident .winDetector_photos .photo.camera {
+	margin-right: 1px;
+}
+.winDetector_ident .winDetector_photos .photo .photo_img {
+	width: 200px;
+	height: 200px;
+	background-color: #f2f2f2;
+}
+.winDetector_ident .winDetector_photos .photo .photo_img a {
+	text-align: center;
+	width: 200px;
+	height: 200px;
+	line-height: 200px;
+	vertical-align: middle;
+	display: table-cell;
+}
+.winDetector_ident .winDetector_photos .photo .photo_img a img {
+	max-width: 200px;
+	max-height: 200px;
+	vertical-align: middle;
+}
+.winDetector_ident .winDetector_photos  .photo .param {
+	bottom: 0px;
+	right: 0px;	
+}
+.winDetector_ident .winDetector_photos  .photo .param.count_ident {
+	right: auto;
+	left: 0px;
+}
+.block_noact_camera {
+	text-align: center;
+	margin-top: 30px;
+}
+.block_noact_camera .txt_noact_camera {
+	font-size: 120%;
+	margin-bottom: 30px;
+	color: #ff0000;
+}

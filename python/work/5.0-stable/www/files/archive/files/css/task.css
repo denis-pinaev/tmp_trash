@@ -1,0 +1,218 @@
+﻿.btn_calend {
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    height: 16px;
+    width: 16px;
+    cursor: pointer;
+    background: url('/archive/files/images/calend.png') top left no-repeat;
+    -background: none;  
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/archive/files/images/calend.png', sizingMethod='crop');
+    margin-left: 1px;
+}
+.btn_blue {
+    background: url('/files/images/btn_blue_90.png') top left no-repeat;
+    -background: none;
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_90.png', sizingMethod='scale');
+    width: 90px;
+    color: #ffffff;
+}
+.req {
+    color: #ff0000;
+}
+.req_dis {
+    visibility: hidden;
+}
+.form label {
+    cursor: default;
+}
+.form .bl_head {
+    font-weight: bold;
+    margin-top: 10px;
+}
+.form .bl_param {
+    margin-top: 10px;
+}
+.form .bl_param .bl_txt {
+    float: left;
+    width: 180px;
+    margin-right: 10px;
+}
+.form .bl_param .bl_enter {
+    margin-left: 190px;
+}
+.form .bl_param .bl_enter .inp_txt {
+    width: 220px;
+}
+.form .bl_param .bl_enter .select {
+    width: 226px;
+}
+.form .bl_btn {
+    margin-top: 10px;
+}
+.form .bl_btn .btn_blue {
+    float: left;
+    margin-right: 10px;
+}
+.form .bl_error {
+    color: #ff0000;
+    margin-left: 190px;
+}
+.form .bl_error2 {
+    color: #ff0000;
+}
+.form .bl_repeat {
+    float: left;
+    width: 120px;
+    margin-top: 2px;
+    margin-bottom: 5px;
+}
+.form .bl_radio {
+    margin-bottom: 5px;
+}
+.form .bl_radio.last {
+    margin-bottom: 0px;
+}
+.form .bl_param .bl_enter .inp_txt.inp_date {
+    width: 75px;
+    margin-left: 5px;
+}
+.form .bl_param .bl_enter.bl_time input {
+    width: 38px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.form .bl_param .bl_enter.bl_time .txt_duration {
+    margin-left: 5px;
+    font-weight: bold;
+}
+.form .bl_param .select_time_video {
+    float: left;
+}
+.form .bl_param .other_time {
+    float: left;
+}
+.form .bl_param .arrow_left {
+    margin: 0px 15px;
+    float: left;
+}
+.form .bl_param .delim {
+    float: left;
+    margin: 0px 5px;
+}
+.form .bl_param .delim_txt,
+.form .bl_param .delim_txt2 {
+    float: left;                             
+}
+.form .bl_param .delim_txt2 {
+    margin-right: 5px;
+}                                                       
+.form .bl_param .delim_txt {
+    margin-left: 15px;
+    margin-right: 5px;
+}                            
+.form .bl_param select.select_video,
+.form .bl_param .bl_enter select.select_video {
+    width: 120px;
+}
+.form .inp_txt.err_forms,
+.form .select.err_forms {
+    border-color: #ff0000;
+}                        
+.error_border {
+    border: 1px solid #FF0000;
+}
+.note {
+    width: 100%;
+    overflow: hidden;
+    color: #FF6600;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.note .note_img {
+    float: left;
+    width: 24px;
+    height: 24px;
+    background: url("/archive/files/images/error1.png") top left no-repeat;
+    -background: none;  
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/archive/files/images/error1.png', sizingMethod='crop');    
+}
+.note .note_txt {
+    margin-left: 29px;
+    margin-top: 5px;
+}
+.dist_right {
+    margin-right: 10px;
+}
+/* slider */
+.block_sliders {
+    margin-left: 190px;
+    margin-bottom: 10px;
+}
+.block_slider {
+    width: 100%;
+    overflow: hidden;
+}
+.block_slider .name_slider {
+    float: left;
+    width: 65px;
+    margin-top: 14px;
+}
+.block_slider .cont_slider {
+    width: 800px;
+    padding-bottom: 20px;
+    padding-top: 15px;
+    float: left;
+}
+.block_slider .cont_slider_minute {
+    width: 375px;
+}
+.block_slider .dist_left_time {
+    margin-left: 50px;
+}
+.block_link_add {
+    margin-left: 65px;
+    margin-top: 10px;
+}
+.block_error_slider {
+    color: #FF0000;
+    float: left;
+    margin-left: 10px;
+    margin-top: 14px;
+    width: 230px;
+    line-height: 1.2;
+}
+/* list days */
+.list_days {
+    white-space: nowrap;
+    float: left;
+    margin-left: 10px;
+}
+.list_days ul {
+    float: left;
+    margin-right: 5px;
+}
+.list_days ul li {
+    float: left;
+    padding: 0px 5px;
+    margin-right: 2px;
+    border: 1px solid #ffffff;
+    cursor: default;
+}
+.list_days ul li.last {
+    margin-right: 0px;
+}
+.list_days ul li.act_day {
+    border: 1px solid #6E7D98;
+}
+.list_days ul li.holiday_day {
+    color: #FF6600;
+    border: 1px solid #FF6600;
+}
+.list_days ul li.noact_day {
+    color: #cccccc;
+    border: 1px solid #cccccc;
+}
+#block_repeat_weekly ul li {
+    cursor: pointer;
+}

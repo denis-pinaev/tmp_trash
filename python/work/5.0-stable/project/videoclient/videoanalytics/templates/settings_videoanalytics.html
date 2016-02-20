@@ -1,0 +1,1596 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Настройка модуля видеоаналитики' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/settings_videoanalytics.css?v=v{{ version }}" />
+{% include "js/js_communicator_api.html" %}
+<script src="/files/js/settings_videoanalytics.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript">
+var HEAD_WINDOW = '{% trans "Создание фона" %}';
+var MESS_SUCCESS = '{% trans "Параметры успешно применены." %}';
+var MESS_ERROR = '{% trans "Параметры не применены." %}';
+var errors_texts = [];
+initTranslations();
+//секундомер генерации фона
+var bgGenStartTime = new Date().getTime();
+function updateBGGenStartTime() {
+    bgGenStartTime = new Date().getTime();
+    updatebg_Time();
+}
+function bgGetDoubleNumber(num) {
+    if (num>9){
+        return num;
+    } else {
+        return '0'+num;
+    }
+}
+function updatebg_Time() {
+    var ts = new Date().getTime();
+
+    var totalTime = ts - bgGenStartTime;
+
+    var hours = totalTime / (1000*60*60);
+    var minutes = (totalTime % (1000*60*60)) / (1000*60);
+    var seconds = ((totalTime % (1000*60*60)) % (1000*60)) / 1000;
+
+    if (document.getElementById('background_generation_time')){
+        document.getElementById('background_generation_time').innerHTML = bgGetDoubleNumber(parseInt(hours)) + ":" + bgGetDoubleNumber(parseInt(minutes)) + ":" + bgGetDoubleNumber(parseInt(seconds));
+        setTimeout('updatebg_Time(500);', 500);
+    }
+}
+
+//updatebg_Time();
+//конец// секундомер генерации фона
+
+var detectMode = '';
+//FLASH DETECT
+//settings
+function setSettingsFlashDetectSuccess() {
+	setValueGlobalParams("explosionDetector");
+    successMessage(true, "{% trans 'Параметры успешно сохранены' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+function setSettingsFlashDetectError(error) {
+     errorMessage(true, "{% trans "Параметры не сохранены" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+function setSettingsExplosionDetect() {
+	var ask_server = true;
+	if(!checkInt('explosionDetectorAlertTime')) ask_server = false;
+	if(!checkInt('explosionDetectorEmaDelay')) ask_server = false;
+	if(!checkInt('explosionDetectorNumWidthBlocks')) ask_server = false;
+	if(!checkInt('explosionDetectorNumHeightBlocks')) ask_server = false;
+	if(!ask_server) return false;
+     $("#explosionDetector").hide('slow');
+     executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'flashDetect\', \'alertTime\': "' + $("#explosionDetectorAlertTime").val() + '", \'emaDelay\': "' + $("#explosionDetectorEmaDelay").val() + '", \'emaAlpha\': "' + $("#explosionDetectorEmaAlpha").val() + '", \'bounceUpContrast\': "' + $("#explosionDetectorBounceUpContrast").val() + '", \'bounceDownContrast\': "' + $("#explosionDetectorBounceDownContrast").val() + '", \'bounceUpBrightness\': "' + $("#explosionDetectorBounceUpBrightness").val() + '", \'bounceDownBrightness\': "' + $("#explosionDetectorBounceDownBrightness").val() + '", \'numWidthBlocks\': "' + $("#explosionDetectorNumWidthBlocks").val() + '", \'numHeightBlocks\': "' + $("#explosionDetectorNumHeightBlocks").val() + '"}', 'IsTrue', '', '', '', 'setSettingsFlashDetectSuccess()', 'setSettingsFlashDetectError(obj.error)');
+     return false;
+}
+
+//turn on off
+function turnOffFlashDetectSuccess() {
+    $("#turnOnOffFlash").val('{% trans "Включить" %}');
+    $("#img_turnOnOffFlash").attr('class', 'detector off');
+
+    successMessage(true, "{% trans 'Параметр успешно применён' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function turnOffFlashDetectError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function turnOnFlashDetectSuccess() {
+    $("#turnOnOffFlash").val('{% trans "Выключить" %}');
+    $("#img_turnOnOffFlash").attr('class', 'detector on');
+
+    successMessage(true, "{% trans 'Параметр успешно применён' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function turnOnFlashDetectError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function turnFlashDetect() {
+    if($("#turnOnOffFlash").val() == '{% trans "Выключить" %}')
+    {
+        executeCommunicatorMethod('turnOffModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid}}\', \'detect\': \'flashDetect\' }', 'IsTrue', '', '', '', 'turnOffFlashDetectSuccess()', 'turnOffFlashDetectError(obj.error)');
+    }else{
+        executeCommunicatorMethod('turnOnModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'flashDetect\' }', 'IsTrue', '', '', '', 'turnOnFlashDetectSuccess()', 'turnOnFlashDetectError(obj.error)');    
+    }
+    return false;
+}
+
+//flash detect bg generation
+function startFlashDetectBGGenenerationSuccess() {
+    $("#background_generation_time").html('00:00:00');
+    updatebg_Time(0);
+    fonDetector();
+}
+
+function startFlashDetectBGGenenerationError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function startFlashDetectBGGenenerationMode0Success() {
+    $("#turnOnOffFlash").val('{% trans "Выключить" %}');
+    $("#img_turnOnOffFlash").attr('class', 'detector on');
+
+    executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid}}\', \'detect\': \'flashDetect\', \'mode\': \'1\' }', 'IsTrue', '', '', '', 'startFlashDetectBGGenenerationSuccess()', 'startFlashDetectBGGenenerationError(obj.error)');
+}
+
+function startFlashDetectBGGenenerationMode0Error(error) {
+     errorMessage(true, "{% trans "Не удалось запустить датчик" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function startFlashDetectBGGeneneration() {
+    detectMode = 'flashDetect';
+    if($("#turnOnOffFlash").val() == '{% trans "Выключить" %}')
+    {
+        executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'flashDetect\', \'mode\': \'1\' }', 'IsTrue', '', '', '', 'startFlashDetectBGGenenerationSuccess()', 'startFlashDetectBGGenenerationError(obj.error)');
+    }else{
+        //сначала включаем датчик
+        executeCommunicatorMethod('turnOnModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'flashDetect\' }', 'IsTrue', '', '', '', 'startFlashDetectBGGenenerationMode0Success()', 'startFlashDetectBGGenenerationMode0Error(obj.error)');
+    }
+}
+
+function stopFlashDetectBGGenenerationSuccess() {
+    successMessage(true, "{% trans 'Генерация фона завершена.' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function stopFlashDetectBGGenenerationError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+}
+
+function stopFlashDetectBGGeneneration() {
+    executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'flashDetect\', \'mode\': \'2\' }', 'IsTrue', '', '', '', 'stopFlashDetectBGGenenerationSuccess()', 'stopFlashDetectBGGenenerationError(obj.error)');
+}
+
+//SMOKE DETECT
+//settings
+function setSettingsSmokeDetectSuccess() {
+	setValueGlobalParams('smokeDetector')
+    successMessage(true, "{% trans 'Параметры успешно сохранены' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+function setSettingsSmokeDetectError(error) {
+     errorMessage(true, "{% trans "Параметры не сохранены" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+function setSettingsSmokeDetect() {
+	var ask_server = true;
+	if(!checkInt('timeSmoke')) ask_server = false;
+	if(!checkInt('emaDelaySmoke')) ask_server = false;
+	if(!checkInt('numWidthBlocksSmokeArea')) ask_server = false;
+	if(!checkInt('numHeightBlocksSmokeArea')) ask_server = false;
+	if(!ask_server) return false;
+     $("#smokeDetector").hide('slow');
+     executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'smokeDetect\', \'threshold\': "' + $("#thresholdSmoke").val() + '", \'alertTime\': "' + $("#timeSmoke").val() + '", \'emaAlpha\': "' + $("#alphaSmoke").val() + '", \'emaDelay\': "' + $("#emaDelaySmoke").val() + '", \'minSmokeArea\': "' + $("#minSmokeArea").val() + '", \'numWidthBlocks\': "' + $("#numWidthBlocksSmokeArea").val() + '", \'numHeightBlocks\': "' + $("#numHeightBlocksSmokeArea").val() + '"}', 'IsTrue', '', '', '','setSettingsSmokeDetectSuccess()', 'setSettingsSmokeDetectError(obj.error)');
+     return false;
+}
+
+//turn on off
+function turnOffSmokeDetectSuccess() {
+    $("#turnOnOffSmoke").val('{% trans "Включить" %}');
+    $("#img_turnOnOffSmoke").attr('class', 'detector off');
+
+    successMessage(true, "{% trans 'Параметр успешно применён' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function turnOffSmokeDetectError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function turnOnSmokeDetectSuccess() {
+    $("#turnOnOffSmoke").val('{% trans "Выключить" %}');
+    $("#img_turnOnOffSmoke").attr('class', 'detector on');
+
+    successMessage(true, "{% trans 'Параметр успешно применён' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function turnOnSmokeDetectError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function turnSmokeDetect() {
+    if($("#turnOnOffSmoke").val() == '{% trans "Выключить" %}')
+    {
+        executeCommunicatorMethod('turnOffModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'smokeDetect\' }', 'IsTrue', '', '', '', 'turnOffSmokeDetectSuccess()', 'turnOffSmokeDetectError(obj.error)');
+    }else{
+        executeCommunicatorMethod('turnOnModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'smokeDetect\' }', 'IsTrue', '', '', '','turnOnSmokeDetectSuccess()', 'turnOnSmokeDetectError(obj.error)');    
+    }
+    return false;
+}
+
+//smoke detect bg generation
+function startSmokeDetectBGGenenerationSuccess() {
+    $("#background_generation_time").html('00:00:00');
+    updatebg_Time(0);
+    fonDetector();
+}
+
+function startSmokeDetectBGGenenerationError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function startSmokeDetectBGGenenerationMode0Success() {
+    $("#turnOnOffSmoke").val('{% trans "Выключить" %}');
+    $("#img_turnOnOffSmoke").attr('class', 'detector on');
+
+    executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'smokeDetect\', \'mode\': \'1\' }', 'IsTrue', '', '', '', 'startSmokeDetectBGGenenerationSuccess()', 'startSmokeDetectBGGenenerationError(obj.error)');
+}
+
+function startSmokeDetectBGGenenerationMode0Error(error) {
+     errorMessage(true, "{% trans "Не удалось запустить датчик" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function startSmokeDetectBGGeneneration() {
+    detectMode = 'smokeDetect';
+    if($("#turnOnOffSmoke").val() == '{% trans "Выключить" %}')
+    {
+        executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'smokeDetect\', \'mode\': \'1\' }', 'IsTrue', '', '', '', 'startSmokeDetectBGGenenerationSuccess()', 'startSmokeDetectBGGenenerationError(obj.error)');
+    }else{
+        //сначала включаем датчик
+        executeCommunicatorMethod('turnOnModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'smokeDetect\' }', 'IsTrue', '', '', '', 'startSmokeDetectBGGenenerationMode0Success()', 'startSmokeDetectBGGenenerationMode0Error(obj.error)');
+    }
+}
+
+function stopSmokeDetectBGGenenerationSuccess() {
+    successMessage(true, "{% trans 'Генерация фона завершена.' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function stopSmokeDetectBGGenenerationError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+}
+
+function stopSmokeDetectBGGeneneration() {
+    executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'smokeDetect\', \'mode\': \'2\' }', 'IsTrue', '', '', '', 'stopSmokeDetectBGGenenerationSuccess()', 'stopSmokeDetectBGGenenerationError(obj.error)');
+}
+
+//FIRE DETECT
+//settings
+function setSettingsFireDetect() {
+	var ask_server = true;
+	if(!checkInt('dynamicDetectorAlertTime_')) ask_server = false;
+	if(!checkInt('dynamicDetectorWatchOverFrameCount')) ask_server = false;
+	if(!checkInt('dynamicDetectorNumBlockWidth')) ask_server = false;
+	if(!checkInt('dynamicDetectorNumBlockHeight')) ask_server = false;
+	if(!ask_server) return false;
+     $("#fireDetector").hide('slow');
+     executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'fireDetect\', \'firedPixelsThreshold\': "' + $("#firedPixelsThreshold_").val() + '", \'alertTime\': "' + $("#dynamicDetectorAlertTime_").val() + '", \'maxMergingGapPercent\': "' + $("#dynamicDetectorMaxMergingGapPercent").val() + '", \'watchOverFrameCount\': "' + $("#dynamicDetectorWatchOverFrameCount").val() + '", \'reliabilityThresholdPercent\': "' + $("#dynamicDetectorReliabilityThresholdPercent").val() + '", \'numBlockWidth\': "' + $("#dynamicDetectorNumBlockWidth").val() + '", \'numBlockHeight\': "' + $("#dynamicDetectorNumBlockHeight").val() + '", \'foregroundToFireMaxRatio\': "' + $("#dynamicDetectorforegroundToFireMaxRatio_").val() + '", \'slidingAvgAlpha\': "' + $("#dynamicDetectorslidingAvgAlpha_").val() + '", \'minForegroundPixelsPercent\': "' + $("#dynamicDetectorminForegroundPixelsPercent_").val() + '", \'minFireDelta\': "' + $("#dynamicDetectorminFireDelta_").val() + '", \'minFireArea\': "' + $("#dynamicDetectorMinFireArea").val() + '"}', 'IsTrue', '', '', '', 'setSettingsFireDetectSuccess()', 'setSettingsFireDetectError(obj.error)');
+     return false;
+}
+function setSettingsFireDetectSuccess() {
+	setValueGlobalParams("fireDetector");
+    successMessage(true, "{% trans 'Параметры успешно сохранены' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+function setSettingsFireDetectError(error) {
+     errorMessage(true, "{% trans "Параметры не сохранены" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+//turn on off
+function turnOffFireDetectSuccess() {
+    $("#turnOnOffFire").val('{% trans "Включить" %}');
+    $("#img_turnOnOffFire").attr('class', 'detector off');
+
+    successMessage(true, "{% trans 'Параметр успешно применён' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function turnOffFireDetectError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function turnOnFireDetectSuccess() {
+    $("#turnOnOffFire").val('{% trans "Выключить" %}');
+    $("#img_turnOnOffFire").attr('class', 'detector on');
+
+    successMessage(true, "{% trans 'Параметр успешно применён' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function turnOnFireDetectError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function turnFireDetect() {
+    if($("#turnOnOffFire").val() == '{% trans "Выключить" %}')
+    {
+        executeCommunicatorMethod('turnOffModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'fireDetect\' }', 'IsTrue', '', '', '', 'turnOffFireDetectSuccess()', 'turnOffFireDetectError(obj.error)');
+    }else{
+        executeCommunicatorMethod('turnOnModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'fireDetect\' }', 'IsTrue', '', '', '', 'turnOnFireDetectSuccess()', 'turnOnFireDetectError(obj.error)');    
+    }
+    return false;
+}
+
+//fire detect bg generation
+function startFireDetectBGGenenerationSuccess() {
+    $("#background_generation_time").html('00:00:00');
+    updatebg_Time(0);
+    fonDetector();
+}
+
+function startFireDetectBGGenenerationError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function startFireDetectBGGenenerationMode0Success() {
+    $("#turnOnOffFire").val('{% trans "Выключить" %}');
+    $("#img_turnOnOffFire").attr('class', 'detector on');
+
+    executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'fireDetect\', \'mode\': \'1\' }', 'IsTrue', '', '', '','startFireDetectBGGenenerationSuccess()', 'startFireDetectBGGenenerationError(obj.error)');
+}
+
+function startFireDetectBGGenenerationMode0Error(error) {
+     errorMessage(true, "{% trans "Не удалось запустить датчик" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function startFireDetectBGGeneneration() {
+    detectMode = 'fireDetect';
+    if($("#turnOnOffFire").val() == '{% trans "Выключить" %}')
+    {
+        executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'fireDetect\', \'mode\': \'1\' }', 'IsTrue', '', '', '','startFireDetectBGGenenerationSuccess()', 'startFireDetectBGGenenerationError(obj.error)');
+    }else{
+        //сначала включаем датчик
+        executeCommunicatorMethod('turnOnModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'fireDetect\' }', 'IsTrue','', '', '', 'startFireDetectBGGenenerationMode0Success()', 'startFireDetectBGGenenerationMode0Error(obj.error)');
+    }
+}
+
+function stopFireDetectBGGenenerationSuccess() {
+    successMessage(true, "{% trans 'Генерация фона завершена.' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function stopFireDetectBGGenenerationError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+}
+
+function stopFireDetectBGGeneneration() {
+    executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'fireDetect\', \'mode\': \'2\' }', 'IsTrue', '', '', '', 'stopFireDetectBGGenenerationSuccess()', 'stopFireDetectBGGenenerationError(obj.error)');
+}
+
+//LEFT THINGS
+function  setSettingsLeftThingsSuccess() {
+	setValueGlobalParams('thingsDetector');
+    successMessage(true, "{% trans 'Параметры успешно сохранены' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function setSettingsLeftThingsError(error) {
+     errorMessage(true, "{% trans "Параметры не сохранены" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function setSettingsLeftThings() {
+	var ask_server = true;
+	if(!checkInt('leftThingsDetectorAlertTime')) ask_server = false;
+	if(!checkInt('leftThingsDetectorMaxSupervisionTime')) ask_server = false;
+	if(!ask_server) return false;
+    $("#thingsDetector").hide('slow');
+    executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'leftThings\', \'alertTime\': "' + $("#leftThingsDetectorAlertTime").val() + '", \'autoLearning\': "' + $("#lt_autolearning").val() + '", \'bound\': "' + $("#lt_bound").val() + '", \'cleaningIntervalSeconds\': "' + $("#lt_cleaningIntervalSeconds").val() + '", \'interval\': "' + $("#leftThingsDetectorMaxSupervisionTime").val() + '", \'maxMergingGapPercent\': "' + $("#lt_maxMergingGapPercent").val() + '", \'maxMod0\': "' + $("#lt_maxMod0").val() + '", \'maxMod1\': "' + $("#lt_maxMod1").val() + '", \'maxMod2\': "' + $("#lt_maxMod2").val() + '", \'minMod0\': "' + $("#lt_minMod0").val() + '", \'minMod1\': "' + $("#lt_minMod1").val() + '", \'minMod2\': "' + $("#lt_minMod2").val() + '", \'minObjectArea\': "' + $("#leftThingsDetectorMinObjectArea").val() + '", \'maxObjectArea\': "' + $("#leftThingsDetectorMaxObjectArea").val() + '", \'mode\': "' + $("#lt_mode").val() + '", \'startingLearningPercent\': "' + $("#lt_startingLearningPercent").val() + '", \'startingLearningTime\': "' + $("#lt_startingLearningTime").val() + '", \'morphology\': "' + $("#lt_morphology").val() + '", \'connectedComp\': "' + $("#lt_connectedComp").val() + '" }', 'IsTrue','', '', '', 'setSettingsLeftThingsSuccess()', 'setSettingsLeftThingsError(obj.error)');
+    return false;
+}
+
+function turnOffLeftThingsSuccess() {
+    $("#turnOnOffLeftThings").val('{% trans "Включить" %}');
+    $("#img_turnOnOffLeftThings").attr('class', 'detector off');
+
+    successMessage(true, "{% trans 'Параметр успешно применён' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function turnOffLeftThingsError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function turnOnLeftThingsSuccess() {
+    $("#turnOnOffLeftThings").val('{% trans "Выключить" %}');
+    $("#img_turnOnOffLeftThings").attr('class', 'detector on');
+
+    successMessage(true, "{% trans 'Параметр успешно применён' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function turnOnLeftThingsError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function turnOnLeftThings() {
+    executeCommunicatorMethod('turnOnModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'leftThings\' }', 'IsTrue', '', '', '','turnOnLeftThingsSuccess()', 'turnOnLeftThingsError(obj.error)');        
+}
+
+function turnOffLeftThings() {
+    executeCommunicatorMethod('turnOnModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'leftThings\' }', 'IsTrue', '', '', '','turnOnLeftThingsSuccess()', 'turnOnLeftThingsError(obj.error)');    
+}
+
+function turnLeftThings() {
+    if($("#turnOnOffLeftThings").val() == '{% trans "Выключить" %}')
+    {
+        executeCommunicatorMethod('turnOffModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'leftThings\' }', 'IsTrue', '', '', '','turnOffLeftThingsSuccess()', 'turnOffLeftThingsError(obj.error)');
+        //turnOnLeftThings();
+    }else{
+        //cjturnOffLeftThings();
+        executeCommunicatorMethod('turnOnModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'leftThings\' }', 'IsTrue','', '', '', 'turnOnLeftThingsSuccess()', 'turnOnLeftThingsError(obj.error)');    
+    }
+    return false;
+}
+//
+function startLeftThingsBGGenenerationSuccess() {
+    $("#background_generation_time").html('00:00:00');
+    updatebg_Time(0);
+    fonDetector();
+    //turnOnLeftThings();
+}
+
+function startLeftThingsBGGenenerationError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function startLeftThingsBGGenMode0Success() {
+    $("#background_generation_time").html('00:00:00');
+    updatebg_Time(0);
+    fonDetector();
+}
+
+function startLeftThingsBGGenMode0Error(error) {
+
+}
+
+function turnOnLeftThingsMode0Success() {
+    $("#turnOnOffLeftThings").val('{% trans "Выключить" %}');
+    $("#img_turnOnOffLeftThings").attr('class', 'detector on');
+
+    executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'leftThings\', \'mode\': \'1\', \'alertTime\': "' + $("#leftThingsDetectorAlertTime").val() + '", \'autoLearning\': "' + $("#lt_autolearning").val() + '", \'bound\': "' + $("#lt_bound").val() + '", \'cleaningIntervalSeconds\': "' + $("#lt_cleaningIntervalSeconds").val() + '", \'interval\': "' + $("#leftThingsDetectorMaxSupervisionTime").val() + '", \'maxMergingGapPercent\': "' + $("#lt_maxMergingGapPercent").val() + '", \'maxMod0\': "' + $("#lt_maxMod0").val() + '", \'maxMod1\': "' + $("#lt_maxMod1").val() + '", \'maxMod2\': "' + $("#lt_maxMod2").val() + '", \'minMod0\': "' + $("#lt_minMod0").val() + '", \'minMod1\': "' + $("#lt_minMod1").val() + '", \'minMod2\': "' + $("#lt_minMod2").val() + '", \'minObjectArea\': "' + $("#leftThingsDetectorMinObjectArea").val() + '", \'maxObjectArea\': "' + $("#leftThingsDetectorMaxObjectArea").val() + '", \'startingLearningPercent\': "' + $("#lt_startingLearningPercent").val() + '", \'startingLearningTime\': "' + $("#lt_startingLearningTime").val() + '", \'morphology\': "' + $("#lt_morphology").val() + '", \'connectedComp\': "' + $("#lt_connectedComp").val() + '" }', 'IsTrue','', '', '', 'startLeftThingsBGGenMode0Success()', 'startLeftThingsBGGenMode0Error(obj.error)');
+}
+
+function turnOnLeftThingsMode0Error(error) {
+     errorMessage(true, "{% trans "Не удалось запустить датчик" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function startLeftThingsBGGeneneration() {
+    detectMode = 'leftThings';
+
+    //разрешаем генерацию фона только если включен датчик
+    if($("#turnOnOffLeftThings").val() == '{% trans "Выключить" %}')
+    {
+        executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'leftThings\', \'mode\': \'1\', \'alertTime\': "' + $("#leftThingsDetectorAlertTime").val() + '", \'autoLearning\': "' + $("#lt_autolearning").val() + '", \'bound\': "' + $("#lt_bound").val() + '", \'cleaningIntervalSeconds\': "' + $("#lt_cleaningIntervalSeconds").val() + '", \'interval\': "' + $("#leftThingsDetectorMaxSupervisionTime").val() + '", \'maxMergingGapPercent\': "' + $("#lt_maxMergingGapPercent").val() + '", \'maxMod0\': "' + $("#lt_maxMod0").val() + '", \'maxMod1\': "' + $("#lt_maxMod1").val() + '", \'maxMod2\': "' + $("#lt_maxMod2").val() + '", \'minMod0\': "' + $("#lt_minMod0").val() + '", \'minMod1\': "' + $("#lt_minMod1").val() + '", \'minMod2\': "' + $("#lt_minMod2").val() + '", \'minObjectArea\': "' + $("#leftThingsDetectorMinObjectArea").val() + '", \'maxObjectArea\': "' + $("#leftThingsDetectorMaxObjectArea").val() + '", \'startingLearningPercent\': "' + $("#lt_startingLearningPercent").val() + '", \'startingLearningTime\': "' + $("#lt_startingLearningTime").val() + '", \'morphology\': "' + $("#lt_morphology").val() + '", \'connectedComp\': "' + $("#lt_connectedComp").val() + '" }', 'IsTrue','', '', '', 'startLeftThingsBGGenenerationSuccess()', 'startLeftThingsBGGenenerationError(obj.error)');
+    }else{
+        //сначала включаем датчик
+        executeCommunicatorMethod('turnOnModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'leftThings\' }', 'IsTrue', '', '', '','turnOnLeftThingsMode0Success()', 'turnOnLeftThingsMode0Error(obj.error)');
+    }
+}
+
+function stopLeftThingsBGGenenerationSuccess() {
+    successMessage(true, "{% trans 'Генерация фона завершена.' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function stopLeftThingsBGGenenerationError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+}
+function stopLeftThingsBGGeneneration() {
+    executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'leftThings\', \'mode\': \'2\', \'alertTime\': "' + $("#leftThingsDetectorAlertTime").val() + '", \'autoLearning\': "' + $("#lt_autolearning").val() + '", \'bound\': "' + $("#lt_bound").val() + '", \'cleaningIntervalSeconds\': "' + $("#lt_cleaningIntervalSeconds").val() + '", \'interval\': "' + $("#leftThingsDetectorMaxSupervisionTime").val() + '", \'maxMergingGapPercent\': "' + $("#lt_maxMergingGapPercent").val() + '", \'maxMod0\': "' + $("#lt_maxMod0").val() + '", \'maxMod1\': "' + $("#lt_maxMod1").val() + '", \'maxMod2\': "' + $("#lt_maxMod2").val() + '", \'minMod0\': "' + $("#lt_minMod0").val() + '", \'minMod1\': "' + $("#lt_minMod1").val() + '", \'minMod2\': "' + $("#lt_minMod2").val() + '", \'minObjectArea\': "' + $("#leftThingsDetectorMinObjectArea").val() + '", \'maxObjectArea\': "' + $("#leftThingsDetectorMaxObjectArea").val() + '", \'startingLearningPercent\': "' + $("#lt_startingLearningPercent").val() + '", \'startingLearningTime\': "' + $("#lt_startingLearningTime").val() + '", \'morphology\': "' + $("#lt_morphology").val() + '", \'connectedComp\': "' + $("#lt_connectedComp").val() + '" }', 'IsTrue', '', '', '','stopLeftThingsBGGenenerationSuccess()', 'stopLeftThingsBGGenenerationError(obj.error)');
+}
+//
+{% comment %}
+//SEPARATING OBJECTS
+function setSettingsSeparatingObjectsSuccess(){
+    successMessage(true, "{% trans 'Параметры успешно сохранены' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function setSettingsSeparatingObjectsError(error){
+     errorMessage(true, "{% trans "Параметры не сохранены" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function setSettingsSeparatingObjects() {
+    $("#fonsDetector").hide('slow');
+    executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'separatingObjects\', \'mode\': \'2\', \'maxMod0\': "' + $("#maxMod0").val() + '", \'minMod0\': "' + $("#minMod0").val() + '", \'maxMod1\': "' + $("#maxMod1").val() + '", \'minMod1\': "' + $("#minMod1").val() + '", \'maxMod2\': "' + $("#maxMod2").val() + '", \'minMod2\': "' + $("#minMod2").val() + '", \'threshold_e\': "' + $("#threshold_e").val() + '", \'a\': "' + $("#rate_a").val() + '", \'counterApproxLevel\': "' + $("#counter_approx_level").val() + '", \'morphology\': "' + $("#morphology").val() + '", \'minPixelInObject\': "' + $("#min_pixel_in_object").val() + '", \'autoLearning\': "' + $("input[name=auto_learning]:checked").attr("value") + '", \'morphology\': "' + $("input[name=morphology]:checked").attr("value") + '", \'connectedComp\': "' + $("input[name=connected_comp]:checked").attr("value") + '" }', 'IsTrue', '', '', '','setSettingsSeparatingObjectsSuccess()', 'setSettingsSeparatingObjectsError(obj.error)');
+    return false;
+}
+
+//turn on
+function turnOffSeparatingObjectsSuccess() {
+    $("#turnOnOffSeparatingObjects").val('{% trans "Включить" %}');
+    $("#img_turnOnOffSeparatingObjects").attr('class', 'detector off');
+
+    successMessage(true, "{% trans 'Параметр успешно применён' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function turnOffSeparatingObjectsError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function turnOnSeparatingObjectsSuccess() {
+    $("#turnOnOffSeparatingObjects").val('{% trans "Выключить" %}');
+    $("#img_turnOnOffSeparatingObjects").attr('class', 'detector on');
+
+    successMessage(true, "{% trans 'Параметр успешно применён' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function turnOnSeparatingObjectsError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function turnSeparatingObjects() {
+    if($("#turnOnOffSeparatingObjects").val() == '{% trans "Выключить" %}')
+    {
+        executeCommunicatorMethod('turnOffModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'separatingObjects\' }', 'IsTrue','', '', '','turnOffSeparatingObjectsSuccess()', 'turnOffSeparatingObjectsError(obj.error)');
+    }else{
+        executeCommunicatorMethod('turnOnModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'separatingObjects\' }', 'IsTrue','', '', '', 'turnOnSeparatingObjectsSuccess()', 'turnOnSeparatingObjectsError(obj.error)');    
+    }
+    return false;
+}
+
+function startSeparatingObjectsBGGenenerationSuccess() {
+    $("#background_generation_time").html('00:00:00');
+    updatebg_Time(0);
+    fonDetector();
+}
+
+function startSeparatingObjectsBGGenenerationError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function startSeparatingObjectsBGGenenerationMode0Success() {
+    $("#turnOnOffSeparatingObjects").val('{% trans "Выключить" %}');
+    $("#img_turnOnOffSeparatingObjects").attr('class', 'detector on');
+
+    executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'separatingObjects\', \'mode\': \'1\' }', 'IsTrue', '', '', '','startSeparatingObjectsBGGenenerationSuccess()', 'startSeparatingObjectsBGGenenerationError(obj.error)');
+}
+
+function startSeparatingObjectsBGGenenerationMode0Error(error) {
+     errorMessage(true, "{% trans "Не удалось запустить датчик" %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function startSeparatingObjectsBGGeneneration() {
+    detectMode = 'separatingObjects';
+    if($("#turnOnOffSeparatingObjects").val() == '{% trans "Выключить" %}')
+    {
+        executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'separatingObjects\', \'mode\': \'1\' }', 'IsTrue', '', '', '','startSeparatingObjectsBGGenenerationSuccess()', 'startSeparatingObjectsBGGenenerationError(obj.error)');
+    }else{
+        //сначала включаем датчик
+        executeCommunicatorMethod('turnOnModeDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'separatingObjects\' }', 'IsTrue','', '', '', 'startSeparatingObjectsBGGenenerationMode0Success()', 'startSeparatingObjectsBGGenenerationMode0Error(obj.error)');
+    }
+}
+
+function stopSeparatingObjectsBGGenenerationSuccess() {
+    successMessage(true, "{% trans 'Генерация фона завершена. Датчик успешно запущен.' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function stopSeparatingObjectsBGGenenerationError(error) {
+     errorMessage(true, "{% trans "Параметр не применён" %}: " + getTranslation(error));
+}
+function stopSeparatingObjectsBGGeneneration() {
+    executeCommunicatorMethod('setSettingsDetectScheduler', '{\'uuid\': \'{{ selected_camera.uuid }}\', \'detect\': \'separatingObjects\', \'mode\': \'2\' }', 'IsTrue', '', '', '','stopSeparatingObjectsBGGenenerationSuccess()', 'stopSeparatingObjectsBGGenenerationError(obj.error)');
+}
+{% endcomment %}
+function stopBGGeneration() {
+    switch(detectMode)
+    {
+		{% comment %}
+        case 'separatingObjects':
+            stopSeparatingObjectsBGGeneneration();
+        break;
+		{% endcomment %}
+        case 'leftThings':
+            stopLeftThingsBGGeneneration();
+        break;
+        case 'fireDetect':
+            stopFireDetectBGGeneneration();
+        break;
+        case 'smokeDetect':
+            stopSmokeDetectBGGeneneration();
+        break;
+        case 'flashDetect':
+            stopFlashDetectBGGeneneration();
+        break;
+    }
+}
+
+//CROWD DETECT
+function turnCrowdDetectSuccess(){
+	if($("#turnOnOffCrowd").val() == '{% trans "Выключить" %}')
+    {
+		$("#turnOnOffCrowd").val('{% trans "Включить" %}');
+		$("#img_turnOnOffCrowd").attr('class', 'detector off');
+    }else{
+    	$("#turnOnOffCrowd").val('{% trans "Выключить" %}');
+		$("#img_turnOnOffCrowd").attr('class', 'detector on');
+    }
+    successMessage(true, "{% trans 'Параметры успешно сохранены' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+
+function turnCrowdDetectError(error){
+     errorMessage(true, "{% trans 'Параметры не сохранены' %}: " + getTranslation(error));
+     setTimeout('errorMessage(false)', 2500);
+}
+
+function turnCrowdDetect(){
+    if($("#turnOnOffCrowd").val() == '{% trans "Выключить" %}')
+    {
+    	//executeMethodBalancerUni('turnCrowdDetectSuccess()', 'turnCrowdDetectError()', 'turnCrowdDetectError()', 'setParameter', 'false', 'control.detector.crowd.need.alert');
+		executeMethodBalancerUni('turnCrowdDetectSuccess()', 'turnCrowdDetectError()', 'turnCrowdDetectError()', 'setCameraParameter', '{{ selected_camera.uuid }}', 'false', '', '', '', 'crowdNeedAlert');
+    }else{
+    	//executeMethodBalancerUni('turnCrowdDetectSuccess()', 'turnCrowdDetectError()', 'turnCrowdDetectError()', 'setParameter', 'true', 'control.detector.crowd.need.alert');
+		executeMethodBalancerUni('turnCrowdDetectSuccess()', 'turnCrowdDetectError()', 'turnCrowdDetectError()', 'setCameraParameter', '{{ selected_camera.uuid }}', 'true', '', '', '', 'crowdNeedAlert');  
+    }
+    return false;
+}
+
+//CROWD DETECT SET PARAMETERS
+function setCrowdDetectParamSuccess(){
+	setValueGlobalParams("crowdDetector");
+	successMessage(true, "{% trans 'Параметры успешно сохранены' %}");
+    setTimeout('successMessage(false)', 2500);
+}
+function setCrowdDetectParamError(detectorParam){
+	errorMessage(true, "{% trans 'Параметры не сохранены' %}: " + getTranslation(detectorParam));
+    setTimeout('errorMessage(false)', 2500);
+}
+function setSettingsCrowdDetectTimeout(){
+	//executeMethodBalancerUni('setCrowdDetectParamSuccess()', 'setCrowdDetectParamError("{% trans "Тайм-аут" %}")', 'setCrowdDetectParamError("{% trans "Тайм-аут" %}")', 'setParameter', $("#controlDetectorCrowdTimeout").val() * 1000, 'control.detector.crowd.timeout');
+	var ask_server = true;
+	if(!checkInt('controlDetectorCrowdTimeout')) ask_server = false;
+	if(!ask_server) return false;
+	executeMethodBalancerUni('setCrowdDetectParamSuccess()', 'setCrowdDetectParamError("{% trans "Тайм-аут" %}")', 'setCrowdDetectParamError("{% trans "Тайм-аут" %}")', 'setCameraParameter', '{{ selected_camera.uuid }}', $("#controlDetectorCrowdTimeout").val() * 1000, '', '', '', 'crowdAlertTimeout');
+}
+function setSettingsCrowdDetect(){
+	var ask_server = true;
+	if(!checkInt('controlDetectorCrowdSize')) ask_server = false;
+	if(!ask_server) return false;
+    $("#crowdDetector").hide('slow');
+	//executeMethodBalancerUni('setSettingsCrowdDetectTimeout()', 'setCrowdDetectParamError("{% trans "Количество лиц для срабатывания детектора" %}")', 'setCrowdDetectParamError("{% trans "Количество лиц для срабатывания детектора" %}")', 'setParameter', $("#controlDetectorCrowdSize").val(), 'control.detector.crowd.size');
+	executeMethodBalancerUni('setSettingsCrowdDetectTimeout()', 'setCrowdDetectParamError("{% trans "Количество лиц для срабатывания детектора" %}")', 'setCrowdDetectParamError("{% trans "Количество лиц для срабатывания детектора" %}")', 'setCameraParameter', '{{ selected_camera.uuid }}', $("#controlDetectorCrowdSize").val(), '', '', '', 'crowdSize');
+}
+function checkInt(value){
+	var val = $('#'+value).val();
+	if (Math.round(val) != val){
+		$('#'+value+'Error').html('{% trans "Введите целое число." %}');
+		return false;
+	}
+	$('#'+value+'Error').html('');
+	return true;
+}
+function getTranslation(txt){
+	var is_ru = {% if LANGUAGE_CODE == "ru" %}true{% else %}false{% endif %};
+	for(var i=0;i<errors_texts.length;i++){
+		if(errors_texts[i].length!=4) alert(i);
+		if(txt.indexOf(errors_texts[i][3])>=0){
+			if(is_ru){
+				return errors_texts[i][0].toLowerCase();
+			}else{
+				return errors_texts[i][3];
+			}
+		}
+	}
+	return getTranslation('Unknown error');
+}
+function initTranslations(){
+	errors_texts.push(["Невозможно декодировать изображение", "00", "UNABLE_TO_DECODE_IMAGE", "unable to decode image"]);
+	errors_texts.push(["Ошибка функции clock_gettime", "01", "CLOCK_GETTIME_FAILED", "clock_gettime failed"]);
+	errors_texts.push(["Итератор кодовой книги вышел за границы", "03", "CODEBOOK_ELEMENT_ITERATOR_IS_OUT_OF_BOUNDS", "codebook element iterator is out of bounds"]);
+	errors_texts.push(["Параметры не могут быть применены, некорректный параметр", "05", "SETTINGS_CAN_NOT_BE_APPLIED_INCORRECT_PARAMETER", "settings can not be applied, incorrect parameter"]);
+	errors_texts.push(["Параметры не могут быть применены, некорректный параметр", "06", "SETTINGS_CAN_NOT_BE_APPLIED_PARAMETER_NOT_FOUND", "settings can not be applied, parameter is not found"]);
+	errors_texts.push(["Параметры не могут быть применены", "04", "SETTINGS_CAN_NOT_BE_APPLIED", "settings can not be applied"]);
+	errors_texts.push(["Пустой текущий кадр", "07", "CURRENT_FRAME_IS_EMPTY", "current frame is empty"]);
+	errors_texts.push(["Байты изображения должны идти непрерывно", "08", "IMAGE_MUST_BE_CONTINUOUS", "image must be continuous"]);
+	errors_texts.push(["Структура кодовой книги пуста", "09", "CODEBOOK_STRUCTURE_IS_EMPTY", "codebook structure is empty"]);
+	errors_texts.push(["Нет изображения, необходимого для классификации", "0A", "NO_IMAGE_AVAILABLE_FOR_CLASSIFICATION", "no image available for classification"]);
+	errors_texts.push(["Некорректное количество каналов", "0B", "INCORRECT_NUMBER_OF_CHANELS", "incorrect number of chanels"]);
+	errors_texts.push(["Неизвестная команда", "0C", "UNKNOWN_COMMAND", "unknown command"]);
+	errors_texts.push(["Ошибка при выполнении обработчика команды", "0D", "EXCEPTION_WAS_THROWN_WHILE_EXECUTING_COMMAND_HANDLER", "exception was thrown while executing command handler"]);
+	errors_texts.push(["Неизвестное значение типа времени в статистике", "0E", "UNKNOWN_VALUE_OF_TIME_ELEMENT_IN_STATISTICS", "unknown value of time kind element in statistics"]);
+	errors_texts.push(["Не удается найти детектор с таким названием", "0F", "UNABLE_TO_FIND_DETECTOR", "unable to find detector"]);
+	errors_texts.push(["В наборе детекторов демона обнаружен NULL-детектор", "10", "THERE_IS_NULL_DETECTOR", "there is null detector"]);
+	errors_texts.push(["Некорректный параметр", "11", "INCORRECT_PARAMETER", "incorrect parameter"]);
+	errors_texts.push(["Некорректный метод аппроксимации контура", "12", "INVALID_COUNTOUR_REFINEMENT_METHOD", "invalid contour refinement method"]);
+	errors_texts.push(["Ошибка при разборе аргументов командной строки", "13", "COMMAND_LINE_PARSE_ERROR", "command line parse error"]);
+	errors_texts.push(["Одинаковые параметры в детекторе", "17", "IDENTICAL_PARAMETERS_IN_DETECTOR", "identical parameters in detector"]);
+	errors_texts.push(["Некорректное значение режима детектора", "18", "INVALID_MODE_VALUE", "invalid mode value"]);
+	errors_texts.push(["Некорректные границы при слиянии прямоугольников", "1C", "INVALID_RECTANGLE_MERGER_BOUNDS", "invalid rectangle merger bounds"]);
+	errors_texts.push(["Некорректные границы при слиянии прямоугольников", "1D", "INVALID_BOUNDING_RECTANGLE", "invalid bounding rectangle"]);
+	errors_texts.push(["Было передано некорректное время", "20", "INVALID_TIME_HAS_BEEN_PASSED", "invalid time has been passed"]);
+	errors_texts.push(["Параметр покадровой статистики не найден", "21", "PERFRAME_STATS_PARAMETER_NOT_FOUND", "per-frame stats parameter is not found"]);
+	errors_texts.push(["Неизвестный тип таймера статистики", "22", "UNKNOWN_TYPE_OF_STATISTICS_TIMER", "unknown type of statistics timer"]);
+	errors_texts.push(["Количество элементов кольцевого списка не может быть нулевым", "23", "RING_LIST_ITEM_COUNT_MUST_BE_NONZERO", "ring list item count must be nonzero"]);
+	errors_texts.push(["Ошибка создания сокета", "2C", "SOCKET_CREATION_ERROR", "socket() error"]);
+	errors_texts.push(["Ошибка установки опции сокета TCP_NODELAY", "2D", "ERROR_SETTING_SOCKET_OPTION_TCP_NODELAY", "error setting socket option TCP_NODELAY"]);
+	errors_texts.push(["Ошибка открытия соединения с сервером", "2E", "CONNECT_ERROR", "connect() error"]);
+	errors_texts.push(["Невозможно открыть файл", "2F", "UNABLE_TO_OPEN_FILE", "unable to open file"]);
+	errors_texts.push(["Невозможно получить информацию о потоке", "30", "UNABLE_TO_GET_STREAM_INFORMATION", "unable to get stream information"]);
+	errors_texts.push(["Невозможно получить видеопоток", "31", "UNABLE_TO_FIND_ANY_VIDEOSTREAM", "unable to find any videostream"]);
+	errors_texts.push(["Невозможно найти кодек для декодирования видеопотока", "31", "UNABLE_TO_FIND_CODEC_TO_DECODE_VIDEOSTREAM", "unable to find codec to decode videostream"]);
+	errors_texts.push(["Невозможно открыть кодек", "32", "UNABLE_TO_OPEN_CODEC", "unable to open codec"]);
+	errors_texts.push(["Невозможно выделить кадр  в формате YUV", "33", "UNABLE_TO_ALLOCATE_YUV_FRAME", "unable to allocate YUV frame"]);
+	errors_texts.push(["Невозможно выделить кадр в формате RGB", "34", "UNABLE_TO_ALLOCATE_RGB_FRAME", "unable to allocate RGB frame"]);
+	errors_texts.push(["Ошибка при разборе XML-документа", "80", "XML_PARSE_ERROR", "XML parse error"]);
+	errors_texts.push(["Некорректное значение XML-элемента", "81", "INCORRECT_ELEMENT_VALUE", "incorrect element value"]);
+	errors_texts.push(["Невозможно найти дочерний XML-элемент", "82", "CANT_FIND_CHILD_ELEMENT", "can't find child element"]);
+	errors_texts.push(["Невозможно получить текст XML-элемента", "83", "UNABLE_TO_GET_TEXT_FOR_ELEMENT", "unable to get text for element"]);
+	errors_texts.push(["Ошибка функции recv()", "84", "RECV_ERROR", "recv() error"]);
+	errors_texts.push(["Соединение закрыто другой стороной", "85", "RECV_PEER_SHUTDOWN", "recv(): peer shutdown"]);
+	errors_texts.push(["Некорректный размер данных", "86", "INCORRECT_DATA_SIZE", "incorrect data size"]);
+	errors_texts.push(["Неизвестная сигнатура протокола", "87", "UNKNOWN_PROTOCOL_SIGNATURE", "unknown protocol signature"]);
+	errors_texts.push(["Длина пакета должна соответствовать длине UUID", "88", "PACKET_LENGTH_MUST_MATCH_UUID_LENGTH", "packet length must match UUID length"]);
+	errors_texts.push(["Функция getaddrinfo() аварийно завершилась с кодом ошибки", "89", "GETADDRINFO_HAS_FAILED_WITH_ERROR_CODE", "getaddrinfo() has been failed with error code"]);
+	errors_texts.push(["Функция getaddrinfo() вернула пустой список адресов", "8A", "GETADDRINFO_HAS_RETURNED_AN_EMPTY_ADDRESS_LIST", "getaddrinfo() has returned an empty address list"]);
+	errors_texts.push(["Некорректная длина идентификатора пакета", "8B", "INVALID_PACKET_ID_LENGTH", "invalid packet id length"]);
+	errors_texts.push(["Некорректная версия протокола", "8C", "INVALID_PROTOCOL_VERSION", "invalid protocol version"]);
+	errors_texts.push(["Некорректный приоритет пакета", "8D", "INVALID_PACKET_PRIORITY", "invalid packet priority"]);
+	errors_texts.push(["Недопустимый размер очереди", "8E", "INVALID_SIZE_OF_QUEUE", "invalid size of queue"]);
+	errors_texts.push(["Ошибка функции send()", "8F", "SEND_ERROR", "send() error"]);
+	errors_texts.push(["Текстовая часть пакета слишком большая", "90", "PACKET_TEXT_DATA_TOO_LARGE", "packet text data too large"]);
+	errors_texts.push(["Двоичная часть пакета слишком большая", "91", "", "packet raw data too large"]);
+	errors_texts.push(["Некорректный набор входных параметров", "91", "", "Incorrect parameters"]);
+	errors_texts.push(["Некорректный номер камеры в запросе", "91", "", "Incorrect camera number"]);
+	errors_texts.push(["Демон видеоаналитики не запущен", "91", "", "Videoanalytics daemon not started"]);
+	errors_texts.push(["Неизвестная ошибка", "91", "", "Unknown error"]);
+	errors_texts.push(["Неизвестная ошибка", "91", "", "Unknown"]);
+}
+
+</script>
+{% endblock %}
+ {% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+                    <h2>{% trans "Настройка модуля видеоаналитики" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Настройка модуля видеоаналитики" %}');" /></h2>
+                    {% include "current_time.html" %}
+                    {% include "system_blocks/system_cameras.html" %}
+					{% if error %}
+					<div class="error_field"><br/><br/>{% trans "Ошибка подключения! Коммуникатор" %} {% trans "не доступен. Пожалуйста, попробуйте подключиться позднее." %}</div>
+					{% endif %}
+                    {% if all_cameras|length > 0 and not error %}
+                    <div class="block">
+                        <form method="post" action="" class="form" id="formVideoAnalytics">
+                            {% if selected_camera and all_active_cameras|length > 0 %}
+
+                            <div class="form_block_head">{% trans "Общие настройки" %}</div>
+                            <div class="form_block">
+                                <div class="error_field"></div>
+                                <div class="fb_content">
+                                    <label for="" class="fbc_text">{% trans "Детекторы" %}:</label>
+                                    <div class="fb_enter" id="detectors">
+                                        <div class="block_ie" id="block_sensors">
+                                            <div class="block dist_inner">
+                                                <div id="img_turnOnOffLeftThings" class="detector {% if isOnleftThings %}on{% else %}off{% endif %}" title="">{% trans "Детектор оставленных вещей" %}</div>
+                                                <input type="button" name="" id="turnOnOffLeftThings" value="{% if isOnleftThings %}{% trans 'Выключить' %}{% else %}{% trans 'Включить' %}{% endif %}" class="inp_btn inp_btn90 dist_left off_detector_btn{% if selected_camera.mode == -1 %} dis{% endif %}" {% if selected_camera.mode != -1 %} onclick="javascript: turnLeftThings();"{% else %} disabled="disabled"{% endif %} />
+                                                <input type="button" name="thingsDetector" value="{% trans "Настроить" %}" class="inp_btn inp_btn90 dist_left settings_detector_btn" title="{% trans "Настроить детектор оставленных вещей" %}" />
+                                                <input type="button" name="" {% if selected_camera.mode != -1 %}onclick="javascript: startLeftThingsBGGeneneration();"{% else %}disabled="disabled"{% endif %} value="{% trans "Создать фон" %}" class="inp_btn inp_btn120 dist_left fon_detector_btn{% if selected_camera.mode == -1 %} dis{% endif %}" title="{% trans "Генерация фона. При создании фона детектор автоматически становится активным" %}" />                                            
+                                            </div>
+											{% comment %}
+                                            <div class="block dist_inner" style="display: none;">
+                                                <div id="img_turnOnOffSeparatingObjects" class="detector {% if isOnSeparatingObjects %}on{% else %}off{% endif %}" title="">{% trans "Детектор отделения объектов от фона" %}</div>
+                                                <input type="button" name="" id="turnOnOffSeparatingObjects" value="{% if isOnSeparatingObjects %}{% trans 'Выключить' %}{% else %}{% trans 'Включить' %}{% endif %}" class="inp_btn inp_btn90 dist_left off_detector_btn{% if selected_camera.mode == -1 %} dis{% endif %}"{% if selected_camera.mode != -1 %} onclick="javascript: turnSeparatingObjects();"{% else %} disabled="disabled"{% endif %} />
+                                                <input type="button" name="fonsDetector" value="{% trans "Настроить" %}" class="inp_btn inp_btn90 dist_left settings_detector_btn" title="{% trans "Настроить детектор отделения объектов от фона" %}" />    
+                                                <input type="button" name="" {% if selected_camera.mode != -1 %}onclick="javascript: startSeparatingObjectsBGGeneneration();"{% else %}disabled="disabled"{% endif %} value="{% trans "Создать фон" %}" class="inp_btn inp_btn120 dist_left fon_detector_btn{% if selected_camera.mode == -1 %} dis{% endif %}" title="{% trans "Генерация фона. При создании фона детектор автоматически становится активным" %}" />                                            
+                                            </div>
+											{% endcomment %}
+                                            <div class="block dist_inner">
+                                                <div id="img_turnOnOffFire" class="detector {% if isOnFire%}on{% else %}off{% endif %}" title="">{% trans "Детектор огня" %}</div>
+                                                <input type="button" name="" id="turnOnOffFire" value="{% if isOnFire %}{% trans 'Выключить' %}{% else %}{% trans 'Включить' %}{% endif %}" class="inp_btn inp_btn90 dist_left off_detector_btn{% if selected_camera.mode == -1 %} dis{% endif %}"{% if selected_camera.mode != -1 %} onclick="javascript: turnFireDetect();"{% else %} disabled="disabled"{% endif %} />
+                                                <input type="button" name="fireDetector" value="{% trans "Настроить" %}" class="inp_btn inp_btn90 dist_left settings_detector_btn" title="{% trans "Настроить детектор огня" %}" />    
+                                                <!-- <input type="button" name="" {% if selected_camera.mode != -1 %}onclick="javascript: startFireDetectBGGeneneration();"{% else %}disabled="disabled"{% endif %} value="{% trans "Создать фон" %}" class="inp_btn inp_btn120 dist_left fon_detector_btn{% if selected_camera.mode == -1 %} dis{% endif %}" title="{% trans "Генерация фона. При создании фона детектор автоматически становится активным" %}" />-->                                           
+                                            </div>
+                                            <div class="block dist_inner">
+                                                <div id="img_turnOnOffSmoke" class="detector {% if isOnSmoke%}on{% else %}off{% endif %}" title="">{% trans "Детектор дыма" %}</div>
+                                                <input type="button" name="" id="turnOnOffSmoke" value="{% if isOnSmoke %}{% trans 'Выключить' %}{% else %}{% trans 'Включить' %}{% endif %}" class="inp_btn inp_btn90 dist_left off_detector_btn{% if selected_camera.mode == -1 %} dis{% endif %}"{% if selected_camera.mode != -1 %} onclick="javascript: turnSmokeDetect();"{% else %} disabled="disabled"{% endif %} />
+                                                <input type="button" name="smokeDetector" value="{% trans "Настроить" %}" class="inp_btn inp_btn90 dist_left settings_detector_btn" title="{% trans "Настроить детектор дыма" %}" />    
+                                                <!-- <input type="button" name="" {% if selected_camera.mode != -1 %}onclick="javascript: startSmokeDetectBGGeneneration();"{% else %}disabled="disabled"{% endif %} value="{% trans "Создать фон" %}" class="inp_btn inp_btn120 dist_left fon_detector_btn{% if selected_camera.mode == -1 %} dis{% endif %}" title="{% trans "Генерация фона. При создании фона детектор автоматически становится активным" %}" />-->                                            
+                                            </div>
+                                            <div class="block dist_inner">
+                                                <div id="img_turnOnOffFlash" class="detector {% if isOnFlash%}on{% else %}off{% endif %}" title="">{% trans "Детектор вспышки" %}</div>
+                                                <input type="button" name="" id="turnOnOffFlash" value="{% if isOnFlash %}{% trans 'Выключить' %}{% else %}{% trans 'Включить' %}{% endif %}" class="inp_btn inp_btn90 dist_left off_detector_btn{% if selected_camera.mode == -1 %} dis{% endif %}"{% if selected_camera.mode != -1 %} onclick="javascript: turnFlashDetect();"{% else %} disabled="disabled"{% endif %} />
+                                                <input type="button" name="explosionDetector" value="{% trans "Настроить" %}" class="inp_btn inp_btn90 dist_left settings_detector_btn" title="{% trans "Настроить детектор вспышки" %}" />
+                                                <!-- <input type="button" name="" {% if selected_camera.mode != -1 %}onclick="javascript: startFlashDetectBGGeneneration();"{% else %}disabled="disabled"{% endif %} value="{% trans "Создать фон" %}" class="inp_btn inp_btn120 dist_left fon_detector_btn{% if selected_camera.mode == -1 %} dis{% endif %}" title="{% trans "Генерация фона. При создании фона детектор автоматически становится активным" %}" /> -->                                           
+                                            </div>
+                                            <div class="block">
+                                                <div id="img_turnOnOffCrowd" class="detector {% if isOnCrowd %}on{% else %}off{% endif %}" title="">{% trans "Детектор скопления людей" %}</div>
+                                                <input type="button" name="" id="turnOnOffCrowd" value="{% if isOnCrowd %}{% trans 'Выключить' %}{% else %}{% trans 'Включить' %}{% endif %}" class="inp_btn inp_btn90 dist_left off_detector_btn{% if selected_camera.mode == -1 %} dis{% endif %}"{% if selected_camera.mode != -1 %} onclick="turnCrowdDetect();"{% else %} disabled="disabled"{% endif %} />
+                                                <input type="button" name="crowdDetector" value="{% trans "Настроить" %}" class="inp_btn inp_btn90 dist_left settings_detector_btn" title="{% trans "Настроить детектор скопления людей" %}" />                                           
+                                            </div>
+                                        </div>
+                                    </div>    
+                                </div>
+                            </div>
+                            {% endif %}
+                        </form>
+                        {% if selected_camera and all_active_cameras|length > 0 %}
+                        <form method="post" action="" class="form settings_detector" id="thingsDetector" {% if com_error or not isLeftThingsOn  %} style="display: none;"{% endif %} >                            
+                            <div class="delim_block"></div>
+                            <div class="form_block_head">{% trans "Настройки детектора оставленных вещей" %}</div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="leftThingsDetectorAlertTime" class="fbc_text">{% trans "Время обновления записи в журнале (в сек.)" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "leftThingsDetectorAlertTime" "leftThingsDetectorAlertTime" lthings_data.alertTime "38" "0" "360" "5" %}
+												<div class="error_field" id="leftThingsDetectorAlertTimeError"></div>
+											</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="leftThingsDetectorMaxSupervisionTime" class="fbc_text">{% trans "Время покоя (в сек.)" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "leftThingsDetectorMaxSupervisionTime" "leftThingsDetectorMaxSupervisionTime" lthings_data.interval "38" "5" "120" "5" %}
+												<div class="error_field" id="leftThingsDetectorMaxSupervisionTimeError"></div>
+											</div>
+                                            <span class="fbc_help2">{% trans "Время бесхозности предмета с момента его обнаружения" %}</span>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>
+			    <!--
+                            <div class="form_block">
+                                <div class="error_field"></div>
+                                <div class="fb_content">
+                                    <label for="leftThingsDetectorWaitingTime" class="fbc_text">{% trans "Время латентности (в сек.)" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">{% spinbox "leftThingsDetectorWaitingTime" "leftThingsDetectorWaitingTime" lthings_data.waitingTime "38" "5" "20" "1" %}</div>
+                                            <span class="fbc_help2">{% trans "Ожидание появления предмета после временной потери его из зоны видимости" %}</span>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>-->
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="leftThingsDetectorMinObjectArea" class="fbc_text">{% trans "Минимальная площадь оставленного предмета" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "leftThingsDetectorMinObjectArea" "leftThingsDetectorMinObjectArea" lthings_data.minObjectArea "38" "0.1" "100" "0.1" %}
+												<div class="error_field" id="leftThingsDetectorMaxSupervisionTimeError"></div>
+											</div>
+                                            <span class="fbc_help2">{% trans "В процентах от площади кадра" %}</span>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="leftThingsDetectorMaxObjectArea" class="fbc_text">{% trans "Максимальная площадь оставленного предмета" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "leftThingsDetectorMaxObjectArea" "leftThingsDetectorMaxObjectArea" lthings_data.maxObjectArea "38" "0.1" "100" "0.1" %}
+												<div class="error_field" id="leftThingsDetectorMaxObjectAreaError"></div>
+											</div>
+                                            <span class="fbc_help2">{% trans "В процентах от площади кадра" %}</span>
+                                        </div>                                    
+                                    </div>
+                                </div>
+                            </div>
+			    <!--
+                            <div class="form_block">
+                                <div class="error_field"></div>
+                                <div class="fb_content">
+                                    <label for="leftThingsDetectorMinNumPixelInObject" class="fbc_text">{% trans "Чувствительность алгоритма детектора (в %)" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">{% spinbox "leftThingsDetectorMinNumPixelInObject" "leftThingsDetectorMinNumPixelInObject" lthings_data.minNumPixelInObject "38" "30" "100" "5" %}</div>
+                                            <span class="fbc_help2">{% trans "Минимальное количество пикселей для четкого выделения границ предмета" %}</span>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>-->
+                            <div class="form_block" style="display: none;">
+                                <div class="error_field"></div>
+                                <div class="fb_content">
+                                    <label for="motionDetector" class="fbc_text"><span class="req">*</span>{% trans "Чувствительность" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie dist_inner">
+                                            <label for="lt_autolearning" class="fbc_text_inner3">{% trans "autolearning" %}:</label>
+                                            {% spinbox "lt_autolearning" "lt_autolearning" lthings_data.autoLearning "38" "0" "255" "1" %}
+                                        </div>
+                                         <div class="block_ie dist_inner">
+                                            <label for="lt_bound" class="fbc_text_inner3">{% trans "bound" %}:</label>
+                                            {% spinbox "lt_bound" "lt_bound" lthings_data.bound "38" "0" "255" "1" %}
+                                        </div>         
+                                        <div class="block_ie dist_inner">
+                                            <label for="lt_cleaningIntervalSeconds" class="fbc_text_inner3">{% trans "cleaningIntervalSeconds" %}:</label>
+                                            {% spinbox "lt_cleaningIntervalSeconds" "lt_cleaningIntervalSeconds" lthings_data.cleaningIntervalSeconds "38" "0" "255" "1" %}
+                                        </div>     
+                                        <div class="block_ie dist_inner">
+                                            <label for="lt_maxMergingGapPercent" class="fbc_text_inner3">{% trans "maxMergingGapPercent" %}:</label>
+                                            {% spinbox "lt_maxMergingGapPercent" "lt_maxMergingGapPercent" lthings_data.maxMergingGapPercent "38" "0" "255" "1" %}
+                                        </div>
+                                        <div class="block_ie dist_inner">
+                                            <label for="lt_maxMod0" class="fbc_text_inner3">{% trans "maxMod0" %}:</label>
+                                            {% spinbox "lt_maxMod0" "lt_maxMod0" lthings_data.maxMod0 "38" "0" "255" "1" %}
+                                        </div>
+                                        <div class="block_ie dist_inner">
+                                            <label for="lt_maxMod1" class="fbc_text_inner3">{% trans "maxMod1" %}:</label>
+                                            {% spinbox "lt_maxMod1" "lt_maxMod1" lthings_data.maxMod1 "38" "0" "255" "1" %}
+                                        </div>
+                                        <div class="block_ie dist_inner">
+                                            <label for="lt_maxMod2" class="fbc_text_inner3">{% trans "maxMod2" %}:</label>
+                                            {% spinbox "lt_maxMod2" "lt_maxMod2" lthings_data.maxMod2 "38" "0" "255" "1" %}
+                                        </div>
+                                        <div class="block_ie dist_inner">
+                                            <label for="lt_minMod0" class="fbc_text_inner3">{% trans "minMod0" %}:</label>
+                                            {% spinbox "lt_minMod0" "lt_minMod0" lthings_data.minMod0 "38" "0" "255" "1" %}
+                                        </div>
+                                        <div class="block_ie dist_inner">
+                                            <label for="lt_minMod1" class="fbc_text_inner3">{% trans "minMod1" %}:</label>
+                                            {% spinbox "lt_minMod1" "lt_minMod1" lthings_data.minMod1 "38" "0" "255" "1" %}
+                                        </div>
+                                        <div class="block_ie dist_inner">
+                                            <label for="lt_minMod2" class="fbc_text_inner3">{% trans "minMod2" %}:</label>
+                                            {% spinbox "lt_minMod2" "lt_minMod2" lthings_data.minMod2 "38" "0" "255" "1" %}
+                                        </div>
+                                        <div class="block_ie dist_inner">
+                                            <label for="lt_mode" class="fbc_text_inner3">{% trans "mode" %}:</label>
+                                            {% spinbox "lt_mode" "lt_mode" lthings_data.mode "38" "0" "255" "1" %}
+                                        </div>
+                                        <div class="block_ie dist_inner">
+                                            <label for="lt_startingLearningPercent" class="fbc_text_inner3">{% trans "mode" %}:</label>
+                                            {% spinbox "lt_startingLearningPercent" "lt_startingLearningPercent" lthings_data.startingLearningPercent "38" "0" "255" "1" %}
+                                        </div>
+                                        <div class="block_ie dist_inner">
+                                            <label for="lt_startingLearningTime" class="fbc_text_inner3">{% trans "startingLearningTime" %}:</label>
+                                            {% spinbox "lt_startingLearningTime" "lt_startingLearningTime" lthings_data.startingLearningTime "38" "0" "255" "1" %}
+                                        </div>
+                                        <div class="block_ie dist_inner">
+                                            <label for="lt_morphology" class="fbc_text_inner3">{% trans "morphology" %}:</label>
+                                            {% spinbox "lt_morphology" "lt_morphology" lthings_data.morphology "38" "0" "255" "1" %}
+                                        </div>
+                                        <div class="block_ie dist_inner">
+                                            <label for="lt_connectedComp" class="fbc_text_inner3">{% trans "connectedComp" %}:</label>
+                                            {% spinbox "lt_connectedComp" "lt_connectedComp" lthings_data.connectedComp "38" "0" "255" "1" %}
+                                        </div>                                                                                       
+                                    </div>                                
+                                </div>                    
+                            </div>
+							
+                            <div class="form_block_btn"><input class="formButton" id="btnForm" type="button" value="{% trans "Сохранить" %}" onclick="javascript: setSettingsLeftThings();" />
+                                <input type="button" name="" value="{% trans "Отменить" %}" class="inp_btn inp_btn90 dist_left"  onclick="javascript: hideSettings('thingsDetector');"/>
+                            </div>
+                        </form>
+						{% comment %}
+                        <form method="post" action="" class="form settings_detector" id="fonsDetector" style="display: none;" >
+                            <div class="delim_block"></div>
+                            <div class="form_block_head">{% trans "Настройки детектора отделения объектов от фона" %}</div>                            
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="bound" class="fbc_text">{% trans "Размер блока" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            {% spinbox "bound" "bound" s_obj_data.bound "38" "0" "50" "1" %}
+											<div class="error_field"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="fbc_help">{% trans "Размер блока в кодовой книге" %}</span>
+                            </div>                                
+                            <div class="form_block">
+                                <div class="error_field"></div>
+                                <div class="fb_content">
+                                    <label for="sizeBlockCode" class="fbc_text">{% trans "Поправки границ блока" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie dist_inner">
+                                            <div class="fbc_text_inner4">{% trans "Для нулевого канала" %}:</div>
+                                            <label for="minMod0" class="fbc_text_inner2 dist_left">{% trans "снизу" %}</label>
+                                            {% spinbox "minMod0" "minMod0" s_obj_data.minMod0 "38" "0" "10" "1" %}                                        
+                                            <label for="maxMod0" class="fbc_text_inner2 dist_left">{% trans "сверху" %}</label>                                            
+                                            {% spinbox "maxMod0" "maxMod0" s_obj_data.maxMod0 "38" "0" "10" "1" %}
+                                        </div>
+                                        <div class="block_ie dist_inner">
+                                            <div class="fbc_text_inner4">{% trans "Для первого канала" %}:</div>
+                                            <label for="minMod1" class="fbc_text_inner2 dist_left">{% trans "снизу" %}</label>
+                                            {% spinbox "minMod1" "minMod1" s_obj_data.minMod1 "38" "0" "10" "1" %}
+                                            <label for="minMod1" class="fbc_text_inner2 dist_left">{% trans "сверху" %}</label>
+                                            {% spinbox "maxMod1" "maxMod1" s_obj_data.maxMod1 "38" "0" "10" "1" %}
+                                        </div>
+                                        <div class="block_ie">
+                                            <div class="fbc_text_inner4">{% trans "Для второго канала" %}:</div>
+                                            <label for="minMod2" class="fbc_text_inner2 dist_left">{% trans "снизу" %}</label>
+                                            {% spinbox "minMod2" "minMod2" s_obj_data.minMod2 "38" "0" "10" "1" %}                                        
+                                            <label for="maxMod2" class="fbc_text_inner2 dist_left">{% trans "сверху" %}</label>                                            
+                                            {% spinbox "maxMod2" "maxMod2" s_obj_data.maxMod2 "38" "0" "10" "1" %}
+                                        </div>                                            
+                                    </div>
+                                </div>
+                                <span class="fbc_help">{% trans "Поправки границ блока в кодовой книге для каждого канала (окрестность при классификации)" %}</span>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="threshold_e" class="fbc_text">{% trans "Порог при обучении фона" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">                                            
+                                            {% spinbox "threshold_e" "threshold_e" s_obj_data.e "38" "0" "1" "0.01" %}
+											<div class="error_field"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="fbc_help">{% trans "Если больше порога, то обучаем данный пиксель, иначе не обучаем" %}</span>
+                            </div>                                    
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="rate_a" class="fbc_text">{% trans "Скорость обучения" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">                                            
+                                            {% spinbox "rate_a" "rate_a" s_obj_data.a "38" "0" "1" "0.01" %}
+											<div class="error_field"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="fbc_help">{% trans "Коэффициент в алгоритме скользящих средних, при изменении весов пикселей" %}</span>
+                            </div>                                    
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="counter_approx_level" class="fbc_text">{% trans "Уровень аппроксимации" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">                                            
+                                            {% spinbox "counter_approx_level" "counter_approx_level" s_obj_data.counterApproxLevel "38" "0" "35" "1" %}
+											<div class="error_field"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="fbc_help">{% trans "Чем больше значение, тем аппроксимация более грубая" %}</span>
+                            </div>                                    
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="morphology" class="fbc_text">{% trans "Уровень морфологической обработки" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">                                            
+                                            {% spinbox "morphology" "close_itr" s_obj_data.morphology "38" "0" "10" "1" %}
+											<div class="error_field"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="fbc_help">{% trans "Чем больше значение, тем грубее обработка (больше эрозия)" %}</span>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="min_pixel_in_object" class="fbc_text">{% trans "Процент заполнения сегмента объектом" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">                                            
+                                            {% spinbox "min_pixel_in_object" "min_pixel_in_object" s_obj_data.minPixelInObject "38" "0" "100" "5" %}
+                                            <span class="unit">%</span>
+											<div class="error_field"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="fbc_help">{% trans "Минимальное количество пикселей, для того чтобы утверждать, что обнаружен объект в блоке" %}</span>
+                            </div>
+                            <div class="form_block_head">{% trans "Режимы детектора" %}</div>
+                            <!-- 
+                            <div class="form_block">
+                                <div class="error_field"></div>
+                                <div class="fb_content">
+                                    <label for="generate_no" class="fbc_text">Режим генерации фона:</label>
+                                    <div class="fb_enter">
+                                        <input type="radio" name="generate" id="generate_yes" value="" class="inp_check" /><label for="generate_yes">Включён</label>
+                                        <input type="radio" name="generate" id="generate_no" value="" checked="checked" class="inp_check dist_left" /><label for="generate_no">Выключен</label>                                            
+                                        <script type="text/javascript">params["generate"] = "false"</script>                                            
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="error_field"></div>
+                                <div class="fb_content">
+                                    <label for="classification_no" class="fbc_text">Режим классификации:</label>
+                                    <div class="fb_enter">
+                                        <input type="radio" name="classification" id="classification_yes" value="" class="inp_check" /><label for="classification_yes">Включён</label>
+                                        <input type="radio" name="classification" id="classification_no" value="" checked="checked" class="inp_check dist_left" /><label for="classification_no">Выключен</label>                                            
+                                        <script type="text/javascript">params["classification"] = "false"</script>                                            
+                                    </div>
+                                </div>
+                                <span class="fbc_help">Режим отделения объектов от фона.</span>
+                            </div>-->
+                            <div class="form_block">
+                                <div class="error_field"></div>
+                                <div class="fb_content">
+                                    <label for="auto_learning_no" class="fbc_text">{% trans "Режим автообучения" %}:</label>
+                                    <div class="fb_enter">
+                                        <input type="radio" name="auto_learning" id="auto_learning_yes" value="1" {% if autoLearning %}checked="checked"{% endif %} class="inp_check" /><label for="auto_learning_yes">{% trans "Включён" %}</label>
+                                        <input type="radio" name="auto_learning" id="auto_learning_no" value="0" {% if not autoLearning %}checked="checked"{% endif %} class="inp_check dist_left" /><label for="auto_learning_no">{% trans "Выключен" %}</label>                                            
+                                        <script type="text/javascript">params["auto_learning"] = "false"</script>
+                                        <span class="fbc_help2">{% trans "Используется, если включён режим классификации" %}</span>
+                                    </div>
+                                </div>                                
+                            </div>
+                            <div class="form_block">
+                                <div class="error_field"></div>
+                                <div class="fb_content">
+                                    <label for="morphology_no" class="fbc_text">{% trans "Режим морфологического преобразования" %}:</label>
+                                    <div class="fb_enter">
+                                        <input type="radio" name="morphology" id="morphology_yes" value="1" {% if morphology %}checked="checked"{% endif %} class="inp_check" /><label for="morphology_yes">{% trans "Включён" %}</label>
+                                        <input type="radio" name="morphology" id="morphology_no" value="0" {% if not morphology %}checked="checked"{% endif %} class="inp_check dist_left" /><label for="morphology_no">{% trans "Выключен" %}</label>                                            
+                                        <script type="text/javascript">params["morphology"] = "false"</script> 
+                                        <span class="fbc_help2">{% trans "Режим морфологического преобразования результатов работы алгоритма" %}</span>
+                                    </div>
+                                </div>                            
+                            </div>
+                            <div class="form_block">
+                                <div class="error_field"></div>
+                                <div class="fb_content">
+                                    <label for="connected_comp_no" class="fbc_text">{% trans "Режим выделения связных компонент" %}:</label>
+                                    <div class="fb_enter">
+                                        <input type="radio" name="connected_comp" id="connected_comp_yes" value="1" {% if connectedComp %}checked="checked"{% endif %} class="inp_check" /><label for="connected_comp_yes">{% trans "Включён" %}</label>
+                                        <input type="radio" name="connected_comp" id="connected_comp_no" value="0" {% if not connectedComp %}checked="checked"{% endif %} class="inp_check dist_left" /><label for="connected_comp_no">{% trans "Выключен" %}</label>                                            
+                                        <script type="text/javascript">params["connected_comp"] = "false"</script>
+                                        <span class="fbc_help2">{% trans "Режим выделения связных компонент результатов работы алгоритма" %}</span>                                            
+                                    </div>
+                                </div>                                
+                            </div>
+                            <div class="form_block_btn"><input class="formButton" type="button" value="{% trans "Сохранить" %}" onclick="javascript: setSettingsSeparatingObjects();"/>
+                                <input type="button" name="" value="{% trans "Отменить" %}" class="inp_btn inp_btn90 dist_left"  onclick="javascript: hideSettings('fonsDetector');"/>
+                            </div>
+                        </form> 
+						{% endcomment %}
+                        <form method="post" action="" class="form settings_detector" id="fireDetector" style="display: none;">
+                            <div class="delim_block"></div>
+                            <div class="form_block_head">{% trans "Настройки детектора огня" %}</div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="dynamicDetectorAlertTime_" class="fbc_text">{% trans "Время обновления записи в журнале (в сек.)" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            {% spinbox "dynamicDetectorAlertTime_" "dynamicDetectorAlertTime_" fireDetect_data.alertTime "38" "30" "300" "5" %}
+											<div class="error_field" id="dynamicDetectorAlertTime_Error"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                            
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="min_pixel_in_object" class="fbc_text">{% trans "Процент огня в блоке" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            {% spinbox "firedPixelsThreshold_" "firedPixelsThreshold_" fireDetect_data.firedPixelsThreshold "37" "1" "100" "5" %}
+											<div class="error_field"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="dynamicDetectorMinFireArea" class="fbc_text">{% trans "Минимальная площадь огня" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+	                                            {% spinbox "dynamicDetectorMinFireArea" "dynamicDetectorMinFireArea" fireDetect_data.minFireArea "38" "0.1" "100" "0.1" %}
+												<div class="error_field"></div>
+                                    		</div>
+                                            <span class="fbc_help2">{% trans "В процентах от площади кадра" %}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="dynamicDetectorMaxMergingGapPercent" class="fbc_text">{% trans "Наибольший зазор (в процентах)" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+                                                {% spinbox "dynamicDetectorMaxMergingGapPercent" "dynamicDetectorMaxMergingGapPercent" fireDetect_data.maxMergingGapPercent "38" "5" "100" "1" %}
+												<div class="error_field"></div>
+                                            </div>
+                                            <span class="fbc_help2">{% trans "Наибольший зазор между прямоугольниками с огнём, при котором они сливаются в один в ответе детектора; в процентах от ширины изображения" %}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="dynamicDetectorWatchOverFrameCount" class="fbc_text">{% trans "Интервал наблюдения за результатами детектирования (в кадрах)" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+                                                {% spinbox "dynamicDetectorWatchOverFrameCount" "dynamicDetectorWatchOverFrameCount" fireDetect_data.watchOverFrameCount "38" "1" "100" "1" %}
+												<div class="error_field" id="dynamicDetectorWatchOverFrameCountError"></div>
+                                            </div>
+                                            <span class="fbc_help2">{% trans "Если в течение этого интервала будет мало срабатываний, то они не будут засчитаны" %}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="dynamicDetectorReliabilityThresholdPercent" class="fbc_text">{% trans "Пороговый процент кадров" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+                                                {% spinbox "dynamicDetectorReliabilityThresholdPercent" "dynamicDetectorReliabilityThresholdPercent" fireDetect_data.reliabilityThresholdPercent "38" "10" "100" "5" %}
+												<div class="error_field"></div>
+                                            </div>
+                                            <span class="fbc_help2">{% trans "Пороговый процент кадров, на которых обнаружен огонь. При превышении данного показателя клиент получает оповещение о наличии огня" %}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="dynamicDetectorNumBlockWidth" class="fbc_text">{% trans "Количество блоков по горизонтали" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+                                                {% spinbox "dynamicDetectorNumBlockWidth" "dynamicDetectorNumBlockWidth" fireDetect_data.numBlockWidth "38" "10" "150" "5" %}
+												<div class="error_field" id="dynamicDetectorNumBlockWidthError"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="dynamicDetectorNumBlockHeight" class="fbc_text">{% trans "Количество блоков по вертикали" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+                                                {% spinbox "dynamicDetectorNumBlockHeight" "dynamicDetectorNumBlockHeight" fireDetect_data.numBlockHeight "38" "10" "150" "5" %}
+												<div class="error_field" id="dynamicDetectorNumBlockHeightError"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="dynamicDetectorforegroundToFireMaxRatio_" class="fbc_text">{% trans "Отношение количества &quot;нефоновых&quot; пикселей к количеству огненных" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            {% spinbox "dynamicDetectorforegroundToFireMaxRatio_" "dynamicDetectorforegroundToFireMaxRatio_" fireDetect_data.foregroundToFireMaxRatio "38" "20" "200" "5" %}
+                                            <span class="unit"></span>
+											 <div class="error_field"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="dynamicDetectorslidingAvgAlpha_" class="fbc_text">{% trans "Весовой коэффициент для вычисления скользящих средних" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            {% spinbox "dynamicDetectorslidingAvgAlpha_" "dynamicDetectorslidingAvgAlpha_" fireDetect_data.slidingAvgAlpha "38" "0" "1" "0.01" %}
+                                            <span class="unit"></span>
+											<div class="error_field"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>            
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="dynamicDetectorminForegroundPixelsPercent_" class="fbc_text">{% trans "Минимальный процент &quot;нефоновых&quot; пикселей в кадре" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            {% spinbox "dynamicDetectorminForegroundPixelsPercent_" "dynamicDetectorminForegroundPixelsPercent_" fireDetect_data.minForegroundPixelsPercent "38" "0" "5" "0.1" %}
+                                            <span class="unit"></span>
+											<div class="error_field"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="dynamicDetectorminFireDelta_" class="fbc_text">{% trans "Минимальное колебание интенсивностей &quot;нефоновых&quot; пикселей" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            {% spinbox "dynamicDetectorminFireDelta_" "dynamicDetectorminFireDelta_" fireDetect_data.minFireDelta "38" "0" "10" "0.1" %}
+                                            <span class="unit"></span>
+											<div class="error_field"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                                                                                                                                                                                           
+                            <div class="form_block_btn"><input class="formButton" type="button" value="{% trans "Сохранить" %}" onclick="javascript: setSettingsFireDetect();" />
+                                <input type="button" name="" value="{% trans "Отменить" %}" class="inp_btn inp_btn90 dist_left"  onclick="javascript: hideSettings('fireDetector');" />
+                            </div>                    
+                        </form>
+                        <form method="post" action="" class="form settings_detector" id="smokeDetector" style="display: none;">
+                            <div class="delim_block"></div>
+                            <div class="form_block_head">{% trans "Настройки детектора дыма" %}</div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="timeSmoke" class="fbc_text">{% trans "Время обновления записи в журнале (в сек.)" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "timeSmoke" "timeSmoke" smokeDetect_data.alertTime "38" "10" "360" "5" %}
+												<div class="error_field" id="timeSmokeError"></div>
+											</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                            
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="alphaSmoke" class="fbc_text">{% trans "Скорость обучения" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "alphaSmoke" "alphaSmoke" smokeDetect_data.emaAlpha "38" "0" "1" "0.01" %}
+												<div class="error_field"></div>
+											</div>
+                                            <span class="fbc_help2">{% trans "Коэффициент, указывающий на скорость адаптации алгоритма к изменению кадра" %}</span>
+                                        </div>
+                                    </div>
+                                </div>                              
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="emaDelaySmoke" class="fbc_text">{% trans "Количество кадров" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "emaDelaySmoke" "emaDelaySmoke" smokeDetect_data.emaDelay "38" "50" "300" "10" %}
+												<div class="error_field" id="emaDelaySmokeError"></div>
+											</div>
+                                            <span class="fbc_help2">{% trans "Количество кадров для вычисления дыма" %}</span>
+                                        </div>
+                                    </div>
+                                </div>                              
+                            </div>                            
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="thresholdSmoke" class="fbc_text">{% trans "Процент изменения интенсивности пикселя" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "thresholdSmoke" "thresholdSmoke" smokeDetect_data.threshold "38" "0.2" "0.95" "0.01" %}
+												 <div class="error_field"></div>
+											</div>
+                                            <span class="fbc_help2">{% trans "Для того чтобы считать его дымом" %}</span>
+                                        </div>
+                                    </div>
+                                </div>                     
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="minSmokeArea" class="fbc_text">{% trans "Минимальная площадь дыма" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "minSmokeArea" "minSmokeArea" smokeDetect_data.minSmokeArea "38" "1" "100" "0.1" %}
+												<div class="error_field"></div>
+											</div>
+                                            <span class="fbc_help2">{% trans "В процентах от площади кадра" %}</span>
+                                        </div>
+                                    </div>
+                                </div>                     
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="numWidthBlocksSmokeArea" class="fbc_text">{% trans "Количество блоков по горизонтали" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "numWidthBlocksSmokeArea" "numWidthBlocksSmokeArea" smokeDetect_data.numWidthBlocks "38" "2" "20" "1" %}
+												<div class="error_field" id="numWidthBlocksSmokeAreaError"></div>
+											</div>
+                                            <span class="fbc_help2"></span>
+                                        </div>
+                                    </div>
+                                </div>                     
+                            </div> 
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="numHeightBlocksSmokeArea" class="fbc_text">{% trans "Количество блоков по вертикали" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "numHeightBlocksSmokeArea" "numHeightBlocksSmokeArea" smokeDetect_data.numHeightBlocks "38" "2" "20" "1" %}
+												<div class="error_field" id="numHeightBlocksSmokeAreaError"></div>												
+											</div>
+                                            <span class="fbc_help2"></span>
+                                        </div>
+                                    </div>
+                                </div>                     
+                            </div>                                                       
+                            <div class="form_block_btn"><input class="formButton" type="button" value="{% trans "Сохранить" %}" onclick="javascript: setSettingsSmokeDetect();"/>
+                                <input type="button" name="" value="{% trans "Отменить" %}" class="inp_btn inp_btn90 dist_left"  onclick="javascript: hideSettings('smokeDetector');" />
+                            </div>
+                        </form>
+                        <form method="post" action="" class="form settings_detector" id="explosionDetector" style="display: none;">
+                            <div class="delim_block"></div>
+                            <div class="form_block_head">{% trans "Настройки детектора вспышки" %}</div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="explosionDetectorAlertTime" class="fbc_text">{% trans "Время обновления записи в журнале (в сек.)" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "explosionDetectorAlertTime" "explosionDetectorAlertTime" flashDetect_data.alertTime "38" "10" "360" "5" %}
+												<div class="error_field" id="explosionDetectorAlertTimeError"></div>
+											</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="explosionDetectorEmaAlpha" class="fbc_text">{% trans "Скорость обучения" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "explosionDetectorEmaAlpha" "explosionDetectorEmaAlpha" flashDetect_data.emaAlpha "38" "0" "1" "0.01" %}
+												<div class="error_field"></div>
+											</div>
+                                            <span class="fbc_help2">{% trans "Коэффициент, указывающий на скорость адаптации алгоритма к изменению кадра" %}</span>
+                                        </div>                                    
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="explosionDetectorEmaDelay" class="fbc_text">{% trans "Количество кадров" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "explosionDetectorEmaDelay" "explosionDetectorEmaDelay" flashDetect_data.emaDelay "38" "20" "100" "5" %}
+												<div class="error_field" id="explosionDetectorEmaDelayError"></div>												
+											</div>
+                                            <span class="fbc_help2">{% trans "Количество кадров для вычисления вспышки" %}</span>
+                                        </div>                                    
+                                    </div>
+                                </div>                            
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="explosionDetectorBounceUpContrast" class="fbc_text">{% trans "Увеличение контрастности изображения" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "explosionDetectorBounceUpContrast" "explosionDetectorBounceUpContrast" flashDetect_data.bounceUpContrast "38" "1" "2" "0.005" %}
+												<div class="error_field"></div>												
+											</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="explosionDetectorBounceDownContrast" class="fbc_text">{% trans "Уменьшение контрастности изображения" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "explosionDetectorBounceDownContrast" "explosionDetectorBounceDownContrast" flashDetect_data.bounceDownContrast "38" "0" "1" "0.005" %}
+												<div class="error_field"></div>
+											</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="explosionDetectorBounceUpBrightness" class="fbc_text">{% trans "Увеличение яркости изображения" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "explosionDetectorBounceUpBrightness" "explosionDetectorBounceUpBrightness" flashDetect_data.bounceUpBrightness "38" "1" "2" "0.005" %}
+												<div class="error_field"></div>
+											</div>
+                                        </div>
+                                    </div>
+                                </div>                            
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="explosionDetectorBounceDownBrightness" class="fbc_text">{% trans "Уменьшение яркости изображения" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "explosionDetectorBounceDownBrightness" "explosionDetectorBounceDownBrightness" flashDetect_data.bounceDownBrightness "38" "0" "1" "0.005" %}
+												<div class="error_field"></div>
+											</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="explosionDetectorNumWidthBlocks" class="fbc_text">{% trans "Количество блоков по горизонтали" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "explosionDetectorNumWidthBlocks" "explosionDetectorNumWidthBlocks" flashDetect_data.numWidthBlocks "38" "2" "10" "1" %}
+												<div class="error_field" id="explosionDetectorNumWidthBlocksError"></div>
+											</div>
+                                            <span class="fbc_help2"></span>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="explosionDetectorNumHeightBlocks" class="fbc_text">{% trans "Количество блоков по вертикали" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "explosionDetectorNumHeightBlocks" "explosionDetectorNumHeightBlocks" flashDetect_data.numHeightBlocks "38" "2" "10" "1" %}
+												<div class="error_field" id="explosionDetectorNumHeightBlocksError"></div>
+											</div>
+                                            <span class="fbc_help2"></span>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block_btn"><input class="formButton" type="button" value="{% trans "Сохранить" %}" onclick="javascript: setSettingsExplosionDetect();"/>
+                                <input type="button" name="" value="{% trans "Отменить" %}" class="inp_btn inp_btn90 dist_left"  onclick="javascript: hideSettings('explosionDetector');" />
+                            </div>
+                        </form>
+                        <form method="post" action="" class="form settings_detector" id="crowdDetector" style="display: none;">
+                            <div class="delim_block"></div>
+                            <div class="form_block_head">{% trans "Настройки детектора скопления людей" %}</div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="controlDetectorCrowdSize" class="fbc_text">{% trans "Количество лиц для срабатывания детектора" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "controlDetectorCrowdSize" "controlDetectorCrowdSize" crowdDetectSize "38" "2" "500" "1" %}
+												<div class="error_field" id="controlDetectorCrowdSizeError"></div>
+											</div>
+                                            <span class="fbc_help2"></span>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_block">
+                                <div class="fb_content">
+                                    <label for="controlDetectorCrowdTimeout" class="fbc_text">{% trans "Минимальное время между срабатываниями (в сек.)" %}:</label>
+                                    <div class="fb_enter">
+                                        <div class="block_ie">
+                                            <div class="block">
+												{% spinbox "controlDetectorCrowdTimeout" "controlDetectorCrowdTimeout" crowdDetectTimeout "38" "1" "20120000" "1" %}
+												<div class="error_field" id="controlDetectorCrowdTimeoutError"></div>
+											</div>
+                                            <span class="fbc_help2"></span>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>                          
+                            <div class="form_block_btn"><input class="formButton" type="button" value="{% trans "Сохранить" %}" onclick="javascript: setSettingsCrowdDetect();"/>
+                                <input type="button" name="" value="{% trans "Отменить" %}" class="inp_btn inp_btn90 dist_left"  onclick="javascript: hideSettings('crowdDetector');" />
+                            </div>                        
+                        </form>
+                        {% else%}
+                        <!-- {% trans "Камера выключена или недоступна" %}-->
+                        {% endif %}                                          
+                    </div>
+                    {% endif %}
+{% endblock %}					
+{% block windows %}
+{% include "execute.html" %}
+{% include "window_videoanalytics.html" %}
+{% endblock %}

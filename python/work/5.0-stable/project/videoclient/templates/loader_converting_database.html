@@ -1,0 +1,64 @@
+{% load i18n templatetags %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>{% trans "Конвертирование базы персон" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<link rel="stylesheet" type="text/css" href="/files/css/main.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/lib/draw/jquery-1.6.2.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+
+setInterval('window.location.reload()', 15000);  // перезагрузка страницы раз в 15 сек.
+
+// получить размер экрана
+function getScreenSize() {
+	return { width: $(window).width(), height: $(window).height() }
+}
+// выровнить блок с контентом по вертикали
+function setLocationContent() {
+	var scr = getScreenSize();
+	var body = $("#content");
+	var footer = $("#footer");
+	var padding_top = parseInt( (scr.height - body.height() - footer.height() ) / 2 );
+	body.css("padding-top", padding_top + "px");
+}
+// инициализация
+function init() {
+	setLocationContent();
+	$(window).resize(function() {
+		setLocationContent();
+	});
+}
+$(function() {
+	init();
+});
+</script>
+</head>
+<body>
+<div class="body1">
+<!-- BEGIN: content-->
+<div class="content" id="content" style="margin-top: 0px; padding-top: 57px;">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<div class="block_loader">
+					<img src="/files/images/loader.gif" alt="" />
+					<div class="dist_top">{% trans "Идёт конвертирование базы персон." %}</div>
+					<div>{% trans "Пожалуйста, подождите." %}</div>						
+				</div>			
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+<!-- BEGIN: footer -->
+<div class="footer" id="footer">
+	{% include "footer_contacts.html" %}
+</div>
+<!-- END: footer -->
+</body>
+</html>

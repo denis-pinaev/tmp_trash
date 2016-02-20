@@ -1,0 +1,50 @@
+{% load i18n %}
+{% include "header.html" %}
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>{% trans "Обучение базы персон" %}</h2>
+				{% include "current_time.html" %}
+				<div class="process2">{% trans "Пожалуйста, подождите. Идёт обучение." %}<img width="20px" height="20px" alt="" src="/files/images/loader.gif"></div>
+				<table cellspacing="0" cellpadding="0" border="0" class="table_info_learn">
+					<tr>
+						<td>
+							<div class="td_head">{% trans "Затрачено времени" %}:</div>
+							<div>{% trans "Среднее на одно изображение" %}: 1.2 {% trans "c." %}</div>
+							<div>{% trans "Всего на все изображения" %}: 10 {% trans "c." %}</div>
+						</td>
+						<td class="last">
+							<div class="td_head">{% trans "Изображения" %}</div>
+							<div>{% trans "загружено" %} - 1</div>	
+							<div>{% trans "обработано" %} - 1</div>								
+							<div>{% trans "неверный формат" %} - 10</div>
+							<div>{% trans "неверный размер" %} - 10</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="last" colspan="2">
+							<form method="post" action="" id="" name="">
+								<div>
+									<label for="update"><input type="checkbox" name="" id="update" value="" class="inp_check" checked />{% trans "Автоматическое обновление каждые 15 секунд" %}</label>
+								</div>
+								<div class="frm_block">
+									<input type="submit" name="" value="{% trans "Обновить информацию" %}" class="inp_btn inp_btn170" onMouseOver="javascript: buttonStatus(this, 'over');" 
+									onMouseOut="javascript: buttonStatus(this, 'out');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />																			
+								</div>
+							</form>							
+						</td>
+					</tr>
+				</table>			
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>
+</div>
+<!-- END: content -->
+</div>
+{% include "footer.html" %}
+
+</body>
+</html>

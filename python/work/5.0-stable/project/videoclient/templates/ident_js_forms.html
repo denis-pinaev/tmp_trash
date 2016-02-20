@@ -1,0 +1,59 @@
+{% load i18n %}
+{% load templatetags %}
+{% if info_big_camera %}
+<div><strong>{% trans "Информация о камере" %}</strong></div>
+<div class="info_delim"></div>
+{% if resolution %}<div>{% trans "Разрешение камеры" %}: {{ resolution }}</div>{% endif %}
+{% if captureRect %}<div>{% trans "Область захвата" %}: {{ captureRect }}</div>{% endif %}
+<div class="info_delim"></div>
+<div style="display: none;">{% trans "Количество попыток получения детектов" %}: <span id="current-fps"></span></div>
+<div>{% trans "Задержка" %}: <span id="frame_delay">0</span> {% trans "сек." %}</div>
+<div>{% trans "Порог идентификации" %}: <span id="frame_coeff"></span></div>								
+<div style="display: none;">{% trans "Временная проверка" %}: <span id="frame_countTime"></span></div>
+<div>{% trans "Количество лиц в секунду" %}: <span id="current-frame-ps"></span></div>
+<div class="info_delim" id="vinfo_delim1"></div>
+<div class="dist_top" id="vinfo_head"><strong>{% trans "Информация по видеокартам" %}</strong></div>
+<div class="info_delim" id="vinfo_delim2"></div>
+<span id="videocards-info">{% trans "Загрузка..." %}</span>
+<script type="text/javascript">
+function updateInfoValues(){
+	$("#current-fps").html(fps);
+	$("#current-frame-ps").html(face_ps);
+	$("#frame_delay").html(frame_delay);
+	$("#frame_coeff").html(boundFactor);
+	//$("#frame_countTime").html(countTimetest);
+
+	$.ajax({
+		type: "GET",
+		url: "{% url get-extended-video-info %}",
+		data: {},
+		success: function(data){
+			if(data.res != 'success') {
+			}else{
+				$("#videocards-info").html(data.html);
+			}
+			if (data.res != 'success' && data.html.length < 20){
+				$('#vinfo_delim1').hide();
+				$('#vinfo_delim2').hide();
+				$('#vinfo_head').hide();
+				$('#videocards-info').hide();
+			}else{
+				$('#vinfo_delim1').show();
+				$('#vinfo_delim2').show();
+				$('#vinfo_head').show();
+				$('#videocards-info').show();
+			}
+		},
+		error: function(data) {
+		}
+	});
+}
+
+setInterval('updateInfoValues()', 1000);
+</script>
+{% endif %} 
+{% if videocard_info %}
+{% for v in videocards %}
+<div>{{ v.address }}:{{ v.port }} ({{ v.name }}): {{ v.temperature }}&deg;C</div>
+{% endfor %}
+{% endif %}

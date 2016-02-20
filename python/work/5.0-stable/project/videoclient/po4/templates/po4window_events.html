@@ -1,0 +1,95 @@
+{% load i18n %}
+{% load templatetags %}
+<div id="win_sound" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<form method="post" enctype="multipart/form-data" id="frmAddSound">
+			<div class="headWF">
+				<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_sound');" title="{% trans "Закрыть окно" %}" /></div>
+				<div class="headWF_txt">{% trans "Добавление звука" %}</div>
+			</div>
+			<div class="contWF1">
+				<div class="contWF_add" id="win_sound_contWF">				
+						<div class="frm_block">
+							<div class="error_block" style="display: none;" id="error_block1"></div>
+							<div class="bl_txt">{% trans "Название" %}:</div><input type="text" name="name" id="nameSound" value="" class="inp_txt" style="width: 210px;" size="32"/></div>
+						<div class="frm_block">
+							<div class="error_block" style="display: none;" id="error_block2"></div>
+							<div class="bl_txt">{% trans "Файл" %}:</div><input type="file" name="file" value="value" size="20" id="fileSound" accept="audio/*"/>
+						</div>
+						<input type="hidden" name="ext" value="" id="ext" />					
+				</div>
+			</div>
+			<div class="footerWF">
+				<input type="button" name="" value="{% trans "Добавить" %}" class="btn_wf_blue" onClick="javascript: checkFieldSound();" />
+				<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_sound');" />
+			</div>
+		</form>
+	</div>
+</div>
+<div id="win_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF" id="win_mess_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />    
+		</div>
+	</div>
+</div>
+<div id="win_save_profile" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_save_profile');" title='{% trans "Закрыть окно" %}' /></div>
+			<div class="headWF_txt">{% trans "Сохранение профиля" %}</div>
+		</div>
+		<div class="contWF1">
+			<div class="contWF_add" id="win_save_profile_contWF">
+				{% trans "Для сохранения профиля текущих настроек звуков и сигналов, необходимо, ввести имя профиля" %}.<div class="name_profile"><input type="text" name="" value="" class="inp_txt" id="nameProfile"/></div>
+			</div>
+		</div>
+		<div class="footerWF">
+			<input type="button" name="" value='{% trans "Сохранить" %}' class="btn_wf_blue" onClick="javascript: profileSave(document.getElementById('nameProfile').value); closeChangeWindow('win_save_profile');" />
+			<input type="button" name="" value='{% trans "Отмена" %}' class="btn_wf" onClick="javascript: closeChangeWindow('win_save_profile');" />
+		</div>
+	</div>
+</div>
+<div id="win_upload_profile" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_upload_profile');" title='{% trans "Закрыть окно" %}' /></div>
+			<div class="headWF_txt">{% trans "Загрузка профиля" %}</div>
+		</div>
+		<div class="contWF1">
+			<div class="contWF_add" id="win_upload_profile_contWF">
+				{% trans "Выберите, пожалуйста, название профиля" %}.
+				<div class="name_profile">
+					
+					<select name="profiles" class="select" id="profiles">
+						{% for profile in profiles %}
+							<option value="{{ profile.id }}">{{ profile.name }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="footerWF">
+			<input type="button" name="" value='{% trans "Загрузить" %}' class="btn_wf_blue" onClick="javascript: profileLoad('profiles'); closeChangeWindow('win_upload_profile');" />
+			<input type="button" name="" value='{% trans "Отмена" %}' class="btn_wf" onClick="javascript: closeChangeWindow('win_upload_profile');" />
+		</div>
+	</div>
+</div>
+<div id="win_default_profile" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_default_profile');" title='{% trans "Закрыть окно" %}' /></div>
+			<div class="headWF_txt">{% trans "Сбрасывание настроек" %}</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_default_profile_contWF"></div></div>
+		<div class="footerWF">
+			<input type="button" name="" value='{% trans "Да" %}' class="btn_wf_blue" onClick="javascript: profileLoad('default'); closeChangeWindow('win_default_profile');" />
+			<input type="button" name="" value='{% trans "Отмена" %}' class="btn_wf" onClick="javascript: closeChangeWindow('win_default_profile');" />
+		</div>
+	</div>
+</div>

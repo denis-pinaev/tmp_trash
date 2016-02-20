@@ -1,0 +1,10 @@
+﻿.video {
+    height: 626px;
+    background-color: #666666;
+	margin-top: 10px;
+}
+.inp_btn140 {
+	width: 140px;
+	background: url("/files/images/button140x24_up.gif") no-repeat left top;
+	float: left;
+}

@@ -1,0 +1,91 @@
+{% load i18n %}
+{% include "po4header.html" %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4photos.css?v=v{{ version }}" />
+{% if allphotos.photos|length == 0 %}
+	<script type="text/javascript">
+		{% if select_page == "photosperson" %}location.replace('/po4/anketaperson/{{ user.id }}/');{% endif %}
+		{% if select_page == "photosvisitor" %}location.replace('/po4/anketavisitor/{{ user.id }}/');{% endif %}
+		{% if select_page == "photosstaff" %}location.replace('/po4/anketastaff/{{ user.id }}/');{% endif %}
+	</script>
+{% endif %}
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>
+					{% if select_page == "photosperson" %}
+						<a href="/po4/persons/">{% trans "Персоны" %}</a> - <a href="/po4/anketaperson/{{ user.id }}/">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> - {% trans "Все фотографии" %} ({{ allphotos.count }})
+					{% endif %}
+
+					{% if select_page == "photosvisitor" %}
+						<a href="/po4/visitors/">{% trans "Карточки посещений" %}</a> - <a href="/po4/visitorslist/">{% trans "Посетители" %}</a> - <a href="/po4/anketavisitor/{{ user.id }}/">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> - {% trans "Все фотографии" %} ({{ allphotos.count }})
+					{% endif %}
+
+					{% if select_page == "photosstaff" %}
+						<a href="/po4/staff/">{% trans "Журнал проходов" %}</a> - <a href="/po4/stafflist/">{% trans "Сотрудники" %}</a> - <a href="/po4/anketastaff/{{ user.id }}/">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> - {% trans "Все фотографии" %} ({{ allphotos.count }})
+					{% endif %}
+
+
+					<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Фотографии персоны" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+
+				<form method="post" action="" name="">
+					<div class="frm_block_link">
+						{% if select_page == "photosperson" %}<a href="/po4/anketaperson/{{ user.id }}/" class="link_btn">{% endif %}
+						{% if select_page == "photosvisitor" %}<a href="/po4/anketavisitor/{{ user.id }}/" class="link_btn">{% endif %}
+						{% if select_page == "photosstaff" %}<a href="/po4/anketastaff/{{ user.id }}/" class="link_btn">{% endif %}
+						{% trans "Назад" %}</a></div>					
+					<div class="frm_block dist_link">
+						<div class="bl_btn_check">
+							<input type="button" name="" value="{% trans "Выделить всё" %}" class="inp_btn inp_btn120" onMouseUp="javascript: buttonStatus(this, 'over');" onMouseDown="javascript: buttonStatus(this, 'down');" 
+								onMouseOut="javascript: buttonStatus(this, 'up');" onMouseOver="javascript: buttonStatus(this, 'over');" onClick="javascript: checkAllPhotosBtn('choose_all', {{ allphotos.photos|length }}, {{ start }}, {{ finish }});" />
+							<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAllPhotos(this, {{ allphotos.photos|length }}, {{ start }}, {{ finish }});" id="choose_all" />
+						</div>
+						<input type="button" name="" value="{% trans "Экспорт фотографий" %}" class="inp_btn inp_btn170 dist_left" onClick="javascript: showMessageExport({{ allphotos.photos|length }}, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_left" onClick="javascript: showMessageDelete({{ allphotos.photos|length }}, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+					</div>
+
+					{% include "po4NavigationBlock.html" %}
+
+					<ul class="list_photos">
+						{% for photo in allphotos.photos %}
+							{% if forloop.counter >= start and forloop.counter < finish %}
+								<li>
+									<div class="block_photo"><img src="/image/?id={{ allphotos.id }}&photo={{ photo.num }}" alt="" /></div>
+									<input type="checkbox" name="photo{{ photo.num }}" value="{{ photo.num }}" class="inp_check" id="check{{ forloop.counter }}" onClick="javascript: checkPhoto3(this, {{ allphotos.photos|length }}, {{ start }}, {{ finish }})" />
+									<div class="block_info_photo">{% trans "Разрешение" %}: <span class="info_add">{{ photo.size.width }}x{{ photo.size.height }}</span></div>
+								</li>
+							{% endif %}
+						{% endfor %}
+					</ul>
+
+					{% include "po4NavigationBlock.html" %}
+
+					<div class="frm_block">
+						<div class="bl_btn_check">
+							<input type="button" name="" value="{% trans "Выделить всё" %}" class="inp_btn inp_btn120" onMouseUp="javascript: buttonStatus(this, 'over');" onMouseDown="javascript: buttonStatus(this, 'down');" 
+								onMouseOut="javascript: buttonStatus(this, 'up');" onMouseOver="javascript: buttonStatus(this, 'over');" onClick="javascript: checkAllPhotosBtn('choose_all2', {{ allphotos.photos|length }}, {{ start }}, {{ finish }});" />
+							<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAllPhotos(this, {{ allphotos.photos|length }}, {{ start }}, {{ finish }});" id="choose_all2" />
+						</div>
+						<input type="button" name="" value="{% trans "Экспорт фотографий" %}" class="inp_btn inp_btn170 dist_left" onClick="javascript: showMessageExport({{ allphotos.photos|length }}, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_left" onClick="javascript: showMessageDelete({{ allphotos.photos|length }}, 'photos')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+					</div>
+					<div class="frm_block">
+						{% if select_page == "photosperson" %}<a href="/po4/anketaperson/{{ user.id }}/" class="link_btn">{% endif %}
+						{% if select_page == "photosvisitor" %}<a href="/po4/anketavisitor/{{ user.id }}/" class="link_btn">{% endif %}
+						{% if select_page == "photosstaff" %}<a href="/po4/anketastaff/{{ user.id }}/" class="link_btn">{% endif %}{% trans "Назад" %}</a></div>					
+
+				</form>			
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+{% include "po4footer.html" %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% include "po4window_photos.html" %}
+</body>
+</html>

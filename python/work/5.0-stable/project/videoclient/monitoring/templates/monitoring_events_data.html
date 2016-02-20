@@ -1,0 +1,40 @@
+{% load i18n %}
+{% load templatetags %}
+{% load pagination_tags %}
+						{% autopaginate events %}
+						{% paginate %}
+						{% if events|length > 0 %}
+							<table cellpadding="0px" cellspacing="0px" class="table">
+								<tr>
+									<th class="first"><a href="?{{ getvars }}&sorto=1&up={% if sorto == 1 and up == 1 %}0" class="up"{% else %}1"{% endif %}>ID</a></th>
+									<th class="date_time"><a href="?{{ getvars }}&sorto=2&up={% if sorto == 2 and up == 1 %}0" class="up"{% else %}1"{% endif %}>{% trans "Дата" %}</a></th>
+									<th class="date_time"><a href="?{{ getvars }}&sorto=3&up={% if sorto == 3 and up == 1 %}0" class="up"{% else %}1"{% endif %}>{% trans "Время" %}</a></th>                        
+									<th><a href="?{{ getvars }}&sorto=4&up={% if sorto == 4 and up == 1 %}0" class="up"{% else %}1"{% endif %}>{% trans "Статус" %}</a></th>
+									<th><a href="?{{ getvars }}&sorto=5&up={% if sorto == 5 and up == 1 %}0" class="up"{% else %}1"{% endif %}>{% trans "Тип" %}</a></th>
+									<th><a href="?{{ getvars }}&sorto=6&up={% if sorto == 6 and up == 1 %}0" class="up"{% else %}1"{% endif %}>{% trans "Описание" %}</a></th>
+								</tr>
+
+								{% for event in events %}
+									<tr{% cycle '' ' class="odd"' %} onMouseOver="javascript: overRow(this);" onMouseOut="javascript: outRow(this);">
+										<td class="td_check first">{{ event.id }}</td>
+										<td>{{ event.date|date:"d.m.Y" }}</td>
+										<td>{{ event.time|time:"H:i:s" }}</td>
+										{%comment%}{% trans 'Аварийная ситуация'%}{% trans 'Информационное сообщение'%}{% trans 'Действия с системой'%}{% trans 'Перегрузки температур'%}{% trans 'Перегрузки по очередям'%}{% trans 'Нахождение объектов'%}{% trans 'Авария компонентов'%}{% trans 'Успешная загрузка системы'%}{% trans 'Включение системы'%}{% trans 'Выключение системы'%}{% trans 'Обновление системы'%}{% trans 'Тестирование системы'%}{% trans 'Аварийное выключение системы'%}{% trans 'Заканчивается свободное место'%}{% trans 'Закончилось свободное место'%}{% trans 'Неизвестная ошибка'%}{%endcomment%}
+										{%comment%}
+										<td {% if event.status == "warning" %}class="error"{% endif %}>{% trans  event.get_status_display|stringformat:"s"  %}</td>
+										<td>{% trans  event.get_type_display  %}</td>                        
+										<td>{% trans  event.description  %}{% if event.error_file %}<a href="{{ event.error_file.url }}">{% trans "Скачать" %}</a>{% endif %}</td>
+										{%endcomment%}
+										<td {% if event.status == "warning" %}class="error"{% endif %}>{% trans event.get_status_display|stringformat:"s" %}</td>
+										<td>{% trans event.get_type_display|stringformat:"s" %}</td>                        
+										<td {% if event.description|length >= 64 %}title="{{ event.description }}" class="short_descr"{% endif %}>
+										    {{ event.description|truncchar:64 }}
+										    {% if event.error_file %}<a href="{% url monitoring_get_upload_file event.id %}">{% trans "Скачать" %}</a>{% endif %}
+										</td>
+									</tr>
+								{% endfor %}
+							</table>
+						{% else %}
+							<div class="message_action dist_top">{% trans "Не найдены записи, соответствующие заданным условиям поиска" %}.</div>
+						{% endif %}
+						{% paginate %}

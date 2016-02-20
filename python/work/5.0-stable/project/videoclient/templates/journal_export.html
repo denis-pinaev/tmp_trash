@@ -1,0 +1,65 @@
+{% load i18n %}
+{% load templatetags %}
+{% if content %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="content-language" content="ru" />
+	<title>{% trans "Журнал Идентификаций" %}</title>
+	{% include "journal_export_styles.html" %}
+</head>
+<body>
+<div class="body1">
+	<div class="content">
+		<div class="content_add">
+			<h1><a href="{{ url_to_agr_list }}">{% trans "Журнал Идентификаций" %}</a> - {% if person %}{{ person.first_name }} {{ person.last_name }} {{ person.middle_name }} (ID: {{ id }}, {% else %}ID: {{ id }} ({% endif %}{% trans "всего фотографий:" %} {{ col_photo }})</h1>
+			<div class="block nav"><ul class="list_pages">{{ pagination }}</ul></div>
+			<ul class="block list_photos">
+				{% for j in journals %}
+				<li>
+					<div class="info">{% if j.corr_coeff %}<div class="csm">С<sub>sm</sub>={{ j.corr_coeff }}</div>{% endif %}{{ j.dt_first_fixed|date:"d.m.Y" }} <span class="time">{{ j.dt_first_fixed|date:"H:i:s" }}</span></div>
+					<div class="photos">
+						<div class="photo camera">
+						{% if not j.original %}
+						<img src="../../../no_photo120x120.gif" alt=""/>
+						{% else %}
+						<a href="{{ j.original }}"><img src="{{ j.original }}" alt=""/></a>
+						{% endif %}
+						<div class="descr"><span>{% trans "С камеры" %}</span></div></div>
+						<div class="photo">
+						{% if not j.found %}
+						<img src="../../../no_photo120x120.gif" alt="" />
+						{% else %}
+						<a href="{{ j.found }}"><img src="{{ j.found }}" alt="" /></a>
+						{% endif %}
+						<div class="descr"><span>{% trans "Из базы" %}</span></div></div>
+					</div>
+				</li>
+				{% endfor %}
+			</ul>							
+			<div class="block nav"><ul class="list_pages">{{ pagination }}</ul></div>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="footer">
+	<div class="version">{% trans "Версия" %}: {{ version }}</div>
+	<div class="block_contacts">
+		<span>{% trans "Контакты" %}:</span><ul class="list_contacts"><li>{% trans "информация" %}: <a href="mailto:info@smilart.com">info@smilart.com</a></li><li>{% trans "техподдержка" %}: <a href="mailto:support@smilart.com">support@smilart.com</a></li></ul>
+		<div class="copyright">Copyright &#169; 2012 "{% trans "Простые решения" %}". {% trans "Все права защищены" %}. <a href="http://www.smilart.com/" target="_blank">http://www.smilart.com/</a></div>
+	</div>
+</div>
+</body>
+</html>
+{% endif %}
+
+{% if pages %}
+<li>
+{% ifequal sel_page page %}
+<a class="act_page" href="{{ page }}.html">{{ p_name }}</a>
+{% else %}
+<a href="{{ page }}.html">{{ p_name }}</a>
+{% endifequal %}
+</li>
+{% endif %}

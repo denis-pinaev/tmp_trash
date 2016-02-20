@@ -1,0 +1,95 @@
+{% load i18n %}
+{% include "header.html" %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/learn_camera.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/learn_camera.js?v=v{{ version }}"></script>
+<!-- BEGIN: content-->
+<div class="content" id="content">
+    <div class="block_cont">
+        <div class="block_cont_top">
+            <div class="block_cont_bottom min_height">
+                <h2><a href="#">Списки</a> - <a href="#">Руководство</a> - <a href="#">Иванов Иван Иванович</a> - Обучение с камеры "192.168.0.13 AV1300"<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+                {% include "current_time.html" %}
+				{% include "system_blocks/system_cameras.html" %}
+                <form method="post" action="" name="" class="block">  
+ 					<div id="block_message_start">
+						<div class="message_action">
+							Для того чтобы начать обучение с камеры, нажмите на кнопку <strong>Начать обучение</strong>.
+						</div>
+						<div class="block block_btn">
+							<input type="button" name="" value="Начать обучение" class="inp_btn inp_btn170" onClick="javascript: startLearn();" />
+						</div>
+					</div>
+					<div id="block_message_stop" style="display: none;">
+						<div class="message_action">
+							Для того чтобы завершить обучение с камеры, нажмите на кнопку <strong>Завершить обучение</strong>.
+						</div>
+						<div class="block block_btn">
+							<input type="button" name="" value="Завершить обучение" class="inp_btn inp_btn170" />
+						</div>
+					</div>
+					<div class="block block_camera">
+						<div class="video">
+							<div class="block name_camera">Псевдоним камеры AV1300 (192.168.0.13 AV1300)</div>
+							<div class="video_img">
+								<div id="bigcamera" class="bigcamera"><img src="images/test.jpg" width="670" height="502" alt="" /></div>
+							</div>
+						</div>
+						<div class="camera_panels">
+							<div class="block_ie">
+								<div class="block_faces">
+									<div class="block_faces_cont">
+										<div class="block_message_faces" id="block_message_faces">Здесь будут отображаться добавленные в систему лица с камеры.</div>
+										<div id="list_faces" style="display: none;">
+											<div class="count_faces">Всего лиц: 20</div>
+											<div class="block_list_faces">
+												<ul class="block list_faces">
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+													<li><a href="#"><img src="images/videoanalitics/face1.jpg" alt="" /></a></li>
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+                </form>            
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+{% include "footer.html" %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% include "po4window_photos.html" %}
+</body>
+</html>

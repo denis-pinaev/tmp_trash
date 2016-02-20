@@ -1,0 +1,698 @@
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+{% load templatetags %}
+<title>Просмотр всех камер</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<link rel="stylesheet" type="text/css" href="/files/css/security_main/main_interface_security_quard.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/lib/draw/jquery-1.6.2.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/tooltip/tooltip.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/util.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/security_main/scripts.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+	// массив с информацией о всех камерах
+	
+	var ALL_CAMERAS = [
+		{% for camera in all_active_cameras %}
+			{'id':'camera_id_{{camera.id}}', 'uuid':'{{camera.uuid}}', 'camera_id':'{{camera.id}}','camera_name':'{{camera.name}}','camera_ip':'{{camera.ip}}','camera_type':'{{camera.type}}','text_name':'{% if camera.name %}{{ camera.name }}{% else %}{{camera.ip}} {{camera.type}}{% endif %}','text_title':'{% if camera.name %}{{ camera.name }} ({{camera.ip}} {{camera.type}}){% else %}{{camera.ip}} {{camera.type}}{% endif %}','camera_url':'http://{{ camera.commun.host }}:{{ camera.commun.mjpeg_port }}/video?uuid={{ camera.uuid }}&width=640&height=480&fps={{ fps_of_the_cameras }}','title':"{% if camera.name %}{% trans 'Псевдоним' %}: {{ camera.name }}, <br />{% endif %}{% trans 'IP-адрес' %}: {{ camera.ip }}, <br />{% trans 'Тип' %}: {{ camera.type }}, <br />{% trans 'Коммуникатор' %}: {{ camera.commun.host }}:{{ camera.commun.port }}", 'width':0, 'height':0}{% if not forloop.last %},{% endif %}
+		{% endfor %}
+	];
+	var ID_CAMERA_HAS_EVENT; // id камеры, для которой сработало событие
+	var IS_CAMERA_HAS_EVENT_ZOOM = false; // увеличивать камеру, для которой сработало событие
+	
+	var persons = {};
+	var persons_divisions = ['visitor','visitor','visitor','person','staff','auto'];
+	
+	var detectors_values = [];
+	var queue = [];
+	
+	var api_get_videoanalytics_last_log = "{% url api_get_videoanalytics_last_log %}";
+	var api_get_videoanalytics_log = "{% url api_get_videoanalytics_log %}";
+	var api_get_faces_last_log = "{% url api_get_faces_last_log %}";
+	var api_get_faces_log = "{% url api_get_faces_log %}";
+	
+	var curr_camera_uuid = '0';
+	
+	var frst_journal_id = {{last_journal_id}}-1;
+	var last_journal_id = {{last_journal_id}}-1;
+	var frst_vajournal_id = {{last_detect_message_id}}-1;
+	var last_vajournal_id = {{last_detect_message_id}}-1;
+	var current_layout = 1;
+	var carusel_count = 0;
+	var carusel_count_max = 0;
+	var carusel_max = 52;
+	var{% if boundFactor %} boundFactor = {{ boundFactor }};{% else %} boundFactor = false{% endif %};
+	var TIMEOUT_SEND = 200;
+	
+	//insert LI in queue
+	function insertQueue(obj){
+		queue.unshift(obj);
+		if(queue.length>carusel_max){
+			queue.pop();
+		}
+	}
+	
+	//delete LI in queue
+	function deleteIDQueue(id){
+		for (var i = 0; i < queue.length; i++) {
+			var obj = queue[i];
+			var li_id = obj.id+"_"+obj.uuid;
+			if(li_id == id){
+				queue.splice(i,1);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	//add or remove LI like filter
+	function updateQueue(){
+		for(var i=0; i<queue.length; i++){
+			var obj = queue[i];
+			var li_id = obj.id+"_"+obj.uuid;
+			var show_li = (detectors_values.indexOf(obj.type)>=0 && (curr_camera_uuid==obj.uuid || curr_camera_uuid=='0'));
+			var li = $("#"+li_id);
+			//alert(li_id+" "+show_li+" "+String(detectors_values.indexOf(obj.type)>=0)+" "+curr_camera_uuid);
+			if(show_li){
+				li.css("display", "block");
+			}else{
+				li.css("display", "none");
+			}
+		}
+	}
+	
+	//check for person detects
+	function checkJournalForDetects(){
+		var isFace = (detectors_values.indexOf("face") >= 0);
+		var isPerson = (detectors_values.indexOf("person") >= 0);
+		if(!isFace && !isPerson){
+			setTimeout("checkVAJournalForDetects()", TIMEOUT_SEND);
+			return;
+		} 
+		var uuid = curr_camera_uuid;//$("#camera_select option:selected").val();
+		var data = {'limit': '10', 'first_id': last_journal_id, 'wait': '5', 'sleep': '1'}
+		if (uuid != '0'){
+			data = {'limit': '10', 'first_id': last_journal_id, 'wait': '5', 'sleep': '1', 'filter_camera_uuid': uuid};
+		}
+		$.ajax({
+			type: "POST",
+			url: api_get_faces_last_log,
+			data: data,
+			cache: false,
+			success: function(data){
+				if(data.status = 'true'){
+					if(data.journal.length > 0){
+						for (var z = 0; z < data.journal.length; z++){
+							if (boundFactor) {
+							var isBound = (parseFloat(boundFactor)<=parseFloat(data.journal[z].coeff));
+								if(isFace || (isPerson && isBound)){
+									if(!isPerson) isBound = false; 
+									var li = createLI(data.journal[z], isBound);
+									if(carusel_count>0){
+										$("#carousel li:first").before(li);
+									}else{
+										$("#carousel").append(li);
+									}
+									if(carusel_count<carusel_max){
+										carusel_count++;
+										if(carusel_count>carusel_count_max) carusel_count_max = carusel_count;
+									}else{
+										$("#carousel li:last").remove();
+									}
+								}
+								initTooltip();
+							}
+						}
+						last_journal_id = data.journal[data.journal.length - 1].id;
+					}
+					setTimeout("checkVAJournalForDetects()", TIMEOUT_SEND);
+				}else{
+					setTimeout("checkVAJournalForDetects()", TIMEOUT_SEND);
+				}
+			},
+			error: function(data) {
+				setTimeout("checkVAJournalForDetects()", TIMEOUT_SEND);
+			}
+		});
+	}
+	
+	//check for videanalytics warnings
+	function checkVAJournalForDetects(){
+		var isFace = (detectors_values.indexOf("face") >= 0);
+		var isPerson = (detectors_values.indexOf("person") >= 0);
+		if( (detectors_values.length == 0) || ((detectors_values.length == 1) && (isFace||isPerson)) || (detectors_values.length == 2 && isFace && isPerson) ){
+			setTimeout("checkJournalForDetects()", TIMEOUT_SEND);
+			return;
+		} 
+		var uuid = curr_camera_uuid;//$("#camera_select option:selected").val();
+		var data = {'limit': '10', 'first_id': last_vajournal_id, 'wait': '5', 'sleep': '1'}
+		if (uuid != '0'){
+			data = {'limit': '10', 'first_id': last_vajournal_id, 'wait': '5', 'sleep': '1', 'filter_camera_uuid': uuid};
+		}
+		$.ajax({
+			type: "POST",
+			url: api_get_videoanalytics_last_log,
+			data: data,
+			cache: false,
+			success: function(data){
+				if(data.status = 'true'){
+					if(data.journal.length > 0){
+						for (var z = 0; z < data.journal.length; z++){
+							if(detectors_values.indexOf(data.journal[z].detector_type.dtype) >= 0 ){
+								var li = createLIVA(data.journal[z]);
+								if(carusel_count>0){
+									$("#carousel li:first").before(li);
+								}else{
+									$("#carousel").append(li);
+								}
+								if(carusel_count<carusel_max){
+									carusel_count++;
+									if(carusel_count>carusel_count_max) carusel_count_max = carusel_count;
+								}else{
+									$("#carousel li:last").remove();
+								}
+							}
+						}
+						last_vajournal_id = data.journal[data.journal.length - 1].id;
+					}
+					setTimeout("checkJournalForDetects()", TIMEOUT_SEND);
+				}else{
+					setTimeout("checkJournalForDetects()", TIMEOUT_SEND);
+				}
+			},
+			error: function(data) {
+				setTimeout("checkJournalForDetects()", TIMEOUT_SEND);
+			}
+		});
+	}
+	
+	// создание строки facedetect
+	function createLI(obj, isBound) {
+		var class_str = 'face';
+		var det_str = 'face';
+		var name = "{% trans 'Лицо' %}";
+		var person_count = '';
+		var ahref = '#';
+		var atarget = '';
+		//if(Math.random()<0.3) obj.person = {'person':{'first_name':'test NANA','last_name':'2','id':'5432'}};
+		//if(Math.random()<0.2) obj.person = {'person':{'first_name':'test name','last_name':'1','id':'1234'}}; 
+		if(isBound && obj.person && obj.person.person){
+			class_str = 'person';
+			det_str = 'person';
+			name = obj.person.person.first_name+' '+obj.person.person.last_name;
+			photos = 1;
+			var pid = 'person'+obj.person.person.id;
+			if(persons[pid]){
+				photos = persons[pid]+1;
+			}
+			persons[pid] = photos;
+			person_count = '<div class="short_descr photo_count" title="{% trans 'Количество идентификаций' %}" id="'+pid+'">'+photos+'</div>';
+			var divli = $('#'+pid);
+			if(divli){
+				divli = divli.parent();
+				var li_id = divli.attr("id");
+				divli.remove();
+				if (deleteIDQueue(li_id)) carusel_count--; 
+			}
+			ahref = '/anketa'+persons_divisions[obj.person.person.status.division]+'/'+obj.person.person.id+'/?group='+obj.person.person.group;
+			atarget = ' target="_blank"';
+		}
+		var queue_obj = {'id':obj.id, 'type':det_str, 'uuid':obj.camera.uuid};
+		insertQueue(queue_obj);
+		var show_li = (detectors_values.indexOf(queue_obj.type)>=0 && (curr_camera_uuid==queue_obj.uuid || curr_camera_uuid=='0'));
+		var display = "none";
+		if(show_li) display = "block";
+		var html = '<li class="'+class_str+'" id="'+obj.id+'_'+obj.camera.uuid+'" style="display: '+display+';"><div class="time">'+obj.t_last_fixed+'</div><div class="name_event short_descr" title="'+name+'">'+name+'</div><a href="'+ahref+'"'+atarget+'><img src="'+obj.found+'" alt="" class="short_descr" title="{% trans 'Камера'%}:'+obj.camera.ip+' '+obj.camera.type+'" /></a>'+person_count+'</li>';
+		ID_CAMERA_HAS_EVENT = obj.camera.id;
+		setActiveCameraWithEvent(det_str);
+		return html;
+	}
+
+	// создание строки analytics
+	function createLIVA(obj) {
+		var queue_obj = {'id':obj.id, 'type':obj.detector_type.dtype, 'uuid':obj.json_data.cameraUuid};
+		insertQueue(queue_obj);
+		var show_li = (detectors_values.indexOf(queue_obj.type)>=0 && (curr_camera_uuid==queue_obj.uuid || curr_camera_uuid=='0'));
+		var display = "none";
+		if(show_li) display = "block";
+		var html = '<li class="'+obj.detector_type.dtype+'" id="'+obj.id+'_'+obj.json_data.cameraUuid+'" style="display: '+display+';"><div class="time">'+obj.dt_detect.split('T')[1]+'</div><div class="name_event short_descr" title="'+name+'">'+obj.detector_type.name+'</div><a href="#"><img src="'+obj.preview+'" alt="" class="short_descr" title="{%trans 'Камера'%}:'+obj.json_data.cameraIp+' '+obj.json_data.cameraType+'" /></a></li>';
+		ID_CAMERA_HAS_EVENT = obj.camera;
+		setActiveCameraWithEvent(obj.detector_type.dtype);			
+		return html;
+	}
+	
+	//check filtered detectors
+	function getFilterDetector(){
+		var fd = [];
+		if ($('#face_check').attr('checked')) fd.push('face');
+		if ($('#person_check').attr('checked')) fd.push('person');
+		if ($('#crowdDetect_check').attr('checked')) fd.push('crowdDetect');
+		if ($('#leftThings_check').attr('checked')) fd.push('leftThings');
+		if ($('#smokeDetect_check').attr('checked')) fd.push('smokeDetect');
+		if ($('#fireDetect_check').attr('checked')) fd.push('fireDetect');
+		if ($('#flashDetect_check').attr('checked')) fd.push('flashDetect');
+		return fd;
+	}
+	
+	//get active detectors
+	function changeDetectors(inp) {
+		if (inp) {
+			if (!inp.attr("checked")) {
+				var event = inp.prev().attr("class").split(" ")[1];
+				initHeadCamerasWindow(event);
+			}
+		}
+		detectors_values = getFilterDetector();
+		updateQueue();
+	}	
+	
+	function changeDetectorsBtn(btn) {
+		var check = $(btn).parent().find("input[type=checkbox]");
+		if (check.attr("checked")) {
+			check.attr("checked", false);
+		} else {
+			check.attr("checked", "checked");
+		}
+		changeDetectors(check);
+	}
+	
+	//update carusel filters
+	function changeCameraSelect(){
+		var uuid = $("#camera_select option:selected").val();
+		curr_camera_uuid = uuid;
+		updateQueue();
+	}
+	
+	// установить активной камеру с событием
+	function setActiveCameraWithEvent(event) {
+		var ids = $("#cameras div.win_camera input[type=hidden].camera_id");
+		if (ids.size() > 0) {
+			$.each(ids, function() {
+				if ($(this).val() == ID_CAMERA_HAS_EVENT) {
+					var num = $(this).parent().parent().attr("id").split("_")[1];
+					initHeadCamerasWindow();
+					if (IS_CAMERA_HAS_EVENT_ZOOM) {
+						if ($(this).val() != ALL_CAMERAS[0]["camera_id"]) {		
+							if (current_layout == 1 || current_layout == 3) {
+								zoomCamera(num, checkActiveEvent(event));
+							} else {
+								$("#camera_" + num).addClass(checkActiveEvent(event));
+							}
+						} else {					
+							$("#camera_0").addClass(checkActiveEvent(event));
+						}
+					} else {
+						$("#camera_" + num).addClass(checkActiveEvent(event));
+					}
+				}				
+			});
+		}
+	}	
+	
+	//main function on ready
+	$(document).ready(function() {
+		$("body").click(function(e) {
+			var obj = (e.target) ? e.target : e.srcElement;	
+			if ($(obj).attr("id") != "btn_settings") {
+				showPanelSettings(false);
+			}
+		});
+		setValueIsCameraHasEventZoom();
+		setTimeout("init()", 1500);
+	});
+</script>
+
+</head>
+<body>
+<div class="body1">
+<!-- BEGIN: header -->
+<div class="header" id="header">
+	<div class="block bl_fon">
+		<div class="bl_left"></div>
+		<div class="bl_right"></div>
+		<div class="bl_center">
+			<div class="block bl_content">
+				<div class="bl_time">{% include "current_time.html" %}</div>
+				<div class="bl_calendar">{{full_date}}</div>
+				<!--<ul class="menu_cameras">
+						<li><input type="button" name="" value="" class="btn btn_cameras short_descr" title="Показать весь список доступных камер" /></li>
+					</ul>-->
+				<ul class="list_views" id="list_views">
+					<li><a href="#" id="view1" class="view1 lv_act" onClick="javascript: changeLayout(1); return false;"></a></li>
+					<li><a href="#" id="view2" class="view2" onClick="javascript: changeLayout(2); return false;"></a></li>
+					<li><a href="#" id="view3" class="view3" onClick="javascript: changeLayout(3); return false;"></a></li>
+				</ul>
+				<div class="menu_right">
+					<input type="button" name="" value="" class="btn btn_settings" id="btn_settings" onClick="javascript: panelSettings(this);" />
+					<a href="/logout" class="btn_exit"><span>Выход...</span></a>
+					{% if login_user or user %}<div class="user">{% if login_user %}{{ login_user }}{% else %}{{ user }}{% endif %}</div>{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END: header -->
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block">
+		<input type="button" name="" value="" class="btn btn_filter" id="btn_log" onClick="javascript: showLog(this);" />
+		<div class="filters_maps" id="filters_maps">
+			<div class="filters">
+				<div class="block bl_fon">
+					<div class="bl_left"></div>
+					<div class="bl_right"></div>
+					<div class="bl_center">
+						<div class="bl_content name_block_filter">
+							Текущие события и фильтры
+						</div>					
+					</div>
+				</div>
+				<div class="filters_content">
+					<div class="filters_content_add">
+						<form method="post" action="" id="" name="" class="frm_filter">
+							<div class="block bl_param" style="display: none;">
+								<label for="date_time" class="bl_txt">Дата/Время:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<input type="text" name="" value="01.06.2012" class="inp_txt date" maxlength="10" /><input type="button" name="" value="" class="btn btn_calend short_descr" title="Выбрать дату начала" /><input type="text" name="" value="13:00" class="inp_txt time" maxlength="5" />
+										<span class="delim">-</span>
+										<input type="text" name="" value="01.06.2012" class="inp_txt date" maxlength="10" /><input type="button" name="" value="" class="btn btn_calend short_descr" title="Выбрать дату окончания" /><input type="text" name="" value="13:30" class="inp_txt time" maxlength="5" />
+									</div>
+								</div>
+							</div>
+							<div class="block bl_param">
+								<label for="detectors" class="bl_txt">Детекторы:</label>
+								<div class="bl_enter">		
+									<div class="block_ie">
+										<ul class="block list_detectors">
+											<li class="short_descr" title="Детектор распознавания лиц"><input type="button" name="" value="" class="btn face" onClick="javascript: changeDetectorsBtn(this);" /><input id="face_check" type="checkbox" name="" value="" class="inp_check" checked="checked" onClick="javascript: changeDetectors($(this));" /></li>
+											<li class="short_descr" title="Детектор идентификации лиц"><input type="button" name="" value="" class="btn person" onClick="javascript: changeDetectorsBtn(this);" /><input id="person_check" type="checkbox" name="" value="" class="inp_check" checked="checked" onClick="javascript: changeDetectors($(this));" /></li>
+											<li class="short_descr" title="Детектор скопления людей"><input type="button" name="" value="" class="btn crowdDetect" onClick="javascript: changeDetectorsBtn(this);" /><input id="crowdDetect_check" type="checkbox" name="" value="" class="inp_check" checked="checked" onClick="javascript: changeDetectors($(this));" /></li>
+											<li class="short_descr" title="Детектор оставленных вещей"><input type="button" name="" value="" class="btn leftThings" onClick="javascript: changeDetectorsBtn(this);" /><input id="leftThings_check" type="checkbox" name="" value="" class="inp_check" checked="checked" onClick="javascript: changeDetectors($(this));" /></li>
+											<li class="short_descr" title="Детектор дыма"><input type="button" name="" value="" class="btn smokeDetect" onClick="javascript: changeDetectorsBtn(this);" /><input id="smokeDetect_check" type="checkbox" name="" value="" class="inp_check" checked="checked" onClick="javascript: changeDetectors($(this));" /></li>
+											<li class="short_descr" title="Детектор огня"><input type="button" name="" value="" class="btn fireDetect" onClick="javascript: changeDetectorsBtn(this);" /><input id="fireDetect_check" type="checkbox" name="" value="" class="inp_check" checked="checked" onClick="javascript: changeDetectors($(this));" /></li>
+											<li class="ld_last short_descr" title="Детектор вспышки"><input type="button" name="" value="" class="btn flashDetect" onClick="javascript: changeDetectorsBtn(this);" /><input id="flashDetect_check" type="checkbox" name="" value="" class="inp_check" checked="checked" onClick="javascript: changeDetectors($(this));" /></li>
+										</ul>
+									</div>														
+								</div>
+							</div>	
+							<div class="block bl_param">
+								<label for="camera_select" class="bl_txt">Камера:</label>
+								<div class="bl_enter">
+									<select name="" class="select" id="camera_select"  onchange="javascript: changeCameraSelect(); return false;">
+										<option value="0" selected="selected">--- Все ---</option>
+										{% for camera in all_active_cameras %}
+										<option value="{{camera.uuid}}">{% if camera.name %}{{ camera.name }} ({{camera.ip}} {{camera.type}}){% else %}{{camera.ip}} {{camera.type}}{% endif %}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+							<div class="block bl_param" style="display: none;">
+								<input type="button" name="" value="Применить" class="btn btn_apply" />	
+								<input type="button" name="" value="Сбросить" class="btn btn_reset" style="display: none;"/>
+								<a href="#" class="filter_adv" style="display: none;">Расширенный фильтр</a>
+							</div>
+							<ul class="block log" id="carousel">
+							</ul>																														
+						</form>
+					</div>
+				</div>				
+			</div>
+			<div class="maps" style="display: none;">
+				<div class="block bl_fon">
+					<div class="bl_left"></div>
+					<div class="bl_right"></div>
+					<div class="bl_center">
+						<div class="block bl_content">
+							<ul class="menu_maps">
+								<li><input type="button" name="" value="" class="btn btn_map short_descr" title="Показать карту для текущей камеры" /></li>
+								<li><input type="button" name="" value="" class="btn btn_maps short_descr" title="Показать все карты" /></li>
+							</ul>
+							Главный вход на вокзал
+						</div>
+					</div>
+				</div>
+				<div class="maps_content" style="display: none;">
+					<div class="maps_content_add">
+						<div class="map" style="width: 304px;">
+							<a href="#"><img src="/files/images/security_main/map_small_1.jpg" alt="" /></a>
+							<div class="map_camera pos0" style="left: 200px; top: 50px;">
+								<div class="ico_camera right short_descr" title="192.168.0.14 AV2100"></div>
+								<div class="active short_descr" title="192.168.0.14 AV2100" style="display: block;"><div class="arrow_down"></div></div>
+							</div>
+							<div class="map_camera pos0" style="left: 20px; top: 100px;">
+								<div class="ico_camera left short_descr" title="192.168.0.15 AV2100"></div>
+								<div class="active short_descr" title="192.168.0.15 AV2100"><div class="arrow_down"></div></div>
+							</div>
+							<div class="map_camera pos1" style="left: 20px; top: 20px;">
+								<div class="ico_camera top short_descr" title="192.168.0.16 AV2100"></div>
+								<div class="active short_descr" title="192.168.0.16 AV2100"><div class="arrow_down"></div></div>
+							</div>								
+							<div class="map_camera pos1" style="left: 250px; top: 140px;">
+								<div class="ico_camera bottom short_descr" title="192.168.0.17 AV2100"></div>
+								<div class="active short_descr" title="192.168.0.17 AV2100"><div class="arrow_down"></div></div>
+							</div>
+						</div>
+						<div class="panel_maps">
+							<div class="count_maps">5 из 10</div>
+							<input type="button" name="" value="" class="btn btn_zoom short_descr" title="Увеличить карту" />
+							<ul class="menu_arrow">
+								<li><input type="button" name="" value="" class="btn btn_left short_descr" title="Предыдущая карта" /></li>
+								<li><input type="button" name="" value="" class="btn btn_right short_descr" title="Следующая карта" /></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% comment %}
+		<div class="win_camera" id="camera_0">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_1">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_2">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_3">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_4">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_5">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_6">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_7">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_8">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_9">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_10">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_11">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_12">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_13">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_14">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_15">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_16">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_17">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_18">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_19">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		<div class="win_camera" id="camera_20">
+			<div class="block">
+				<div class="head_camera short_descr" title="Главный выход (192.168.0.12 AV1200)">
+					<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />
+					Главный выход
+				</div>
+				<div class="video"><a href="#"><img src="images/main_interface/big_camera.jpg" alt="" /></a></div>
+			</div>
+		</div>
+		{% endcomment %}
+		<div id="cameras">
+ 	  	{% for camera in all_active_cameras %}
+		<div class="win_camera" id="camera_{{ forloop.counter0 }}">
+			<div class="block">
+				<div class="head_camera" onMouseOver="javascript: overCamera(this); showInfoCamera('{{ forloop.counter0 }}', this, event);" onMouseMove="javascript: showInfoCamera('{{ forloop.counter0 }}', this, event);" onMouseOut="javascript: hideInfoCamera();">
+					<!--<input type="button" name="" value="" title="Не отображать камеру на главном экране" class="btn btn_close" />-->
+					{% if camera.name %}{{ camera.name }}{% else %}{{camera.ip}} {{camera.type}}{% endif %}
+				</div>
+				<div class="video"><a href="#" onClick="javascript: zoomCameraCurrent('{{ forloop.counter0 }}'); return false;" onMouseOver="javascript: overCamera(this); showInfoCamera('{{ forloop.counter0 }}', this, event);" onMouseMove="javascript: showInfoCamera('{{ forloop.counter0 }}', this, event);" onMouseOut="javascript: hideInfoCamera();"><img src="" alt="" /></a></div>
+				<input type="hidden" name="" id="camera_info_{{ forloop.counter0 }}" value="{% if camera.name %}{% trans 'Псевдоним' %}: {{ camera.name }}, <br />{% endif %}{% trans 'IP-адрес' %}: {{ camera.ip }},  <br />{% trans 'Тип' %}: {{ camera.type }},  <br />{% trans 'Коммуникатор' %}: {{ camera.commun.host }}:{{ camera.commun.port }}" />
+				<input type="hidden" name="" id="camera_id_{{ forloop.counter0 }}" class="camera_id" value="{{ camera.id }}" />
+			</div>
+		</div>
+		{% endfor %}
+		</div>
+	</div>
+	<!--<div class="clear"></div>-->   
+</div>
+<!-- END: content -->
+</div>
+
+<!-- BEGIN: footer -->
+<!--<div class="footer">&nbsp;</div>-->
+<!-- END: footer -->
+<div id="easyTooltip_camera" class="tooltip" style="display: none;"></div>
+<div class="panel_settings" id="panel_settings" style="display: none;">
+	<div class="panel_settings_cont">
+		<div class="panel_settings_head">Настройки интерфейса</div>
+		<div class="block_delim"></div>
+		<ul>
+			<li><input type="checkbox" name="" value="" class="inp_check" id="is_zoom_camera_event" onClick="javascript: showPanelSettings(false); checkZoomCameraEvent(this);" /><label for="is_zoom_camera_event">Делать камеру активной при обнаружении события</label></li>
+		</ul>
+	</div>
+</div>
+</body>
+</html>

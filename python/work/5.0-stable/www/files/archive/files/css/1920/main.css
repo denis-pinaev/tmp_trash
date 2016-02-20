@@ -1,0 +1,18 @@
+.body1,
+.block_contacts,
+.block_cont,
+.foot_menu_ver {
+    width: 1890px;
+}
+.block_cont {
+    background: url('/files/images/1920/bg_cont.gif') top left repeat-y;
+}
+.block_cont_top {
+    background: url('/files/images/1920/bg_cont_top.gif') left top no-repeat;
+}
+.block_cont_top2 {
+    background: url('/files/images/1920/bg_cont_top2.gif') left top no-repeat;
+}
+.block_cont_bottom {
+    background: url('/files/images/1920/bg_cont_bottom.gif') left bottom no-repeat;
+}

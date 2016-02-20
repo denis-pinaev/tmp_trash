@@ -1,0 +1,94 @@
+{% load i18n templatetags %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>{% trans "Вход в систему" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<link rel="stylesheet" type="text/css" href="/files/css/main.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/login.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/lib/draw/jquery-1.6.2.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script> 
+<script type="text/javascript" src="/files/js/lib/jquery.validate.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/additional-methods.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+$(function() {
+	$.validator.addMethod("checkLogin", function(value, element) {
+		var value = $(element).attr("value");
+		var reg = /^[a-zA-Z0-9_]{3,30}$/;
+		if (reg.test(value)) return true;
+		return false;
+	}, "{% trans "Логин может содержать только латинские буквы, цифры и знак подчёркивания" %}" );			
+	var validator = $("#frm_login").validate({
+		rules: {
+			login: {
+				required: true,				
+				minlength: 3,
+				maxlength: 30,
+				checkLogin: true		
+			},
+			password: {
+				required: true,
+				minlength: 6,
+				maxlength: 32					
+			}
+		},
+		messages: {
+			login: {
+				required: "{% trans "Введите логин" %}",
+				minlength: jQuery.format("{% trans "Логин должен содержать не менее 3 символов" %}"),
+				checkLogin: "{% trans "Логин может содержать только латинские буквы, цифры и знак подчёркивания" %}"
+			},
+			password: {
+				required: "{% trans "Введите пароль" %}",
+				minlength: jQuery.format("{% trans "Пароль должен содержать не менее 6 символов" %}")
+			}
+		},
+		errorPlacement: function(error, element) {
+			error.appendTo( element.parent().parent().prev() ); 
+		}		
+	});
+});	
+</script>
+</head>
+<body>
+<div class="body1">
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="content_add">
+		<div class="logo"><img src="/files/images/logo_smilart.png" alt="{% trans 'Логотип Смиларт' %}" /></div>
+		<h1>{% trans "Комплекс Распознавания Лиц, Объектов, Событий" %}</h1>
+		<div class="block_login">
+			<form method="post" action="/i18n/setlang/" class="frm_language" id="frm_language">
+				{% for lang in LANGUAGES %}
+				{% if lang.0 != LANGUAGE_CODE %}
+				<input type="hidden" name="language" value="{% if lang.0 != 'en' %}ru{% else %}en{% endif %}" />
+				{% endif %}
+				{% endfor %}
+				<input type="button" class="language {{ LANGUAGE_CODE }}" name="" id="change_language" value="{{ LANGUAGE_CODE|upper }}" onClick="javascript: $('#frm_language').submit();" />
+			</form>
+			<h2>{% trans "Вход в систему" %}</h2>
+			<form method="post" action="/" name="" class="frm_log" id="frm_login">
+				{% if error %}<div class="err_mess">{% trans "Вы указали неверный логин или пароль" %}</div>{% endif %}
+				<div class="frm_log_block">
+					<div class="block_error"></div>
+					<div class="block frm_log_block"><label for="login" class="bl_txt">{% trans "Логин" %}:</label><div class="bl_inp"><input type="text" name="login" id="login" value="" class="inp_txt" maxlength="30" /></div></div>
+				</div>
+				<div class="frm_log_block">
+					<div class="block_error"></div>
+					<div class="block frm_log_block"><label for="password" class="bl_txt">{% trans "Пароль" %}:</label><div class="bl_inp"><input type="password" name="password" id="password" value="" class="inp_txt" maxlength="32" /></div></div>
+				</div>
+				<div class="block frm_log_block"><div class="bl_inp"><input type="submit" name="" value="{% trans "Войти" %}" class="inp_btn btn_enter" /></div></div>
+			</form>	
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+<!-- BEGIN: footer -->
+<div class="footer">{% include "footer_contacts.html" %}</div>
+<!-- END: footer -->
+</body>
+</html>

@@ -1,0 +1,14 @@
+{% extends "base_archive.html" %}
+{% load i18n templatetags %}    
+{% block content %}
+    <div class="block_settings">
+        {% block submenu %}{% endblock %}
+        <div class="block_cont">
+            <div class="block_cont_top2">
+                <div class="block_cont_bottom min_height"> 
+					{% block subcontent %}{% endblock %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}	

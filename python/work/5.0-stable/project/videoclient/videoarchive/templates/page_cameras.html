@@ -1,0 +1,30 @@
+{% load i18n %}
+{% load a_templatetags %}
+{% include "a_header.html" %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/cameras.css?v=v{{ version }}" />
+{% include "js/js_cameras.html" %}
+<!-- BEGIN: content-->
+<div class="content">
+    <div class="block_tabs">
+        {% include "menu/menu_settings.html" %}
+        <div class="block_cont">
+            <div class="block_cont_top2">
+                <div class="block_cont_bottom min_height">
+                    <h2>{% trans "Настройки камер" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Видеоархив Настройки камер" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+                    {% include "current_time.html" %}
+                    <div id="cameras_list">    				
+                        {% include "cameras_list.html" %}
+                    </div>        
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+{% include "a_footer.html" %}
+{% include "window_cameras.html" %}
+</body>
+</html>

@@ -1,0 +1,33 @@
+.list_functionals li {
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	border-bottom: 1px dotted #cccccc;
+}
+.list_functionals li .link_btn {
+	width: 140px;
+	background: url('/files/images/button140x24_up.gif') top left no-repeat;	
+}
+.list_functionals li .head {
+	font-weight: bold;
+}
+.list_functionals li .cont {
+	margin: 5px 0px 5px 0px;
+}
+.list_functionals li.lf_last {
+	padding-bottom: 0px;
+	margin-bottom: 0px;
+	border-bottom: 0px;
+}
+.bl_param {
+	margin-top: 5px;
+}
+.bl_param .bl_txt {
+	float: left;
+	margin-right: 10px;
+	margin-top: 1px;
+}
+.bl_param .btn_save {
+	color: #ffffff;
+	width: 90px;
+	background: url("/files/images/btn_blue_90.png") top left no-repeat;
+}

@@ -1,0 +1,65 @@
+{% load i18n %}
+{% load templatetags %}
+<h2>{% trans "Журнал сессий" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Журнал сессий' %}');" /></h2>
+{% include "current_time.html" %}
+<form method="get" action="" name="" id="mainForm">
+	<div class="frm_block">
+		{% if all_loginjournal > 0 %}{% include "search.html" %}{% endif %}
+		<div class="block_results">{% trans "Общее количество записей" %}: <strong>{{ all_loginjournal }}</strong></div>
+	</div>					
+	{% if all_loginjournal > 0 %}
+		<div class="block_filter dist_top" id="filters">
+			<div class="bl_error"></div>
+			<div class="block block_filter_param">
+				<input class="inp_txt inp_date" type="text" value="{{ dateBegin|date:"d.m.Y" }}" id="dateBegin" name="dateBegin" maxlength="10" />
+				<input type="button" title="{% trans "Выбрать дату начала" %}" class="btn_calend short_descr" value="" name="" />
+				<span class="dist_date">{% trans "по" %}</span>
+				<input type="text" class="inp_txt inp_date" value="{{ dateEnd|date:"d.m.Y" }}" id="dateEnd" name="dateEnd" maxlength="10" />
+				<input type="button" title="{% trans "Выбрать дату окончания" %}" class="btn_calend short_descr" value="" name="" />
+			</div>
+			<div class="block">
+				<input type="submit" id="apply_filters"  class="inp_btn btn_apply" value="{% trans 'Применить' %}" name="" /><input type="button" class="inp_btn inp_btn140 dist_left" value="{% trans 'Сбросить фильтр' %}" name="" id="btn_clear_filter" onClick="javascript: window.location.href='/kpp/';" />
+			</div>			
+		</div>
+		{% if users|length > 0 %}	
+			<div class="block block_results">
+				{% trans "Отфильтровано" %} <strong id="search_data_journal">{{ users|length }}</strong> {% trans "из" %} <strong id="search_all_data_journal">{{ all_loginjournal }}</strong> {% trans "записей" %}
+			</div>
+			{% include "po4NavigationBlock.html" %}
+			<div class="frm_block dist_link">
+				<table cellspacing="0" cellpadding="0" class="table">
+					<tr>
+						<th rowspan="2" class="first"><a href="?start={{start}}&sorto=1&up={% if sorto == 1 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 1 and up == 1  %}up{% else %}down{% endif %}">ID</a></th>
+						<th rowspan="2" class="th_name"><a href="?start={{start}}&sorto=2&up={% if sorto == 2 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 2 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "КПП" %}</a></th>						
+						<th colspan="4">{% trans "Сессия" %}</th>
+						<th rowspan="2" class="th_fio"><a href="?start={{start}}&sorto=8&up={% if sorto == 8 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 8 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "ФИО" %}</a></th>
+						<th rowspan="2"><a href="?start={{start}}&sorto=9&up={% if sorto == 9 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 9 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "Статус" %}</a></th>
+					</tr>
+					<tr>									
+						<th><a href="?start={{start}}&sorto=4&up={% if sorto == 4 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 4 and up == 1  %}up{% else %}down{% endif %}">{% trans "Дата начала" %}</a></th>
+						<th><a href="?start={{start}}&sorto=5&up={% if sorto == 5 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 5 and up == 1  %}up{% else %}down{% endif %}">{% trans "Время начала" %}</a></th>
+						<th><a href="?start={{start}}&sorto=6&up={% if sorto == 6 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 6 and up == 1  %}up{% else %}down{% endif %}">{% trans "Дата окончания" %}</a></th>
+						<th><a href="?start={{start}}&sorto=7&up={% if sorto == 7 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 7 and up == 1  %}up{% else %}down{% endif %}">{% trans "Время окончания" %}</a></th>
+					</tr>
+					{% for user in users %}
+						{% if forloop.counter >= start and forloop.counter < finish %}
+							<tr {% cycle '' 'class="odd"' %} onMouseOver="javascript: overRow(this);" onMouseOut="javascript: outRow(this);">
+								<td class="td_id first">{{ user.j_id }}</td>
+								<td>{% trans user.kpp %}</td>
+								<td class="td_date">{{ user.login|date:"d.m.Y" }}</td>
+								<td class="td_date">{{ user.login|date:"H:i:s" }}</td>
+								<td class="td_date">{% if user.logout %}{{ user.logout|date:"d.m.Y" }}{% else %}&nbsp;{% endif %}</td>
+								<td class="td_date">{% if user.logout %}{{ user.logout|date:"H:i:s" }}{% else %}&nbsp;{% endif %}</td>
+								<td><a href="{{ project_url }}/anketauser/{{ user.id }}/?select_page=kpp">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> {% if user.is_active == 0 %}<img title="{% trans "Сотрудник удален" %}" src="/files/images/delete.png">{% endif %}</td>
+								<td>{% trans user.status  %}</td>	
+							</tr>
+						{% endif %}
+					{% endfor %}												
+				</table>
+			</div>
+			{% include "po4NavigationBlock.html" %}		
+		{% else %}
+			<div class="message_action dist_top">{% trans "Не найдены записи, соответствующие заданным условиям поиска" %}.</div>
+		{% endif %}
+	{% endif %}
+</form>

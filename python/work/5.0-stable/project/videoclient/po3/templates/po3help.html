@@ -1,0 +1,92 @@
+﻿{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+{% include "javascript.html" %}
+
+<link rel="stylesheet" type="text/css" href="/files/css/main.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/page.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/windows.css?v=v{{ version }}" />
+
+</head>
+<body>
+<div class="body1">
+<!-- BEGIN: header -->
+<div class="header">
+	<div class="block_tm">
+		<div class="block_rtm"></div>
+		<div class="block_ltm"></div>
+		<div class="logo"><a href="#"><img src="/files/images/logo.png" alt="" /></a></div>
+		<div class="lang" onClick="javascript: chooseLang(this);" title="Выбор языка">RU</div>
+		<ul class="right_menu">
+			<li><a href="#">Выход</a></li>	
+			<li><span class="user">Пользователь</span></li>
+		</ul>
+		<ul class="top_menu">
+			<li><a href="/po3/wanted/">Разыскиваемые</a></li>
+			<li><a href="/po3/anketawantedclear/">Анкета</a></li>
+			<li><a href="/po3/help/" class="last tm_active">Помощь</a></li>
+		</ul>
+	</div>
+</div>
+<!-- END: header -->
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>Помощь<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+<!-- BEGIN: footer -->
+<div class="footer">
+	<div class="foot_menu_ver">
+		<div class="version">Версия: 1.0.0</div>
+		<ul class="bottom_menu">
+			<li><a href="/po3/wanted/" class="first">Разыскиваемые</a></li>
+			<li><a href="/po3/anketawantedclear/">Анкета</a></li>
+			<li><a href="/po3/help/" class="last act">Помощь</a></li>
+		</ul>
+	</div>
+	<div class="contacts">
+		<div class="block_contacts">
+			Контакты:
+			<ul class="list_contacts">
+				<li>информация: <a href="mailto:info@smilart.com">info@smilart.com</a></li> 
+				<li>техподдержка: <a href="mailto:support@smilart.com">support@smilart.com</a></li>
+			</ul>
+			<div class="copyright">Copyright &#169; 2010 "Простые решения". Все права защищены. <a href="http://www.smilart.com/">http://www.smilart.com/</a></div>
+		</div>
+	</div>	
+</div>
+<!-- END: footer -->
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+<div id="win_help" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_help');" title="Закрыть окно" /></div>
+			<div class="headWF_txt">Помощь</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_help_contWF"></div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="ОК" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_help');" />	
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

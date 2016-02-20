@@ -1,0 +1,33 @@
+{% load i18n %}
+{% load templatetags %}
+{% include "po1header.html" %}
+<link rel="stylesheet" type="text/css" href="/files/css/po1/po1signal.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>Сигналы<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				<div class="info_signals">
+					<div><img src="/files/images/tick.png" width="16" height="16" /> - разрешён - 30</div>
+					<div><img src="/files/images/list-remove.png" width="16" height="16" /> - запрещён - 30</div>
+					<div><img src="/files/images/error.png" width="16" height="16" /> - <a href="/po1/signal/1/">разрешён оператором - 3</a></div>
+					<div><img src="/files/images/exclamation.png" width="16" height="16" /> - <a href="/po1/signal/2/">сбой системы - 1</a></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po1footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+{% include "window_help.html" %}
+
+</body>
+</html>

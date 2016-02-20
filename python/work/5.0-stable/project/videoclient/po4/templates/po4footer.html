@@ -1,0 +1,29 @@
+{% load i18n %}
+{% load templatetags %}
+<!-- BEGIN: footer -->
+<div class="footer">
+	<div class="foot_menu_ver">
+		<div class="version">{% trans "Версия" %}: {{ version }}</div>
+		<ul class="bottom_menu">
+			<li><a href="/po4/ident/" {% if select_page == 'ident' %} class="first act" {% else %} class="first" {% endif %}>{% trans "Просмотр" %}</a></li>
+			<li><a href="/po4/visitors/" {% if select_page == 'visitors' or select_page = 'visitorslist' or select_page == 'anketavisitor' or select_page == 'photosvisitor' %} class="act" {% endif %}>{% trans "Посетители" %}</a></li>
+			<li><a href="/po4/persons/" {% if select_page == 'persons' or select_page == 'photosperson' or select_page == 'anketaperson' or select_page == 'anketaclear' %} class="act" {% endif %}>{% trans "Персоны" %}</a></li>
+			<li><a href="/po4/staff/" {% if select_page == 'staff' or select_page == 'stafflist' or select_page == 'anketastaff' or select_page == 'photosstaff' %} class="act" {% endif %}>{% trans "Сотрудники" %}</a></li>
+			{% if access != 'Оператор' %}
+				<li><a href="/po4/kpp/" {% if select_page == 'kpp' or select_page == 'kppedit' or select_page == 'kppadd' %} class="act" {% endif %}>{% trans "КПП" %}</a></li>
+			{% endif %}
+			<li><a href="/po4/journal/" {% if select_page == 'journal' %} class="act" {% endif %}>{% trans "Журнал" %}</a></li>
+			<li><a href="/po4/historychange/" {% if select_page == 'historychange' or select_page == 'historychangep1' %} class="act" {% endif %}>{% trans "История" %}</a></li>
+			{% if access != 'Оператор' %}
+				<li><a href="{% url settings_user %}" {% if select_page == 'events' or select_page == 'sounds' or select_page == 'settingsus' or select_page == 'special' or select_page == 'camera' or select_page == 'distortion' or select_page == 'recognition' or select_page == 'settingspage' or select_page == 'users' or select_page == 'anketauser' or select_page == 'photosuser' or select_page == 'anketaclearuser' %} class="act" {% endif %}>{% trans "Настройки" %}</a></li>
+			{% endif %}
+			<li><a href="/files/help/po4/help.html" {% if select_page == 'help' %} class="act last" {% else %} class="last" {% endif %} target="_blank">{% trans "Помощь" %}</a></li>			
+
+		</ul>
+	</div>
+	{% include "footer_contacts.html" %}
+</div>
+<!-- END: footer -->
+{% include "window_help.html" %}
+{% include "window_journal.html" %}
+{% if not learn %}<script>checkJournal();</script>{% endif %}

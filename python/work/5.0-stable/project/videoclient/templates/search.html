@@ -1,0 +1,50 @@
+{% load i18n templatetags %}
+<script type="text/javascript">
+function search(obj, focus, defaultValue) {
+	var inp = $(obj);
+	if (focus) {
+		if ((inp.val() == defaultValue) || (inp.val() == "")) {
+			inp.val("");
+		} 
+		inp.css("color", "#333333");
+	} else {
+		if (inp.val() == "") {
+			inp.val(defaultValue);
+			inp.css("color", "#868686");
+		}
+	}
+}
+// поиск по слову
+function submitSearch(defaultValue) {
+	var inp = $("#filter_search");
+	if (inp.val() == defaultValue) {
+		inp.val("");
+	}
+	document.getElementById("mainForm").submit();
+}
+// сбросить поиск
+function resetSearch() {
+	$("#filter_search").val("");
+	document.getElementById("mainForm").submit();
+}
+// показывать / не показывать кнопку "Сбросить поиск"
+function showBtnResetSearch(defaultValue) {
+	var btn = $("#btn_reset_search");
+	var txt_search = $("#filter_search").val();
+	if ((txt_search != defaultValue) && (txt_search != "")) btn.show()
+	else btn.hide();
+}
+function btnSearchOver(obj) {
+	$(obj).addClass("act");
+}
+function btnSearchOut(obj) {
+	$(obj).removeClass("act");
+}
+</script>
+<div class="search">
+	<div class="search_add">
+		<div class="center"><input type="text" name="filter" id="filter_search" value="{% if filter %}{{ filter }}{% else %}{% trans 'Поиск' %}{% endif %}" value="" class="txt_search" onFocus="javascript: search(this, true, '{% trans 'Поиск' %}');" onBlur="javascript: search(this, false, '{% trans 'Поиск' %}');" onChange="javascript: showBtnResetSearch('{% trans 'Поиск' %}');" onKeyUp="javascript: showBtnResetSearch('{% trans 'Поиск' %}');" /></div>
+		<input type="button" name="" value="" class="btn search short_descr" title="{% trans 'Найти' %}" onClick="javascript: submitSearch('{% trans 'Поиск' %}');" onMouseOver="javascript: btnSearchOver(this);" onMouseOut="javascript: btnSearchOut(this);" />
+		<input type="button" name="" id="btn_reset_search" value="" class="btn reset short_descr" style="display: {% if filter and filter != 'Поиск' %}block{% else %}none{% endif %};" title="{% trans 'Сбросить фильтр' %}" onClick="javascript: resetSearch('{% trans 'Поиск' %}');" onMouseOver="javascript: btnSearchOver(this);" onMouseOut="javascript: btnSearchOut(this);" />
+	</div>
+</div>

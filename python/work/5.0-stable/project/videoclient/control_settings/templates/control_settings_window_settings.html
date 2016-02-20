@@ -1,0 +1,229 @@
+{% load i18n %}
+{% load templatetags %}
+<div class="info_title" id="win_help_param">
+    <div id="win_help_param_contWF" class="info_title_cont"></div>
+</div>
+<div id="win_mess" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Предупреждение" %}</div>
+        </div>
+        <div class="contWF" id="win_mess_contWF"></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />    
+        </div>
+    </div>
+</div>
+<div id="win_dialog" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_dialog');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Перезапуск системы" %}</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add" id="win_dialog_contWF"></div></div>
+        <div class="footerWF">
+            <input type="button" name=""  value="{% trans "Перезапуск" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_dialog'); reboot_system();" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_dialog');" />
+        </div>
+    </div>
+</div>
+<div id="win_reboot_offer_dialog" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_reboot_offer_dialog');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Сохранение общих настроек" %}</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add" id="win_reboot_offer_dialog_contWF">
+            <div><input type="radio" name="save_settings" value="" id="save_settings1" checked="checked" class="inp_check" /><label for="save_settings1">{% trans "Сохранить без применения настроек?" %}</label></div>
+            <div style="margin-top: 5px;"><input type="radio" name="save_settings" value="" id="save_settings2" class="inp_check" /><label for="save_settings2">{% trans "Сохранить и перезапустить систему для применения настроек?" %}</label></div>
+        </div></div>
+        <div class="footerWF">
+            <input type="button" name=""  value="{% trans "Сохранить" %}" class="btn_wf_blue" id="win_reboot_offer_dialog_btn_yes" /><!-- save_settings(); save_and_reboot_settings();-->
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_reboot_offer_dialog');" />
+        </div>
+    </div>
+</div>
+<div id="win_add" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_add');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Добавление параметра" %}</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add" id="win_add_contWF">
+<form method="post" action="" class="frm_add">
+    <div class="frm">{% trans "Поля, отмеченные звёздочкой" %} (<span class="info_important">*</span>), {% trans "являются обязательными для заполнения" %}.</div>
+<!--    <div class="frm">
+        <div class="bl_error" id="all_errors" style="margin-left:0px;"><script type="text/javascript"> function update_errors(){}</script></div>
+    </div>-->
+    <div class="frm">
+        <label for="name_param" class="bl_txt"><strong class="info_important">*</strong>{% trans "Название" %}:</label>
+        <div class="bl_enter"><input type="text" name="param_name" value="" class="inp_txt" id="name_param" /></div>
+        <div class="bl_error" id="error_param_name"></div>
+    </div>
+    <div class="frm">
+        <label for="type_param" class="bl_txt"><strong class="info_important">*</strong>{% trans "Тип" %}:</label>
+        <div class="bl_enter">
+            <select name="type" id="type_param" class="select" onChange="javascript: changeTypeParams(this);">
+                <option value="0" selected="selected">{% trans "Текст" %}</option>
+                <option value="1">{% trans "Радиобаттон" %}</option>
+                <option value="2">{% trans "Спинбокс" %}</option>
+            </select>
+        </div>
+        <div class="bl_error" id="error_type_param"></div>
+    </div>
+    <div class="frm" id="type_text" style="display: block;">
+        <label for="param_value0" class="bl_txt"><strong class="info_important">*</strong>{% trans "Значение" %}:</label>
+        <div class="bl_enter"><input type="text" name="param_value0" value="" class="inp_txt" id="param_value0" /></div>
+        <div class="bl_error" id="error_param_value0"></div>
+    </div>
+    <div class="frm" id="type_radio" style="display: none;">
+        <label for="radio_default_ok" class="bl_txt"><strong class="info_important">*</strong>{% trans "Значение по умолчанию" %}:</label>
+        <div class="bl_enter">
+            <input type="radio" name="param_value1" value="" class="inp_check" id="radio_default_ok" checked="checked" /><label for="radio_default_ok">{% trans "Да" %}</label>
+            <input type="radio" name="param_value1" value="" class="inp_check dist_left" id="radio_default_no" /><label for="radio_default_no">{% trans "Нет" %}</label>
+        </div>
+        <div class="bl_error" id="error_param_value1"></div>
+    </div>
+    <div id="type_spinbox" style="display: none;">
+        <div class="frm">
+            <label for="param_value2" class="bl_txt"><strong class="info_important">*</strong>{% trans "Значение" %}:</label>
+            <div class="bl_enter"><input type="text" name="param_value2" value="0" class="inp_txt inp_num" id="param_value2" /></div>
+            <div class="bl_error" id="error_param_value2"></div>
+        </div>
+        <div class="frm">
+            <label for="min_val" class="bl_txt"><strong class="info_important">*</strong>{% trans "Минимальное значение" %}:</label>
+            <div class="bl_enter"><input type="text" name="min_val" value="0" class="inp_txt inp_num" id="min_val" /></div>
+            <div class="bl_error" id="error_min_val"></div>
+        </div>    
+        <div class="frm">
+            <label for="max_val" class="bl_txt"><strong class="info_important">*</strong>{% trans "Максимальное значение" %}:</label>
+            <div class="bl_enter"><input type="text" name="max_val" value="1000000" class="inp_txt inp_num" id="max_val" /></div>
+            <div class="bl_error" id="error_max_val"></div>
+        </div>    
+        <div class="frm">
+            <label for="step" class="bl_txt"><strong class="info_important">*</strong>{% trans "Шаг" %}:</label>
+            <div class="bl_enter"><input type="text" name="step" value="1" class="inp_txt inp_num" id="step" /></div>
+            <div class="bl_error" id="error_step"></div>
+        </div>
+    </div>
+    <div class="frm">
+        <label for="param_info" class="bl_txt">{% trans "Описание" %}:</label>
+        <div class="bl_enter"><textarea id="param_info" name="param_info" class="textarea"></textarea></div>
+    </div>
+    <input type="hidden" value="{{base}}" name="base" id="base">
+</form>        
+        </div></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Добавить" %}" class="btn_wf_blue" onClick="javascript: add_new_param();" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_add');" />
+        </div>
+    </div>
+</div>
+<div id="win_del" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_del');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Удаление" %}</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add" id="win_del_contWF"></div>
+             <form method="post" action="" class="frm_rename" id="MainDeleteForm">
+                <input type="hidden" value="" name="base" class="inp_txt" id="delete_base_name" />
+                <input type="hidden" value="" name="param_name" class="inp_txt" id="delete_param_name" />
+            </form>
+        </div>
+        <div class="footerWF">
+            <input type="button" name=""  value="{% trans "Удалить" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_del'); delete_param();" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_del');" />
+            <input type="hidden" id="id_delete_parameter" value="" />
+        </div>
+    </div>
+</div>
+<div id="win_edit" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_edit');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Переименование" %}</div>
+        </div>
+        <div class="contWF1"><div>
+            <div id="win_edit_contWF" class="contWF_add"></div>
+            <form method="post" action="" class="frm_rename" id="MainRenameForm">
+                <input type="hidden" value="" name="base" class="inp_txt" id="rename_base_name" />
+                <input type="hidden" value="" name="param_name" class="inp_txt" id="rename_param_name" />
+                <input type="text" value="" name="new_param_name" class="inp_txt" id="new_name_param" onKeyDown="javascript: KeyRenameParams(event); "/>
+            </form>
+        </div></div>
+        <div class="footerWF">
+            <input type="button" name=""  value="{% trans "Сохранить" %}" class="btn_wf_blue" onClick="javascript: renameParameters(); closeChangeWindow('win_edit');" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_edit');" />
+        </div>
+    </div>
+</div>
+<div id="win_dupl" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_dupl');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Дубликат" %}</div>
+        </div>
+        <div class="contWF1">
+            <div class="contWF_add" id="win_dupl_contWF"></div>
+            <form method="post" action="" class="frm_rename" id="MainCopyForm">
+                <input type="hidden" value="" name="base" class="inp_txt" id="copy_base_name" />
+                <input type="hidden" value="" name="param_name" class="inp_txt" id="copy_param_name" />
+                <input type="text" value="" name="new_param_name" class="inp_txt" id="copy_new_name_param" />
+            </form>            
+        </div>
+        <div class="footerWF">
+            <input type="button" name=""  value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_dupl'); copyParameters();" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_dupl');" />
+        </div>
+    </div>
+</div>
+<div id="win_export" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_export');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Экспорт настроек" %}</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add" id="win_export_contWF"></div></div>
+        <div class="footerWF">
+            <input type="button" name=""  value="{% trans "Экспорт" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_export'); exportParameter();" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_export');" />
+        </div>
+    </div>
+</div>
+<div id="win_import" style="display: none;" class="winFloating">
+    <form action="" method="post" id="ImportParamsForm" enctype="multipart/form-data" class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_import');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Импорт параметров" %}</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add" id="win_import_contWF">
+            <div>{% trans "Загрузите файл с настройками управляющей системы" %}:</div> 
+            <div class="frm_rename">
+                <div class="block_error2"></div>
+                <input type="file" name="importfile" id="importfile" value="" accept="text/*"/>
+            </div>       
+        </div></div>
+        <div class="footerWF">
+            <input type="submit" name=""  value="{% trans "Далее" %}" class="btn_wf_blue" id="btn_import" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_import');" />
+        </div>
+    </form>
+</div>
+<div id="win_import2" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_import2');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Импорт параметров" %}</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add" id="win_dialog_contWF">
+            <div><input type="radio" name="import" value="" id="import1" checked="checked" class="inp_check" /><label for="import1">{% trans "Импортировать параметры без применения настроек?" %}</label></div>
+            <div style="margin-top: 5px;"><input type="radio" name="import" value="" id="import2" class="inp_check" /><label for="import2">{% trans "Импортировать параметры и перезапустить систему для применения настроек?" %}</label></div>	
+		</div></div>
+        <div class="footerWF">
+            <input type="button" name=""  value="{% trans "Импорт" %}" class="btn_wf_blue" onClick="javascript: checkOptionImport();" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_import2');" />
+        </div>
+    </div>
+</div>

@@ -1,0 +1,168 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% load pagination_tags %}
+{% block title %}{% trans 'Статистика пользователя' %} {{user_login}}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/configuration/statistics.css?v=v{{ version }}" />
+<!--[if lte IE 8]><script type="text/javascript" src="/files/js/lib/graph/excanvas.min.js?v=v{{ version }}"></script><![endif]--> 
+<script type="text/javascript" src="/files/js/lib/graph/jquery.flot.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/graph/jquery.flot.stack.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/jquery.json-1.3.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/configuration/statistics.js?v=v{{ version }}"></script>
+<script type="text/javascript">    
+var URL_GET_STATISTICS = '{% url data_statistics %}';
+var URL_GET_TABLE_STATISTICS = '{% url table_statistics %}';
+var ERR = {
+	1 : "{% trans "Произошла ошибка. Попробуйте ещё раз." %}",
+	2 : "{% trans "Ошибка передачи данных. Пожалуйста, попробуйте ещё раз." %}",
+	3 : "{% trans "Некорректный логин пользователя" %}",
+	4 : "{% trans "Произошла ошибка при получении IP-адресов. Попробуйте ещё раз" %}.",
+	5 : "{% trans "Отсутствуют данные за указанный период" %}."
+}
+var USER = '{{ user_login }}';
+var textErr1="";
+var textErr2="{% trans "Произошла ошибка сервера. Попробуйте ещё раз." %}";    
+var textErr3="{% trans "Ошибка при отправке запроса. Попробуйте ещё раз." %}";
+var textQuery="{% trans "запросов" %}";
+var textMb="{% trans "мегабайт" %}";
+var textSec="{% trans "секунд" %}";
+var textFaces="{% trans "лиц" %}";
+var textPeriod="{% trans "Период с" %}";
+var textTo="{% trans "по" %}";
+var textTotal="{% trans ", всего запросов:" %}";
+var textDetect="{% trans "Распознавание лиц" %}";
+var textIdent="{% trans "Идентификация лиц" %}";
+var textFS="{% trans "Фоторедактор" %}";
+var textDay1="{% trans "пн" %}";
+var textDay2="{% trans "вт" %}";
+var textDay3="{% trans "ср" %}";
+var textDay4="{% trans "чт" %}";
+var textDay5="{% trans "пт" %}";
+var textDay6="{% trans "сб" %}";
+var textDay7="{% trans "вс" %}";
+var textModule="{% trans "Модуль" %}";
+var textTDeamon="{% trans "Количество запросов" %}";
+var textTTraffic="{% trans "Мегабайт передано" %}";
+var textTTime="{% trans "Секунд затрачено" %}";
+var textTFace="{% trans "Количество обнаруженных лиц" %}";
+var textDays="{% trans "Дни" %}";
+var textHours="{% trans "Часы" %}";
+$(function() {
+    init();
+});
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+	<h2><a href="{% url web_api_users %}">{% trans "Пользователи WEB API" %}</a> - {% trans "Статистика пользователя" %} {{user_login}}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Настройки пользователя WEB API Статистика' %}');" /></h2>
+	{% include "current_time.html" %}
+	<div class="block">
+		<ul class="list_period"><li><a href="#" id="link_daemons_chart_by_day_yesterday">{% trans "Вчера" %}</a></li><li class="lp_active"><a href="#" id="link_daemons_chart_by_day">{% trans "Сегодня" %}</a></li><li><a href="#" id="link_daemons_chart_by_week">{% trans "За 7 дней" %}</a></li><li class="lp_last"><a href="#" id="link_daemons_chart_30days">{% trans "За 30 дней" %}</a></li></ul>
+		<div class="head_period"><span id="period_head">{% trans "Дата" %}</span>: <strong id="period_info"></strong></div>
+		<input type="hidden" value="" name="" id="period_info_server" />
+	</div>                    
+	<div class="block_head">{% trans "Количество выполненных запросов" %}</div>
+	<div id="block_table"></div>
+	<div class="block_upload" id="indicator2" style="display: none;">
+		<img src="/files/images/loader.gif" alt="" />
+		<div class="dist_top">{% trans "Идет процесс обработки данных" %}.</div>
+		<div>{% trans "Пожалуйста, подождите" %}.</div>
+	</div>
+	<div class="block_error" id="error2" style="display: none;"></div>            
+
+	<div class="block_result">
+		<div id="daemon_graph" class="graph" style="display: none;"></div>
+		<div style="display: none;">
+			<div class="axisY" id="daemon_axisY">{% trans "Количество" %}</div>
+			<div class="axisX" id="daemon_axisX">{% trans "Часы" %}</div>
+		</div>
+		<div class="block_upload" id="daemon_indicator" style="display: none;">
+			<img src="/files/images/loader.gif" alt="" />
+			<div class="dist_top">{% trans "Идет процесс обработки данных" %}.</div>
+			<div>{% trans "Пожалуйста, подождите" %}.</div>
+		</div>
+		<div class="block_error" id="daemon_error" style="display: none;"></div>
+	</div>
+	<div class="block graph_options" style="display: none;">
+		<input type="hidden" name="" value="bar" id="daemon_type_graphs_cur" />
+		<ul class="type_graphs" id="daemon_type_graphs">
+			<li><input type="button" name="" value="" class="graph_line" /></li>
+			<li><input type="button" name="" value="" class="graph_line_points" /></li>
+			<li class="tg_act"><input type="button" name="" value="" class="graph_bar" /></li>
+		</ul>            
+		<div id="daemon_choices" class="choices"></div>
+	</div>
+
+	<div class="block_head">{% trans "Трафик в мегабайтах" %}</div>
+	<div class="block_result">
+		<div id="traffic_graph" class="graph" style="display: none;"></div>
+		<div style="display: none;">
+			<div class="axisY" id="traffic_axisY">{% trans "Количество" %}</div>
+			<div class="axisX" id="traffic_axisX">{% trans "Часы" %}</div>
+		</div>
+		<div class="block_upload" id="traffic_indicator" style="display: none;">
+			<img src="/files/images/loader.gif" alt="" />
+			<div class="dist_top">{% trans "Идет процесс обработки данных" %}.</div>
+			<div>{% trans "Пожалуйста, подождите" %}.</div>
+		</div>
+		<div class="block_error" id="traffic_error" style="display: none;"></div>
+	</div>
+	<div class="block graph_options" style="display: none;">
+		<input type="hidden" name="" value="bar" id="traffic_type_graphs_cur" />
+		<ul class="type_graphs" id="traffic_type_graphs">
+			<li><input type="button" name="" value="" class="graph_line" /></li>
+			<li><input type="button" name="" value="" class="graph_line_points" /></li>
+			<li class="tg_act"><input type="button" name="" value="" class="graph_bar" /></li>
+		</ul>            
+		<div id="traffic_choices" class="choices"></div>
+	</div>
+
+	<div class="block_head">{% trans "Затраченное процессорное время в секундах" %}</div>
+	<div class="block_result">
+		<div id="daemon_time_graph" class="graph" style="display: none;"></div>
+		<div style="display: none;">
+			<div class="axisY" id="daemon_time_axisY">{% trans "Количество" %}</div>
+			<div class="axisX" id="daemon_time_axisX">{% trans "Часы" %}</div>
+		</div>
+		<div class="block_upload" id="daemon_time_indicator" style="display: none;">
+			<img src="/files/images/loader.gif" alt="" />
+			<div class="dist_top">{% trans "Идет процесс обработки данных" %}.</div>
+			<div>{% trans "Пожалуйста, подождите" %}.</div>
+		</div>
+		<div class="block_error" id="daemon_time_error" style="display: none;"></div>
+	</div>
+	<div class="block graph_options" style="display: none;">
+		<input type="hidden" name="" value="bar" id="daemon_time_type_graphs_cur" />
+		<ul class="type_graphs" id="daemon_time_type_graphs">
+			<li><input type="button" name="" value="" class="graph_line" /></li>
+			<li><input type="button" name="" value="" class="graph_line_points" /></li>
+			<li class="tg_act"><input type="button" name="" value="" class="graph_bar" /></li>
+		</ul>            
+		<div id="daemon_time_choices" class="choices"></div>
+	</div>
+
+	<div class="block_head">{% trans "Обнаруженные лица" %}</div>
+	<div class="block_result">
+		<div id="faces_graph" class="graph" style="display: none;"></div>
+		<div style="display: none;">
+			<div class="axisY" id="faces_axisY">{% trans "Количество" %}</div>
+			<div class="axisX" id="faces_axisX">{% trans "Часы" %}</div>
+		</div>
+		<div class="block_upload" id="faces_indicator" style="display: none;">
+			<img src="/files/images/loader.gif" alt="" />
+			<div class="dist_top">{% trans "Идет процесс обработки данных" %}.</div>
+			<div>{% trans "Пожалуйста, подождите" %}.</div>
+		</div>
+		<div class="block_error" id="faces_error" style="display: none;"></div>
+	</div>
+	<div class="block graph_options" style="display: none;">
+		<input type="hidden" name="" value="bar" id="faces_type_graphs_cur" />
+		<ul class="type_graphs" id="faces_type_graphs">
+			<li><input type="button" name="" value="" class="graph_line" /></li>
+			<li><input type="button" name="" value="" class="graph_line_points" /></li>
+			<li class="tg_act"><input type="button" name="" value="" class="graph_bar" /></li>
+		</ul>            
+		<div id="faces_choices" class="choices"></div>
+	</div>                    
+{% endblock %}

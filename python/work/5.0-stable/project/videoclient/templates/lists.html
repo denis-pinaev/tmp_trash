@@ -1,0 +1,101 @@
+{% extends "base_notab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Списки' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/lists.css?v=v{{ version }}" />
+{% include "js/js_list.html" %}
+{% include "js/js_update_left_photos.html" %}
+<script type="text/javascript">
+var ERRORS = {
+	"delete": "{% trans 'Вы должны выбрать хотя бы одну запись' %}.",
+	"full": "{% trans 'Прежде чем удалить список, удалите все входящие в него записи' %}."
+}
+var MESSAGES = {
+	"delete": "{% trans 'Вы действительно хотите удалить выбранные списки' %} ({} {% trans 'шт' %}.)?",
+	"delete_all_persons": "{% trans 'Вы действительно хотите удалить всех персон?' %}",
+	"export_all": "{% trans 'Экспортировать весь список?' %}",
+	"export_choose": "{% trans 'Экспортировать выбранные персоны' %} ({} {% trans 'шт' %}.)?"
+}
+$(function() {
+    init();
+});
+    
+</script>
+{% endblock %}
+{% block subcontent %}
+<h2>{% trans "Списки" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Списки" %}');" /></h2>
+{% include "current_time.html" %}
+{% if lists|length == 0 %}
+	<div class="frm_block">
+		<div>{% trans "Всего списков" %}: <span class="info_important">{{ lists|length }}</span></div>
+		{% if perms.user_perms.perm_lists_edit %}
+			<div class="frm_block">
+				<a href="/anketalist/" class="link_btn">{% trans "Добавить" %}</a>
+			</div>					
+		{% endif %}
+	</div>
+{% else %}
+	<div>{% trans "Общее количество персон" %}: <span class="info_important" id="all_persons">0</span></div>
+	<div>{% trans "Общее количество фотографий" %}: <span class="info_important" id="all_photos">0</span></div>
+	<div class="short_descr" title="{% trans 'Сколько фотографий Вы можете еще добавить' %}">{% trans "Ограничение на добавление фотографий" %}: <span class="info_important" id="left_photos"><span class="loader_count"><img src="/files/images/loader20x20.gif" alt="" /></span></span></div>
+	<form method="post" action="" name="" class="dist_top">
+		{% if perms.user_perms.perm_lists_edit %}
+			<div class="frm_block">
+				<div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all" /><label for="choose_all">{% trans "Выделить всё" %}</label></div></div>
+				<a href="/anketalist/" class="link_btn">{% trans "Добавить" %}</a>
+				<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 margin_right" onClick="javascript: deleteLists({{ lists|length }});" />
+				<input type="button" name="" value="{% trans "Удалить всех персон" %}" class="inp_btn inp_btn170" onClick="javascript: deleteAllPersons();" />
+			</div>					
+		{% endif %}
+		<div class="frm_block dist_link">
+			<table cellspacing="0" cellpadding="0" class="list_users dist_top" id="table">
+				<tr>
+					{% if perms.user_perms.perm_lists_edit %}
+						<th class="first">&nbsp;</th>
+						<th>{% trans "Название" %}</th>				
+					{% else %}
+						<th class="first">{% trans "Название" %}</th>					
+					{% endif %}
+					<th>{% trans "Описание" %}</th>
+					<th>{% trans "Количество персон" %}</th>
+					<th>{% trans "Количество фото" %}</th>
+				</tr>
+				{% for list in lists %}
+					{% if not is_active_self_learning and list.group.id == self_learning %}
+					{% else %}
+						{% if list.group.id != noise_learning %}
+							<tr{% cycle '' ' class="odd"' %}>
+								{% if perms.user_perms.perm_lists_edit %}
+									<td class="td_check first"><input type="checkbox" name="pi{{forloop.counter}}" value="{{ list.id }}" class="inp_check" id="check{{ forloop.counter }}" /></td>
+									<td>{% if list.group.id == noise_learning %}<span class="btn_edit dis"></span>{% else %}<a class="btn_edit short_descr" title='{% trans "Редактировать список" %} "{% trans  list.name  %}"' href="/anketalist/{{ list.id }}/"></a>{% endif %}<div class="name_list short_descr" title="{% trans list.name %}"><a href="{{ list.type.url }}{% if list.group %}?group={{ list.group.id }}{% endif %}">{% if res_interface == "0" %}{% trans list.name|truncchar:32 %}{% else %}{% trans list.name|truncchar:64 %}{% endif %}</a></div></td>
+								{% else %}
+									<td class="first short_descr" title="{% trans list.name %}"><a href="{{ list.type.url }}{% if list.group %}?group={{ list.group.id }}{% endif %}">{% if res_interface == "0" %}{% trans list.name|truncchar:32 %}{% else %}{% trans list.name|truncchar:64 %}{% endif %}</a></td>
+								{% endif %}
+								<td class="short_descr" title="{% if list.discription %}{% trans list.discription %}{% endif %}">{% if list.discription %}{% if res_interface == "0" %}{% trans  list.discription|truncchar:84  %}{% else %}{% trans list.discription|truncchar:160 %}{% endif %}{% else %}&nbsp;{% endif %}</td>
+								<td class="type" id="lCount{{ list.id }}"><span class="loader_count"><img src="/files/images/loader20x20.gif" alt="" /></span></td>
+								<td class="type" id="pCount{{ list.id }}"><span class="loader_count"><img src="/files/images/loader20x20.gif" alt="" /></span></td>
+							</tr>
+							<script>
+								{% if forloop.counter == 1 %}
+									updatePersonPhotosCount({{ list.id }}, true);
+								{% else %}
+									updatePersonPhotosCount({{ list.id }});
+								{% endif %}
+							</script>
+						{% endif %}
+					{% endif %}
+				{% endfor %}
+			</table>
+		</div>
+		{% if perms.user_perms.perm_lists_edit %}
+			<div class="frm_block">
+				<div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all2" /><label for="choose_all2">{% trans "Выделить всё" %}</label></div></div>
+				<a href="/anketalist/" class="link_btn">{% trans "Добавить" %}</a>
+				<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 margin_right" onClick="javascript: deleteLists({{ lists|length }});" />
+				<input type="button" name="" value="{% trans "Удалить всех персон" %}" class="inp_btn inp_btn170" onClick="javascript: deleteAllPersons();" />
+			</div>						
+		{% endif %}
+	</form>					
+{% endif %}
+{% endblock %}
+{% block windows %}{% include "window_list.html" %}{% endblock %}

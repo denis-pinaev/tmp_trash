@@ -1,0 +1,7 @@
+{% load i18n %}
+{% load templatetags %}
+<ul class="menu_vkl_inner">
+	<li><a href="{% url integration_universal %}" class="first{% if 'universal' in select_page %} act{% endif%}">{% trans "Универсальные оповещения" %}</a></li>
+    <li><a href="{% url integration_smtp %}" class="{% if 'smtp' in select_page %} act{% endif%}">{% trans "Протокол SMTP" %}</a></li>
+    <li><a href="{% url integration_snmp %}" class="last{% if 'snmp' in select_page %} act{% endif%}">{% trans "Протокол SNMP" %}</a></li>
+</ul>

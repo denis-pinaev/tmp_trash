@@ -1,0 +1,3 @@
+{% load i18n %}
+{% load templatetags %}{% for res in results %}
+<div class="block"><div class="ac_img"><img src="{{ res|getPersonPhotoById }}" alt="" /></div><div class="ac_txt">{{ res.person.first_name }} {{ res.person.last_name }}{% if res.person.middle_name %} {{ res.person.middle_name }}{% endif %}</div></div>{% endfor %}

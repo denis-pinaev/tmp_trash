@@ -1,0 +1,99 @@
+{% load i18n %}
+{% load a_templatetags %}
+{% include "a_header.html" %}
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/users.css?v=v{{ version }}" />
+<script type="text/javascript" src="{{ root_path }}/files/js/spinbox.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+	function del(users) {
+		showIndicator(true);
+		$.ajax({
+			type: "POST",
+			url: "{{ root_path }}/command/delete_users/",
+			data: {users: users},
+			success: function(msg){
+				//closeChangeWindow('win_del');
+				setTimeout('location.reload(true)', 1000);
+			}
+		});
+	}
+</script>
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>{% trans "Пользователи" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Видеоархив Пользователи" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				{% include "current_time.html" %}				
+				<form method="get" action="" name="" id="main_form">
+				    <input type="hidden" name="sort" value="{{ sort|default:0 }}" id="id_sort">
+                    <input type="hidden" name="order" value="{{ order|default:0 }}" id="id_order">
+					<div class="frm_block">
+						{% if all_users > 0 %}
+							<div class="search">
+								<span class="left"></span>
+								<span class="center"><input type="text" name="filter" value="{% if filter %}{{ filter }}{% else %}{% trans "Поиск" %}{% endif %}" value="" class="txt_search" onFocus="javascript: search(this, true, '{% trans "Поиск" %}');" onBlur="javascript: search(this, false, '{% trans "Поиск" %}');" id="filter"/></span>
+								<input type="submit" name="" value="" class="btn_search" onclick=" search(byId('filter'), true, '{% trans "Поиск" %}');"/>
+							</div>
+						{% endif %}
+						<div>{% trans "Всего пользователей" %}: <span class="info_important">{{ all_users }}</span></div>
+						{% if filter %}
+						    <div>{% trans "Всего найдено" %}: <span class="info_important">{{ find_count }}</span></div>
+						{% endif %}
+					</div>				
+					<div class="frm_block">
+						{% if users|length > 0 %}
+							{% include "navigation/light_top.html" %} 
+							<div class="bl_btn_check">
+								<input type="button" name="" value="{% trans "Выделить всё" %}" class="inp_btn inp_btn120" onClick="javascript: checkAllRow('choose_all', {{ users|length }}, true);" />
+								<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAllRow(this, {{ users|length }});" id="choose_all" />
+							</div>
+						{% endif %}
+						<input {% if users|length == 0 %}style="margin-left: 0px;" {% endif %}type="button" name="test" value="{% trans "Добавить пользователя" %}" class="inp_btn inp_btn170 dist_btn" onClick="javascript: window.location.href='{{ root_path}}/page_user/'" />
+						{% if users|length > 0 %}
+							<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_btn" onClick="javascript: showMessageDelete({{ users|length }}, 'operators')" />
+						{% endif %}					
+					</div>
+					{% if users|length > 0 %}
+					
+						{% include "navigation/main.html" %}				
+						<table cellspacing="0" cellpadding="0" class="table">
+							<tr>
+								<th class="first th_check"><a href="#"  onclick="sort_journal(0, {% if sort == 0 %}{{ order }}{% else %}0{% endif %});" {% if sort == 0 and order == 1%}class="btn_arrow up"{% endif %}>№</a></th>
+								<th><a href="#" onclick="sort_journal(1, {% if sort == 1 %}{{ order }}{% else %}0{% endif %});" {% if sort == 1 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "ФИО" %}</a></th>
+								<th><a href="#" onclick="sort_journal(2, {% if sort == 2 %}{{ order }}{% else %}0{% endif %});" {% if sort == 2 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Логин" %}</a></th>
+								<th><a href="#" onclick="sort_journal(3, {% if sort == 3 %}{{ order }}{% else %}0{% endif %});" {% if sort == 3 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Должность" %}</a></th>
+								<th class="th_status2"><a href="#" onclick="sort_journal(4, {% if sort == 4 %}{{ order }}{% else %}0{% endif %});" {% if sort == 4 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Статус" %}</a></th>
+							</tr>
+							{% for user in users %}
+								<tr {% cycle '' 'class="odd" ' %}onMouseOver="javascript: overElem(this, 'act');" onMouseOut="javascript: outElem(this, 'act');">
+									<td class="td_check first"><span>{{ forloop.counter }}.</span><input type="checkbox" name="" value="{{ user.id }}" class="inp_check" id="check{{ forloop.counter }}" onClick="javascript: check(this, {{ users|length }});" /></td>
+									<td><a href="{{ root_path }}/page_user/{{ user.id }}/">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a></td>
+									<td>{{ user.username }}</td>
+									<td>{% trans  user.position  %}</td>
+									<td>{% trans  user.access  %}</td>
+								</tr>
+							{% endfor %}
+						</table>
+						{% include "navigation/main_buttom.html" %}
+						<div class="frm_block">
+							<div class="bl_btn_check">
+								<input type="button" name="" value="{% trans "Выделить всё" %}" class="inp_btn inp_btn120" onClick="javascript: checkAllRow('choose_all2', {{ users|length }}, true);" />
+								<input type="checkbox" name="" value="" class="inp_check" onClick="javascript: checkAllRow(this, {{ users|length }});" id="choose_all2" />
+							</div>
+							<input type="button" name="test" value="{% trans "Добавить пользователя" %}" class="inp_btn inp_btn170 dist_btn" onClick="javascript: window.location.href='{{ root_path}}/page_user/'" />
+							<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_btn" onClick="javascript: showMessageDelete({{ users|length }}, 'operators')" />					
+						</div>
+					{% endif %}				
+				</form>		
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "a_footer.html" %}
+{% include "window_users.html" %}
+</body>
+</html>

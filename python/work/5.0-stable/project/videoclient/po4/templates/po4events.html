@@ -1,0 +1,112 @@
+{% load i18n %}
+{% include "po4header.html" %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4events.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_settings">
+		
+		{% include "po4menu_insert.html" %}
+			
+		<div class="block_cont">
+			<div class="block_cont_top2">
+				<div class="block_cont_bottom min_height">
+					<h2>{% trans "Настройки звуков и сигналов" %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Настройки звуков и сигналов" %}');" /></h2>
+					<form method="get" action="" name="" id="mainForm">
+					<div class="settings_btns">					
+						<input type="button" name="" value='{% trans "Сохранить профиль" %}' class="inp_btn inp_btn140" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" 
+						title='{% trans "Для сохранения текущих настроек звуков и сигналов" %}' onClick="javascript: saveProfile();" />
+						<input type="button" name="" value='{% trans "Загрузить профиль" %}' class="inp_btn inp_btn140" style="margin-left: 5px;" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" 
+						title='{% trans "Загрузка сохранённых настроек" %}' onClick="javascript: uploadProfile();" />
+						<input type="button" name="" value='{% trans "Сбросить настройки" %}' class="inp_btn inp_btn140" style="margin-left: 5px;" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" 
+						title='{% trans "Для сохранения текущих настроек звуков и сигналов" %}' onClick="javascript: defaultProfile();" />						
+					</div>					
+					<div class="frm_block">					
+						
+						<div class="search">
+							<span class="left"></span>
+							<span class="center"><input type="text" name="filter" value="{{ filter|default:"Поиск" }}" value="" class="txt_search" onFocus="javascript: search(this, true, '{% trans "Поиск" %}');" onBlur="javascript: search(this, false, '{% trans "Поиск" %}');" /></span>
+							<input type="submit" name="" value="" class="btn_search" title="{% trans "Найти" %}" />
+						</div>							
+			
+						<div>{% trans "Всего событий" %}: <span class="info_important">{{ all_events }}</span></div>
+						{% if all_events != events|length %}
+							<div class="frm_block">{% trans "Всего событий найдено" %}: <span class="info_important">{{ events|length }}</span></div>
+						{% endif %}
+					</div>
+					{% if all_events > 0 %}
+						<div class="frm_block">
+							<input type="button" name="" value="{% trans "Добавить звук" %}" class="inp_btn inp_btn110" onClick="javascript: addSound();" />
+						</div>
+					{% endif %}
+					{% include "js/js_events.html" %}
+					{% if events|length > 0 %}
+					
+						{% include "po4NavigationBlock.html" %}
+						
+						<script type="text/javascript">
+							{% for sound in sounds %}
+								sounds[{{ sound.id }}] = '{{ media_url }}{{ sound.sound }}'; 
+							{% endfor %}								
+						</script>
+						
+						<div class="frm_block">
+							<table cellspacing="0" cellpadding="0" class="list_users">
+								<tr>
+									<th class="th_check first"><a href="?start={{start}}&sorto=1&up={% if sorto == 1 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}"><input type="button" class="btn_arrow {% if sorto == 1 and up == 1  %}up{% else %}down{% endif %}" value="">№</a></th>
+									<th class="th_event"><a href="?start={{start}}&sorto=2&up={% if sorto == 2 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}"><input type="button" class="btn_arrow {% if sorto == 2 and up == 1  %}up{% else %}down{% endif %}" value="">{% trans "Событие" %}</a></th>
+									<th><a href="?start={{start}}&sorto=3&up={% if sorto == 3 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}"><input type="button" class="btn_arrow {% if sorto == 3 and up == 1  %}up{% else %}down{% endif %}" value="">{% trans "Название звука" %}</a></th>	
+									<th><a href="?start={{start}}&sorto=4&up={% if sorto == 4 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}"><input type="button" class="btn_arrow {% if sorto == 4 and up == 1  %}up{% else %}down{% endif %}" value="">{% trans "Внешние сигналы" %}</a></th>																	
+								</tr>
+								
+								{% for event in events %}
+									<tr{% cycle '' ' class="odd"' %}>
+										<td class="td_check first"><span>{{ forloop.counter }}.</span><input type="checkbox" name="active" value="" class="inp_check" id="check{{ forloop.counter }}" title="{% trans "Добавить звук на событие" %}"{% if event.active %} checked="checked"{% endif %} onClick="javascript: clickActive({{ event.id }}, this, {{ forloop.counter }});"/></td>
+										<td class="td_event" id="event{{ forloop.counter }}">{{ event.name }}</td>
+										<td class="td_sound">
+											<select name="sound" class="select" onChange="javascript: changeSound({{ event.id }}, {{ forloop.counter }})" id="listSounds{{ forloop.counter }}">
+												<option value="0">-- {% trans "Выберите звук" %} --</option>
+												{% for sound in sounds %}
+													<option value="{{ sound.id }}"{% if sound.id == event.sound.id %} selected="selected"{% endif %}>{{ sound.name }}</option>
+												{% endfor %}
+											</select>
+											<input type="button" name="" value="" class="btn_camera play" onClick="javascript: playSound({{ forloop.counter }});" />
+										</td>
+										<td class="td_sound">
+											<select name="" class="select" onChange="javascript: changeSignal({{ event.id }}, {{ forloop.counter }})" id="listSignal{{ forloop.counter }}">
+												<option value="0">-- {% trans "Выберите сигнал" %} --</option>
+												{% for signal in signals %}
+													<option value="{{ signal.id }}"{% if signal.id == event.signal.id %} selected="selected"{% endif %}>{{ signal.name }}</option>
+												{% endfor %}
+											</select>
+											<input type="button" name="" value="" class="btn_camera play" />									
+										</td>								
+									</tr> 
+								{% endfor %}
+							</table>
+						</div>
+						
+						{% include "po4NavigationBlock.html" %}
+
+					{% endif %}
+					</form>						
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po4footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+{% include "po4window_events.html" %}
+{% include "window_help.html" %}
+
+</body>
+</html>

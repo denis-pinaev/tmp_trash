@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<Resources>
+	<xml_file id="config" path="xml/config.xml"/>
+	<xml_file id="formats" path="xml/formats.xml"/>
+	<xml_file id="appmap" path="xml/appmap.xml"/>
+	<xml_file id="strings_ru" path="xml/strings_ru.xml"/>
+	<xml_file id="map" path="xml/mapobjects.xml"/>
+</Resources>

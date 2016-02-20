@@ -1,0 +1,64 @@
+{% load i18n %}
+{% load templatetags %}
+	<ul class="menu_vkl">
+			<li{% if 'events' in select_page %} class="menu_vkl_act"{% endif %}>
+				<div>
+					<div>
+						<a href="{% url monitoring %}">{% trans "События системы" %}</a>
+					</div>
+				</div>
+			</li>
+			<li{% if 'monitoring_syslog_journal' in select_page %} class="menu_vkl_act"{% endif %}>
+				<div>
+					<div>
+						<a href="{% url syslog_journal %}">{% trans "Общий журнал системы" %}</a>
+					</div>
+				</div>
+			</li>
+			<li{% if 'system' in select_page %} class="menu_vkl_act"{% endif %}>
+				<div>
+					<div>
+						<a href="{% url monitoring_system %}">{% trans "Аналитика УС" %}</a>
+					</div>
+				</div>
+			</li>
+			{% if show_videoanalitycs == '1' %}
+			<li{% if 'videoanalytics' in select_page %} class="menu_vkl_act"{% endif %}>
+				<div>
+					<div>
+						<a href="{% url monitoring_videoanalytics %}">{% trans "Видеоаналитика" %}</a>
+					</div>
+				</div>
+			</li>
+			{% endif %}
+			<li{% if 'communicator' in select_page %} class="menu_vkl_act"{% endif %}>
+				<div>
+					<div>
+						<a href="{% url monitoring_communicator %}">{% trans "Графики коммуникаторов" %}</a>
+					</div>
+				</div>
+			</li>
+			<li {% if 'testfr' in select_page %} class="menu_vkl_act" {% endif %}>
+				<div>
+					<div>
+						<a href="{% url monitoring_testfr %}">{% trans "Тестирование" %}</a>
+					</div>
+				</div>
+			</li>
+			<li {% if 'versions' in select_page %} class="menu_vkl_act" {% endif %}>
+				<div>
+					<div>
+						<a href="{% url monitoring_versions %}">{% trans "Версии компонентов" %}</a>
+					</div>
+				</div>
+			</li>
+			{% if show_recognition == '1' %}
+			<li {% if 'identification' in select_page %} class="menu_vkl_act" {% endif %}>
+				<div>
+					<div>
+						<a href="{% url upload_recognition %}">{% trans "Идентификация из файлов" %}</a>
+					</div>
+				</div>
+			</li>
+			{% endif %}
+		</ul>

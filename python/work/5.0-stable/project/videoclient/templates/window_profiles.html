@@ -1,0 +1,113 @@
+{% load i18n %}
+{% load templatetags %}
+<div id="win_save_cameraprofile" style="display: none;" class="winFloating">
+    <form method="post" action="" id="MainNewProfileForm" class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_save_cameraprofile');" /></div>
+            <div class="headWF_txt">{% trans "Сохранение профиля" %}</div>
+        </div>
+        <div class="contWF" id="win_save_cameraprofile_contWF">
+			{% if profiles_list and profiles_list|length > 0 %}
+			<div class="block frm_profile" id="select_profiles">
+                <label for="list_save_profile" class="txt_param">{% trans "Название профиля" %}:</label>
+                <div class="bl_enter">
+                    <select name="idprofile" class="select profiles" id="list_save_profile" onChange="javascript: showOther(this, 'other_profile', 'other_profile_name');">                          
+                            {% for pi in profiles_list %}
+                                <option value="{{ pi.id }}" {% if profile and profile.id == pi.id %}selected="selected"{% endif %}>{% if pi.name %}{% trans pi.name|truncchar:32 %}{% else %}&nbsp;{% endif %}</option>
+                            {% endfor %}
+                        <option value="">--- {% trans "Создать новый" %} ---</option>
+                    </select>
+                    <input type="button" id="list_save_profile_delete" name="" value="" class="inp_btn btn_profile_delete short_descr" onClick="javascript: isDeleteProfile('list_save_profile');" title="{% trans "Удалить выбранный профиль" %}" />
+                </div>
+            </div>
+            {% endif %}
+            <div class="block_error" id="other_profile_name_error"></div>
+            <div class="block frm_profile" id="other_profile" style="display: {% if profiles_list and profiles_list|length > 0 %}none{% else %}block{% endif %};">
+                <label for="other_profile_name" class="txt_param">{% trans "Название профиля" %}:</label>
+                <div class="bl_enter">
+                    <input type="text" name="name" value="" class="inp_txt" id="other_profile_name" maxlength="64" />
+                </div>
+            </div>
+        </div>
+        <div class="footerWF">
+            <input type="submit" name="" value="{% trans "Сохранить" %}" class="btn_wf_blue" />        
+            <input type="button" name="" value="{% trans "Отменить" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_save_cameraprofile');" />
+        </div>
+    </form>
+</div>
+<div id="win_upload_cameraprofile" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_upload_cameraprofile');" /></div>
+            <div class="headWF_txt">{% trans "Применение профиля" %}</div>
+        </div>
+        <div class="contWF" id="win_upload_cameraprofile_contWF">
+            <form method="post" action="" id="MainUploadProfileForm">
+                <div class="block frm_profile">
+                    <label for="idprofile" class="txt_param2">{% trans "Выберите название профиля" %}:</label>
+                    <div class="bl_enter" id="select_idprofile">
+                        <select name="idprofile" id="idprofile" class="select profiles">
+                            {% for pi in profiles_list %}
+                                 <option value="{{ pi.id }}" {% if forloop.first %}selected="selected"{% endif %}>{% trans pi.name|truncchar:32 %}</option>
+                            {% endfor %}                        
+                        </select>
+                        <input type="button" id="idprofile_delete" name="" value="" class="inp_btn btn_profile_delete short_descr" onClick="javascript: isDeleteProfile('idprofile');" title="{% trans "Удалить выбранный профиль" %}" />
+                    </div>
+                </div>
+                <input type="hidden" name="idcamera" value="{{uuid}}" id="id_numcamera" />
+            </form>
+        </div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Применить" %}" class="btn_wf_blue" onClick="javascript: uploadCameraFormProfile();" />        
+            <input type="button" name="" value="{% trans "Отменить" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_upload_cameraprofile');" />            
+        </div>
+    </div>
+</div>
+<div id="win_upload_camerasprofile" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_upload_camerasprofile');" /></div>
+            <div class="headWF_txt">{% trans "Применение профиля" %}</div>
+        </div>
+        <div class="contWF" id="win_upload_camerasprofile_contWF">
+            <form method="post" action="" id="MainUploadProfileCamerasForm">
+                <div class="block frm_profile">
+                    <label for="list_profile" class="txt_param2">{% trans "Выберите название профиля" %}:</label>
+                    <div class="bl_enter">
+                        <select name="idprofile" id="list_profile" class="select profiles">
+                            {% for pi in profiles_list %}
+                                 <option value="{{ pi.id }}" {% if forloop.first %}selected="selected"{% endif %}>{% trans pi.name|truncchar:32 %}</option>
+                            {% endfor %}                        
+                        </select>
+                        <!--<input type="button" name="" value="Удалить" class="inp_btn inp_btn90 dist_left" />-->
+                        <input type="button" id="list_profile_delete" name="" value="" class="inp_btn btn_profile_delete short_descr" onClick="javascript: isDeleteProfile('list_profile');" title="{% trans "Удалить выбранный профиль" %}" />
+                    </div>
+                </div>
+                <input type="hidden" name="idcamera" value="{{numcamera}}" id="id_numcameras">
+            </form>
+        </div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Применить" %}" class="btn_wf_blue" onClick="javascript: preuploadCameraFormProfile();" />        
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_upload_camerasprofile');" />            
+        </div>
+    </div>
+</div>
+<div id="win_delete_profile" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_upload_camerasprofile');" /></div>
+            <div class="headWF_txt">{% trans "Удаление профиля" %}</div>
+        </div>
+        <div class="contWF" id="win_delete_profile_contWF">
+            <form method="post" action="" id="MainDeleteCameraProfileForm">
+                {% trans "Вы действительно хотите удалить профиль" %} "<span id="name_delete_profile"></span>"?
+                <input type="hidden" name="idprofile" value="" id="id_delete_profile">
+                <input type="hidden" name="" value="" id="select_name_delete_profile">
+            </form>
+        </div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Удалить" %}" class="btn_wf_blue" onClick="javascript: deleteProfile();" />        
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_delete_profile');" />            
+        </div>
+    </div>
+</div>

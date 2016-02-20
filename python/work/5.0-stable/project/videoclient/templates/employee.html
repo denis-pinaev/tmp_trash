@@ -1,0 +1,116 @@
+{% load i18n %}
+{% if journal %}
+    {% load templatetags %}
+    <input type="hidden" value="{{ event }}" name="" id="event" />
+	<div class="block_camera_kpp">
+     	<span>{% trans "Камера" %}: <b>{{ journal.camera.ip }} {{ journal.camera.type }}</b></span>
+     	<span style="margin-left: 20px;">{% trans "КПП" %}: <b>{{ journal.camera.kpp.name }}</b></span>
+    </div>
+	{% if access %}
+	    <div class="block_danger">{% trans "ДОСТУП РАЗРЕШЕН!" %}</div>
+	{% else %}
+	    <div class="block_danger red">{% trans "ДОСТУП ЗАПРЕЩЕН!" %}</div>
+	    {% if not journal.person %}
+	        <div class="block_danger2 red">{% trans "Лицо не опознано!" %}</div>
+	    {% endif %}
+        {% if journal.person.person.status.division.id == division_person %}
+	        <div class="block_danger2 red">{% trans "Категория" %}: {% trans  journal.person.person.category.name  %}!</div>
+	    {% endif %}	    
+	{% endif %}
+	
+	<table colspacing="0" colpadding="0" border="0" class="table_img">
+		<tr>
+			<td class="photo_base">
+				<div class="photo_head">{% trans "Фото из базы" %}</div>
+				<div><img src="/files/{% if journal.coeff < csm  %}images/no_foto.gif{% else %}{{ journal.finded }}{% endif %}" {% if journal.coeff < csm  %}width="120" height="120"{% else %}width="{{ sizes.finded.width }}" height="{{ sizes.finded.height }}"{% endif %} alt="" /></div>
+			</td>
+			<td class="photo_cam">
+				<div class="photo_head">{% trans "Фото с камеры" %}</div>
+				<div><img src="/files/{{ journal.original }}" width="{{ sizes.original.width }}" height="{{ sizes.original.height }}" alt="" /></div>
+			</td>
+		</tr>
+	</table>	
+	   
+    <table border="0px" cellpadding="0px" cellspacing="0px" class="table_info">
+        <tr>
+            <th class="first">{% trans "Идентифицирован" %}, C<sub>sm</sub></th>
+            <th>{% trans "Порог" %}, К<sub>sm</sub></th>
+            <th>{% trans "ФИО" %}</th>
+            <th>{% trans "Время" %}</th>
+        </tr>
+        <tr>
+            <td class="first td_ident short_descr" title="{% trans 'Коэффициент похожести' %} (C<sub>sm</sub>): {{ journal.coeff }}%"><strong class="info_important">{{ journal.coeff|floatformat:"-1" }}%</strong></td>
+            <td class="td_porog short_descr" title="{% trans 'Порог идентификации' %} (K<sub>sm</sub>): {{ csm }}%"><strong>{{ csm }}%</strong></td>
+            <td>
+                {% if journal.person %}
+                    <b>{{ journal.person.person.first_name }} {{ journal.person.person.last_name }} {{ journal.person.person.middle_name }}</b>
+                {% else %}
+                    <b>{% trans "Лицо не опознано!" %}</b>
+                {% endif %}
+            </td>
+            <td class="td_time"><b>{{ journal.dt_first_fixed|date:"H:i" }}</b></td>
+        </tr>
+    </table>    
+    
+	{% if journal.person %}	
+    	<div class="dist_top">
+    		<b>{% trans "Дополнительная информация" %}:</b>
+    	</div>
+		<div class="block_info">
+			<div class="add_info">{% trans "Статус" %}:</div><div class="add_info_val"><b>{{ journal.person.person.status.name }}</b></div>
+		</div>
+		{% if journal.person.person.status.division.id == division_person %}
+			<div class="block_info">
+				<div class="add_info">{% trans "Категория" %}:</div><div class="add_info_val"><b>{{ journal.person.person.category.name }}</b></div>
+			</div>
+			{% if not journal.person.active %}
+				<div class="block_info"><b>{% trans "Персона была удалена из системы!" %}</b></div>
+			{% endif %}
+		{% endif %}
+		{% if journal.person.person.status.division.id == division_employee %}
+			{% if not journal.person.active %}
+				<div class="block_info"><b>{% trans "Сотрудник был удален из системы!" %}</b></div>
+			{% endif %}
+		{% endif %}
+		{% if journal.person.person.status.division.id == division_visitor %}
+			<div class="block_info">
+				<div class="add_info">{% trans "Документ" %}:</div><div class="add_info_val"><b>{{ journal.person.person.document.name }}</b></div>
+			</div>
+			{% if vc %}
+				<div class="block_info">
+					<div class="add_info">{% trans "Период доступа" %}:</div><div class="add_info_val"><b>{{ vc.dt_enter|date:"d.m.Y H:i" }} - {% if vc.dt_enter|date:"Y:m:d" != vc.dt_exit|date:"Y:m:d" %}{{ vc.dt_exit|date:"d.m.Y" }} {% endif %}{{ vc.dt_exit|date:"H:i" }}</b></div>
+				</div>
+			{% else %}
+				<div class="block_info">
+					<div class="add_info">{% trans "Период доступа" %}:</div><div class="add_info_val"><b>{% trans "Отсутствует" %}</b></div>
+				</div>
+			{% endif %}
+			{% if not journal.person.active %}
+				<div class="block_info"><b>{% trans "Посетитель был удален из системы!" %}</b></div>
+			{% endif %}
+		{% endif %}
+		
+		<div class="block_btns">
+			{% if access %}<input type="button" name="" value="{% trans "Разрешено" %}" class="btn_wf_blue" style="margin-right: 5px;" onClick="javascript:  movementProcess('{{journal.id}}'); closeChangeWindow('win_journal');" />{% endif %}
+			<input type="button" name="" value="{% trans "Запрещено" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_journal');" />	
+		</div>
+		
+	{% else %}
+        <div class="block_btns2">            
+            <a class="link_btn_cancel" href="#" onClick="javascript: closeChangeWindow('win_journal'); return false;"><span>{% trans "Закрыть" %}</span></a>
+            <a onClick="javascript: repeatRecognition(); return false;" href="#" class="link_btn_cancel"><span>{% trans "Повторить" %}</span></a>
+            <a onClick="javascript: savePerson(); return false;" class="link_btn_cancel last" id="bLearn" href="#"><span>{% trans "Обучить" %}</span></a>            
+        </div>            		    
+		<div class="block_info" style="display:none;" id="divLearn">		    
+			<select id="selectPerson" name="person" class="select" onChange="javascript: document.getElementById('btnLearn').href=this.value;">
+				<option value="/anketavisitor/">{% trans "Посетитель" %}</option>
+				<option value="/anketastaff/">{% trans "Сотрудник" %}</option>
+				<option value="/anketaperson/">{% trans "Персона" %}</option>
+			</select>
+			<a id="btnLearn" href="/anketavisitor/" onClick="javascript: closeChangeWindow('win_journal');" class="link_btn">{% trans "Обучить" %}</a>		    
+		</div>
+	{% endif %}
+	
+{% else %}
+	<div class="block_head">{% trans "Обнаружен объект! Получены некорректные данные!" %}</div>
+{% endif %}

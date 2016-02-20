@@ -1,0 +1,21 @@
+{% load i18n %}
+{% load templatetags %}
+<div id="win_genfon" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"></div>
+            <div class="headWF_txt">{% trans "Создание фона" %}</div>
+        </div>
+        <div class="contWF">
+			<div class="message_action" style="margin-top: 0px;">{% trans "Для сохранения сгенерированного фона нажмите на кнопку" %} <strong>{% trans "Завершить" %}</strong>.</div>
+			<div class="block_video_fon">
+				<div class="name_camera">{% if selected_camera.name %}{{ selected_camera.name }} ({{ selected_camera.ip }} {{ selected_camera.type }}){% else %}{{ selected_camera.ip }} {{ selected_camera.type }}{% endif %}</div>
+				<div><img src="http://{{ selected_camera.commun.host }}:{{ selected_camera.commun.mjpeg_port }}/video?uuid={{ selected_camera.uuid }}&width=640&height=480&fps={{ fps_of_the_cameras }}" alt="" /></div>
+			</div>
+			<div class="block_loader_fon"><span class="loader_count"><img src="/files/images/loader20x20.gif" alt="" /></span> {% trans "Идёт создание фона" %} <span id="background_generation_time">00:00:00</span></div>
+        </div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Завершить" %}" class="inp_btn btn_wf_blue ok" onclick="javascript: closeChangeWindow('win_genfon'); stopBGGeneration();"/>  
+        </div>
+    </div>
+</div>

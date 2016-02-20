@@ -1,0 +1,23 @@
+{% load control_settings_templatetags %}
+{% load i18n %}
+{% if inf.index == "params" %}
+    {% for p in inf.params %}                                
+        <div class="list_block" onMouseOver="javascript: overElem(this, 'act_set');" onMouseOut="javascript: outElem(this, 'act_set');">
+            <label for="{{ p.id }}" class="txt_param">{% if p.info %}{{ p.info }} ({{ p.code }}){% else %}{{ p.code }}{% endif %}:</label>
+            {% if p.type == text %}
+                <div class="enter_param"><input type="text" class="inp_txt inp_address" name="{{ p.id }}" id="{{ p.id }}" value="{{ p.val }}" style="width:{{ p.val|get_size }}px;" /></div>
+            {% else %}
+                {% if p.type == boolean %}
+                    <div class="enter_param">
+                        <input type="radio" id="idyes{{ p.id }}" name='{{ p.id }}' value="true" {% if p.val == "true" %}checked="checked"{% endif %} class="inp_check" /><label for="idyes{{ p.id }}">{% trans "Да" %}</label>
+                        <input type="radio" id="idno{{ p.id }}" name='{{ p.id }}' value="false" {% if p.val == "false" %}checked="checked"{% endif %} class="inp_check dist_left" /><label for="idno{{ p.id }}">{% trans "Нет" %}</label>
+                    </div>
+                {% else %}
+                    {% spinbox p.id p.id p.val 55 p.min_val p.max_val p.step %}
+                    {% comment %}<input type="button" class="btn_help" name="" value="" onMouseOver="javascript: showHelpParam(this, {min: {{p.min_val}}, max: {{p.max_val}}});" onMouseOut="javascript: hideTitle('win_help_param');" />{% endcomment %}
+                {% endif %}
+            {% endif %}                                   
+            <span class="block_error">{{ p.error|default_if_none:"&nbsp;" }}</span>
+        </div>
+    {% endfor %}
+{% endif %}

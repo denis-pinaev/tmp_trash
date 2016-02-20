@@ -1,0 +1,111 @@
+{% load i18n %}
+{% include "header.html" %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/persons.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2><a href="/personsadm/">{% trans "Персоны" %}</a> - {{ person.big }}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Персона" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				{% include "current_time.html" %}
+				<div>{% trans "Всего фотографий выбранной персоны" %}: <span class="info_important">{{ count }}{{ debug }}</span></div>
+				<form method="post" action="" name="">				
+					<div class="frm_block">
+						<a href="/personsadm/" class="link_btn" onMouseOver="javascript: linkStatus(this, 'over', 90);" onMouseOut="javascript: linkStatus(this, 'up', 90);" onMouseDown="javascript: linkStatus(this, 'down', 90);" onMouseUp="javascript: linkStatus(this, 'over', 90);">{% trans "Назад" %}</a>
+					</div>
+					
+					{% if count > 0 %}
+										
+						<div class="frm_block">
+							<label for="choose_all"><input type="checkbox" name="" id="choose_all" value="" class="inp_check" onClick="javascript: checkAll(this, {{ out|length  }});" />{% trans "Выбрать всё на странице" %}</label>
+							<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_left" onClick="javascript: showMessageDelete({{ out|length  }}, 'person')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						</div>
+						
+						{% if allpages > 1 %}
+	
+							<div class="block_navigation">
+								
+								<a href="?start=1" class="page" title="{% trans "Первая страница" %}">{% trans "Начало" %}</a>
+								<a href="?start={{ allpages|item }}" class="page" title="{% trans "Последняя страница" %}">{% trans "Конец" %}</a>
+								<a href="?start={{ page|last }}" class="page" title="{% trans "Предыдущая страница" %}">&#8592;&nbsp;{% trans "Назад" %}</a>
+								<a href="?start={{ page|next:allpages }}" class="page" title="{% trans "Следующая страница" %}">{% trans "Вперёд" %}&nbsp;&#8594;</a>
+								
+								{% for p in pages %}
+									{% if p == page %}
+										<span class="page active">{{ p }}</span>
+									{% else %}
+										<a href="?start={{ p|item }}" class="page" title="">{{ p }}</a>
+									{% endif %}
+								{% endfor %}
+								{% if allpages in pages %}
+								{% else %}
+									<span class="page" style="border: none;">...</span>
+									<a href="?start={{ allpages|item }}" class="page" title="">{{ allpages }}</a>
+								{% endif %}					
+							</div>
+							
+						{% endif %}
+	
+						<ul class="list_photos">
+							{% for o in out %}
+							<li onMouseOver="javascript: showLoupe({{ forloop.counter }}, true);" onMouseOut="javascript: showLoupe({{ forloop.counter }}, false);">
+								<div class="block_photo" onClick="javascript: checkPhoto2(this, {{forloop.counter}}, {{ out|length }});"><img src="/image/?id={{ id }}&photo={{ o.name }}" alt="{{ o.name }}" /></div>
+								<input type="checkbox" name="photo{{ o.name }}" value="{{ o.name }}" class="inp_check" id="check{{ forloop.counter }}" onClick="javascript: checkPhoto(this, {{ out|length }})" />
+								<a href="{{ o.url.big }}" target="_blank" class="bl_loupe" id="loupe{{ forloop.counter }}"><span></span></a>
+							</li>
+							{% endfor %}
+						</ul>
+						
+						{% if allpages > 1 %}
+	
+							<div class="block_navigation">
+								
+								<a href="?start=1" class="page" title="{% trans "Первая страница" %}">{% trans "Начало" %}</a>
+								<a href="?start={{ allpages|item }}" class="page" title="{% trans "Последняя страница" %}">{% trans "Конец" %}</a>
+								<a href="?start={{ page|last }}" class="page" title="{% trans "Предыдущая страница" %}">&#8592;&nbsp;{% trans "Назад" %}</a>
+								<a href="?start={{ page|next:allpages }}" class="page" title="{% trans "Следующая страница" %}">{% trans "Вперёд" %}&nbsp;&#8594;</a>
+								
+								{% for p in pages %}
+									{% if p == page %}
+										<span class="page active">{{ p }}</span>
+									{% else %}
+										<a href="?start={{ p|item }}" class="page" title="">{{ p }}</a>
+									{% endif %}
+								{% endfor %}
+								{% if allpages in pages %}
+								{% else %}
+									<span class="page" style="border: none;">...</span>
+									<a href="?start={{ allpages|item }}" class="page" title="">{{ allpages }}</a>
+								{% endif %}					
+							</div>
+	
+						{% endif %}
+	
+						<div class="frm_block">
+							<label for="choose_all2"><input type="checkbox" name="" id="choose_all2" value="" class="inp_check" onClick="javascript: checkAll(this, {{ out|length  }});" />{% trans "Выбрать всё на странице" %}</label>
+							<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_left" onClick="javascript: showMessageDelete({{ out|length  }}, 'person')" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+						</div>
+						<div class="frm_block">
+							<a href="/personsadm/" class="link_btn" onMouseOver="javascript: linkStatus(this, 'over', 90);" onMouseOut="javascript: linkStatus(this, 'up', 90);" onMouseDown="javascript: linkStatus(this, 'down', 90);" onMouseUp="javascript: linkStatus(this, 'over', 90);">{% trans "Назад" %}</a>
+						</div>	
+					{% else %}
+						<div class="info_important">{% trans "Фотографий не найдено" %}.</div>					
+					{% endif %}
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "footer.html" %}
+
+{% include "window_person.html" %}
+{% include "window_help.html" %}
+
+</body>
+</html>

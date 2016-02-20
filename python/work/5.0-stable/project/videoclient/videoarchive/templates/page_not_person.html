@@ -1,0 +1,13 @@
+
+{% extends "base_notab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Списки' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/lists.css?v=v{{ version }}" />
+{% endblock %}
+{% block subcontent %}
+    <h2>{% trans "Списки" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Видеоархив Персона не найдена" %}');" /></h2>
+    {% include "current_time.html" %}
+    <div class="message_action">{% trans 'Персона не найдена' %}.</div>
+{% endblock %}
+{% block windows %}{% endblock %}

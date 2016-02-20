@@ -1,0 +1,158 @@
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<script type="text/javascript" src="js/funcs.js?v=v{{ version }}"></script>
+
+<link rel="stylesheet" type="text/css" href="css/main.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="css/page.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="css/windows.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="css/po4_anketa_user.css?v=v{{ version }}" />
+
+</head>
+<body>
+<div class="body1">
+<!-- BEGIN: header -->
+<div class="header">
+	<div class="block_tm">
+		<div class="block_rtm"></div>
+		<div class="block_ltm"></div>
+		<div class="logo"><a href="#"><img src="images/logo.png" alt="" /></a></div>
+		<div class="lang" onClick="javascript: chooseLang(this);" title="Выбор языка">RU</div>
+		<ul class="right_menu">
+			<li><a href="#">Выход</a></li>	
+			<li><span class="user">user</span></li>
+		</ul>
+		<ul class="top_menu">
+			<li><a href="po4_persons.html">Персоны</a></li>
+			<li><a href="po4_users.html" class="tm_active">Сотрудники</a></li>
+			<li><a href="po4_journal.html">Журнал</a></li>
+			<li><a href="po4_kpp.html">КПП</a></li>
+			<li><a href="po4_history_change.html">История изменений</a></li>
+			<li><a href="po4_help.html" class="last">Помощь</a></li>
+		</ul>
+	</div>
+</div>
+<!-- END: header -->
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2><a href="po4_users.html">Сотрудники</a> - Добавление сотрудника<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Сотрудники Добавление сотрудника" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				<form method="post" action="" name="">
+					<div class="frm_block">
+						<div class="bl_photo_btn">
+							<div class="no_photo_user">
+								<div>Фотография сотрудника</div>
+							</div>
+						</div>
+						<div class="bl_info_all">
+							<div class="bl_info">
+								<div class="bl_txt">Фамилия:</div>
+								<input type="text" name="" value="" class="inp_txt" />
+							</div>
+							<div class="bl_info">
+								<div class="bl_txt">Имя:</div>
+								<input type="text" name="" value="" class="inp_txt" />
+							</div>
+							<div class="bl_info">
+								<div class="bl_txt">Отчество:</div>
+								<input type="text" name="" value="" class="inp_txt" />
+							</div>														
+							<div class="bl_info">
+								<div class="bl_txt">Название предприятия:</div>
+								<input type="text" name="" value="" class="inp_txt" />
+							</div>
+							<div class="bl_info">
+								<div class="bl_txt">Отдел предприятия:</div>
+								<input type="text" name="" value="" class="inp_txt" />
+							</div>							
+							<div class="bl_info">
+								<div class="bl_txt">Занимаемая должность:</div>
+								<input type="text" name="" value="" class="inp_txt" />
+							</div>
+							<div class="bl_info">
+								<div class="bl_txt">Телефон:</div>
+								<div class="bl_phone"><div>1. Служебный:</div><input type="text" name="" value="" class="inp_txt" /></div>
+								<div class="bl_phone"><div>2. Домашний:</div><input type="text" name="" value="" class="inp_txt" /></div>
+								<div class="bl_phone last"><div>3. Мобильный:</div><input type="text" name="" value="" class="inp_txt" /></div>
+							</div>	
+							<div class="bl_info">
+								<div class="bl_txt">Категория:</div>
+								<select name="" class="select">
+									<option value="1" selected="selected">Сотрудник</option>
+									<option value="2">Посетитель</option>
+									<option value="3">Ограничение доступа</option>
+									<option value="4">Доступ запрещён</option>
+								</select>
+							</div>
+							<div class="bl_info">
+								<div class="bl_txt">Фотографии:</div>
+								<div class="bl_btn_photo">
+									<input type="button" name="" class="inp_btn inp_btn90" value="Добавить" />
+								</div>
+							</div>							
+						</div>					
+					</div>
+					<div class="frm_block">
+						<input type="button" name="" value="Сохранить" class="inp_btn inp_btn90" />
+					</div>					
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+<!-- BEGIN: footer -->
+<div class="footer">
+	<div class="foot_menu_ver">
+		<div class="version">Версия: 1.0.0</div>
+		<ul class="bottom_menu">
+			<li><a href="po4_persons.html" class="first">Персоны</a></li>
+			<li><a href="po4_users.html" class="act">Сотрудники</a></li>
+			<li><a href="po4_journal.html">Журнал</a></li>
+			<li><a href="po4_kpp">КПП</a></li>
+			<li><a href="po4_history_change.html">История изменений</a></li>
+			<li><a href="po4_help.html" class="last">Помощь</a></li>
+		</ul>
+	</div>
+	<div class="contacts">
+		<div class="block_contacts">
+			Контакты:
+			<ul class="list_contacts">
+				<li>информация: <a href="mailto:info@smilart.com">info@smilart.com</a></li> 
+				<li>техподдержка: <a href="mailto:support@smilart.com">support@smilart.com</a></li>
+			</ul>
+			<div class="copyright">Copyright &#169; 2010 "Простые решения". Все права защищены. <a href="http://www.smilart.com/">http://www.smilart.com/</a></div>
+		</div>
+	</div>	
+</div>
+<!-- END: footer -->
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+<div id="win_help" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_help');" title="Закрыть окно" /></div>
+			<div class="headWF_txt">Помощь</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_help_contWF"></div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="ОК" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_help');" />	
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

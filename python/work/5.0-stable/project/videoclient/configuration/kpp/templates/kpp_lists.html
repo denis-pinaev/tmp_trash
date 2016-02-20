@@ -1,0 +1,52 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans "Настройки КПП" %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/lists.css?v=v{{ version }}" />
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+<h2>{% trans "Настройки КПП" %}<input type="button" name="" value="" class="btn_quest" style="display:none" onClick="javascript: showContextHelp('lists');" /></h2>
+{% include "current_time.html" %}
+<div class="frm_block">
+	<div>{% trans "Всего КПП" %}: <span class="info_important">{{ kpp_list_count|default:0 }}</span></div>
+	<div class="frm_block">
+		<a href="{% url new_kpp %}" class="link_btn">{% trans "Добавить" %}</a>
+	</div>
+</div>
+<div class="frm_block">	
+<table cellspacing="0" cellpadding="0" class="list_users">
+	<tr>
+		<th class="first">ID</th>
+		<th>{% trans "Название" %}</th>
+		<th>{% trans "Расположение КПП" %}</th>
+		{% comment %}
+		<th>{% trans "Камеры" %}</th>
+		{% endcomment %}
+	</tr>
+	{% for kpp in kpp_list %}
+	<tr{% cycle '' ' class="odd"' %}>
+		<td class="first td_id">{{ kpp.id }}</td>
+		<td><a href="{% url update_kpp kpp.id %}">{{ kpp.name }}</a></td>
+		<td>{{ kpp.location|default_if_none:'&nbsp;' }}</td>
+	</tr>
+	{% endfor %}
+		{% comment %}
+		<td>
+		    {% for camera in kpp.cameras %}
+			    <ul>
+				    <li>
+				        {% if camera.commun.id and camera.id %}
+				            <a href="{% url camera-settings camera.commun.id camera.id %}">{{ camera.full_name }}</a>
+				        {% else %}
+				            {{ camera.full_name }}
+				        {% endif %}
+				    </li>
+			    </ul>
+			{% endfor %}
+		</td>
+		{% endcomment %}
+</table>
+</div>				
+{% endblock %}

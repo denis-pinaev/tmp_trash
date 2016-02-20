@@ -1,0 +1,14 @@
+{% load i18n %}
+{% load templatetags %}
+<div id="win_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close close" onClick="javascript: closeChangeWindow('win_mess');" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF" id="win_mess_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue close" onClick="javascript: closeChangeWindow('win_mess');" />	
+		</div>
+	</div>
+</div>

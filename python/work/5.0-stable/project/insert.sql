@@ -1,0 +1,1 @@
+insert into videoclient_journal (person_id, camera_id, coeff, positions_status_id, show_info, dt_open, dt_first_fixed, dt_last_fixed) values (1, 1, 55, 3, 0, "2010-12-30 17:08:32", "2010-12-30 17:08:32", "2010-12-30 17:09:32");

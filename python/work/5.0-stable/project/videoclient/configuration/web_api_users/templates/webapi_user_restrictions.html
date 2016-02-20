@@ -1,0 +1,73 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% load pagination_tags %}
+{% block title %}{% trans 'Настройки пользователя' %} {{user_login}}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/configuration/users.css?v=v{{ version }}" />
+<style type="text/css">
+.table tr td { width: 25%; }
+</style>
+<script type="text/javascript" src="/files/js/jquery.json-1.3.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+	var URL_GET_RESTRICTIONS = '{% url post_restr %}';
+	var USER = '{{ user_login }}';
+	var ERR = {
+		1 : "{% trans "Произошла ошибка. Попробуйте ещё раз." %}",
+		2 : "{% trans "Ошибка передачи данных. Пожалуйста, попробуйте ещё раз." %}",
+		3 : "{% trans "Некорректный логин пользователя" %}",
+	}	
+	$(function() {
+		showIndicatorWindow(true);
+		getRestrictions();
+	});
+	function showIndicatorWindow(show) {
+		if (show) $("#block_upload").show()
+		else $("#block_upload").hide()
+	}
+	function showError(show, msg) {
+		if (show) {
+			if (msg) $("#error_message").html(msg);
+			$("#error_message").show();
+		} else {
+			$("#error_message").hide();
+		}
+	}
+	function getRestrictions() {
+		$.ajax({
+			url: URL_GET_RESTRICTIONS,
+			type:'POST',
+			timeout: 30000,
+			dataType: 'json',
+			data: 'user_login=' + USER,		
+			success: function(msg) {
+				showIndicatorWindow(false);
+				obj = eval(msg);
+				if (obj && obj.status){
+					showError(true, ERR[obj.status]); 
+				} else if (obj && (obj.result)) {
+					$("#table_restrictions").html(obj['result']);
+				}
+			},
+			error: function() {	
+				showIndicatorWindow(false);
+				showError(true, ERR[4]);
+			} 
+		});
+	}
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+	<h2><a href="{% url web_api_users %}">{% trans "Пользователи WEB API" %}</a> - {% trans "Настройки пользователя" %} {{user_login}}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Настройки пользователя WEB API Ограничения' %}');" /></h2>                    
+	{% include "current_time.html" %}
+	{% include "webapi_menu.html" %}
+	<h3 class="dist_top">{% trans "Ограничения" %}</h3>
+	<div class="message_warning" style="display: none;" id="error_message"></div>
+	<div class="block_upload" id="block_upload" style="display: none;">
+		<img src="/files/images/loader.gif" alt="" />
+		<div class="dist_top">{% trans "Идет процесс обработки данных" %}.</div>
+		<div>{% trans "Пожалуйста, подождите" %}.</div>
+	</div>                    
+	<div id='table_restrictions'></div>
+{% endblock %}

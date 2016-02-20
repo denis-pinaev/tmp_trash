@@ -1,0 +1,134 @@
+{% load a_templatetags %}
+<script type="text/javascript">
+   var dperson = '{{ division_person }}';
+   var demployee = '{{ division_employee }}';
+</script>
+{% include "js/js_visitorcard.html" %}
+<input type="hidden" value="{{ visitingcard.id }}" name="vcid">
+<input type="hidden" name="visitor" value="{{ user.id_person }}">
+<div class="head_block">{% trans "Карточка посещения" %}</div>
+<div class="bl_info">                            
+    <div class="bl_txt">{% trans "К кому" %}:</div>
+    <div class="bl_enter">
+        <div>
+            <select name="statys" class="select" onChange="javascript: changeWhom(this.value);">
+                <option {% if visitingcard.person.person.status.division.id == division_person %} selected="selected"{% endif %} value="{{ division_person }}">{% trans "Персона" %}</option>
+                <option {% if visitingcard.person.person.status.division.id == division_employee %} selected="selected"{% endif %} value="{{ division_employee }}">{% trans "Сотрудник" %}</option>
+            </select>
+        </div>
+        <div style="{% if visitingcard.person.person.status.division.id == division_employee %} display:none;{% endif %}" id="whom{{ division_person }}" class="dist_top">
+            <select name="person" class="select"  id="swhom{{ division_person }}">
+                {% for v in person %}
+                    <option {% if visitingcard.person.id == v.id %} selected="selected"{% endif %} value="{{ v.id }}">{{ v.person.first_name }} {{ v.person.last_name }} {{ v.person.middle_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="{% if not visitingcard %} display:none;{% endif %}{% if visitingcard.person.person.status.division.id == division_person %} display:none;{% endif %}" id="whom{{ division_employee }}" class="dist_top">
+            <select name="employee" class="select" id="swhom{{ division_employee }}">
+                {% for v in employee %}
+                    <option {% if visitingcard.person.id == v.id %} selected="selected"{% endif %} value="{{ v.id }}" >{{ v.person.first_name }} {{ v.person.last_name }} {{ v.person.middle_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+<div class="bl_info">                        
+    <div class="bl_txt">{% trans "Основание" %}:</div>
+    <div class="bl_enter">
+        <select name="ground" class="select">
+            {% for g in ground %}
+                <option {% if visitingcard.ground.id == g.id %} selected="selected"{% endif %} value="{{ g.id }}">{{ g.name }}</option>                                            
+            {% endfor %}
+        </select>
+    </div>
+</div>
+<div class="bl_info">
+    {% if errors.dateVisit1 and post %}<div class="block_error">{{ errors.dateVisit1 }}</div>
+    {% else %}
+        {% if errors.dateVisit2 and post %}<div class="error_block">{{ errors.dateVisit2 }}</div>{% endif %}
+    {% endif %}
+    <div class="error_block" id="err1" style="display: none;"></div>
+    <div class="bl_txt">{% trans "Период посещений" %}:</div>
+    <div class="bl_date"><span>{% trans "с" %}</span>
+        <input type="text"  value="{{ visitingcard.dt_enter|date:"d.m.Y" }}" class="inp_txt dist_left" name="dateVisit1" id="iddateVisit1" /><input type="button" name="" value="" title="{% trans "Выберите дату" %}" class="btn_calend" onClick="javascript: displayDatePicker('dateVisit1', false, 'dmy', '.');" />
+        <span class="dist_left">{% trans "по" %}</span><input type="text"  value="{{ visitingcard.dt_exit|date:"d.m.Y" }}" class="inp_txt dist_left" name="dateVisit2" id="iddateVisit2" /><input type="button" name="" value="" title="{% trans "Выберите дату" %}" class="btn_calend" onClick="javascript: displayDatePicker('dateVisit2', false, 'dmy', '.');" />                                
+    </div>
+</div>
+<div class="bl_info">
+    {% if errors.time22 and post %}<div class="error_block">{{ errors.time22 }}</div>{% endif %}
+    <div class="error_block" id="err2" style="display: none;"></div>
+    <div class="bl_txt">{% trans "Время посещения" %}:</div>
+    <div class="bl_time"><span>{% trans "с" %}</span>
+        <select name="time11" id="time11" class="select dist_left">
+            <option {% if visitingcard.dt_enter|date:"H" == "00" %} selected="selected"{% endif %} value="00">00</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "01" %} selected="selected"{% endif %} value="01">01</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "02" %} selected="selected"{% endif %} value="02">02</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "03" %} selected="selected"{% endif %} value="03">03</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "04" %} selected="selected"{% endif %} value="04">04</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "05" %} selected="selected"{% endif %} value="05">05</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "06" %} selected="selected"{% endif %} value="06">06</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "07" %} selected="selected"{% endif %} value="07">07</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "08" %} selected="selected"{% endif %} value="08">08</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "09" %} selected="selected"{% endif %} value="09">09</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "10" %} selected="selected"{% endif %} value="10">10</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "11" %} selected="selected"{% endif %} value="11">11</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "12" %} selected="selected"{% endif %} value="12">12</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "13" %} selected="selected"{% endif %} value="13">13</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "14" %} selected="selected"{% endif %} value="14">14</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "15" %} selected="selected"{% endif %} value="15">15</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "16" %} selected="selected"{% endif %} value="16">16</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "17" %} selected="selected"{% endif %} value="17">17</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "18" %} selected="selected"{% endif %} value="18">18</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "19" %} selected="selected"{% endif %} value="19">19</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "20" %} selected="selected"{% endif %} value="20">20</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "21" %} selected="selected"{% endif %} value="21">21</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "22" %} selected="selected"{% endif %} value="22">22</option>
+            <option {% if visitingcard.dt_enter|date:"H" == "23" %} selected="selected"{% endif %} value="23">23</option>                                        
+        </select>
+        <span class="delim">:</span>
+        <select name="time12" class="select" id="time12">
+            <option {% if visitingcard.dt_enter|date:"i" == "00" %} selected="selected"{% endif %} value="00">00</option>
+            <option {% if visitingcard.dt_enter|date:"i" == "10" %} selected="selected"{% endif %} value="10">10</option>
+            <option {% if visitingcard.dt_enter|date:"i" == "20" %} selected="selected"{% endif %} value="20">20</option>
+            <option {% if visitingcard.dt_enter|date:"i" == "30" %} selected="selected"{% endif %} value="30">30</option>
+            <option {% if visitingcard.dt_enter|date:"i" == "40" %} selected="selected"{% endif %} value="40">40</option>
+            <option {% if visitingcard.dt_enter|date:"i" == "50" %} selected="selected"{% endif %} value="50">50</option>                                        
+        </select>
+        <span class="dist_left">{% trans "по" %}</span>
+        <select name="time21" class="select dist_left" id="time21">
+            <option {% if visitingcard.dt_exit|date:"H" == "00" %} selected="selected"{% endif %} value="00">00</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "01" %} selected="selected"{% endif %} value="01">01</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "02" %} selected="selected"{% endif %} value="02">02</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "03" %} selected="selected"{% endif %} value="03">03</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "04" %} selected="selected"{% endif %} value="04">04</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "05" %} selected="selected"{% endif %} value="05">05</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "06" %} selected="selected"{% endif %} value="06">06</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "07" %} selected="selected"{% endif %} value="07">07</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "08" %} selected="selected"{% endif %} value="08">08</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "09" %} selected="selected"{% endif %} value="09">09</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "10" %} selected="selected"{% endif %} value="10">10</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "11" %} selected="selected"{% endif %} value="11">11</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "12" %} selected="selected"{% endif %} value="12">12</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "13" %} selected="selected"{% endif %} value="13">13</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "14" %} selected="selected"{% endif %} value="14">14</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "15" %} selected="selected"{% endif %} value="15">15</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "16" %} selected="selected"{% endif %} value="16">16</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "17" %} selected="selected"{% endif %} value="17">17</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "18" %} selected="selected"{% endif %} value="18">18</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "19" %} selected="selected"{% endif %} value="19">19</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "20" %} selected="selected"{% endif %} value="20">20</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "21" %} selected="selected"{% endif %} value="21">21</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "22" %} selected="selected"{% endif %} value="22">22</option>
+            <option {% if visitingcard.dt_exit|date:"H" == "23" %} selected="selected"{% endif %} value="23">23</option>                                        
+        </select>
+        <span class="delim">:</span>
+        <select name="time22" class="select" id="time22">
+            <option {% if visitingcard.dt_exit|date:"i" == "00" %} selected="selected"{% endif %} value="00">00</option>
+            <option {% if visitingcard.dt_exit|date:"i" == "10" %} selected="selected"{% endif %} value="10">10</option>
+            <option {% if visitingcard.dt_exit|date:"i" == "20" %} selected="selected"{% endif %} value="20">20</option>
+            <option {% if visitingcard.dt_exit|date:"i" == "30" %} selected="selected"{% endif %} value="30">30</option>
+            <option {% if visitingcard.dt_exit|date:"i" == "40" %} selected="selected"{% endif %} value="40">40</option>
+            <option {% if visitingcard.dt_exit|date:"i" == "50" %} selected="selected"{% endif %} value="50">50</option>                                        
+        </select>
+    </div>                                                                                                                                                                               
+</div>

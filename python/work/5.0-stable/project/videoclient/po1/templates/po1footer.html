@@ -1,0 +1,19 @@
+{% load i18n %}
+{% load templatetags %}
+<!-- BEGIN: footer -->
+<div class="footer">
+	<div class="foot_menu_ver">
+		<div class="version">{% trans "Версия" %}: 2.1.25</div>
+		<ul class="bottom_menu">
+			<li><a href="/po1/journal/" {% if select_page == "journal" %} class="act first" {% else %} class="first" {% endif %}>{% trans "Журнал" %}</a></li>
+			<li><a href="/po1/signal/" {% if select_page == "signal"%} class="act" {% else %}{% endif %}>{% trans "Сигналы" %}</a></li>
+			<li><a href="/po1/wanted/" {% if select_page == "wanted"%} class="act" {% else %}{% endif %}>{% trans "Розыск" %}</a></li>
+			<li><a href="/po1/persons/" {% if select_page == "persons" or select_page == "person" %} class="act" {% else %}{% endif %}>{% trans "Пользователи" %}</a></li>
+			<li><a href="/po1/record/" {% if select_page == "record"%} class="act" {% else %}{% endif %}>{% trans "Запись" %}</a></li>
+			<li><a href="/po1/kpp/" {% if select_page == "kpp"%} class="act" {% else %}{% endif %}>{% trans "КПП" %}</a></li>
+			<li><a href="/po1/help/" {% if select_page == "help" %} class="last act" {% else %} class="last" {% endif %}>{% trans "Помощь" %}</a></li>
+		</ul>
+	</div>
+	{% include "footer_contacts.html" %}
+</div>
+<!-- END: footer -->

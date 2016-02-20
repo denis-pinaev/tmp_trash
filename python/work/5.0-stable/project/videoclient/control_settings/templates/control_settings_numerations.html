@@ -1,0 +1,28 @@
+{% load i18n %}
+{% load templatetags %}
+{% if num and first and last %}
+<div class="block_navigation">
+    <a title="{% trans "Первая страница" %}" class="page" {% if pref %}onClick="javascript: window.location = window.location+'/{{first}}';"{% else %}href="{{ first }}"{% endif %}>{% trans "Начало" %}</a>
+    <a title="{% trans "Последняя страница" %}" class="page" {% if pref %}onClick="javascript: window.location = window.location+'/{{last}}';"{% else %}href="{{ last }}"{% endif %}>{% trans "Конец" %}</a>
+    {% if prev %}                        
+        <a title="{% trans "Предыдущая страница" %}" class="page" {% if pref %}onClick="javascript: window.location = window.location+'/{{prev}}';"{% else %}href="{{ prev }}"{% endif %}>← {% trans "Назад" %}</a>
+    {% endif %}
+    {% if next %}
+        <a title="{% trans "Следующая страница" %}" class="page" {% if pref %}onClick="javascript: window.location = window.location+'/{{next}}';"{% else %}href="{{ next }}"{% endif %}>{% trans "Вперёд" %} →</a>
+    {% endif %}        
+    {% if range %}                    
+        {% for x in range %}
+            {% ifequal x num %}<span class="page active">{{ x }}</span>
+            {% else %}
+                <a title="" class="page" {% if pref %}onClick="javascript: window.location = window.location+'/{{x}}';"{% else %}href="{{ x }}"{% endif %}>{{ x }}</a>
+            {% endifequal %}
+        {% endfor %}
+    {% endif %}
+    {% if end1 < last %}
+        <span style="border: medium none ;" class="page">...</span>
+    {% endif %}
+    {% if end1 <= last %}
+         <a title="" class="page" {% if pref %}onClick="javascript: window.location = window.location+'/{{last}}';"{% else %}href="{{ last }}"{% endif %}>{{ last }}</a>
+    {% endif %}                        
+</div>
+{% endif %}

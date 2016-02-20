@@ -1,0 +1,26 @@
+{% load i18n %}
+{% load templatetags %}
+<ul class="list_pages">	
+	{% if start_page > 1 %}<li><a href="?{% if getvars %}{{ getvars }}&{% endif %}page=1{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}{% if all_pages %}&all_pages={{all_pages}}{% endif %}">1</a></li>{% endif %}
+	{% if start_page > 2 %}<li><span>...</span></li>{% endif %}
+	{% for p in pages %}
+		<li>
+			{% if page == p %} 
+				{% block current_page %}<input type="text" id="page_top" name="page" value="{{ p }}" class="inp_txt" onKeyUp="javascript: goToPage($(this));" onChange="javascript: goToPage($(this));" maxlength="8" />{% endblock %}
+			{% else %}
+				<a href="?{% if getvars %}{{ getvars }}&{% endif %}page={{ p }}{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}{% if all_pages %}&all_pages={{all_pages}}{% endif %}">{{ p }}</a>
+			{% endif %}
+		</li>
+	{% endfor %}
+	{% if finish_page < allpages|add:-1 %}<li><span>...</span></li>{% endif %}
+	{% if finish_page < allpages %}<li><a href="?{% if getvars %}{{ getvars }}&{% endif %}page={{ allpages}}{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}{% if all_pages %}&all_pages={{all_pages}}{% endif %}">{{ allpages }}</a></li>{% endif %}
+	<li><a {% if page == 1 %}href="#" class="btn_arrow left dis" onClick="return false;"{% else %}href="?{% if getvars %}{{ getvars }}&{% endif %}page={{ page|add:-1 }}{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}{% if all_pages %}&all_pages={{all_pages}}{% endif %}" class="btn_arrow left short_descr" title="{% trans 'Предыдущая страница' %}"{% endif %}></a></li>
+	<li><a {% if page == allpages %}href="#" class="btn_arrow right dis" onClick="return false;"{% else %}href="?{% if getvars %}{{ getvars }}&{% endif %}page={{ page|add:1 }}{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}{% if all_pages %}&all_pages={{all_pages}}{% endif %}" class="btn_arrow right short_descr" title="{% trans 'Следующая страница' %}"{% endif %}></a></li>
+</ul>
+{% if need_button %}
+	{% if all_pages = 'True' %}
+		<a class="link_btn btn_pages short_descr" title="{% trans 'Отобразить только три первых страницы' %}" href="?{% if getvars %}{{ getvars }}&{% endif %}page={{ page }}{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}"><span class="arr_left">&laquo;</span>{% trans 'Только последние' %}</a>
+	{% else %}
+		<a class="link_btn btn_pages short_descr" title="{% trans 'Отобразить все данные' %}" href="?{% if getvars %}{{ getvars }}&{% endif %}page={{ page }}&all_pages=True{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}"><span class="arr_right">&raquo;</span>{% trans 'Все данные' %}</a>
+	{% endif  %}
+{% endif %}

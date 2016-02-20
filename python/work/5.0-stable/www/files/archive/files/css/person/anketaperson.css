@@ -1,0 +1,203 @@
+﻿.btn_calend {
+	padding: 0px;
+	margin: 0px;
+	border: none;
+	height: 16px;
+	width: 16px;
+	cursor: pointer;
+	font-size: 13px;
+	font-family: arial,helvetica,sans-serif;
+	background: url('/files/images/calend.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/calend.png', sizingMethod='crop');
+	margin-left: 5px;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.btn_blue {
+	width: 90px;
+	background: url('/files/images/btn_blue_90.png') top left no-repeat;
+	-background: none;
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_90.png', sizingMethod='scale');
+	color: #ffffff;
+}
+.inp_btn90 {
+	width: 90px;
+	background: url('/files/images/button90x24_up.gif') top left no-repeat;
+}
+/* anketa */
+.bl_photo_btn {
+	float: left;
+	width: 190px;
+}
+.bl_photo_btn .photo_user {
+	//width: 120px;
+	height: 120px;
+	border: 1px solid #AAAAAA;
+	padding: 5px;
+	background-color: #eeeeee;
+	text-align: center;
+	margin-bottom: 10px;
+}
+.all_photo {
+	margin-bottom: 5px;
+}
+.all_photo a {
+	color: #0088CC;
+	text-decoration: underline;
+}
+.bl_info_all {
+	margin-left: 230px;
+}
+.head_info {
+	font-weight:bold;
+	margin-bottom:10px;
+}
+.bl_info,
+.bl_passport {
+	margin-bottom: 10px;
+}
+.bl_info,
+.bl_passport {
+	width: auto;
+	overflow: hidden;
+}
+.bl_info .bl_txt,
+.bl_passport .bl_txt {
+	float: left;
+	width: 200px;
+}
+.bl_enter,
+.bl_date,
+.bl_time {
+	margin-left: 200px;
+}
+.bl_info .inp_txt {
+	width: 220px;
+}
+.bl_info .bl_phone {
+	margin-bottom: 3px;
+	margin-left: 160px;
+}
+.bl_info .bl_phone div {
+	width: 100px;
+	float: left;
+}
+.bl_info .bl_phone .inp_txt {
+	width: 120px;
+}
+.bl_info .bl_phone.last {
+	margin-bottom: 0px;
+}
+.bl_info .select {
+	width: 226px;
+}
+.bl_info_btn {
+	width: 380px;
+	text-align: center;
+}
+
+.bl_passport span {
+	margin-right: 10px;
+}
+.bl_passport .inp_txt {
+	width: 53px;
+	margin-left: 5px;
+} 
+.info_passport {
+	margin-left: 200px;
+}
+.passport_field {
+	margin-bottom: 5px;
+}
+.bl_btn {
+	float: left;
+}
+.bl_btn .link_btn {
+	float: left;
+	margin-left: 10px;
+}
+.bl_btn .inp_btn {
+	float: left;
+}
+
+.head_block {
+	padding: 10px 0px 10px 0px; 
+	font-weight: bold;
+}
+.head_block .head_info {
+	float: left;
+	margin-right: 10px;
+}
+.head_block2 {
+	padding-bottom: 10px;
+	font-weight: bold;
+}
+
+.no_photo_user {
+	border: 1px solid #AAAAAA;
+	padding: 5px;
+	background-color: #eeeeee;
+	margin-bottom: 10px;
+}
+.no_photo_user div {
+	width: 120px;
+	height: 80px;
+	text-align: center;
+	padding-top: 40px;
+	margin: 0px auto;
+}
+.bl_articles {
+	overflow: hidden;
+	width: 230px;
+}
+.bl_article {
+	float: left;
+	width: 73px;
+	margin-right: 5px;
+}
+.bl_article.last {
+	margin-right: 0px;
+}
+/**/
+.listDoc {
+	width: 158px; 
+	margin-left: 5px;
+}
+.btn_photos {
+	width: 100%;
+	overflow: hidden;
+}
+.btn_photos .inp_btn {
+	float: right;
+}
+
+.block_error {
+    clear: both;
+    padding-left: 200px;
+    color: #FF6600;
+}
+.block_error_passport {
+	color: #FF6600;
+}
+.error_border {
+	border-color: #FF6600;
+}
+.bl_date .inp_txt {
+	width: 95px;
+}
+.bl_time .delim {
+	margin-left: 3px;
+	margin-right: 3px;
+}
+.bl_time .select {
+	width: 55px;
+}
+.error_block {
+    clear: both;
+    margin-left: 200px;
+    color: #FF6600;
+}

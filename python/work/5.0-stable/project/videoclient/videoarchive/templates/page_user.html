@@ -1,0 +1,90 @@
+{% load i18n %}
+{% load a_templatetags %}
+{% include "a_header.html" %}
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/user.css?v=v{{ version }}" />
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2><a href="{{ root_path }}/page_users/">{% trans "Пользователи" %}</a> - {% trans "Добавление пользователя" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Видеоархив Добавление пользователя" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				{% include "current_time.html" %}				
+				<form method="post" action="" name="">					
+					<div class="frm_block">
+						<div class="bl_left">
+							<div class="frm_head">{% trans "Информация" %}</div>
+							{% if errors.first_name %}<div class="block_error">{% trans  errors.first_name  %}</div>{% endif %}
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Фамилия" %}:</div>
+								<input type="text" name="first_name" value="{% if errors %}{{ request.first_name }}{% else %}{{ user.first_name }}{% endif %}" class="inp_txt{% if errors.first_name %} error_border{% endif %}" />
+							</div>
+							{% if errors.last_name %}<div class="block_error">{% trans  errors.last_name  %}</div>{% endif %}
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Имя" %}{{ request.last_name }}:</div>
+								<input type="text" name="last_name" value="{% if errors %}{{ request.last_name }}{% else %}{{ user.last_name }}{% endif %}" class="inp_txt{% if errors.last_name %} error_border{% endif %}" />
+							</div>
+							{% if errors.middle_name %}<div class="block_error">{% trans  errors.middle_name  %}</div>{% endif %}
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Отчество" %}{{ request.middle_name }}:</div>
+								<input type="text" name="middle_name" value="{% if errors %}{{ request.middle_name }}{% else %}{{ user.middle_name }}{% endif %}" class="inp_txt{% if errors.middle_name %} error_border{% endif %}" />
+							</div>
+							{% if errors.position %}<div class="block_error">{% trans  errors.position  %}</div>{% endif %}
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Должность" %}:</div>
+								<select name="position" class="select{% if errors.position %} error_border{% endif %}" >
+									{% for position in all_positions %}
+										<option value="{{ position.id }}"{% if not errors and position.id == user.position.id %} selected="selected"{% else %}{% if errors and position.id|toint == request.position|toint %} selected="selected"{% endif %}{% endif %}>{% trans  position.name  %}</option>
+									{% endfor %}
+								</select>
+							</div>
+							{% if errors.access %}<div class="block_error">{% trans  errors.access  %}</div>{% endif %}
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Статус" %}:</div>
+								<select name="access" class="select{% if errors.access %} error_border{% endif %}" >
+									{% for access in all_access %}
+										<option value="{{ access.id }}"{% if not errors and access.id == user.access.id %} selected="selected"{% else %}{% if errors and access.id|toint == request.access|toint %} selected="selected"{% endif %}{% endif %}>{% trans  access.name  %}</option>
+									{% endfor %}
+								</select>
+							</div>
+						</div>
+						<div class="bl_left">
+							<div class="frm_head">{% trans "Доступ" %}</div>
+							{% if errors.username %}<div class="block_error">{% trans  errors.username  %}</div>{% endif %}
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Логин" %}:</div>
+								<input type="text" name="username" value="{% if errors %}{{ request.username }}{% else %}{{ user.username }}{% endif %}" class="inp_txt inp_access{% if errors.username %} error_border{% endif %}" />
+							</div>
+							{% if errors.password %}<div class="block_error">{% trans  errors.password  %}</div>{% endif %}
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Пароль" %}:</div>
+								<input type="password" maxlength="128" name="password" value="" class="inp_txt inp_access{% if errors.password or errors.password2 %} error_border{% endif %}" />
+							</div>
+							{% if errors.password2 %}<div class="block_error">{% trans  errors.password2  %}</div>{% endif %}
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Пароль повтор" %}:</div>
+								<input type="password" maxlength="128" name="password2" value="" class="inp_txt inp_access{% if errors.password or errors.password2 %} error_border{% endif %}" />
+							</div>
+						</div>
+					</div>
+					<input type="hidden" name="{{ action }}" value="" />
+					<input type="hidden" name="last_login" value="" id="last_login" />
+					<input type="hidden" name="date_joined" value="" id="date_joined" />
+					<input type="hidden" name="is_active" value="{% if user and not user.is_active %}0{% else %}1{% endif %}"/>
+					<script type="text/javascript">
+						document.getElementById('last_login').value = '{% now "d.m.Y" %}';
+						document.getElementById('date_joined').value = '{% now "d.m.Y" %}';
+					</script>
+					<div class="frm_block">
+						<input type="submit" name="" value="{% if user %}{% trans "Сохранить" %}{% else %}{% trans "Добавить" %}{% endif %}" class="inp_btn inp_btn120" /></div>
+					</div>
+				</form>		
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+{% include "a_footer.html" %}
+</body>
+</html>

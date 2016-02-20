@@ -1,0 +1,66 @@
+{% load i18n %}
+{% load templatetags %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>
+{% if select_page == "persons" %}{% trans "Пользователи" %}{% endif %}
+{% if select_page == "person" %}{% trans "Пользователь" %} - {{ person.big }}{% endif %}
+{% if select_page == "help" %}{% trans "Помощь" %}{% endif %}
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+
+<!--<link rel="stylesheet" type="text/css" href="/files/css/style.css?v=v{{ version }}" />-->
+<link rel="stylesheet" type="text/css" href="/files/css/main.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/page.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/windows.css?v=v{{ version }}" />
+{% include "javascript.html" %}
+<script type="text/javascript" src="/files/js/lib/jquery.js?v=v{{ version }}"></script> 
+<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script> 
+<script type="text/javascript" src="/files/js/lib/jquery.validate.js?v=v{{ version }}"></script> 
+
+</head>
+
+<body>
+<div class="body1">
+	
+<!-- BEGIN: header -->
+<div class="header">
+	<div class="block_tm">
+		<div class="block_rtm"></div>
+		<div class="block_ltm"></div>
+		<div class="logo"><a href="http://smilart.com"><img src="/files/images/logo.png" alt="" /></a></div>
+		<div id="bl_lang" class="lang" onClick="
+			javascript:			
+			$.ajax({
+				type: 'POST',
+				url: '/change_language/',
+				data: {},
+				success: function(msg){
+					setTimeout('location.reload(true)', 125);
+				}
+			}); 
+			" title="{% trans "Выбор языка" %}">RU</div>
+		
+		<script type="text/javascript">chooseLang('bl_lang');</script>	
+		
+		<ul class="right_menu">
+			<li><a href="/logout">{% trans "Выход" %}</a></li>	
+			<li><span>{{ user }}</span></li>
+		</ul>			
+		<ul class="top_menu">
+			<li><a href="/po1/journal/" {% if select_page == "journal" %} class="tm_active first" {% else %} class="first" {% endif %}>{% trans "Журнал" %}</a></li>
+			<li><a href="/po1/signal/" {% if select_page == "signal"%} class="tm_active" {% endif %}>{% trans "Сигналы" %}</a></li>
+			<li><a href="/po1/wanted/" {% if select_page == "wanted"%} class="tm_active" {% endif %}>{% trans "Розыск" %}</a></li>
+			<li><a href="/po1/persons/" {% if select_page == "persons" or select_page == "person" %} class="tm_active" {% endif %}>{% trans "Пользователи" %}</a></li>
+			<li><a href="/po1/record/" {% if select_page == "record"%} class="tm_active" {% endif %}>{% trans "Запись" %}</a></li>
+			<li><a href="/po1/kpp/" {% if select_page == "kpp"%} class="tm_active" {% endif %}>{% trans "КПП" %}</a></li>
+			<li><a href="/po1/help/" {% if select_page == "help" %} class="last tm_active" {% else %} class="last" {% endif %}>{% trans "Помощь" %}</a></li>
+		</ul>	
+	</div>
+</div>
+<!-- END: header -->

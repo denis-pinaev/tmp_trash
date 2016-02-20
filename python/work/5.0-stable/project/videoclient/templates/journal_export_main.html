@@ -1,0 +1,116 @@
+{% load i18n %}
+{% load templatetags %}
+{% if content %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="content-language" content="ru" />
+	<title>{% trans "Журнал Идентификаций" %}</title>
+	{% include "journal_export_styles.html" %}
+</head>
+<body>
+<div class="body1">
+	<div class="content">
+		<div class="content_add">
+			<h1>{% trans "Журнал Идентификаций" %} ({% trans "всего записей" %}: {{ all_journals }}, {% trans "идентифицированных" %}: {{ all_ident_journals }}, {% trans "фотографий" %}: {{ all_photo_journals }})</h1>
+			{% if filters %}
+				<div class="block_filters">
+					<strong>{% trans "Применённые фильтры:" %}</strong>
+					<ul class="filters">
+						{% if filters.datetime_check %}
+							<li class="block first"><div class="bl_txt">{% trans "По дате и времени" %}:</div><div class="bl_enter">{{ filters.dateBegin }} - {{ filters.dateEnd }}</div></li>
+						{% else %}
+							<li class="block first"><div class="bl_txt">{% trans "По дате" %}:</div><div class="bl_enter">{{ filters.dateBegin }}{% if filters.dateBegin != filters.dateEnd %} - {{ filters.dateEnd }}{% endif %}</div></li>
+						{% endif %}
+						{% if filters.time_check %}<li class="block"><div class="bl_txt">{% trans "По времени" %}:</div><div class="bl_enter">{{ filters.timeBegin.time }} - {{ filters.timeEnd.time }}</div></li>{% endif %}
+						{% if filters.defined %}<li class="block">{% trans "По идентифицированным персонам" %}</li>{% endif %}
+						{% if filters.cameras %}
+							<li class="block"><div class="bl_txt">{% trans "По видеокамерам" %}:</div>
+								<div class="bl_enter">
+									<ul>
+										{% for cam in filters.cameras %}
+											<li>{{ cam }}</li>
+										{% endfor %}
+									</ul>
+								</div>
+							</li>
+						{% endif %}
+						{% if filters.fio %}<li class="block"><div class="bl_txt">{% trans "По ФИО персоны" %}:</div><div class="bl_enter">{{ filters.fio }}</div></li>{% endif %}
+						{% if filters.id_person %}<li class="block"><div class="bl_txt">{% trans "По id персоны" %}:</div><div class="bl_enter">{{ filters.id_person }}</div></li>{% endif %}
+						{% if filters.id_record %}<li class="block"><div class="bl_txt">{% trans "По id записей" %}:</div><div class="bl_enter">{{ filters.id_record }}</div></li>{% endif %}
+						{% if filters.filter %}<li class="block"><div class="bl_txt">{% trans "Расширенный фильтр" %}:</div><div class="bl_enter">{{ filters.filter }}</div></li>{% endif %}				
+					</ul>
+				</div>
+			{% endif %}
+			<div class="block nav"><ul class="list_pages">{{ pagination }}</ul></div>
+			<table cellpadding="0px" cellspacing="0px" class="table">
+				<tr>
+					<th class="first">ID</th>
+					<th>{% trans "Дата" %}</th>
+					<th>{% trans "Время" %}</th>                        
+					<th>{% trans "Камера" %}</th>
+					<th>{% trans "С камеры" %}</th>
+					<th>{% trans "Из базы" %}</th>
+					<th>{% trans "ФИО" %}</th>
+					<th class="nowrap">{% trans "Коэффициент похожести" %}<br />(С<sub>sm</sub>, {% trans "мин." %} - {% trans "макс." %})</th>
+					<th>{% trans "Количество фотографий" %}</th>
+				</tr>
+			{% for j in journals %}
+				<tr{% cycle '' ' class="odd"' %}>
+					<td class="first fix"><a href="{{j.url_page}}">{{ j.data.id }}</a></td>
+					<td class="fix">{{ j.data.dt_first_fixed|date:"d.m.Y" }}{% if j.data.dt_first_fixed|date:"Y.m.d" != j.data.dt_last_fixed|date:"Y.m.d" %}-{{ j.data.dt_last_fixed|date:"d.m.Y" }}{% endif %}</td>
+					<td class="fix">{{ j.time_first_fixed }}{% if j.time_first_fixed != j.time_last_fixed %}-{{ j.time_last_fixed}}{% endif %}</td>
+					<td>{{ j.data.camera }}</td>
+					<td class="photo">
+					{% if not j.original %}
+					<img src="../../no_photo120x120.gif" alt=""/>
+					{% else %}
+					<a href="{{ j.original }}"><img src="{{ j.original }}" alt=""/></a>
+					{% endif %}
+					</td>   
+					<td class="photo">
+					{% if j.data.person %}
+						{% if not j.found %}
+						<img src="../../no_photo120x120.gif" alt="" />
+						{% else %}
+						<a href="{{ j.found }}"><img src="{{ j.found }}" alt="" /></a>
+						{% endif %}
+					{% else %}
+						<img src="../../no_photo120x120.gif" alt="" />
+					{% endif %}
+					{% if j.data.person %}                   
+					<td><a href="{{ j.url_page }}">{{ j.data.person.person.first_name }} {{ j.data.person.person.last_name }} {{ j.data.person.person.middle_name }}</a></td>
+					{% else %}
+					<td>{% trans "Лицо не опознано" %}</td>
+					{% endif %}
+					<td class="fix">{{ j.min_coeff }}{% if j.min_coeff != j.max_coeff %} - {{ j.max_coeff }}{% endif %}</td>
+					<td class="fix">{{ j.col_photo }}</td> 					
+				</tr>
+			{% endfor %}
+			</table>
+			<div class="block nav"><ul class="list_pages">{{ pagination }}</ul></div>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="footer">
+	<div class="version">{% trans "Версия" %}: {{ version }}</div>
+	<div class="block_contacts">
+		<span>{% trans "Контакты" %}:</span><ul class="list_contacts"><li>{% trans "информация" %}: <a href="mailto:info@smilart.com">info@smilart.com</a></li><li>{% trans "техподдержка" %}: <a href="mailto:support@smilart.com">support@smilart.com</a></li></ul>
+		<div class="copyright">Copyright &#169; 2012 "{% trans "Простые решения" %}". {% trans "Все права защищены" %}. <a href="http://www.smilart.com/" target="_blank">http://www.smilart.com/</a></div>
+	</div>
+</div>
+</body>
+</html>
+{% endif %}
+
+{% if pages %}
+<li>
+{% ifequal sel_page page %}
+<a class="act_page" href="../{{dir_page}}/{{ page }}.html">{{ p_name }}</a>
+{% else %}
+<a href="../{{dir_page}}/{{ page }}.html">{{ p_name }}</a>
+{% endifequal %}
+</li>
+{% endif %}

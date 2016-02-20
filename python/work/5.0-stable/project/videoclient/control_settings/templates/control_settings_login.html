@@ -1,0 +1,59 @@
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Форма входа</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<link rel="stylesheet" type="text/css" href="/files/control_settings/css/mail.css?v=v{{ version }}"/>
+<link rel="stylesheet" type="text/css" href="/files/control_settings/css/login.css?v=v{{ version }}" />
+</head>
+<body>
+<div class="body1">
+<!-- BEGIN: header -->
+<div class="header_log">Настройки для Управляющей Системы</div>
+<!-- END: header -->
+
+<!-- BEGIN: content-->
+<div class="content">
+    <div class="block_log">
+        <h1>Вход в систему</h1>
+        {% if form.errors %}<div class="err_mess">Вы указали неверный логин или пароль.</div>{% endif %}
+        <form action='.' method="post" name="" class="frm">{% csrf_token %}
+            <div class="field">
+                <label for="username" class="label_txt">Логин:</label>
+                <div class="enter"><input type="text" name="username" value="" class="inp_txt" id="username"></div>
+            </div>
+            <div class="field">
+                <label for="password" class="label_txt">Пароль:</label>
+                <div class="enter"><input type="password" name="password" value="" class="inp_txt" id="password"></div>
+            </div>
+            <div class="field">
+                <label for="" class="label_txt">&nbsp;</label>
+                <div class="enter"><input type="submit" name="" value="Войти" class="inp_btn inp_btn90" /></div>
+            </div>
+            <input type="hidden" name="next" value="/users/" />          
+        </form>                                           
+    </div>
+    <div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+<!-- BEGIN: footer -->
+<div class="footer">
+    <div class="contacts">
+        <div class="block_contacts">
+            <span class="name_contacts">Контакты:</span>
+            <ul class="list_contacts">
+                <li>информация: <a href="mailto:info@smilart.com">info@smilart.com</a></li> 
+                <li>техподдержка: <a href="mailto:support@smilart.com">support@smilart.com</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- END: footer -->
+
+</body>
+</html>

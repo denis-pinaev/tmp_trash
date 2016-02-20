@@ -1,0 +1,164 @@
+{% load i18n %}
+{% load a_templatetags %}
+{% include "a_header.html" %}
+<script type="text/javascript" src="{{ root_path }}/files/js/spinbox.js?v=v{{ version }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/record.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2><a href="{% url archive_page "records" %}">{% trans "Процессы" %}</a> - {% trans "Добавление процесса" %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				{% include "current_time.html" %}
+				<form method="post" action="">
+					<div class="frm_head">{% trans "Общие параметры" %}</div>
+					<div class="frm_block">
+						<div class="block_txt">{% trans "Источник" %}:</div>
+						<select name="" class="select">
+							<option value="0" selected="selected">192.168.0.13 AV2100</option>
+							<option value="0" selected="selected">192.168.0.14 AV2100</option>
+							<option value="0" selected="selected">192.168.0.15 AV2100</option>
+						</select>
+						<input type="button" id="title_source" name="" value="" class="btn_quest" onMouseOver="javascript: showTitleForm(this);" onMouseOut="javascript: closeTitle('title');" />
+					</div>
+					<div class="frm_block">
+						<div class="block_txt">{% trans "Запуск задачи" %}:</div>
+						<select name="" class="select">
+							<option value="1" selected="selected">{% trans "Движение" %}</option>
+							<option value="2">{% trans "Детектирование" %}</option>
+							<option value="3">{% trans "Идентификация" %}</option>
+							<option value="4">{% trans "Постоянная запись" %}</option>
+							<option value="5">{% trans "Сигнал тревоги" %}</option>
+						</select>
+						<input type="button" id="title_signal" name="" value="" class="btn_quest" onMouseOver="javascript: showTitleForm(this);" onMouseOut="javascript: closeTitle('title');" />
+					</div>					
+					<div class="frm_block">
+						<div class="block_txt">{% trans "Период" %}:</div>
+						<div class="block_date">{% trans "с" %}<input type="text" name="test" value="01.12.2010" class="inp_txt dist_left" /><input type="button" name="" value="" class="btn_calend" title="{% trans "Выбрать дату" %}" /></div>
+						<div class="block_date dist_left">{% trans "по" %}<input type="text" name="test" value="01.12.2010" class="inp_txt dist_left" /><input type="button" name="" value="" class="btn_calend" title="{% trans "Выбрать дату" %}" /></div>
+					</div>
+					<div class="frm_block">
+						<div class="block_txt">{% trans "Время" %}:</div>
+						<div class="delim_txt">{% trans "c" %}</div>
+						<div class="spinbox dist_left">
+							<input type="text" id="hour1" name="hour1" value="09" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 09, 00, 23);"/>
+							<div class="spinbtns">
+								<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 23, 1, 'hour1');" onMouseUp="javascript: clearTimer();" />
+								<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 23, 1, 'hour1');" onMouseUp="javascript: clearTimer();" />
+							</div>
+						</div>
+						<div class="delim">:</div>
+						<div class="spinbox">
+							<input type="text" id="minute1" name="minute1" value="00" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 00, 00, 60);"/>
+							<div class="spinbtns">
+								<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 60, 10, 'minute1');" onMouseUp="javascript: clearTimer();" />
+								<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 60, 10, 'minute1');" onMouseUp="javascript: clearTimer();" />
+							</div>
+						</div>
+						<div class="delim">:</div>
+						<div class="spinbox">
+							<input type="text" id="second1" name="second1" value="00" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 00, 00, 60);"/>
+							<div class="spinbtns">
+								<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 60, 10, 'second1');" onMouseUp="javascript: clearTimer();" />
+								<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 60, 10, 'second1');" onMouseUp="javascript: clearTimer();" />
+							</div>
+						</div>
+						<div class="delim_txt dist_left">{% trans "по" %}</div>
+						<div class="spinbox dist_left">
+							<input type="text" id="hour2" name="hour2" value="09" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 09, 00, 23);"/>
+							<div class="spinbtns">
+								<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 23, 1, 'hour2');" onMouseUp="javascript: clearTimer();" />
+								<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 23, 1, 'hour2');" onMouseUp="javascript: clearTimer();" />
+							</div>
+						</div>
+						<div class="delim">:</div>
+						<div class="spinbox">
+							<input type="text" id="minute2" name="minute2" value="00" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 00, 00, 60);"/>
+							<div class="spinbtns">
+								<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 60, 10, 'minute2');" onMouseUp="javascript: clearTimer();" />
+								<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 60, 10, 'minute2');" onMouseUp="javascript: clearTimer();" />
+							</div>
+						</div>
+						<div class="delim">:</div>
+						<div class="spinbox">
+							<input type="text" id="second2" name="second2" value="00" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 00, 00, 60);"/>
+							<div class="spinbtns">
+								<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 60, 10, 'second2');" onMouseUp="javascript: clearTimer();" />
+								<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 60, 10, 'second2');" onMouseUp="javascript: clearTimer();" />
+							</div>
+						</div>
+						<input type="button" id="title_time_source" name="" value="" class="btn_quest" onMouseOver="javascript: showTitleForm(this);" onMouseOut="javascript: closeTitle('title');" />
+					</div>
+					<div class="frm_head">{% trans "Параметры для видеоролика" %}</div>
+					<div class="frm_block">
+						<div class="block_txt">{% trans "Время одного видеоролика" %}:</div>
+						<select name="test" class="select select_video">
+							<option value="0" selected="selected">10 {% trans "мин." %}</option>
+							<option value="1">20 {% trans "мин." %}</option>
+							<option value="2">30 {% trans "мин." %}</option>
+							<option value="3">40 {% trans "мин." %}</option>
+							<option value="4">50 {% trans "мин." %}</option>
+							<option value="5">60 {% trans "мин." %}</option>
+							<option value="6">{% trans "Другое" %}</option>
+						</select>
+						<input type="button" id="title_time_video" name="" value="" class="btn_quest" onMouseOver="javascript: showTitleForm(this);" onMouseOut="javascript: closeTitle('title');" />
+						<!--<div class="spinbox">
+							<input type="text" id="hour3" name="hour3" value="09" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 09, 00, 23);"/>
+							<div class="spinbtns">
+								<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 23, 1, 'hour3');" onMouseUp="javascript: clearTimer();" />
+								<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 23, 1, 'hour3');" onMouseUp="javascript: clearTimer();" />
+							</div>
+						</div>
+						<div class="spinbox">
+							<input type="text" id="minute3" name="minute3" value="00" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 00, 00, 60);"/>
+							<div class="spinbtns">
+								<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 60, 10, 'minute3');" onMouseUp="javascript: clearTimer();" />
+								<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 60, 10, 'minute3');" onMouseUp="javascript: clearTimer();" />
+							</div>
+						</div>
+						<div class="spinbox">
+							<input type="text" id="second3" name="second3" value="00" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 00, 00, 60);"/>
+							<div class="spinbtns">
+								<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 60, 10, 'second3');" onMouseUp="javascript: clearTimer();" />
+								<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 60, 10, 'second3');" onMouseUp="javascript: clearTimer();" />
+							</div>
+						</div>-->
+					</div>
+					<div class="frm_block">
+						<div class="block_txt">{% trans "Разрешение" %}:</div>
+						<select name="" class="select select_video">
+							<option value="1" selected="selected">640x480</option>
+						</select>						
+					</div>
+					<div class="frm_block">
+						<div class="block_txt">{% trans "Частота кадров" %}:</div>
+						<div class="spinbox">
+							<input type="text" id="fps" name="fps" value="5" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 5, 0, 30);"/>
+							<div class="spinbtns">
+								<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 0, 30, 1, 'fps');" onMouseUp="javascript: clearTimer();" />
+								<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 0, 30, 1, 'fps');" onMouseUp="javascript: clearTimer();" />
+							</div>
+						</div>
+					</div>
+					<div class="frm_block">
+						<div class="block_txt">{% trans "Кодек" %}:</div>
+						<select name="" class="select select_video">
+							<option value="1" selected="selected">h264</option>
+						</select>
+						<input type="button" id="title_codec" name="" value="" class="btn_quest" onMouseOver="javascript: showTitleForm(this);" onMouseOut="javascript: closeTitle('title');" />
+					</div>
+					<div class="frm_block">
+						<input type="button" name="" value="{% trans "Добавить процесс" %}" class="inp_btn inp_btn120" />
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+{% include "a_footer.html" %}
+</body>
+</html>

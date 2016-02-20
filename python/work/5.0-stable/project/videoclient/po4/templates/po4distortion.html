@@ -1,0 +1,68 @@
+{% load i18n %}
+{% include "po4header.html" %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/camera.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_settings">
+		{% include "po4menu_insert.html" %}
+		<div class="block_cont">
+			<div class="block_cont_top2">
+				<div class="block_cont_bottom min_height">
+					<h2><a href="/po4/settingspage/">{% trans "Настройка сервера" %}</a> - <a href="/po4/settingspage/{{ communicator }}/{{ numcamera}}/" onClick="executeMethod('setModeScheduler', {{ numcamera }}, {{ cameramode }});">{% trans "Настройка камеры" %} "{{ camera.info }}"</a> - {% trans "Настройка дисторсии" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Настройки_дисторсии" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+					{% if error %}
+						<div class="info_important">
+						{% if error == 'communicator' %}
+							{% trans "Ошибка подключения! Коммуникатор" %} <b>{{ com.host }}</b> {% trans "не доступен. Пожалуйста, попробуйте подключиться позднее." %}
+						{% else %}
+							{% trans "Ошибка подключения! Камера с таким названием недоступна. Пожалуйста, попробуйте подключиться позднее" %}.
+						{% endif %}
+							<a href="/po4/settingspage/{{ communicator }}/{{ numcamera }}/" class="link_btn" onMouseOver="javascript: linkStatus(this, 'over', 90);" onMouseOut="javascript: linkStatus(this, 'up', 90);" onMouseDown="javascript: linkStatus(this, 'down', 90);" onMouseUp="javascript: linkStatus(this, 'over', 90);">{% trans "Назад" %}</a>
+						</div>
+					{% else %}
+					<form method="POST" action="" name="">
+						<input type="hidden" name="communicator" value="{{ communicator }}">
+						<input type="hidden" name="numcamera" value="{{ numcamera }}">
+						<input type="hidden" name="mode" value="{{ cameramode }}">
+						<div class="frm_block">
+							<input id="communicator" type="hidden" name="communucator" value="{{ communicator }}" >
+							<a href="/po4/settingspage/{{ communicator }}/{{ numcamera }}/" onClick="javascript: executeMethod('setModeScheduler', {{ numcamera }}, {{ cameramode }});" class="link_btn" onMouseOver="javascript: linkStatus(this, 'over', 90);" onMouseOut="javascript: linkStatus(this, 'up', 90);" onMouseDown="javascript: linkStatus(this, 'down', 90);" onMouseUp="javascript: linkStatus(this, 'over', 90);">{% trans "Назад" %}</a>
+						</div>
+						<div class="frm_block">
+							<script type="text/javascript">
+								var lang = readCookie('django_language');
+								document.write('<object id="flash-app" name="flash-app" width="980" height="628" data="/files/swf/distortion/flash.swf" type="application/x-shockwave-flash">'+
+										'<param value="/files/swf/distortion/flash.swf" name="movie">'+
+										'<param value="always" name="AllowScriptAccess">'+
+										'<param value="all" name="allowNetworking">'+
+										'<param value="true" name="allowFullScreen">'+
+										'<param name="quality" value="best" />'+
+										'<param name="bgcolor" value="#ffffff" />'+
+										'<param name="wmode" value="opaque" />'+
+										'<param name="FlashVars" value="locale='+lang+'&server={{ server }}&port={{ port }}&camera={{ numcamera }}&distortion=true&control_server={{ bal.host }}&control_port={{ bal.port }}&control_user={{ bal.user }}&control_password={{ bal.passwd }}&control_login={{ bal.login}}" />'+
+										'<embed src="/files/swf/distortion/flash.swf" FlashVars="locale='+lang+'&server={{ server }}&port={{ port }}&camera={{ numcamera }}&distortion=true&control_server={{ bal.host }}&control_port={{ bal.port }}&control_user={{ bal.user }}&control_password={{ bal.passwd }}&control_login={{ bal.login}}" wmode="opaque" quality="best" bgcolor="#ffffff" width="980" height="628" name="flash-app" align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer" />'+
+										'</object>');
+							</script>
+						</div>
+						<div class="frm_block">
+							<a href="/po4/settingspage/{{ communicator }}/{{ numcamera }}/" onClick="javascript: executeMethod('setModeScheduler', {{ numcamera }}, {{ cameramode }});" class="link_btn" onMouseOver="javascript: linkStatus(this, 'over', 90);" onMouseOut="javascript: linkStatus(this, 'up', 90);" onMouseDown="javascript: linkStatus(this, 'down', 90);" onMouseUp="javascript: linkStatus(this, 'over', 90);">{% trans "Назад" %}</a>
+						</div>
+					</form>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po4footer.html" %}
+{% include "execute.html" %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% include "window_help.html" %}
+
+</body>
+</html>

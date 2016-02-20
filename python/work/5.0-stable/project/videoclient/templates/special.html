@@ -1,0 +1,91 @@
+{% load i18n %}
+{% if project == "po4" %}{% include "po4header.html" %}{% endif %}
+{% if project == None %}{% include "header.html" %}{% endif %}
+{% load templatetags %}
+
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4special.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_settings">
+
+		{% if project == "po4" %}{% include "po4menu_insert.html" %}{% endif %}
+		{% if project == None %}{% include "menu_insert.html" %}{% endif %}
+
+		<div class="block_cont">
+			<div class="block_cont_top2">
+				<div class="block_cont_bottom min_height">
+					<h2>{% trans "Специальные настойки" %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Специальные настойки" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+					{% include "current_time.html" %}
+					<form method="POST" action="" name="">
+						<script type="text/javascript">
+							function complite(){
+								$.ajax({
+									type: 'POST',
+									url: '{{ project_url}}/special/',
+									data: {ping: 'True'},
+									success: function(msg){
+										if (msg == 'True') {
+											location.reload(true);
+										}
+									}
+								});
+
+								setTimeout('complite()', 3000);
+							}
+
+							function execute(data) {
+								showIndicator(true);
+								$.ajax({
+									type: 'POST',
+									url: '{{ project_url }}/special/',
+									data: data,
+									success: function(msg){
+
+									}
+								});
+								setTimeout('complite()', 3000);
+							}
+						</script>
+						<div class="settings_btns">
+							<!--<input type="button" onMouseUp="javascript: buttonStatus(this, 'over');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseOver="javascript: buttonStatus(this, 'over');" class="inp_btn inp_btn140" value="Перезапуск системы" name="" onClick = "javascript: execute({cmd:'True', restart: 'True'});" >
+							<input type="button" onMouseUp="javascript: buttonStatus(this, 'over');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseOver="javascript: buttonStatus(this, 'over');" class="inp_btn inp_btn170" value="Перезапуск компьютера" name="" onClick = "javascript: execute({cmd:'True', reboot: 'True'});" style="margin-left: 5px;" />-->
+
+							<input type="button" onMouseUp="javascript: buttonStatus(this, 'over');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseOver="javascript: buttonStatus(this, 'over');" class="inp_btn inp_btn140" value="{% trans "Перезапуск системы" %}" name="" onClick = "javascript: restartSystem('restart');" >
+							<input type="button" onMouseUp="javascript: buttonStatus(this, 'over');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseOver="javascript: buttonStatus(this, 'over');" class="inp_btn inp_btn170" value="{% trans "Перезапуск компьютера" %}" name="" onClick = "javascript: rebootComputer('reboot');" style="margin-left: 5px;" />
+
+						</div>
+						<div class="frm_block dist_top_no">
+							<fieldset class="set_copy_rezerv"><legend>{% trans "Резервное копирование" %}</legend>
+								<div class="bl_set_camera">
+									<div><span>{% trans "Директория" %}:</span>
+										<input type="text" class="inp_txt dist_left" value="./backup/" id="path" name="path" style="width: 450px;">
+									</div>									
+									<div class="bl_set dist_top">
+										<label for="light_auto"><input type="radio" onclick="" class="inp_check" value="0" name="action"><span>{% trans "Создать" %}</span></label>
+									</div>
+									<div class="bl_set" style="">
+										<label for="light_auto"><input type="radio" onclick="" class="inp_check" value="1" name="action"><span>{% trans "Востановить" %}</span></label>
+									</div>
+									<div class="bl_set_btn">
+										<input type="button" onmouseup="javascript: buttonStatus(this, 'over');" onmousedown="javascript: buttonStatus(this, 'down');" onmouseout="javascript: buttonStatus(this, 'up');" onmouseover="javascript: buttonStatus(this, 'over');" class="inp_btn inp_btn90" value="{% trans "Применить" %}" name=""
+											onClick = "javascript: execute({cmd:'True', path: document.getElementById('path').value, action: document.getElementsByName('action')[0].value });" />
+									</div>							 
+								</div>
+							</fieldset>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+{% if project == "po4" %}{% include "po4footer.html" %}{% endif %}
+{% if project == None %}{% include "footer.html" %}{% endif %}
+{% include "po4window_special.html" %}
+</body>
+</html>

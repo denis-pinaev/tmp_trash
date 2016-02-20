@@ -1,0 +1,60 @@
+{% load i18n %}
+{% load templatetags %}
+{% include "po4header.html" %}
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="/files/css/settings_recognition.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_settings">
+		{% include "po4menu_insert.html" %}
+		<div class="block_cont">
+			<div class="block_cont_top2">
+				<div class="block_cont_bottom min_height">
+					<script type="text/javascript">var params=new Array();</script>
+					<h2>{% trans "Настройки распознавания" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Настройки_распознавания" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>	
+					<form method="" action="" name="">
+						<div class="frm_block">
+							<div class="frm_block_txt"><span {% if dis_eye == None %} class="txt_dis" {% endif %}>{% trans "Минимальный размер лица" %}:</span></div>
+							{% spinbox "dis_eye" "dis_eye" dis_eye "38" "20" "10000" "1" %}
+							<input type="button" name="" value="{% trans "Применить" %}"  {% if dis_eye == None %} disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% else %} class="inp_btn inp_btn90 dist_left" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" 
+								onClick="javascript: executeMethodBalancer('setParameter', document.getElementsByName('dis_eye')[0].value)" {% endif %}/>
+						</div>
+						<!--
+						<div class="frm_block">
+							<div class="frm_block_txt"><span {% if journalBoundCoeff == None %} class="txt_dis" {% endif %}>{% trans "Порог регистриции в журнале" %}:</span></div>
+							<div>
+								<input type="text" name="journalBoundCoeff" {% if journalBoundCoeff == None %} disabled="disabled" class="inp_txt dis"{% else %}  value="{{ journalBoundCoeff }}" class="inp_txt"{% endif %}  style="width: 50px;" />
+								<input type="button" name="" value="{% trans "Применить" %}"  {% if dis_eye == None %} disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% else %} class="inp_btn inp_btn90 dist_left" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" 
+									onClick="javascript: executeMethodBalancer('setParameter', document.getElementsByName('journalBoundCoeff')[0].value, 'journalBoundCoeff')" {% endif %}/>
+							</div>
+						</div>
+						-->					
+						<div class="frm_block">
+							<div class="frm_block_txt"><span {% if minBoundCoeffForLearn == None %} class="txt_dis" {% endif %}>{% trans "Нижний порог обучения" %}:</span></div>
+							{% spinbox "minBoundCoeffForLearn" "minBoundCoeffForLearn" minBoundCoeffForLearn "38" "0" "1" "0.01" %}						
+							<input type="button" name="" value="{% trans "Применить" %}"  {% if minBoundCoeffForLearn == None %} disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% else %} class="inp_btn inp_btn90 dist_left" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" 
+								onClick="javascript: executeMethodBalancer('setParameter', document.getElementsByName('minBoundCoeffForLearn')[0].value, 'minBoundCoeffForLearn')" {% endif %}/>
+						</div>
+						<div class="frm_block">
+							<div class="frm_block_txt"><span {% if maxBoundCoeffForLearn == None %} class="txt_dis" {% endif %}>{% trans "Верхний порог обучения" %}:</span></div>
+							{% spinbox "maxBoundCoeffForLearn" "maxBoundCoeffForLearn" maxBoundCoeffForLearn "38" "0" "1" "0.01" %}				
+							<input type="button" name="" value="{% trans "Применить" %}"  {% if maxBoundCoeffForLearn == None %} disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% else %} class="inp_btn inp_btn90 dist_left" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" 
+								onClick="javascript: executeMethodBalancer('setParameter', document.getElementsByName('maxBoundCoeffForLearn')[0].value, 'maxBoundCoeffForLearn')" {% endif %}/>
+						</div>					
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>			
+
+{% include "po4footer.html" %}
+{% include "execute.html" %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+</body>
+</html>

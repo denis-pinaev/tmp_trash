@@ -1,0 +1,170 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+var sounds=[];
+function clickActive(id, inp, num) {
+    var selected = getSelectedSound(num);
+    if (!flashVersion()) {
+        inp.checked = false;
+        txt = '<div class="noFlash" style="text-align: left;">{% trans "Для настройки звуков и сигналов вам необходимо установить новую версию flash плеера. Новую версию плеера можно скачать" %} <a target="_blank" href="http://get.adobe.com/flashplayer/">{% trans "здесь" %}</a>.</div>';
+        changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});                                        
+        return false;                       
+    }
+    if ((selected == 0) && (inp.checked)) {
+        inp.checked = false;
+        txt = '{% trans "Пожалуйста, выберите звук" %}.'
+        changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});                                        
+        return false;
+    }            
+    $.ajax({
+        type: "POST",
+        url: "/po4/events/",
+        data: {change: true, id: id, active: inp.checked},
+        success: function(msg){
+            var txt = '';
+            if (msg != 'True') {
+                txt = '{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}';
+                changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+                return;
+            }
+            if (inp.checked) {
+                txt = '{% trans "Звук успешно добавлен на событие" %} "'+byId('event'+num).innerHTML+'".';
+            } else {
+                txt = '{% trans "Звук выключен" %}.';
+            }
+            changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});                                        
+        },
+        error: function() {
+            var txt = '{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}';
+            changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});                                                            
+        }                                            
+    });
+}
+function changeSound(id, num) {
+    var value = getSelectedSound(num);
+    $.ajax({
+        type: "POST",
+        url: "/po4/events/",
+        data: {change: true, id: id, sound: value},
+        success: function(msg){
+            var txt = '';
+            if (msg != 'True') {
+                txt = '{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}';
+                changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+                return;
+            }
+        },
+        error: function() {
+            var txt = '{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}';
+            changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});                                                            
+        }
+    });
+}
+
+function changeSignal(id, num) {
+    var value = getSelectedSignal(num);
+    $.ajax({
+        type: "POST",
+        url: "/po4/events/",
+        data: {change: true, id: id, signal: value},
+        success: function(msg){
+            var txt = '';
+            if (msg != 'True') {
+                txt = '{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}';
+                changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+                return;
+            }
+        },
+        error: function() {
+            var txt = '{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}';
+            changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});                                                            
+        }
+    });
+}
+
+function getSelectedSound(num) {
+    var objSel = byId('listSounds'+num);
+    var selected = objSel.options[objSel.selectedIndex].value;
+    return selected;
+}
+function getSelectedSignal(num) {
+    var objSel = byId('listSignal'+num);
+    var selected = objSel.options[objSel.selectedIndex].value;
+    return selected;
+}
+function playSound(num) {
+    var selected = getSelectedSound(num);
+    var txt = '';
+    if (!flashVersion()) {
+        txt = '<div class="noFlash" style="text-align: left;">{% trans "Для прослушивания звука вам необходимо установить новую версию flash плеера. Новую версию плеера можно скачать" %} <a target="_blank" href="http://get.adobe.com/flashplayer/">{% trans "здесь" %}</a>.</div>';
+        changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});                                        
+        return false;                       
+    }    
+    if (selected == 0) {
+        txt = '{% trans "Пожалуйста, выберите звук" %}.'
+        changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});    
+        return false;                                                    
+    }
+    if (sounds[selected]) {
+        addFlashSound(sounds[selected]);
+    }
+}
+function saveProfile() {
+    changeWindow({id: 'win_save_profile', css: {width: '300px', height: '200px'}});
+}
+function uploadProfile() {
+    changeWindow({id: 'win_upload_profile', css: {width: '300px', height: '200px'}});
+}
+function defaultProfile() {
+    var txt = '{% trans "Вернуться к настройкам по умолчанию?" %}';
+    changeWindow({id: 'win_default_profile', css: {width: '300px', height: '200px'}, txt: txt});
+}
+function profileSave(name) {
+	$.ajax({
+        type: "POST",
+        url: "/po4/events/",
+        data: {save: name},
+        success: function(msg){
+            var txt = '';
+            if (msg != 'True') {
+                txt = '{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}';
+                changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+                return;
+            }
+			location.reload(true);
+        },
+        error: function() {
+            var txt = '{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}';
+            changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});                                                            
+        }                                            
+    });
+}
+function profileLoad(id){
+	var profile = id
+	if (profile !="default") {
+	    var objSel = byId(id);
+	    profile = objSel.options[objSel.selectedIndex].value;
+	}
+	
+	$.ajax({
+        type: "POST",
+        url: "/po4/events/",
+        data: {load: profile},
+        success: function(msg){
+            var txt = '';
+            if (msg != 'True') {
+                txt = '{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}';
+                changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+                return;
+            }
+			location.reload(true);
+            //txt = '{% trans "Профиль успешно сохранен" %} "'+byId('event'+num).innerHTML+'".';
+            //changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});                                        
+        },
+        error: function() {
+            var txt = '{% trans "Извините, произошла ошибка. Пожалуйста, попробуйте ещё раз" %}';
+            changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});                                                            
+        }                                            
+    });
+}
+</script>

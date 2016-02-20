@@ -1,0 +1,13 @@
+{% load i18n %}
+<script type="text/javascript">
+	var params = new Array();
+	function acceptView(id, url) {
+		view = byId(id);
+		setCookie('view', view.value, 9999);
+		if (view.value <= 0) {
+			location.replace(url);
+		} else {
+			location.replace(url+'&view='+view.value)
+		}
+	}
+</script>

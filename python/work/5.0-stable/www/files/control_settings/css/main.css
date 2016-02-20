@@ -1,0 +1,72 @@
+﻿/* table */
+.table {
+    margin: 10px 0px 0px 0px;
+    padding: 0px;
+    border: 0px;
+    /*width: 500px;*/
+    width: 100%;
+    border-top: 1px solid #6e7d98;
+}
+.table tr.odd {
+    background-color: #DBE2F0;
+}
+.table th {
+    vertical-align:top;
+    text-align: center;
+    border-right: 1px solid #6e7d98;
+    border-bottom: 1px solid #6e7d98;
+    background-color: #d9dee7;
+    padding: 3px 5px;
+    font-weight: normal;
+}
+.table th.first {
+    border-left: 1px solid #6e7d98;
+}
+.table th a {
+    color: #333333;
+    display: block;
+    background: url('/smedia/images/arrow_down.gif') 100% 6px no-repeat;
+    padding-right: 15px;
+}
+.table th.sort a {
+    background: url('/smedia/images/arrow_up.gif') 100% 6px no-repeat;
+}
+.table td {
+    border-bottom: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;
+    vertical-align: top;
+    padding: 3px 5px;    
+}
+.table td.first {
+    border-left: 1px solid #cccccc;
+    width: 70px;
+    overflow: hidden;
+}
+.table tr.act {
+    cursor: default;
+}
+.table tr.act td {
+    background-color: #849ac1;
+    color: #ffffff;
+}
+.table tr.act td a {
+    color: #ffffff;
+}
+.block_error {
+    color: #FF6600;
+    padding-left: 10px;
+}
+.error_border {
+    border-color: #FF6600;
+}
+.errorlist,
+.errorlist li {
+    display: inline;
+}
+.inp_blue120 {
+    color: #ffffff;
+    width: 120px;
+    background: url('/files/images/btn_blue_120.png') top left no-repeat;
+    -background: none;
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_120.png', sizingMethod='scale');
+}

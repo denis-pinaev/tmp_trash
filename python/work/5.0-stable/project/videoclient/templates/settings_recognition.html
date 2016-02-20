@@ -1,0 +1,292 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Настройки распознавания' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/settings_recognition.css?v=v{{ version }}" />
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+{% include "js/js_settings_recognition.html" %}
+{% include "js_set_default_params.html" %}
+<script type="text/javascript">
+// установить порог идентификации
+function setCoeffIdent(value){
+	setDefaultParams("journalBoundCoeff", value, 'successSetCoeffIdent()', 'showMessage(DEFAULT_MESSAGE)', 'showMessage(DEFAULT_MESSAGE)');
+}
+// порог идентификации успешно установлен
+function successSetCoeffIdent() {
+	showMessage(SUCCESS_MESSAGE);
+	setValueParams();
+}
+// установить пороги для обучения
+function setThresholdTraining(state) {
+	if (state == "min") {
+		executeMethodBalancerUni('successSetCoeffIdent()', 'showMessage(DEFAULT_MESSAGE)', 'showMessage(DEFAULT_MESSAGE)', 'setParameter', document.getElementsByName('minBoundCoeffForLearn')[0].value, 'control.min.bound.coeff.for.learn', 'oxion');
+	} else {
+		executeMethodBalancerUni('successSetCoeffIdent()', 'showMessage(DEFAULT_MESSAGE)', 'showMessage(DEFAULT_MESSAGE)', 'setParameter', document.getElementsByName('maxBoundCoeffForLearn')[0].value, 'control.max.bound.coeff.for.learn', 'oxion');
+	}
+}
+
+$(document).ready(function() {
+	{% if control_focus_factor == '0' %}$('#focus-wrapper').hide();{% endif %}
+	{% if noiseLevel == '0' %}$('#noise-wrapper').hide();{% endif %}
+	init();
+	initTooltip();
+});
+
+function setVideo(value){
+    setDefaultParams("use_js", value, 'successFuncVideo()', 'errorMessage()', 'errorMessage()');
+}
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+					<h2>{% trans "Настройки распознавания" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Настройки_распознавания' %}');" /></h2>
+					{% include "current_time.html" %}	
+					<form method="" action="" name="" class="block">
+						<div {% if show_recognition == '1' %}class="block_set" style="width: 345px;"{% else %}class="not_recognition"{% endif %}>
+							<div class="head_set">{% trans "Распознавание" %}</div>
+							<div class="frm_block">
+								<div class="frm_block_txt"><span {% if dis_eye == None %} class="txt_dis" {% endif %}>{% trans "Минимальный размер лица" %}:</span></div>
+								{% spinbox "dis_eye" "dis_eye" dis_eye "38" "20" "10000" "1" %}							
+								<input type="button" name="" value="{% trans "Применить" %}" disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% if dis_eye != None %} id="btn_dis_eye"
+									onClick="javascript: change_gItemId('dis_eye'); executeMethodBalancerExt2('setParameter', document.getElementsByName('dis_eye')[0].value, 'control.fd.preprocessing.min.face.side.pixels')" {% endif %}/>
+							</div> 
+							<div class="frm_block">
+								<div class="frm_block_txt"><span id="noise-text" {% if noiseLevel == None or noiseLevel == '0' %} class="txt_dis" {% endif %}>{% trans "Уровень шума" %}:</span></div>								
+								{% if noiseLevel != None %}
+								<input type="radio" id="ident_noiselv_on" name="ident_noiselvon" value="" class="inp_check" {% if noiseLevel != '0' %} checked="checked" {% endif %} onClick="javascript: change_gItemId('ident_noiselvon'); executeMethodBalancerUni('setReconParam(g_ItemId)', 'setBackReconParam(g_ItemId)', 'setBackReconParam(g_ItemId)', 'setParameter', 1, 'control.noise.level');" /><label for="ident_noiselv_on">{% trans "Вкл." %}</label>
+								<input type="radio" id="ident_noiselv_off" name="ident_noiselvoff" value="" class="inp_check dist_left" {% if noiseLevel == '0' %} checked="checked" {% endif %} onClick="javascript: change_gItemId('ident_noiselvoff'); executeMethodBalancerUni('setReconParam(g_ItemId)', 'setBackReconParam(g_ItemId)', 'setBackReconParam(g_ItemId)', 'setParameter', 0, 'control.noise.level');" /><label for="ident_noiselv_off">{% trans "Выкл." %}</label>
+								{% endif %}
+								<div id="noise-wrapper" class="hide_block_set">{% spinbox "noiseLevel" "noiseLevel" noiseLevel "38" "0" "10000" "1" %}				
+								<input type="button" id="noiselv-accept-but" name="" value="{% trans "Применить" %}"  {% if noiseLevel == None %} disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% else %} class="inp_btn inp_btn90 dist_left"
+									onClick="javascript: change_onButgItemId(document.getElementsByName('noiseLevel')[0].value, 'noiselv-accept-but'); executeMethodBalancerUni('setReconParam(g_ItemId)', 'setBackReconParam(g_ItemId)', 'setBackReconParam(g_ItemId)', 'setParameter', document.getElementsByName('noiseLevel')[0].value, 'control.noise.level')" {% endif %}/></div>								
+							</div>
+							<div class="frm_block">
+								<div class="frm_block_txt"><span {% if control_noise_deviation == None %} class="txt_dis" {% endif %}>{% trans 'Уровень "сигнал/шум"' %}:</span></div>
+								{% spinbox "control_noise_deviation" "control_noise_deviation" control_noise_deviation "38" "0" "10000" "1" %}				
+								<input type="button" name="" value="{% trans "Применить" %}" disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% if control_noise_deviation != None %} id="btn_control_noise_deviation"
+									onClick="javascript: change_gItemId('control_noise_deviation'); executeMethodBalancerExt2('setParameter', document.getElementsByName('control_noise_deviation')[0].value, 'control.noise.deviation')" {% endif %}/>
+							</div>
+							<div class="frm_block">
+								<div class="frm_block_txt"><span id="focus-text" {% if control_focus_factor == None or control_focus_factor == '0' %} class="txt_dis" {% endif %}>{% trans "Фокус" %}:</span></div>
+								{% if control_focus_factor != None %}
+								<input type="radio" id="ident_focus_on" name="ident_focuson" value="" class="inp_check" {% if control_focus_factor != '0' %} checked="checked" {% endif %} onClick="javascript: change_gItemId('ident_focuson'); executeMethodBalancerUni('setReconParam(g_ItemId)', 'setBackReconParam(g_ItemId)', 'setBackReconParam(g_ItemId)', 'setParameter', 1, 'control.focus.factor');" /><label for="ident_focus_on">{% trans "Вкл." %}</label>
+								<input type="radio" id="ident_focus_off" name="ident_focusoff" value="" class="inp_check dist_left" {% if control_focus_factor == '0' %} checked="checked" {% endif %} onClick="javascript: change_gItemId('ident_focusoff'); executeMethodBalancerUni('setReconParam(g_ItemId)', 'setBackReconParam(g_ItemId)', 'setBackReconParam(g_ItemId)', 'setParameter', 0, 'control.focus.factor');" /><label for="ident_focus_off">{% trans "Выкл." %}</label>
+								{% endif %}
+								<div id="focus-wrapper" class="hide_block_set">{% spinbox "control_focus_factor" "control_focus_factor" control_focus_factor "38" "0" "10000" "1" %}				
+									<input type="button" id="focus-accept-but" name="" value="{% trans "Применить" %}"  {% if control_focus_factor == None %} disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% else %} class="inp_btn inp_btn90 dist_left"
+								onClick="javascript: change_onButgItemId(document.getElementsByName('control_focus_factor')[0].value, 'focus-accept-but'); executeMethodBalancerUni('setReconParam(g_ItemId)', 'setBackReconParam(g_ItemId)', 'setBackReconParam(g_ItemId)', 'setParameter', document.getElementsByName('control_focus_factor')[0].value, 'control.focus.factor')" {% endif %}/></div>
+							</div>
+							{% if perms.user_perms.perm_system_settings %}
+								<script type="text/javascript">
+									var fd_light = {% if control_fd_detect_type == 'light' %} true {% else %} false {% endif %};
+									function check_fd_light() {
+										var div_heavy = $("#div_heavy");
+										var div_light = $("#div_light");
+										if (fd_light) {
+											div_heavy.hide();
+											div_light.show();
+										} else  {
+											div_heavy.show();
+											div_light.hide();
+										}
+									}
+									function success_chenge_fd() {
+										fd_light = !fd_light;
+										if (fd_light) {
+											$('#FD_light').attr("checked", "checked");
+										} else {
+											$('#FD').attr("checked", "checked");
+										}
+										check_fd_light();
+										location.reload(true);
+									}
+									
+									function changeFDBalancerStep2() {
+										if(!fd_light) {
+											executeMethodBalancerUni('success_chenge_fd()', 'error_message()', 'error_message()', 'setParameter', 'light', 'control.fd.detect.type');
+										} else {
+											executeMethodBalancerUni('success_chenge_fd()', 'error_message()', 'error_message()', 'setParameter', 'heavy', 'control.fd.detect.type');
+										}
+									}
+
+									function changeFDBalancer(){
+										if(!fd_light) {
+											setDefaultParams("control.fd.detect.type", 'light', 'changeFDBalancerStep2()', 'errorMessage()', 'errorMessage()');
+										} else {
+											setDefaultParams("control.fd.detect.type", 'heavy', 'changeFDBalancerStep2()', 'errorMessage()', 'errorMessage()');
+										}
+									}
+									
+									function preChangeFD(mode) {
+										// TODO Save mode
+										
+										if (mode=='light') {
+											if (!fd_light) {
+												$('#FD').attr("checked", "checked");
+											}
+										} else {
+											if (fd_light) {
+												$('#FD_light').attr("checked", "checked");
+											}
+										}
+										changeFD(1);
+									}
+									
+									function changeFD(step) {
+										if (step == 1) {
+											changeWindow({id: 'win_fd1', css: {width: '340px', height: '265px'}});
+										} else {
+											changeWindow({id: 'win_fd2', css: {width: '300px', height: '200px'}});
+										}
+									}
+								</script>
+								<div class="frm_block">
+									<div class="frm_block_txt{% if not control_fd_detect_type %} txt_dis{% endif %}" >{% trans "Алгоритм распознавания" %}:</div> 
+									<div class="block_enter">
+										<input type="radio" id="FD" name="fd" value="" class="inp_check" {% if control_fd_detect_type = 'heavy' %} checked="checked" {% endif %} onClick="javascript: preChangeFD('');" {% if not control_fd_detect_type %} disabled="disabled" {% endif %} /><label for="FD"{% if not control_fd_detect_type %} class="txt_dis"{% endif %}>{% trans "Тяжёлый" %}</label>
+										<input type="radio" id="FD_light" name="fd" value="" class="inp_check dist_left" {% if control_fd_detect_type == 'light' %} checked="checked" {% endif %} onClick="javascript: preChangeFD('light');" {% if not control_fd_detect_type %} disabled="disabled" {% endif %} /><label for="FD_light"{% if not control_fd_detect_type %} class="txt_dis"{% endif %}>{% trans "Лёгкий" %}</label>
+									</div>
+								</div>
+								<!--
+								<div class="frm_block">
+									<div class="frm_block_txt"><span {% if control_fd_deep_level == None %} class="txt_dis" {% endif %}>{% trans "Глубина поиска" %}:</span></div>
+									{% spinbox "control_fd_deep_level" "control_fd_deep_level" control_fd_deep_level "38" "-20" "20" "1" %}				
+									<input type="button" name="" value="{% trans "Применить" %}" disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% if control_fd_deep_level != None %} id="btn_control_fd_deep_level"
+										onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" 
+										onClick="javascript: change_gItemId('control_fd_deep_level'); executeMethodBalancerExt2('setParameter', document.getElementsByName('control_fd_deep_level')[0].value, 'control.fd.deep.level')" {% endif %}/>
+								</div>
+								-->							
+								<div class="frm_block short_descr" title="{% trans 'При увеличении глубины поиска' %}:<ul class='list_num'><li>{% trans 'увеличивается время поиска' %};</li><li>{% trans 'находится больше лиц' %};</li><li>{% trans 'больше ложных срабатываний' %}.</li></ul>" id="div_heavy" style="display: none">
+									<div class="frm_block_txt"><span {% if control_fd_deep_level_heavy == None %} class="txt_dis" {% endif %}>{% trans "Глубина поиска" %}:</span></div>
+									{% spinbox "control_fd_deep_level_heavy" "control_fd_deep_level_heavy" control_fd_deep_level_heavy "38" "-20" "20" "1" %}				
+									<input type="button" name="" value="{% trans "Применить" %}" disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% if control_fd_deep_level_heavy != None %} id="btn_control_fd_deep_level_heavy"
+										onClick="javascript: change_gItemId('control_fd_deep_level_heavy'); executeMethodBalancerExt2('setParameter', document.getElementsByName('control_fd_deep_level_heavy')[0].value, 'control.fd.deep.level.heavy')" {% endif %}/>
+								</div>
+								<div class="frm_block short_descr" title="{% trans 'При увеличении глубины поиска' %}:<ul class='list_num'><li>{% trans 'увеличивается время поиска' %};</li><li>{% trans 'находится больше лиц' %};</li><li>{% trans 'больше ложных срабатываний' %}.</li></ul>" id="div_light" style="display: none">
+									<div class="frm_block_txt"><span {% if control_fd_deep_level_light == None %} class="txt_dis" {% endif %}>{% trans "Глубина поиска" %}:</span></div>
+									{% spinbox "control_fd_deep_level_light" "control_fd_deep_level_light" control_fd_deep_level_light "38" "-20" "20" "1" %}				
+									<input type="button" name="" value="{% trans "Применить" %}" disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% if control_fd_deep_level_light != None %} id="btn_control_fd_deep_level_light"
+										onClick="javascript: change_gItemId('control_fd_deep_level_light'); executeMethodBalancerExt2('setParameter', document.getElementsByName('control_fd_deep_level_light')[0].value, 'control.fd.deep.level.light')" {% endif %}/>
+								</div>
+								<script type="text/javascript">
+									check_fd_light();
+								</script>
+
+							{% endif %}	
+							<div class="frm_block">
+								<div class="frm_block_txt"><span {% if preprocessing_min_image_to_face_side_ratio == None %} class="txt_dis" {% endif %}>{% trans "Минимальное отношение размера изображения к размеру лица" %}:</span></div>
+								{% spinbox "preprocessing_min_image_to_face_side_ratio" "preprocessing_min_image_to_face_side_ratio" preprocessing_min_image_to_face_side_ratio "38" "0.5" "50" "0.1" %}				
+								<input type="button" name="" value="{% trans "Применить" %}" disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% if preprocessing_min_image_to_face_side_ratio != None %} id="btn_preprocessing_min_image_to_face_side_ratio"
+									onClick="javascript: change_gItemId('preprocessing_min_image_to_face_side_ratio'); executeMethodBalancerExt2('setParameter', document.getElementsByName('preprocessing_min_image_to_face_side_ratio')[0].value, 'control.fd.preprocessing.min.image.to.face.side.ratio')" {% endif %}/>
+							</div>
+							<div class="frm_block">
+								<div class="frm_block_txt"><span {% if preprocessing_max_image_to_face_side_ratio == None %} class="txt_dis" {% endif %}>{% trans "Максимальное отношение размера изображения к размеру лица" %}:</span></div>
+								{% spinbox "preprocessing_max_image_to_face_side_ratio" "preprocessing_max_image_to_face_side_ratio" preprocessing_max_image_to_face_side_ratio "38" "0.5" "50" "0.1" %}				
+								<input type="button" name="" value="{% trans "Применить" %}" disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% if preprocessing_max_image_to_face_side_ratio != None %} id="btn_preprocessing_max_image_to_face_side_ratio"
+									onClick="javascript: change_gItemId('preprocessing_max_image_to_face_side_ratio'); executeMethodBalancerExt2('setParameter', document.getElementsByName('preprocessing_max_image_to_face_side_ratio')[0].value, 'control.fd.preprocessing.max.image.to.face.side.ratio')" {% endif %}/>
+							</div>
+							
+							
+						</div>
+						{% if show_recognition == '1' %}
+						<div class="block_set" style="width: 425px;">
+							<div class="head_set">{% trans "Идентификация" %}</div>
+							<div class="frm_block" id="div_coeff">
+								<div class="frm_block_txt"><span {% if journalBoundCoeff == None %} class="txt_dis" {% endif %}>{% trans "Порог идентификации" %}:</span></div>
+								{% spinbox "journalBoundCoeff" "journalBoundCoeff" journalBoundCoeff2 "38" "0" "1" "0.01" %}				
+								<input type="button" name="" value="{% trans "Применить" %}" disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% if journalBoundCoeff != None %} id="btn_journalBoundCoeff"
+									onClick="javascript: change_gItemId('journalBoundCoeff'); setCoeffIdent(document.getElementsByName('journalBoundCoeff')[0].value)" {% endif %}/>
+							</div>
+							<div class="frm_block">
+								<div class="frm_block_txt2{% if not control_check_face_for_identification %} txt_dis{% endif %}" >{% trans "Идентификация неуверенно детектированных лиц" %}:</div> 
+								<div class="block_enter">
+									<input type="radio" id="ident_face_yes" name="ident_face" value="" class="inp_check" {% if control_check_face_for_identification == 'false' %} checked="checked" {% endif %} onClick="javascript: executeMethodBalancer('setParameter', 'false', 'control.check.face.for.identification')" {% if not control_check_face_for_identification %} disabled="disabled" {% endif %} /><label for="ident_face_yes"{% if not control_check_face_for_identification %} class="txt_dis"{% endif %}>{% trans "Вкл." %}</label>
+									<input type="radio" id="ident_face_no" name="ident_face" value="" class="inp_check dist_left" {% if control_check_face_for_identification == 'true' %} checked="checked" {% endif %} onClick="javascript: executeMethodBalancer('setParameter', 'true', 'control.check.face.for.identification')" {% if not control_check_face_for_identification %} disabled="disabled" {% endif %} /><label for="ident_face_no"{% if not control_check_face_for_identification %} class="txt_dis"{% endif %}>{% trans "Выкл." %}</label>
+								</div>
+							</div>
+							<div class="frm_block">
+								<div class="frm_block_txt2{% if not control_check_eyes_for_identification %} txt_dis{% endif %}" >{% trans "Идентификация лиц с неуверенно детектированными глазами" %}:</div> 
+								<div class="block_enter">
+									<input type="radio" id="ident_eyes_yes" name="ident_eyes" value="" class="inp_check" {% if control_check_eyes_for_identification == 'false' %} checked="checked" {% endif %} onClick="javascript: executeMethodBalancer('setParameter', 'false', 'control.check.eyes.for.identification')" {% if not control_check_eyes_for_identification %} disabled="disabled" {% endif %} /><label for="ident_eyes_yes"{% if not control_check_eyes_for_identification %} class="txt_dis"{% endif %}>{% trans "Вкл." %}</label>
+									<input type="radio" id="ident_eyes_no" name="ident_eyes" value="" class="inp_check dist_left" {% if control_check_eyes_for_identification == 'true' %} checked="checked" {% endif %} onClick="javascript: executeMethodBalancer('setParameter', 'true', 'control.check.eyes.for.identification')" {% if not control_check_eyes_for_identification %} disabled="disabled" {% endif %} /><label for="ident_eyes_no"{% if not control_check_eyes_for_identification %} class="txt_dis"{% endif %}>{% trans "Выкл." %}</label>
+								</div>
+							</div>
+							<div class="frm_block">
+								<div class="frm_block_txt4"><span {% if minEyesDistance == None %} class="txt_dis" {% endif %}>{% trans "Минимальное расстояние между глазами" %}:</span></div>
+								{% spinbox "minEyesDistance" "minEyesDistance" minEyesDistance "38" "0" "10000" "1" %}				
+								<input type="button" name="" value="{% trans "Применить" %}" disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% if minEyesDistance != None %} id="btn_minEyesDistance"
+									onClick="javascript: change_gItemId('minEyesDistance'); executeMethodBalancerExt2('setParameter', document.getElementsByName('minEyesDistance')[0].value, 'minEyesDistance')" {% endif %}/>
+							</div>
+							<div class="frm_block">
+								<div class="frm_block_txt2{% if not control_mirror_eyes_identification %} txt_dis{% endif %}" >{% trans "Идентификация отраженного лица" %}:</div> 
+								<div class="block_enter">
+									<input type="radio" id="mirror_ident_eyes_yes" name="mirror_ident_eyes" value="" class="inp_check" {% if control_mirror_eyes_identification == 'false' %} checked="checked" {% endif %} onClick="javascript: executeMethodBalancer('setParameter', 'false', 'control.fr.with.mirroring')"  /><label for="mirror_ident_eyes_yes"{% if not control_mirror_eyes_identification %} class="txt_dis"{% endif %}>{% trans "Вкл." %}</label>
+									<input type="radio" id="mirror_ident_eyes_no" name="mirror_ident_eyes" value="" class="inp_check dist_left" {% if control_mirror_eyes_identification == 'true' %} checked="checked" {% endif %} onClick="javascript: executeMethodBalancer('setParameter', 'true', 'control.fr.with.mirroring')" /><label for="mirror_ident_eyes_no"{% if not control_mirror_eyes_identification %} class="txt_dis"{% endif %}>{% trans "Выкл." %}</label>
+								</div>
+							</div>
+							<div class="frm_block">
+								<div class="frm_block_txt4"><span {% if minEyesDistance == None %} class="txt_dis" {% endif %}>{% trans "Тип кластерного режима" %}:</span></div>
+								{% spinbox "clusterTypeValue" "clusterTypeValue" clusterTypeValue "38" "0" "2" "1" %}				
+								<input type="button" name="" value="{% trans "Применить" %}" disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% if clusterTypeValue != None %} id="btn_clusterTypeValue"
+									onClick="javascript: change_gItemId('clusterTypeValue'); executeMethodBalancerExt2('setParameter', document.getElementsByName('clusterTypeValue')[0].value, 'control.fr.answer.type')" {% endif %}/>
+							</div>
+						</div>						
+						<div class="block_set bl_last">
+							<div class="head_set">{% trans "Обучение" %}</div>
+							<div class="frm_block">
+								<div class="frm_block_txt"><span {% if minBoundCoeffForLearn == None %} class="txt_dis" {% endif %}>{% trans "Нижний порог обучения" %}:</span></div>
+								{% spinbox "minBoundCoeffForLearn" "minBoundCoeffForLearn" minBoundCoeffForLearn "38" "0" "1" "0.01" %}								
+								<input type="button" name="" value="{% trans "Применить" %}" disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% if minBoundCoeffForLearn != None %} id="btn_minBoundCoeffForLearn"
+									onClick="javascript: change_gItemId('minBoundCoeffForLearn'); setThresholdTraining('min');" {% endif %} />
+							</div>
+							<div class="frm_block">
+								<div class="frm_block_txt"><span {% if maxBoundCoeffForLearn == None %} class="txt_dis" {% endif %}>{% trans "Верхний порог обучения" %}:</span></div>
+								{% spinbox "maxBoundCoeffForLearn" "maxBoundCoeffForLearn" maxBoundCoeffForLearn "38" "0" "1" "0.01" %}
+								<input type="button" name="" value="{% trans "Применить" %}" disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% if maxBoundCoeffForLearn != None %} id="btn_maxBoundCoeffForLearn" 
+									onClick="javascript: change_gItemId('maxBoundCoeffForLearn'); setThresholdTraining('max');" {% endif %} />
+							</div>
+							<div class="frm_block">
+								<div class="frm_block_txt2{% if not control_check_face_for_learning %} txt_dis{% endif %}" >{% trans "Обучение неуверенно детектированных лиц" %}:</div> 
+								<div class="block_enter">
+									<input type="radio" id="learn_face_yes" name="learn_face" value="" class="inp_check" {% if control_check_face_for_learning == 'false' %} checked="checked" {% endif %} onClick="javascript: executeMethodBalancer('setParameter', 'false', 'control.check.face.for.learning', 'oxion')" {% if not control_check_face_for_learning %} disabled="disabled" {% endif %} /><label for="learn_face_yes"{% if not control_check_face_for_learning %} class="txt_dis"{% endif %}>{% trans "Вкл." %}</label>
+									<input type="radio" id="learn_face_no" name="learn_face" value="" class="inp_check dist_left" {% if control_check_face_for_learning == 'true' %} checked="checked" {% endif %} onClick="javascript: executeMethodBalancer('setParameter', 'true', 'control.check.face.for.learning', 'oxion')" {% if not control_check_face_for_learning %} disabled="disabled" {% endif %} /><label for="learn_face_no"{% if not control_check_face_for_learning %} class="txt_dis"{% endif %}>{% trans "Выкл." %}</label>
+								</div>
+							</div>
+							<div class="frm_block">
+								<div class="frm_block_txt2{% if not control_check_eyes_for_learning %} txt_dis{% endif %}" >{% trans "Обучение лиц с неуверенно детектированными глазами" %}:</div> 
+								<div class="block_enter">
+									<input type="radio" id="learn_eyes_yes" name="learn_eyes" value="" class="inp_check" {% if control_check_eyes_for_learning == 'false' %} checked="checked" {% endif %} onClick="javascript: executeMethodBalancer('setParameter', 'false', 'control.check.eyes.for.learning', 'oxion')" {% if not control_check_eyes_for_learning %} disabled="disabled" {% endif %} /><label for="learn_eyes_yes"{% if not control_check_eyes_for_learning %} class="txt_dis"{% endif %}>{% trans "Вкл." %}</label>
+									<input type="radio" id="learn_eyes_no" name="learn_eyes" value="" class="inp_check dist_left" {% if control_check_eyes_for_learning == 'true' %} checked="checked" {% endif %} onClick="javascript: executeMethodBalancer('setParameter', 'true', 'control.check.eyes.for.learning', 'oxion')" {% if not control_check_eyes_for_learning %} disabled="disabled" {% endif %} /><label for="learn_eyes_no"{% if not control_check_eyes_for_learning %} class="txt_dis"{% endif %}>{% trans "Выкл." %}</label>
+								</div>
+							</div>
+							<!--
+							<div class="frm_block">
+								<div class="frm_block_txt2">Обучать неуверенно детектированные лица:</div> 
+								<input type="radio" id="learn_face_yes" name="learn_face" value="" class="inp_check" checked="checked" /><label for="learn_face_yes">Да</label>
+								<input type="radio" id="learn_face_no" name="learn_face" value="" class="inp_check dist_left" /><label for="learn_face_no">Нет</label>
+							</div>
+							<div class="frm_block">	
+								<div class="frm_block_txt2">Обучать лица с неуверенно детектированными глазами:</div>
+								<input type="radio" id="learn_eyes_yes" name="learn_eyes" value="" class="inp_check" checked="checked" /><label for="learn_eyes_yes">Да</label>
+								<input type="radio" id="learn_eyes_no" name="learn_eyes" value="" class="inp_check dist_left" /><label for="learn_eyes_no">Нет</label>								
+							</div>
+							-->
+						</div>
+						<!--
+						<div class="frm_block">
+							<div class="frm_block_txt"><span {% if journalBoundCoeff == None %} class="txt_dis" {% endif %}>{% trans "Порог регистриции в журнале" %}:</span></div>
+							<div>
+								<input type="text" name="journalBoundCoeff" {% if journalBoundCoeff == None %} disabled="disabled" class="inp_txt dis"{% else %}  value="{{ journalBoundCoeff }}" class="inp_txt"{% endif %}  style="width: 50px;" />
+								<input type="button" name="" value="{% trans "Применить" %}"  {% if dis_eye == None %} disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% else %} class="inp_btn inp_btn90 dist_left" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" 
+									onClick="javascript: executeMethodBalancer('setParameter', document.getElementsByName('journalBoundCoeff')[0].value, 'journalBoundCoeff')" {% endif %}/>
+							</div>
+						</div>
+						-->
+						{% endif %}
+					</form>
+{% endblock %}
+{% block windows %}
+{% include "execute.html" %}
+{% include "window_recognition.html" %}
+{% endblock %}

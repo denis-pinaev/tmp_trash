@@ -1,0 +1,75 @@
+{% extends "base_notab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% if list %}{% trans "Редактирование списка" %} "{% trans list.name %}"{% else %}{% trans 'Добавление списка' %}{% endif %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/addlist.css?v=v{{ version }}" />
+<script type="text/javascript">
+$(function() {
+    var validator = $("#formAddList").validate({
+        rules: {
+            name: "required",
+			level: {
+				maxlength: 64
+			}			
+        },
+        messages: {
+            name: "{% trans "Введите название списка" %}",
+			level: "{% trans "Введено некорректное значение" %}"			
+        },
+        errorPlacement: function(error, element) {
+            error.appendTo( element.parent().parent().prev() ); 
+        }
+    });    
+});
+</script>
+{% endblock %}
+{% block subcontent %}
+<h2><a href="/lists/">{% trans "Списки" %}</a> - {% if list %}{% trans "Редактирование списка" %} "{% trans  list.name  %}"{% else %}{% trans "Добавление списка" %}{% endif %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Добавление редактирование списка' %}');" /></h2>
+{% include "current_time.html" %}
+<form method="post" action="" name="" id="formAddList">
+	<div>{% trans "Поля, отмеченные звёздочкой" %} (<span class="req">*</span>), {% trans "являются обязательными для заполнения" %}.</div>
+	<div class="bl_param">
+		{% if errors.name %}{% if "Название" in errors.name|stringformat:"s" %}<div class="bl_error">{% trans "Список с таким названием уже существует" %}</div>{% else %}<div class="bl_error">{% trans  errors.name  %}</div>{% endif %}{% endif %}
+		<div class="bl_error"></div>
+		<div class="block">
+			<label for="name_list" class="bl_txt"><span class="req">*</span>{% trans "Название" %}:</label>
+			<div class="bl_enter"><input type="text" name="name" maxlength="128" id="name_list" value="{% if list.name %}{% trans list.name %}{% endif %}" class="inp_txt{% if errors.name %} error_border{% endif %}" /></div>
+		</div>
+	</div>                    
+	<div class="bl_param">
+		{% if errors.discription %}<div class="bl_error">{% trans  errors.discription  %}</div>{% endif %}
+		<div class="bl_error"></div>
+		<div class="block">                        
+			<label for="discription_list" class="bl_txt"><span class="req_hid">*</span>{% trans "Описание" %}:</label>
+			<div class="bl_enter"><textarea class="textarea{% if errors.discription %} error_border{% endif %}" name="discription" id="discription_list" maxlength="512">{% if list.discription %}{% trans list.discription %}{% endif %}</textarea></div>
+		</div>
+	</div>                
+	<div class="bl_param">
+		{% if errors.type %}<div class="bl_error">{% trans  errors.type  %}</div>{% endif %}
+		{% if list %}
+			<input type="hidden" name="type" value="{{ list.type.id }}" />
+		{% endif %}
+		<div class="bl_error"></div>
+		<div class="block">
+			<label for="type_list" class="bl_txt"><span class="req_hid">*</span>{% trans "Тип" %}:</label>
+			<div class="bl_enter"><select name="type" id="type_list" class="select{% if errors.type %} error_border{% endif %}"{% if list %}disabled="true"{% endif %}>
+				{% for type in all_types %}
+					<option value="{{ type.id }}"{% if type.id == list.type.id %} selected="selected" {% endif %}>{% trans  type.name|stringformat:"s" %}</option>
+				{% endfor %}
+			</select></div>
+		</div>
+	</div>
+	<div class="bl_param">
+		{% if errors.level %}<div class="bl_error">{% trans  errors.level  %}</div>{% endif %}
+		<div class="bl_error"></div>
+		<div class="block">                        
+			<label for="level_list" class="bl_txt"><span class="req_hid">*</span>{% trans "Уровень угрозы" %}:</label>
+			<div class="bl_enter"><input type="text" name="level" id="level_list" value="{% if list.level %}{% trans list.level %}{% endif %}" class="inp_txt{% if errors.level %} error_border{% endif %}" maxlength="64" /></div>
+		</div>
+	</div>
+	<div class="block bl_btn">
+		<input type="submit" name="{{ action }}" value="{% if list %}{% trans "Сохранить" %}{% else %}{% trans "Добавить" %}{% endif %}" class="inp_btn btn_blue" />
+		<a href="/lists/" class="link_btn">{% trans "Отменить" %}</a>
+	</div>
+</form>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% load i18n %}
+{% load templatetags %}
+{% if journals_count > 0 %}
+	{% if all_users == 0 %}	
+		<div class="message_action dist_top">{% trans "Не найдены записи, соответствующие заданным условиям поиска" %}.</div>
+	{% else %}
+		<input type="hidden" id="all_data_journal_i" value="{{ journals_count }}" />
+		<input type="hidden" id="all_ident_data_journal_i" value="{{ journals_ident_count }}" />
+		<input type="hidden" id="search_data_journal_i" value="{{ all_users }}" />
+		<input type="hidden" id="search_ident_data_journal_i" value="{{ all_ident_users }}" />	
+		{% if allpages > 1 %}
+			{% include "po4NavigationBlock.html" %}
+		{% endif %}
+		<div class="cont_table">
+			<table cellpadding="0px" cellspacing="0px" class="table">
+				<tr>
+					<th class="first"><a href="?start={{start}}&sorto=1&up={% if sorto == 1 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if description %}&description={{description}}{% endif %}{% if type %}&type={{type}}{% endif %}{% if time_check %}&hour_beg={{timeBegin.hour}}&min_beg={{timeBegin.minute}}&hour_end={{timeEnd.hour}}&min_end={{timeEnd.minute}}{% endif %}{% if id_record %}&id_record={{id_record}}{% endif %}{% if cameras %}&cameras={{cameras}}{% endif %}" class="btn_arrow {% if sorto == 1 and up == 1  %}up{% else %}down{% endif %}">ID</a></th>
+					<th><a href="?start={{start}}&sorto=2&up={% if sorto == 2 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if description %}&description={{description}}{% endif %}{% if type %}&type={{type}}{% endif %}{% if time_check %}&hour_beg={{timeBegin.hour}}&min_beg={{timeBegin.minute}}&hour_end={{timeEnd.hour}}&min_end={{timeEnd.minute}}{% endif %}{% if id_record %}&id_record={{id_record}}{% endif %}{% if cameras %}&cameras={{cameras}}{% endif %}" class="btn_arrow {% if sorto == 2 and up == 1  %}up{% else %}down{% endif %}">{% trans "Дата" %}</a></th>
+					<th><a href="?start={{start}}&sorto=3&up={% if sorto == 3 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if description %}&description={{description}}{% endif %}{% if type %}&type={{type}}{% endif %}{% if time_check %}&hour_beg={{timeBegin.hour}}&min_beg={{timeBegin.minute}}&hour_end={{timeEnd.hour}}&min_end={{timeEnd.minute}}{% endif %}{% if id_record %}&id_record={{id_record}}{% endif %}{% if cameras %}&cameras={{cameras}}{% endif %}" class="btn_arrow {% if sorto == 3 and up == 1  %}up{% else %}down{% endif %}">{% trans "Время" %}</a></th>
+					<!-- <th><a href="#" class="btn_arrow down">Идентификатор</a></th> -->
+					<th class="th_event">{% trans "Фото" %}</th>
+					<th><a href="?start={{start}}&sorto=5&up={% if sorto == 5 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if description %}&description={{description}}{% endif %}{% if type %}&type={{type}}{% endif %}{% if time_check %}&hour_beg={{timeBegin.hour}}&min_beg={{timeBegin.minute}}&hour_end={{timeEnd.hour}}&min_end={{timeEnd.minute}}{% endif %}{% if id_record %}&id_record={{id_record}}{% endif %}{% if cameras %}&cameras={{cameras}}{% endif %}" class="btn_arrow {% if sorto == 5 and up == 1  %}up{% else %}down{% endif %}">{% trans "Камера" %}</a></th>
+					<th><a href="?start={{start}}&sorto=6&up={% if sorto == 6 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if description %}&description={{description}}{% endif %}{% if type %}&type={{type}}{% endif %}{% if time_check %}&hour_beg={{timeBegin.hour}}&min_beg={{timeBegin.minute}}&hour_end={{timeEnd.hour}}&min_end={{timeEnd.minute}}{% endif %}{% if id_record %}&id_record={{id_record}}{% endif %}{% if cameras %}&cameras={{cameras}}{% endif %}" class="btn_arrow {% if sorto == 6 and up == 1  %}up{% else %}down{% endif %}">{% trans "Тип" %}</a></th>
+				</tr>
+				{% for journal in users %}
+				<tr {% cycle '' 'class="odd"' %}>
+					<td class="first td_id"><span>{{ journal.pk }}</span></td>
+					<td class="td_date">{{ journal.dt_detect|date:"d.m.Y" }}</td>
+					<td class="td_date">{{ journal.dt_detect|date:"H:i:s" }}</td>
+					<td class="td_event">
+						<div class="photo">
+							{% if journal.preview %}<a href="#" onClick="javascript: showVideoAnaliticsPhoto('photo{{ forloop.counter }}', '{% url get_original_image journal.pk %}', '{{ journal.camera.display_name|truncchar:40 }}', '{{ journal.camera.display_name }}', '{{ journal.pk }}');  return false;" ><img src="{% url get_preview_image journal.pk %}" height="40" alt="" /></a>{% endif %}{% ifequal journal.detector_type.dtype 'background' %}<a href="#" onClick="javascript: showVideoAnaliticsPhoto('photo{{ forloop.counter }}', '{% url get_original_image journal.pk %}, '{{ journal.camera.display_name|truncchar:40 }}', '{{ journal.camera.display_name }}', '{{ journal.pk }}'); return false;"><img src="{% url get_original_image journal.pk %}" height="40" alt="" /></a>{% endifequal %}
+							{% if journal.frame %}<input type="button" title="{% trans "Просмотреть кадр" %}" name="" id="photo{{ forloop.counter }}" value="" class="btn_loupe short_descr" onClick="javascript: showVideoAnaliticsPhoto('photo{{ forloop.counter }}', '{% url get_original_image journal.pk %}','{{ journal.camera.display_name|truncchar:40 }}', '{{ journal.camera.display_name }}', '{{ journal.pk }}');" />{% endif %}
+						</div>                                
+					</td>
+					<td class="td_camera short_descr" title="{{ journal.camera.full_name }}">{{ journal.camera.display_name|truncchar:64 }}</td>
+					<td class="td_type">{% if journal.detector_type.name %}{% trans journal.detector_type.name|stringformat:"s" %}{% else %}&nbsp;{% endif %}</td>
+				</tr>
+				{% endfor %} 
+			</table>
+		</div>
+		{% if allpages > 1 %}{% include "po4NavigationBlock.html" %}{% endif %}
+		<script type="text/javascript">$("#journal_rows_count").html("{{ journals_count }}")</script>
+	{% endif %}
+{% endif %}
+{% if space %}<input type="hidden" value="{{ space }}" name="" id="info_space" />{% endif %}
+	

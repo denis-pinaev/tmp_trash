@@ -1,0 +1,22 @@
+{% load i18n %}
+{% load a_templatetags %}
+<!-- BEGIN: footer -->
+<div class="footer">
+	<div class="foot_menu_ver">
+		<div class="version">{% trans "Версия" %}: {{ version }}</div>
+		<ul class="bottom_menu">
+			<li><a {% if select_page == "page_calendar" or select_page == "page_tables_video" or select_page == "page_video" or select_page == "page_view_video" %}class="act first" {% else %}class="first" {% endif %}href="{% url archive_page "calendar" %}">{% trans "Архив" %}</a></li>
+			<li><a {% if select_page == "page_records" or select_page == "page_tasks" %}class="act" {% endif %}href="{% url archive_page "records" %}">{% trans "Планировщик" %}</a></li>
+			<li><a href="{% url archive_page "analysis" %}"{% if select_page == 'page_analysis' %} class="act"{% endif %}>{% trans "Анализ видео" %}</a></li>
+			<li><a {% if select_page == "page_journal" %}class="act" {% endif %}href="{% url archive_page "journal" %}">{% trans "Журнал" %}</a></li>	
+			{% if not root_path %}<li><a {% if 'archive_settings' in select_page or select_page == "page_users" or select_page == "page_user" or select_page == "page_cameras" or select_page == "page_communicators" or select_page == "page_interface" %}class="act" {% endif %}href="{% url archive_settings_archive "" %}">{% trans "Настройки" %}</a></li>{% else %}<li><a {% if 'archive_settings' in select_page or select_page == "page_users" or select_page == "page_user" or select_page == "page_cameras" or select_page == "page_communicators" or select_page == "page_interface" %}class="act" {% endif %}href="{% url archive_settings_archive "" %}">{% trans "Настройки" %}</a></li>{% endif %}
+			<li><a {% if select_page == "page_monitor" %}class="act" {% endif %}href="{% url archive_page "monitor" %}">{% trans "Мониторинг" %}</a></li>				
+			<li><a {% if select_page == "page_help" %}class="act last" {% else %}class="last" {% endif %}href="{% url archive_page "help" %}">{% trans "Помощь" %}</a></li>
+		</ul>
+	</div>
+	{% include "a_footer_contacts.html" %}
+</div>
+<!-- END: footer -->
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% include "window_help.html" %}
+{% include "monitoring_checkmessage.html" %}

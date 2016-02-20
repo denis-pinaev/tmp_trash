@@ -1,0 +1,69 @@
+{% extends "wizard_base.html" %}
+{% load i18n %}
+{% load templatetags %}
+{% block wizard_content %}
+<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/tooltip/easyTooltip.js?v=v{{ version }}"></script>
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+{% include "javascript.html" %} 
+{% include "js/js_wizard.html" %}
+<script type="text/javascript">  
+$(function() {
+    $("#add_server").click(function() {
+        addVideoarchive();
+        return false;        
+    });
+    $(".link_head").click(function() {
+        headLinkWizard($(this));
+    });
+    $(".btn_delete").click(function() {
+        deleteServer($(this));
+    });
+    $(".list_servers li:first").css("marginTop", "0px");
+    $(".list_servers li .info .bl_enter input[type=text]").bind("change keyup", function() {
+        if ($(this).val() != "") {
+            $("#error_list_servers").html("");
+        }
+    });
+    initTooltip();
+});
+</script>
+
+<div class="step"><strong>{% trans "Шаг 5 из" %} <span id="step_end">5</span>.</strong></div>
+<div class="message_action dist_top">{% trans 'Введите настройки вручную и нажмите на кнопку' %} <strong>{% trans "Далее" %}</strong>.</div>
+<div class="dist_top">{% trans 'Поля, отмеченные звездочкой' %} (<span class="req">*</span>), {% trans 'являются обязательными для заполнения' %}.</div>
+<form method="post" action="" class="dist_top"  id="ImportParamsForm" enctype="multipart/form-data">
+    <div id="block_list_servers">
+        <input class="inp_check" name="settings" type="radio" id="archive" value="block_list_videoarchive" style="display: none;"{% if videoarchives and videoarchives|length > 0 %} checked="checked"{% endif %} />
+        <span class="info_important" id="error_list_servers" /></span>
+        <ul class="list_servers">
+        {% for archive in videoarchives %}
+                <li><div class="head"><span>{{ forloop.counter }}.</span><a href="#" class="link_head">{% trans "Видеоархив" %} {{ forloop.counter }}</a><input type="button" name="" value="" class="btn_delete short_descr" title="{% trans "Удалить" %} '{% trans "Сервер" %} {{ forloop.counter }}' {% trans "из настроек" %}" /></div>
+                    <div class="info">                        		
+                        <div class="frm">
+                            <label for="ip_server{{ forloop.counter }}" class="bl_txt"><span class="req">*</span>{% trans "IP-адрес" %}:</label>
+                            <div class="bl_enter">                
+                                <input type="text" name="ip_server{{ forloop.counter }}" value="{{ archive.ip }}" class="inp_txt" id="ip_server{{ forloop.counter }}" />                            
+                            </div>
+                        </div> 
+                        <div class="frm">
+                            <label for="ip_server{{ forloop.counter }}" class="bl_txt"><span class="req">*</span>{% trans "Url" %}:</label>
+                            <div class="bl_enter">                
+                                <input type="text" name="url_server{{ forloop.counter }}" value="{{ archive.url|default:"/files/archive/" }}" class="inp_txt" id="url_server{{ forloop.counter }}" />                            
+                            </div>
+                        </div>			
+                    </div>
+                </li>
+        {% endfor %}
+        </ul>
+        <div class="frm"><a href="#" class="blue" id="add_server">{% trans "Добавить видеоархив" %}</a></div>
+    </div>
+    <div class="frm_btn">
+        <input type="hidden" name="save_balancer" value="" />
+        <input type="hidden" name="count_servers" value="{{ videoarchives|length }}" id="count_servers"/>
+        <input type="hidden" name="action" value="next" id="inp_action" />
+        <input type="button" name="" value="{% trans "Назад" %}" class="inp_btn inp_btn90" onClick="javascript: document.location='/wizard/balancer/';" /> <!-- javascript: history.go(-1); -->
+        <input type="button" name="" value="{% trans "Далее" %}" class="inp_btn btn_blue dist_left" onClick="javascript: checkVideoarchiveForm();" />
+    </div>
+</form>
+{% endblock wizard_content %}

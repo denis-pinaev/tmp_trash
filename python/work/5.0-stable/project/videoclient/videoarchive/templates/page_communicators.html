@@ -1,0 +1,55 @@
+{% load i18n %}
+{% load a_templatetags %}
+{% include "a_header.html" %}
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/communicators.css?v=v{{ version }}" />
+{% include "js/js_communicators.html" %}
+<!-- BEGIN: content-->
+<div class="content">
+    <div class="block_cont">
+        <div class="block_cont_top">
+            <div class="block_cont_bottom min_height">
+                <h2>{% trans "Коммуникаторы" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+                <div>{% trans "Всего коммуникаторов" %}: <span class="info_important">4</span></div>
+                <div class="frm_block">
+                    <input type="button" name="" class="inp_btn btn_add" value="{% trans "Добавить коммуникатор" %}" onClick="javascript: addCommunicator();" />
+                </div>    
+                <table cellpadding="0px" cellspacing="0px" border="0px" class="table">
+                    <tr>
+                        <th class="first th_check"><a href="#">№<a></th>
+                        <th class="th_info"><a href="#">IP</a></th>
+                        <th class="th_info"><a href="#">{% trans "Тип" %}</a></th>                        
+                        <th>{% trans "Название" %}</th>
+                    </tr>
+                    <tr>
+                        <td class="first">1.</td>
+                        <td>192.168.0.13</td>
+                        <td>AV2100</td>
+                        <td class="td_camera" id="object1"><input type="button" class="inp_edit" name="" value="" title="{% trans "Редактировать название камеры" %}" onClick="javascript: editName('object_name1', 1);" /><span id="object_name1" onClick="javascript: editName(this, 1);">name</span></td>
+                    </tr>
+                    <tr class="odd">
+                        <td class="first">2.</td>
+                        <td>192.168.0.13</td>
+                        <td>AV2100</td>                        
+                        <td class="td_camera" id="object2"><input type="button" class="inp_edit" name="" value="" title="{% trans "Редактировать название камеры" %}" onClick="javascript: editName('object_name2', 2);" /><span id="object_name2" onClick="javascript: editName(this, 2);">name</span></td>
+                    </tr>
+                    <tr>
+                        <td class="first">3.</td>
+                        <td>192.168.0.13</td>
+                        <td>AV2100</td>                        
+                        <td class="td_camera" id="object3"><input type="button" class="inp_edit" name="" value="" title="{% trans "Редактировать название камеры" %}" onClick="javascript: editName('object_name3', 3);" /><span id="object_name3" onClick="javascript: editName(this, 3);">name</span></td>
+                    </tr>
+                </table>
+                <div class="frm_block">
+                    <input type="button" name="" class="inp_btn btn_add" value="{% trans "Добавить коммуникатор" %}" onClick="javascript: addCommunicator();" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+{% include "a_footer.html" %}
+{% include "window_communicators.html" %}
+</body>
+</html>

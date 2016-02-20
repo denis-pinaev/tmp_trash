@@ -1,0 +1,77 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+// chooseLang
+function byId(node) {
+	return typeof node == 'string' ? document.getElementById(node) : node;
+}
+
+function chooseLang(id) {
+	var lang = readCookie('django_language');
+	var elem = byId(id);
+	if (!lang || lang == 'ru'){
+		elem.innerHTML = 'RU';
+		elem.style.backgroundImage = "url('/files/images/lang_ru.gif')";
+		elem.style.backgroundPosition = "0px 5px";
+	} else if (lang == 'en'){
+		elem.innerHTML = 'EN';
+		elem.style.backgroundImage = "url('/files/images/lang_en2.gif')";
+		elem.style.backgroundPosition = "0px 4px";
+	}
+}
+function readCookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0;i < ca.length;i++) {
+	var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
+}
+function setCookie(name,value,days) {
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime()+(days*24*60*60*1000));
+		var expires = "; expires="+date.toGMTString();
+	}
+	else var expires = "";
+	document.cookie = name+"="+value+expires+"; path=/";
+}
+
+//checkJournal
+function checkJournal(){
+	if ({{ show_ident_window|default:1 }} == 0) {
+		return false;
+	}
+	$.ajax({
+		type: "GET",
+		url: "/checkjournal",
+		data: {},
+		success: function(msg){
+			obj = msg;
+			if  (obj && obj.status){
+				//createInfoWindow({distX: 10, width: 700, height: 600, elem: document.getElementById('divlang'), id: 'win_journal', txt: msg});
+				windowJournal({id: 'win_journal', css: {width: '600px', height: '600px'}, txt:obj.content, pos: '{{ ident_window_position|default_if_none:1 }}'}); //
+				if (byId('event')){
+				if (byId('event').value) { 
+					addFlashSound(byId('event').value);
+				}}
+				delayCheckJournal();
+			} else {
+				setTimeout('checkJournal()', 3000);
+			}
+		},
+		error: function(msg){
+			setTimeout('checkJournal()', 3000);
+		}
+	});
+}
+function delayCheckJournal() {
+	if (document.getElementById('win_journal').style.display == 'none') {
+		checkJournal();
+	} else {
+		setTimeout('delayCheckJournal()', 1000);
+	}
+}
+</script>

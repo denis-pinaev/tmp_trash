@@ -1,0 +1,104 @@
+{% load i18n %}
+{% load templatetags %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+<script type="text/javascript">
+	function deleteAll(){
+		showIndicator(true);
+		$.ajax({
+			type: "POST",
+			url: "/delete_all/",
+			data: {},
+			success: function(msg){
+				closeChangeWindow('win_zeroing');
+				setTimeout('location.reload(true)', 1000);
+			}
+		});
+	}
+	function del(persons) {
+		showIndicator(true);
+		$.ajax({
+			type: "POST",
+			url: "/delete_person/",
+			data: {persons: persons},
+			success: function(msg){
+				closeChangeWindow('win_del');
+				setTimeout('location.reload(true)', 1000);
+			}
+		});
+	}
+	function renamePerson() {
+		closeChangeWindow('win_editname');
+		showIndicator(true);
+		$.ajax({
+			type: "POST",
+			url: "/rename_person/",
+			data: {oldName: document.getElementById('oldname_person').value, newName: document.getElementById('newname_person').value},
+			success: function(msg){
+				if(msg != 'True'){
+					showIndicator(false);
+					showMessage('{% trans "Имя персоны не изменено." %}');
+				} else {
+					setTimeout('location.reload(true)', 1000);
+				}
+			}
+		});
+	}
+</script>
+
+<div id="win_del" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_del');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Удаление" %}</div>
+		</div>
+		<div class="contWF" id="win_del_contWF">&nbsp;</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Назад" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_del');" />	
+			<input type="button" name="" value="{% trans "Далее" %}" class="btn_wf_blue" onClick="
+				javascript: del(clickDelete({{out|length}}));"/>	
+		</div>
+	</div>
+</div>
+<div id="win_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF" id="win_mess_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />	
+		</div>
+	</div>
+</div>
+<div id="win_zeroing" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_zeroing');" /></div>
+			<div class="headWF_txt">{% trans "Обнуление базы" %}</div>
+		</div>
+		<div class="contWF" id="win_zeroing_contWF">&nbsp;</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Назад" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_zeroing');" />
+			<input type="button" name="" value="{% trans "Далее" %}" class="btn_wf_blue" onClick="
+				javascript: deleteAll();" />	
+		</div>
+	</div>
+</div>
+<div id="win_editname" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_editname');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Редактирование имени персоны" %}</div>
+		</div>
+		<div class="contWF" id="win_editname_contWF"><input type="hidden" name="" value="" id="oldname_person"><div class="bl_edit_name">{% trans "Имя" %}: <input type="text" name="" value="" id="newname_person" class="inp_txt" style="width: 200px;" /></div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Назад" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_editname');" />	
+			<input type="button" name="" value="{% trans "Изменить" %}" class="btn_wf_blue" onClick="javascript: renamePerson();" />	
+		</div>
+	</div>
+</div>
+<div class="indicator" id="indicator" style="display: none;">
+	<img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+	<div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>

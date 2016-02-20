@@ -1,0 +1,66 @@
+﻿.btn_blue {
+    color: #ffffff;
+    width: 90px;
+    background: url("/files/images/btn_blue_90.png") top left no-repeat;
+}
+.block_form {
+    margin-bottom: 10px;
+    width: 100%;
+    overflow: hidden;
+}
+.block_req span {
+    color: #ff0000;
+}
+.head_setting {
+    font-weight: bold;
+    margin: 5px 0px;
+}
+.bl_info_all {
+    width: 400px;
+    float: left;
+    overflow: hidden;
+    margin-right: 10px;
+}
+.bl_param {
+    margin-top: 10px;
+}
+.bl_param .bl_txt {
+    float: left;
+    width: 135px;
+    margin-right: 10px;
+}
+.bl_param .bl_enter {
+    margin-left: 145px;
+}
+.bl_param .bl_enter .inp_txt {
+    width: 200px;
+}
+.bl_param .bl_enter .select {
+    width: 206px;
+}
+.bl_param .bl_enter .bl_help {
+    margin-left: 10px;
+}
+.req {
+    color: #ff0000;
+    font-weight: bold;
+}
+.req_hid {
+    font-weight: bold;
+    visibility: hidden;
+}
+.bl_btn {
+    margin-top: 10px; 
+}
+.bl_btn .btn_blue,
+.bl_btn .link_btn_cancel {
+    float: left;
+    margin-right: 10px;
+}
+.bl_error {
+    color: #ff0000;
+    margin-left: 145px;
+}
+.inp_txt.err_forms {
+    border-color: #ff0000;
+}

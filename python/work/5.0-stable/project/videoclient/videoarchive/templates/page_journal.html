@@ -1,0 +1,75 @@
+{% extends "base_archive_notab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Журнал процессов' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/journal.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/spinbox.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+$(function() {
+	initTooltip();
+});
+</script>
+{% endblock %}
+{% block subcontent %}
+	<h2>{% trans "Журнал процессов" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Видеоархив Журнал процессов' %}');" /></h2>
+	{% include "current_time.html" %}				
+	<form method="get" action="" id="main_form">
+		<input type="hidden" name="sort" value="{{ sort|default:0 }}" id="id_sort">
+		<input type="hidden" name="order" value="{{ order|default:0 }}" id="id_order">
+		<div class="frm_block">
+			{% trans "Общее количество записей" %}: <span class="info_important">{{ all_processes }}</span>
+		</div>
+		{% if all_processes > 0 %}
+			<div class="frm_block filter">
+				{% include "navigation/light_top.html" %}					
+			</div>
+			{% include "navigation/main.html" %}				
+			<table cellpadding="0px" cellspacing="0px" border="0px" class="table">
+				<tr>
+					<th rowspan="2" class="first th_check">ID</th>
+					<th colspan="2" class="th_time"><a href="#" onclick="sort_journal(1, {% if sort == 1 %}{{ order }}{% else %}0{% endif %});" {% if sort == 1 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Начало" %}</a></th>
+					<th colspan="2" class="th_time"><a href="#" onclick="sort_journal(2, {% if sort == 2 %}{{ order }}{% else %}0{% endif %});" {% if sort == 2 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Окончание" %}</a></th>
+					<th rowspan="2"><a href="#" onclick="sort_journal(6, {% if sort == 6 %}{{ order }}{% else %}0{% endif %});" {% if sort == 6 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Задача" %}</a></th>								
+					<th rowspan="2"><a href="#" onclick="sort_journal(3, {% if sort == 3 %}{{ order }}{% else %}0{% endif %});" {% if sort == 3 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Источник" %}</a></th>
+					<th rowspan="2"><a href="#" onclick="sort_journal(4, {% if sort == 4 %}{{ order }}{% else %}0{% endif %});" {% if sort == 4 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Запуск задачи" %}</a></th>
+					<th rowspan="2" class="th_count"><a href="#" onclick="sort_journal(5, {% if sort == 5 %}{{ order }}{% else %}0{% endif %});" {% if sort == 5 and order == 1%}class="btn_arrow up"{% endif %}>{% trans "Количество видеороликов" %}</a></th>
+					<th rowspan="2">{% trans "Статус" %}</th>
+				</tr>
+				<tr>
+					<th class="th_time">{% trans "Дата" %}</th>
+					<th class="th_time">{% trans "Время" %}</th>
+					<th class="th_time">{% trans "Дата" %}</th>
+					<th class="th_time">{% trans "Время" %}</th>                                                                                 
+				</tr>		                    
+				{% for process in processes %}
+					<tr class="{% cycle "" "odd" %}" onMouseOver="javascript: overRow(this);" onMouseOut="javascript: outRow(this);">
+						<td class="first">{{ process.id }}</td>
+						<td>{{ process.tm_start|date:"d.m.Y" }}</td>
+						<td>{{ process.tm_start|time:"H:i:s" }}</td>
+						<td>{{ process.tm_stop|date:"d.m.Y" }}</td>
+						<td>{{ process.tm_stop|time:"H:i:s" }}</td>
+						<td{% if process.task_name %} class="short_descr" title="{{ process.task_name }}"{% endif %}>{% if process.task_name %}{% if res_interface == 1 or res_interface == "1" %}{{ process.task_name|truncchar:56 }}{% else %}{{ process.task_name|truncchar:32 }}{% endif %}{% else %}&nbsp;{% endif %}</td>																		
+						<td><a href="{% url archive_page "video" %}/?source={{process.id_camera.id}}" class="short_descr" title='{% trans "Все видеоролики источника" %} "{% if process.id_camera.name %}{{ process.id_camera.name }} ({{ process.id_camera.ip }} {{ process.id_camera.type }}){% else %}{{ process.id_camera.ip }} {{ process.id_camera.type }}{% endif %}"'>{% if res_interface == 1 or res_interface == "1" %}{% if process.id_camera.name %}{{ process.id_camera.name|truncchar:56 }}{% else %}{{ process.id_camera.ip|truncchar:50 }} {{ process.id_camera.type }}{% endif %}{% else %}{% if process.id_camera.name %}{{ process.id_camera.name|truncchar:32 }}{% else %}{{ process.id_camera.ip|truncchar:26 }} {{ process.id_camera.type }}{% endif %}{% endif %}</a></td>
+						<td>{% if process.signal_name %}{% trans process.signal_name %}{% else %}&nbsp;{% endif %}</td>								
+						<td class="td_count">
+							{% comment %}
+								Запрос #4352. Раскомментировать после выполнения позроса Ошибка #5376.
+								{% if process.record_count > 0 %}<div class="record short_descr" title="{% trans "Сейчас идёт запись видеоролика" %}"></div>{% endif %}
+							{% endcomment %}
+							<a href="{% url archive_page "video" %}/?cr={{ process.id }}" class="short_descr" title="{% trans "Перейти к видеороликам" %}">{{ process.roller_count }}</a>
+						</td>
+						<td>
+							{% if process.state == "0" %}{% trans "Идет запись" %}{% else %}
+							{% if process.state == "1" %}{% trans "Ожидание сигнала" %}{% else %}
+							{% if process.state == "2" %}{% trans "Ожидание старта" %}{% else %}
+							{% if process.state == "3" %}{% trans "Инициализация " %}{% else %}
+							{% trans "Процесс остановлен" %} 
+							{% endif %}{% endif %}{% endif %}{% endif %}
+						</td>						
+					</tr>
+				{% endfor %}
+			</table>
+			{% include "navigation/main_buttom.html" %}
+		{% endif %}
+	</form>
+{% endblock %}

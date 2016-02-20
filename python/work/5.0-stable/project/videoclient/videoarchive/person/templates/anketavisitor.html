@@ -1,0 +1,24 @@
+{% include "header.html" %}
+
+{% load a_templatetags %}
+<script src="/files/js/lib/jquery.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/lib/jquery.form.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/lib/jquery.validate.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript" src="/files/js/datePick.js?v=v{{ version }}"></script>
+{% include "datepicker_translate.html" %}
+<script src="/files/js/person/JavaScriptUtil.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/person/Parsers.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/person/InputMask.js?v=v{{ version }}" type="text/javascript"></script>
+<link href="/files/css/person/anketaperson.css?v=v{{ version }}" type="text/css" rel="stylesheet">
+
+{% include "anketavisitor_content.html" %}
+</div>
+
+{% include "footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+{% include "window_help.html" %}
+
+</body>
+</html>

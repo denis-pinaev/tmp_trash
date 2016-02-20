@@ -1,0 +1,662 @@
+{% load i18n %}
+{% load a_templatetags %}
+<script type="text/javascript">
+var params=[];
+function showSearch(elem, id_block) {
+	var search = $("#" + id_block);
+	if (search.css("display") == 'none') {
+		search.show();
+		$(elem).addClass('link_search_bottom');
+		$(elem).html('{% trans "Закрыть расширенный поиск" %}');
+	} else {
+		search.hide();
+		$(elem).removeClass('link_search_bottom');
+		$(elem).html('{% trans "Расширенный поиск" %}');
+	}
+}
+
+function del(rollers) {
+	closeChangeWindow('win_del');
+    showIndicator(true);
+    $.ajax({
+        type: "POST",
+        url: "{{ root_path }}/command/delete_rollers/",
+        data: {rollers: rollers},
+        success: function(msg){
+			showIndicator(false);
+            setTimeout('location.reload(true)', 1000);
+        },
+        error: function(msg){
+            setTimeout('location.reload(true)', 1000);
+        }
+    });
+}
+function deleteAllRollers() {
+	closeChangeWindow('win_all_del');
+	showIndicator(true);
+	//var options = {
+	$.ajax({
+		type: "GET",
+		url: "{{ root_path }}/command/delete_all_rollers/"+location.search,	  
+		success: function(msg) {
+			showIndicator(false);
+			if (msg && msg.status){
+				showMessage("{% trans "Видео успешно удалено" %}.");
+				setTimeout('location.reload(true)', 1000);
+			}else{
+				showMessage("{% trans "Ошибка удаления видео" %}.");
+			}
+		},
+		error: function(msg) {
+			showIndicator(false);
+			showMessage("{% trans "Ошибка удаления видео" %}.");
+		}
+	});
+	//$("#main_form").ajaxSubmit(options);
+}
+{% comment %}
+function deleteAllRollers() {
+    showIndicator(true);
+    $.ajax({
+        type: "POST",
+        url: "{{ root_path }}/command/delete_all_rollers/?{{ request_params }}",
+        data: {},
+        success: function(msg){
+            //closeChangeWindow('win_del');
+            setTimeout('location.reload(true)', 1000);
+        },
+        error: function(msg) {
+            setTimeout('location.reload(true)', 1000);
+        }
+    });
+}
+{% endcomment %}
+function getRollerInfo(url){
+
+}
+function finishUpload(obj) {
+	closeChangeWindow('win_import0');
+    if (obj.status) {
+        $.ajax({
+            type: "POST",
+            url: "{% url archive_command "info_roller_import/" %} ",
+            data: {url: obj.url},
+            success: function(msg){
+                if (msg.status){
+                    var info = byId("infoRoller");
+                    info.innerHTML = msg.info;
+                    var path = byId("pathValue");
+                    path.value = obj.url;
+                    $("#resol").val(msg.width+"x"+msg.height);
+                    $("#resol_width").val(msg.width);
+                    $("#resol_height").val(msg.height);
+                    $("#video_width").val(msg.width);
+                    $("#video_height").val(msg.height);
+                    $("#permit").click(function(){$("#check_permit1").attr("checked", "checked");});                    
+                }else{
+                    $("#compression_div").hide();
+                    $("#check_permit").hide();
+                }
+                $("#permit").click(function(){$("#check_permit1").attr("checked", "checked");});
+                $("#permit").change(function(){$("#check_permit1").attr("checked", "checked");});
+                showIndicator(false);
+                importVideo(2);
+            }
+        });        
+    } else {
+        showIndicator(false);
+        showMessage('{% trans 'Ошибка загрузки файла' %}.');
+    }            
+}
+function createContentIframe(id, url) {
+    var iframe = document.getElementById(id);
+    text = '<form method="post" action="'+url+'file/" enctype="multipart/form-data" id="form">'+
+                '<input type="hidden" id="id" name="id" value="" />'+
+                '</form>';
+    iframe.contentWindow.document.body.innerHTML = '';                
+    iframe.contentWindow.document.body.innerHTML = text;
+}
+function initUpload(id, url) {
+    if (document.getElementById(id)) {
+        document.body.removeChild(document.getElementById(id));
+    }
+    var divForUpload = document.createElement("div");
+    document.body.appendChild(divForUpload);
+    divForUpload.id = id;
+    var iframeid = 'iframe' + id;
+    divForUpload.innerHTML = "<iframe id='"+iframeid+"' height=\"0\" width=\"0\" frameborder=\"0\">{% trans 'Ваш браузер не поддерживает плавающие фреймы!' %}</iframe>";
+    setTimeout("createContentIframe('"+iframeid+"', '"+url+"');", 500);
+}
+function FormSubmit(url, command){
+	var options = {	  
+	  type: "POST",
+	  dateType: "text",
+	  url: url+'file/',	  
+	  success: function(msg) {	      
+	      msg = msg.replace(/<\/?[^>]+>/g, '');      
+          obj = eval('('+msg+')');
+          eval(command+"(obj)");
+	  },
+	  error: function(msg) {
+	      msg = msg.replace(/<\/?[^>]+>/g, '');
+          obj = eval("("+msg+")");
+          eval(command+"(obj)");
+	  }
+	};
+	$("#form_import").ajaxSubmit(options);    
+}
+function setNewIdAdnSubmit(url, command) {
+    $.ajax({
+        type: "POST",
+        url: url+"new_id/",
+        data: {},
+        success: function(msg){
+            form = document.getElementById("form_import");
+            form.id.value = msg;
+            FormSubmit(url, command);
+        }, 
+        error: function(msg){
+            return 0;
+        }
+    });
+}
+
+function checkFileUpload(){
+    var file = $("#file_imp").val();
+	if (file == "") {
+		$("#error_file").html("{% trans 'Пожалуйста, выберите файл для импорта.' %}");
+		//$("#error_file").show();
+		return false;
+	}else{
+	    //$("#error_file").hide();
+	    return true;
+	}
+}
+
+function clickUpload() {
+    if (!checkFileUpload()) return False;
+    closeChangeWindow("win_import0");
+    showIndicator(true);
+    submitUpload("divForUpload", byId("file_imp"), '{{ root_path }}/upload/', 'finishUpload');
+}
+function checkUpload(id, command){
+    iframe = document.getElementById(id);
+    if (iframe) {
+        var obj = 0; 
+        try{
+            body = iframe.contentWindow.document.body.childNodes[0];
+            if (body) {
+                obj = eval("("+body.innerHTML+")");
+                if(obj) {
+                    eval(command+"(obj)");
+                } else {
+                    setTimeout("checkUpload('"+id+"','"+command+"')", 500);
+                }
+            }
+        } catch(e){
+            setTimeout("checkUpload('"+id+"','"+command+"')", 500);
+        }
+    } else {
+        setTimeout("checkUpload('"+id+"','"+command+"')", 500);
+    }    
+}
+function submitUpload(id, input, url, command) {  
+    setNewIdAdnSubmit(url, command);
+}
+function importVideo(step) {
+    if (step == 1) {
+        $("#file_imp").val("");
+        $("#error_file").html("");
+        changeWindow({id: 'win_import0', css: {width: '400px', height: '200px'}});
+        addValidateImage();
+    } else if (step == 2) {
+        closeChangeWindow('win_import0');
+        byId("face_det").checked = false;
+        byId("face_rec").checked = false;
+        byId("block_fps_imp").style.display = 'none';
+        byId("convert_yes").checked = 'checked';
+        byId("parameters_convert").style.display = 'block';
+        //byId("new_source").style.display = 'none';
+        byId("otherPeriod_imp").style.display = 'none';
+        setValueDefaultSelect('name_imp');
+        setValueDefaultSelect('time_video_imp');
+        changeWindow({id: 'win_import', css: {width: '600px', height: '475px'}});
+        //getCurrentTime({hour1: 'hour_imp', minute1: 'minute_imp', second1: 'second_imp'});
+        addValidateDate();
+        $("#resol_width").click(function(){$("#check_permit").attr("checked", "checked");});
+        $("#resol_height").click(function(){$("#check_permit").attr("checked", "checked");});
+    }
+}
+function chooseFPS(ids) {
+    var produce = false;
+    for (var i in ids) {
+        if (byId(ids[i]).checked) produce = true;
+    }
+    var block = byId("block_fps_imp");
+    if (produce) {
+        block.style.display = 'block';
+        if (byId("convert_yes").checked) byId('win_import').style.height = '515px'; 
+        else byId('win_import').style.height = '350px';
+    } else {
+        block.style.display = 'none';
+        if (byId("convert_yes").checked) byId('win_import').style.height = '475px'; 
+        else byId('win_import').style.height = '285px';
+    }
+}
+function showParamConvert(show) {
+    if (show) {
+        byId('parameters_convert').style.display = 'block';
+        if (byId("face_det").checked || byId("face_rec").checked) byId('win_import').style.height = '465px';
+        else byId('win_import').style.height = '445px';
+    } else {
+        byId('parameters_convert').style.display = 'none';
+        if (byId("face_det").checked || byId("face_rec").checked) byId('win_import').style.height = '320px';
+        else byId('win_import').style.height = '255px';
+    }
+}
+function showTimeOther(sel, id_block, inline) {
+    var select = byId(sel);
+    var info = getSelectedElem(select);
+    byId(id_block).style.display = 'none';
+    if (select.selectedIndex == (select.options.length - 1)) {
+        if (inline) {
+            byId(id_block).style.display = 'inline';
+        } else {
+            byId(id_block).style.display = 'block';
+        }
+        return info;
+    }
+    return false;
+}
+/* filter */
+function showFilter(elem, show) {
+    var menu = byId("menu_filter");
+    menu.style.display = show ? 'block' : 'none';
+}
+function unselectFilters(id, nodeName) {
+    var count = getCountChilds(id, nodeName);
+    for (var i = 1; i <= count; i++) {
+        byId('filter'+i).className = '';
+    }
+}
+function changeFilter(elem) {
+    var filter = byId('current_filter');
+    var newt = elem.innerHTML;
+    unselectFilters('menu_filter', 'LI');
+    elem.className = 'sel';
+    filter.innerHTML = newt;
+}
+/* save original */
+function saveOriginalVideo(count, name_block) {
+    var txt;
+    var head;
+    var check = isChecked(count);
+    if (check) {
+        txt = createTextMessage({name_block: name_block+"_save", count: check});
+        changeWindow({id: 'win_save_orig', css: {width: '300px', height: '200px'}, txt: txt});
+    } else {
+        txt = createTextMessage({name_block: name_block});
+        changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});
+    }
+}
+
+function clearCR(){
+   cr = $("#cr");
+   if (cr){cr.attr("value", "");}   
+   if(!checkDataFields('mainForm')){return false;}
+   return true;
+}
+function addValidateDate(){
+    if (!validator){
+	$.validator.addMethod("checkTime", function(value, element) {
+	    var hour = parseInt($("#hour_imp").val(), 10);
+	    var minute = parseInt($("#minute_imp").val(), 10);
+	    var sec = parseInt($("#second_imp").val(), 10);
+		if (hour < 24 && minute < 60 && sec < 60) return true;
+		return false;
+	}, "{% trans "Некорректное значение времени" %}" );	
+	$.validator.addMethod("checkDateFormat", function(value, element) {
+		var val = $(element).val();
+		var regexp = /^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})$/;
+		if (regexp.test(val)) return true;
+		return false
+	}, "{% trans 'Некорректный формат даты (ДД.ММ.ГГГГ)' %}" );		
+	$.validator.addMethod("checkDate", function(value, element) {
+		var val = $(element).val();
+		var regexp = /^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})$/;
+		var arr = regexp.exec(val);		
+		if (arr[1] < 32 && arr[1] > 0 && arr[2] < 13 && arr[2] >= 0 && arr[3] > 1900) {		    
+		    var dt = new Date(arr[3], arr[2]-1, arr[1]);		    
+		    if (dt && dt.getDate()==arr[1] && (dt.getMonth()+1)==arr[2] && dt.getFullYear()==arr[3]) return true;
+		}
+		return false;
+	}, "{% trans 'Некорректное значение даты' %}" );    
+    $.validator.addMethod("checkDateVal", function(value, element) {
+        var dt = ($("#date_imp").val()).split(".");
+        if (new Date(dt[2], dt[1]-1, dt[0], 0,0,0)>new Date()){
+            return false;            
+        }
+		return true;
+	}, "{% trans "Введенное значение превышает текущую дату" %}" );	
+	$.validator.addMethod("checkTimeVal", function(value, element) {
+	    var dt = ($("#date_imp").val()).split(".");
+	    var hour = parseInt($("#hour_imp").val(), 10);
+	    var minute = parseInt($("#minute_imp").val(), 10);
+	    var sec = parseInt($("#second_imp").val(), 10);
+	    if (new Date(dt[2], dt[1]-1, dt[0], 0,0,0) < new Date() && new Date(dt[2], dt[1]-1, dt[0]+1, 0,0,0) > new Date())
+	        if (new Date(dt[2], dt[1]-1, dt[0], hour, minute, sec)>new Date())
+                return false;
+		return true;
+	}, "{% trans "Введенное значение превышает текущее время" %}" );
+    var validator = $("#importform").validate({
+		rules: {
+			date_imp: {
+				required: true,
+				checkDateFormat: true,
+				checkDate: true,
+				checkDateVal: true
+			},
+			hour_imp: {
+				required: true,
+				number: true,
+				checkTime: true,
+				checkTimeVal: true
+			},
+			minute_imp: {
+				required: true,
+				number: true,
+				checkTime: true,
+				checkTimeVal: true
+			},
+			second_imp: {
+				required: true,
+				number: true,
+				checkTime: true,
+				checkTimeVal: true
+			},
+			resol_width: {
+				required: true,
+				number: true
+			},
+			resol_height: {
+				required: true,
+				number: true
+			},
+			permit: {
+				required: true,
+				number: true,
+			}	
+		},
+		messages: {
+			date_imp: {
+				required: "{% trans 'Введите значение' %}",
+				checkDateFormat: "{% trans 'Некорректный формат даты (ДД.ММ.ГГГГ)' %}",
+				checkDate: "{% trans 'Некорректное значение даты' %}",
+				checkDateVal: "{% trans 'Введенное значение превышает текущую дату' %}"
+			},
+			hour_imp: {
+				required: "{% trans 'Введите значение' %}",
+				number: "{% trans 'Значение должно содержать только цифры' %}",
+				checkTime: "{% trans 'Некорректное значение времени' %}",
+				checkTimeVal: "{% trans 'Введенное значение превышает текущее время' %}"
+			},
+			minute_imp: {
+				required: "{% trans 'Введите значение' %}",
+				number: "{% trans 'Значение должно содержать только цифры' %}",
+				checkTime: "{% trans 'Некорректное значение времени' %}",
+				checkTimeVal: "{% trans 'Введенное значение превышает текущее время' %}"
+			},
+			second_imp: {
+				required: "{% trans 'Введите значение' %}",
+				number: "{% trans 'Значение должно содержать только цифры' %}",
+				checkTime: "{% trans 'Некорректное значение времени' %}",
+				checkTimeVal: "{% trans 'Введенное значение превышает текущее время' %}"
+			},
+			resol_height: {
+				required: "{% trans 'Введите значение' %}",
+				number: "{% trans 'Значение должно содержать только цифры' %}"
+			},
+			resol_width: {
+				required: "{% trans 'Введите значение' %}",
+				number: "{% trans 'Значение должно содержать только цифры' %}"
+			},
+			permit: {
+				required: "{% trans 'Введите значение' %}",
+				number: "{% trans 'Значение должно содержать только цифры' %}"
+			},
+		},
+		errorPlacement: function(error, element) {		
+			var block_error = false;
+			var id = element.attr("id");
+			if (id == "date_imp"){
+				block_error = $("#error_date_imp");
+			} else if ((id == "minute_imp") || (id == "hour_imp")) {
+			    block_error = $("#error_time_imp");
+			    block_error.html("");
+			} else if ((id == "resol_height") || (id == "resol_width")) {
+			    block_error = $("#error_resol");
+			    block_error.html("");
+			}
+			if (block_error) error.appendTo( block_error ); 
+		},	
+		submitHandler: function() {
+		    calculatePermit();
+			import_video();
+		}
+	});
+	}
+}
+function calculatePermit(){
+    if ($("#check_permit").attr("checked")=="checked"){
+        $("#resol").val($("#resol_width").val()+"x"+$("#resol_height").val());   
+    }else{
+        k = $("#permit").val();
+        $("#resol").val(Math.round($("#video_width").val()/k)+"x"+Math.round($("#video_height").val()/k));
+    }
+}
+function addValidateImage(){
+    var imgvalidator = $("#form_import").validate({
+		rules: {
+            file: {
+                required: true,
+                accept: 'avi|mpe?g|mov|wmv|i?flv|mp4|wma|3gp|m4v|swf|vob|ogg|ogv|wav|mpe|m1v|dat|m2v|divx|vid|qt|rm|rmvb'
+            }	
+		},
+		messages: {
+			file: {
+				required: "{% trans 'Выберите файл для импорта' %}",
+                accept: "{% trans 'Выберите видеофайл' %}"
+			}
+		},
+		errorPlacement: function(error, element) {		
+			var block_error = false;
+			var id = element.attr("id");
+		    block_error = $("#error_file");
+		    block_error.html("");
+			if (block_error) error.appendTo( block_error ); 
+		},	
+		submitHandler: function() {
+			clickUpload();
+		}
+	});
+}
+function clickIntervalLable(){
+    $("#period_dates").attr("checked", "checked");
+	addRulesDates();
+}
+function loadFacesCount(idi){
+    if (!idi) idi = 1;
+    //var inputs  = $(".list_videos li input[type=checkbox]").len();
+    var obj = $("#check"+idi);
+    if (obj.size() == 0) return false;
+    var id = obj.val();
+    if (parseInt(id)){
+    $.ajax({
+            type: "POST",
+            url: "{% url archive_command "get_video_faces_count" %}/"+id,
+            data: {},
+            dataType: "json",
+            success: function(msg){
+                if(msg.status){
+                    if (msg.count_faces > 0){
+                        $("#count_faces"+id).html("<a href='{% url archive_page "video_faces" %}/"+id+"'>{% trans "Найденные лица" %}: "+msg.count_faces+"</a>");
+                    }else{
+                        $("#count_faces"+id).html("{% trans "Найденные лица" %}: "+msg.count_faces);
+                    }
+                    if (msg.count_persons > 0){
+                        $("#count_persons"+id).html("<a href='{% url archive_page "video_persons" %}/"+id+"'>{% trans "Найденные люди" %}: "+msg.count_persons+"</a>");
+                    }else{
+                        $("#count_persons"+id).html("{% trans "Найденные люди" %}: "+msg.count_persons);
+                    }
+                }
+                loadFacesCount(idi+1);
+            }, 
+            error: function(msg){
+                loadFacesCount(idi+1);
+            }
+    });
+    }
+}
+$(function() {
+//	loadFacesCount();
+});
+// проверка формы поиска на валидность
+function checkFormSearch() {
+	$.validator.addMethod("checkDateReq", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) return true;
+		return false;
+	}, "{% trans 'Введите дату' %}" );
+	$.validator.addMethod("checkDateFormat", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			var regexp = /^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})$/;
+			if (regexp.test(val)) return true;
+			return false
+		}
+		return true;
+	}, "{% trans 'Некорректный формат даты (ДД.ММ.ГГГГ)' %}" );		
+	$.validator.addMethod("checkDate", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			if (checkDateValidator(val)) return true;
+			return false;
+		}
+		return true;
+	}, "{% trans 'Некорректное значение даты' %}" );
+	$.validator.addMethod("checkDateRangeReq", function(value, element) {
+		if (!$("#dateBegin").val() && !$("#dateEnd").val()) return false;
+		return true;
+	}, "{% trans 'Введите период' %}" );		
+	$.validator.addMethod("checkDateRange", function(value, element) {
+		var date1 = $("#dateBegin").val();
+		var date2 = $("#dateEnd").val();
+		if (date1 && (date1 != "") && date2 && (date2 != "")) {
+			if (checkDateValidator(date1) && checkDateValidator(date2)) { 
+				var dates = checkDateRangeValidator('dateBegin', 'dateEnd');
+				if (dates[0] <= dates[1]) return true;
+				return false;
+			}
+			return true;
+		}
+		return true;
+	}, "{% trans 'Дата окончания меньше даты начала' %}" );	
+    var validator = $("#mainForm").validate({
+        errorPlacement: function(error, element) {
+            error.appendTo( element.parent().prev() ); 
+        },
+        submitHandler: function() {
+			document.getElementById("mainForm").submit();
+        }        
+    });
+	$("input[name=interval]").click(function() {
+		if ($(this).attr("id") == "always") {
+			removeRulesDates();
+		} else {
+			addRulesDates();
+		}
+	});
+}
+// проверки на валидность
+// проверить дату на корректность
+function checkDateValidator(date) {
+	var regexp = /^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})$/;
+	if (regexp.test(date)) {
+		var arr = regexp.exec(date);
+		if (arr[1] < 32 && arr[1] > 0 && arr[2] < 13 && arr[2] >= 0 && arr[3] > 1900) {		    
+			var dt = new Date(arr[3], arr[2]-1, arr[1]);		    
+			if (dt && dt.getDate()==arr[1] && (dt.getMonth()+1)==arr[2] && dt.getFullYear()==arr[3]) return true;
+		}
+		return false;
+	} 
+	return false;
+}
+// получить строку даты
+function get_DateString(obj) {
+    var br = $.browser;
+	var browserType = navigator.userAgent.toLowerCase();
+    if ((br.mozilla) || (br.safari && browserType.indexOf("chrome") < 0) || (br.opera)) {
+        var str = obj['2'] + '/' + obj['1'] + '/' + obj['0'];
+    } else {
+        var str = obj['1'] + '-' + obj['0'] + '-' + obj['2'];
+    }
+    return str;
+}
+// проверка валидности периода дат
+function checkDateRangeValidator(id_start, id_stop) {
+	var objStart = $("#" + id_start).val().split(".");
+	var objStop = $("#" + id_stop).val().split(".");
+	var strStart = get_DateString(objStart);
+	var strStop = get_DateString(objStop);
+	var intStart = Date.parse(strStart);
+	var intStop = Date.parse(strStop);
+	return [intStart, intStop];
+}
+// добавление правил для периода дат
+function addRulesDates() {
+    $("#dateBegin").rules("add", {
+		checkDateRangeReq: true,
+		checkDateReq: true,
+		checkDateFormat: true,
+		checkDate: true,
+        messages: {
+			checkDateRangeReq: "{% trans 'Укажите период' %}",
+			checkDateReq: "{% trans 'Введите дату начала' %}",
+			checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+			checkDate: "{% trans 'Введено некорректное значение' %}"
+        }
+    });    
+	$("#dateEnd").rules("add", {
+		checkDateRangeReq: true,
+		checkDateReq: true,
+		checkDateFormat: true,
+		checkDate: true,
+		checkDateRange: true,
+        messages: {
+			checkDateRangeReq: "{% trans 'Укажите период' %}",
+			checkDateReq: "{% trans 'Введите дату окончания' %}",	
+			checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+			checkDate: "{% trans 'Введено некорректное значение' %}",
+			checkDateRange: "{% trans 'Указан некорректный период дат' %}"
+        }
+    });
+}
+// удаление правил для периода дат
+function removeRulesDates() {
+	$("#dateBegin").rules("remove");
+	$("#dateEnd").rules("remove");
+}
+// проверка добавить ли правила для дат
+function checkAddRulesDates() {
+	var block = $("#search_ext");
+	if (block.css("display") == "block") {
+		if ($("#period_dates").attr("checked")) {
+			addRulesDates();
+		} else {
+			removeRulesDates();
+		}
+	} else {
+		removeRulesDates()
+	}
+}
+</script>

@@ -1,0 +1,13 @@
+{% load i18n %}
+{% load a_templatetags %}
+						<ul class="list_pages">
+							<li><a {% if page == 1 %}href="#" class="dis" onClick="return false;"{% else %}href="?page={{ page|add:-1 }}{% if per_page %}&per_page={{ per_page }}{% endif %}{% if and_get %}{{ and_get }}{% endif %}{% if sort %}&sort={{sort}}&order={{order}}{% endif %}{% if filter %}&filter={{filter}}{% endif %}"{% endif %}>{% trans "Предыдущая" %}</a></li>
+							{% if start_page > 1 %}<li><a href="?page=1{% if per_page %}&per_page={{ per_page }}{% endif %}{% if and_get %}{{ and_get }}{% endif %}{% if sort %}&sort={{sort}}&order={{order}}{% endif %}{% if filter %}&filter={{filter}}{% endif %}">1</a></li>{% endif %}
+							{% if start_page > 2 %}<li><span>...</span></li>{% endif %}
+							{% for p in pages_list %}
+								<li><a href="?page={{ p }}{% if per_page %}&per_page={{ per_page }}{% endif %}{% if and_get %}{{ and_get }}{% endif %}{% if sort %}&sort={{sort}}&order={{order}}{% endif %}{% if filter %}&filter={{filter}}{% endif %}"{% if page == p %} class="act_page"{% endif %}>{{ p }}</a></li>
+							{% endfor %}
+							{% if finish_page < pages|add:-1 %}<li><span>...</span></li>{% endif %}
+							{% if finish_page < pages %}<li><a href="?page={{ pages }}{% if per_page %}&per_page={{ per_page }}{% endif %}{% if and_get %}{{ and_get }}{% endif %}{% if sort %}&sort={{sort}}&order={{order}}{% endif %}{% if filter %}&filter={{filter}}{% endif %}">{{ pages }}</a></li>{% endif %}
+							<li><a {% if page == pages %}href="#" class="dis" onClick="return false;"{% else %}href="?page={{ page|add:1 }}{% if per_page %}&per_page={{ per_page }}{% endif %}{% if and_get %}{{ and_get }}{% endif %}{% if sort %}&sort={{sort}}&order={{order}}{% endif %}{% if filter %}&filter={{filter}}{% endif %}"{% endif %}>{% trans "Следующая" %}</a></li>
+						</ul>

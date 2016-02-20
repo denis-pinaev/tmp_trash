@@ -1,0 +1,115 @@
+function getNormVector(x1, y1, x2, y2){
+	h_corner_vector = [x2 - x1, y2 - y1];
+	h_corner_vector_length = Math.sqrt(Math.pow (x2 - x1, 2) + Math.pow (y2 - y1, 2));
+	h_corner_vector_norm = [h_corner_vector[0] / h_corner_vector_length, h_corner_vector[1] / h_corner_vector_length];
+	return {'norm_vector': h_corner_vector_norm, 'length_vector': h_corner_vector_length};
+}
+		
+function drawFace(f_data, cur_color) {
+	scale_factor = f_data.scale_factor;
+	var CORNER_LENGTH = 12;
+	
+	//draw horizontal lines
+	if(f_data.top_l.length > 0 && f_data.top_r.length > 0){
+		temp_vector_tl = [f_data.top_l[0], f_data.top_l[1]];
+		vector_info = getNormVector(f_data.top_l[0], f_data.top_l[1], f_data.top_r[0], f_data.top_r[1]);
+		
+		CORNER_LENGTH = (vector_info.length_vector * 12) / 100;
+		
+		for(var i = 0; i < CORNER_LENGTH; i++){
+			temp_vector_tl[0] = temp_vector_tl[0] + vector_info.norm_vector[0];
+			temp_vector_tl[1] = temp_vector_tl[1] + vector_info.norm_vector[1];
+		}
+		svgObjects.line(f_data.top_l[0], f_data.top_l[1], temp_vector_tl[0], temp_vector_tl[1], {stroke: cur_color, strokeWidth: OBJ_LINE_WIDTH});
+		
+		if(f_data.bot_l.length > 0){
+			temp_vector_bl = [f_data.bot_l[0], f_data.bot_l[1]];
+			for(var i = 0; i < CORNER_LENGTH; i++){
+				temp_vector_bl[0] = temp_vector_bl[0] + vector_info.norm_vector[0];
+				temp_vector_bl[1] = temp_vector_bl[1] + vector_info.norm_vector[1];
+			}
+			svgObjects.line(f_data.bot_l[0], f_data.bot_l[1], temp_vector_bl[0], temp_vector_bl[1], {stroke: cur_color, strokeWidth: OBJ_LINE_WIDTH});
+		}
+		
+		temp_vector_tr = [f_data.top_r[0], f_data.top_r[1]];
+		for(var i = 0; i < CORNER_LENGTH; i++){
+			temp_vector_tr[0] = temp_vector_tr[0] - vector_info.norm_vector[0];
+			temp_vector_tr[1] = temp_vector_tr[1] - vector_info.norm_vector[1];
+		}
+		svgObjects.line(f_data.top_r[0], f_data.top_r[1], temp_vector_tr[0], temp_vector_tr[1], {stroke: cur_color, strokeWidth: OBJ_LINE_WIDTH});
+		
+		if(f_data.bot_r.length > 0){
+			temp_vector_br = [f_data.bot_r[0], f_data.bot_r[1]];
+			for(var i = 0; i < CORNER_LENGTH; i++){
+				temp_vector_br[0] = temp_vector_br[0] - vector_info.norm_vector[0];
+				temp_vector_br[1] = temp_vector_br[1] - vector_info.norm_vector[1];
+			}
+			svgObjects.line(f_data.bot_r[0], f_data.bot_r[1], temp_vector_br[0], temp_vector_br[1], {stroke: cur_color, strokeWidth: OBJ_LINE_WIDTH});
+		}	
+	}
+	
+	//draw vertical lines
+	if(f_data.top_l.length > 0 && f_data.bot_l.length > 0){
+		temp_vector_tl = [f_data.top_l[0], f_data.top_l[1]];
+		vector_info = getNormVector(f_data.top_l[0], f_data.top_l[1], f_data.bot_l[0], f_data.bot_l[1]);
+		
+		for(var i = 0; i < CORNER_LENGTH; i++){
+			temp_vector_tl[0] = temp_vector_tl[0] + vector_info.norm_vector[0];
+			temp_vector_tl[1] = temp_vector_tl[1] + vector_info.norm_vector[1];
+		}
+		svgObjects.line(f_data.top_l[0], f_data.top_l[1], temp_vector_tl[0], temp_vector_tl[1], {stroke: cur_color, strokeWidth: OBJ_LINE_WIDTH});
+		
+		if(f_data.top_r.length > 0){
+			temp_vector_tr = [f_data.top_r[0], f_data.top_r[1]];
+			for(var i = 0; i < CORNER_LENGTH; i++){
+				temp_vector_tr[0] = temp_vector_tr[0] + vector_info.norm_vector[0];
+				temp_vector_tr[1] = temp_vector_tr[1] + vector_info.norm_vector[1];
+			}
+			svgObjects.line(f_data.top_r[0], f_data.top_r[1], temp_vector_tr[0], temp_vector_tr[1], {stroke: cur_color, strokeWidth: OBJ_LINE_WIDTH});
+		}
+		
+		temp_vector_bl = [f_data.bot_l[0], f_data.bot_l[1]];
+		for(var i = 0; i < CORNER_LENGTH; i++){
+			temp_vector_bl[0] = temp_vector_bl[0] - vector_info.norm_vector[0];
+			temp_vector_bl[1] = temp_vector_bl[1] - vector_info.norm_vector[1];
+		}
+		svgObjects.line(f_data.bot_l[0], f_data.bot_l[1], temp_vector_bl[0], temp_vector_bl[1], {stroke: cur_color, strokeWidth: OBJ_LINE_WIDTH});
+		
+		if(f_data.bot_r.length > 0){
+			temp_vector_br = [f_data.bot_r[0], f_data.bot_r[1]];
+			for(var i = 0; i < CORNER_LENGTH; i++){
+				temp_vector_br[0] = temp_vector_br[0] - vector_info.norm_vector[0];
+				temp_vector_br[1] = temp_vector_br[1] - vector_info.norm_vector[1];
+			}
+			svgObjects.line(f_data.bot_r[0], f_data.bot_r[1], temp_vector_br[0], temp_vector_br[1], {stroke: cur_color, strokeWidth: OBJ_LINE_WIDTH});
+		}	
+	}
+	
+	var eyes_radius = (CORNER_LENGTH * 30) / 100;
+	
+	if(eyes_radius > 4){
+		eyes_radius = 4;
+	}
+	
+	//рисуем глаза
+	if(f_data.eye1.length > 0)
+	{
+		svgObjects.circle(f_data.eye1[0], f_data.eye1[1], eyes_radius, {stroke: cur_color, strokeWidth: OBJ_LINE_WIDTH, fillOpacity: 0});
+	}
+
+	if(f_data.eye2.length > 0)
+	{
+		svgObjects.circle(f_data.eye2[0], f_data.eye2[1], eyes_radius, {stroke: cur_color, strokeWidth: OBJ_LINE_WIDTH, fillOpacity: 0});
+	}
+
+	if(f_data.chin.length > 0)
+	{
+		svgObjects.circle(f_data.chin[0], f_data.chin[1], eyes_radius, {stroke: cur_color, strokeWidth: OBJ_LINE_WIDTH, fillOpacity: 0});
+	}
+
+	if(f_data.nouse.length > 0)
+	{
+		svgObjects.circle(f_data.nouse[0], f_data.nouse[1], eyes_radius, {stroke: cur_color, strokeWidth: OBJ_LINE_WIDTH, fillOpacity: 0});
+	}
+	return CORNER_LENGTH;
+} 

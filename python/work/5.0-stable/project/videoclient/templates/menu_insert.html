@@ -1,0 +1,89 @@
+{% load i18n %}
+{% load templatetags %}
+<ul class="menu_vkl">
+	<li {% if select_subpage == 'cameras' or select_subpage == 'camera' or select_subpage == 'distortion' or select_page == 'distortion_js' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="{% url communicator_settings %}">{% trans "Камеры" %}</a>
+			</div>
+		</div>
+	</li>
+	<li {% if select_subpage == 'kpp_list' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="{% url kpp_list %}">{% trans "КПП" %}</a>
+			</div>
+		</div>
+	</li>	
+	<li {% if 'turnstiles' in select_page %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="{% url turnstiles_list %}">{% trans "Турникеты" %}</a>
+			</div>
+		</div>
+	</li>	
+	<li {% if select_page == 'users' or select_page == 'anketauser' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="{% url settings_user %}">{% trans "Пользователи" %}</a>
+			</div>
+		</div>
+	</li>	
+	<li {% if select_subpage == 'recognition' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="{% url settings_recognition %}">{% trans "Распознавание" %}</a>
+			</div>
+		</div>
+	</li>	
+    {% if show_videoanalitycs == '1' %}
+    <li {% if select_page == 'settings_vanalytics' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="{% url settings_videoanalytics %}">{% trans "Видеоаналитика" %}</a>
+			</div>
+		</div>
+	</li>
+	{% endif %}	
+	{% if perms.user_perms.perm_system_settings %}
+	<li {% if select_page == 'control_settings_users' or select_page == 'control_settings_settings' or select_page == 'control_settings_default' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="/control_settings/">{% trans "Управляющая система" %}</a>
+			</div>
+		</div>
+	</li>
+	{% endif %}							
+    <li {% if 'integration' in select_page %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="{% url integration %}">{% trans "Интеграция" %}</a>
+			</div>
+		</div>
+	</li>
+	{% comment %}
+	<li {% if 'web_api' in select_page %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="{% url web_api_users %}">{% trans "API" %}</a>
+			</div>
+		</div>
+	</li>	
+	{% endcomment %}
+	<li {% if select_page == 'settings_interface' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="{% url settings_interface %}">{% trans "Интерфейс" %}</a>
+			</div>
+		</div>
+	</li>	
+	{% if perms.user_perms.perm_setup %}
+	<li{% if select_page == 'setup' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="{% url setup %}">{% trans "Администрирование" %}</a>
+			</div>
+		</div>
+	</li>
+	{% endif %}
+</ul>

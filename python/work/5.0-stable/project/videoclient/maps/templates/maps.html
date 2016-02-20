@@ -1,0 +1,136 @@
+{% extends "header.html" %}
+{% load i18n %}
+{% block js %}
+<link rel="stylesheet" type="text/css" href="/files/js/lib/jquery-ui/ui.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/main.css?v=v{{ version }}" />
+{% if res_interface == "1" %}
+	<link rel="stylesheet" type="text/css" href="/files/css/1920/main.css?v=v{{ version }}" />
+{% endif %}
+<link rel="stylesheet" type="text/css" href="/files/css/windows.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/maps.css?v=v{{ version }}" />
+
+<script type="text/javascript" src="/files/js/lib/jquery-1.5.min.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/jquery-ui/jquery-ui-1.8.min.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/contextmenu/jquery.contextmenu.r2.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/tooltip/tooltip.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+var camera_ip = [];
+var camera_host = [];
+var camera_mjpeg_port = [];
+{% for camera in all_cameras %}
+camera_ip[{{ camera.id }}] = "{{ camera.ip }}";
+camera_host[{{ camera.id }}] = "{{ camera.commun.host }}";
+camera_mjpeg_port[{{ camera.id }}] = "{{ camera.commun.mjpeg_port }}";
+{% endfor %}
+function changeMJPEGVideoParams(cam_id, mode, terminal_num){
+	switch(mode){
+		case 1:
+			$("#add_camera_video_img").attr("src", "");
+			$("#add_camera_video_info_message").show();
+			var url =  "http://" + camera_host[cam_id] + ":" + camera_mjpeg_port[cam_id] + "/video?ipcamera=" + camera_ip[cam_id];
+			$("#add_camera_video_img").attr("src", url);
+			$("#add_camera_video_info_message").hide();
+			break
+		case 2:
+			$("#video_info_img").attr("src", "")
+			$("#video_info_message").show();
+			var url =  "http://" + camera_host[cam_id] + ":" + camera_mjpeg_port[cam_id] + "/video?ipcamera=" + camera_ip[cam_id];
+			$("#video_info_img").attr("src", url)
+			$("#video_info_message").hide();
+			break
+		case 3:
+			$("#terminal_camera_video_img_" + terminal_num).attr("src", "");
+			$("#terminal_camera_video_info_message_" + terminal_num).show();
+			var url =  "http://" + camera_host[cam_id] + ":" + camera_mjpeg_port[cam_id] + "/video?ipcamera=" + camera_ip[cam_id];
+			$("#terminal_camera_video_img_" + terminal_num).attr("src", url);
+			$("#terminal_camera_video_info_message_" + terminal_num).hide();
+			break
+	}
+}
+</script> 
+{% load templatetags %}
+{% include "javascript.html" %}
+{% include "js_map.html" %}
+{% endblock %}
+{% block content %}
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>{% trans "Карты" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Карты" %}');" /></h2>
+				{% include "current_time.html" %}
+				{% if map_is_exist %}
+				{% else %}
+				<div class="message_action">{% trans "Карта не существует." %}</div>
+				{% endif %}
+				<form method="post" action="">
+					<div>
+						{% if map_is_exist %}
+						<strong>{% trans "Карта" %}:</strong>
+						<label for="​​city" class="dist_left">{% trans "Город" %}: </label>
+						<select name="" id="map-​​city" class="select sel_map">
+							{% trans  cityChoices  %}
+						</select>
+						<label for="object" class="dist_left">{% trans "Тип объекта" %}: </label>
+						<select name="" id="map-type-object-name" class="select sel_map">
+							{% trans  objTypeChoices  %}
+						</select>						
+						<label for="object" class="dist_left">{% trans "Объект" %}: </label>
+						<select name="" id="map-object-name" class="select sel_map2">
+							{% trans  objNames  %}
+						</select>
+						{% endif %}
+						{% if perms.user_perms.perm_maps_edit %}
+							{% if map_is_exist %}
+								<input type="button" name="" value="{% trans "Добавить карту" %}" class="inp_btn btn140 dist_left" onClick="javascript: addMap(0);" />
+								<input type="button" name="" value="{% trans "Очистить карту" %}" class="inp_btn btn140 dist_left" onClick="javascript: showClearMapDialog('{% trans 'Все терминалы на карте будут удалены. Удалить терминалы?' %}');" />
+							{% else %}
+								<input type="button" name="" value="{% trans "Добавить карту" %}" class="inp_btn btn140" onClick="javascript: addMap(0);" />
+							{% endif %}
+						{% endif %}					
+					</div>
+					{% if map_is_exist %}
+					{% if perms.user_perms.perm_maps_edit %}
+					<div class="dist_top">
+						<input type="button" name="" value="{% trans "Добавить терминал" %}" class="inp_btn btn140" onClick="javascript: addTerminalToMap(0);" />
+						<input type="button" name="" value="{% trans "Добавить камеру" %}" class="inp_btn btn140 dist_left" onClick="javascript: addCameraToTerminal();" />
+						<input type="button" name="" value="{% trans "Сохранить расположение" %}" class="inp_btn btn170 dist_left" onClick="javascript: saveMap();" />
+						<!-- <a href="#" onClick="javascript: flashingTerminal(true); return false;" class="dist_left blue" id="flashing_yes">{% trans "Мигание" %}</a>-->
+						<a href="#" onClick="javascript: flashingTerminal(false); return false;" class="dist_left blue" id="flashing_no" style="display: none;">{% trans "Остановить мигание" %}</a>
+					</div>
+					{% endif %}
+					<div class="map">
+						<div>
+						{% if map.pk %}
+							<img id="map-picture" src="{% url get-map-image map.pk %}" alt="" style="width: {{ image_size.width }}px; height: {{ image_size.height }}px;"/>
+							{% if map.pk  == '1' %}
+								<div class="txt_example">{% trans "Образец" %}</div>
+							{% endif%}
+						{% else %}<center>{% trans "Изображение карты не найдено" %}</center>{% endif %}
+						</div>
+						<div class="legenda{% if LANGUAGE_CODE == "en" %} en{% endif %}"><div></div></div>
+					</div>
+					{% endif %}			
+				</form>
+				<div class="contextMenu" id="myMenu1">	
+					<ul>
+						<li id="edit" class="edit">{% trans "Редактировать" %}</li>
+						<li id="delete" class="delete">{% trans "Удалить" %}</li>
+						<li id="quit" class="quit">{% trans "Выход" %}</li>
+					</ul>	
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+{% include "windows_maps.html" %}
+<script type="text/javascript">
+	initFuncAfterPageLoad();
+</script>
+{% endblock %}
+{% block footer %}{% include "footer.html" %}{% endblock %}

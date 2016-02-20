@@ -1,0 +1,176 @@
+.header {
+    padding-top: 5px;
+}
+.frm_language {
+    margin-top: 0px;
+    color: #333333;
+}
+.frm_language .language {
+	color: #333333;
+}
+.content {
+    margin-top: 5px;
+}
+.step {
+    font-weight: bold;
+}
+.btn_blue {
+    width: 90px;
+    background: url('/files/images/btn_blue_90.png') top left no-repeat;
+    -background: none;
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_90.png', sizingMethod='scale');
+    color: #ffffff;
+}
+.req,
+.req_hid {
+	font-weight: bold;
+	color: #FF0000;
+}
+.req_hid {
+	visibility: hidden;
+}
+.frm {
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+.frm label {
+    cursor: pointer;
+}
+.frm .bl_txt,
+.frm .bl_txt2,
+.frm .bl_txt3 {
+    float: left;
+    width: 250px;
+}
+.frm .bl_txt2 {
+	width: 120px;
+}
+.frm .bl_txt3 { 
+	width: 200px;
+}
+.frm .bl_enter {
+    float: left;
+    padding-top: 2px;
+}
+
+.frm .inp_txt,
+.frm .textarea {
+    width: 180px;
+}
+.frm .select {
+    width: 186px;
+}
+.frm .inp_num {
+    width: 70px;
+}
+.frm .bl_error,
+.frm .bl_error3 {
+    color: #FF0000;
+    margin-left: 191px;
+}
+.frm .bl_error3 {
+	margin-left: 200px;
+}
+.inp_check {
+    margin-right: 5px;
+}
+.frm.frm_dis {
+    color: #9B9B9B;
+}
+.errorlist,
+.errorlist li {
+    display: inline;
+}
+.frm .inp_txt.err_forms {
+	border-color: #ff0000;
+}
+
+.list_servers {
+    margin-bottom: 10px;
+}
+.list_servers li {
+    margin-top: 10px;
+    position: relative;
+}
+.list_servers li.ls_first {
+    margin-top: 0px;
+}
+.list_servers .head {
+    width: 100%;
+    overflow: hidden;
+}
+.list_servers .head span {
+    margin-right: 5px;
+    float: left;
+}
+.list_servers .head .link_head {
+    background: url("/files/images/arrowB_bottom.gif") left 50% no-repeat;
+    color: #0088CC;
+    padding-left: 15px;
+    text-decoration: underline;
+    float: left;
+}
+.list_servers .head .link_head.arrow_left {
+    background: url("/files/images/arrowB_left.gif") left 50% no-repeat;
+}
+.list_servers .head .btn_delete {
+    background: url("/files/images/delete.png") left top no-repeat;
+    width: 10px;
+    height: 10px;
+    padding: 0px;
+    border: 0px;
+    margin: 5px 0px 0px 10px;
+    cursor: pointer;
+    float: left;
+}
+.list_servers .info {
+    margin-top: 7px;
+    margin-left: 15px;
+    padding-left: 2px;
+    border-left: 1px dotted #999999
+}
+.list_servers .name_card {
+    color: #666666;
+    display: block;
+    font-size: 90%;
+    margin-top: -1px;
+}
+.list_servers .dis_daemon {
+    color: #9B9B9B;
+}
+.list_servers .head_info {
+	margin-left: 15px;
+	margin-top: 5px;
+}
+.list_servers .bl_add_param {
+	margin-left: 15px;
+	margin-top: 5px;
+}
+.list_servers .bl_add_param  .frm {
+	margin-bottom: 0px;
+}
+.error {
+	color: #ff0000;
+}
+.bl_param {
+	margin-top: 5px;
+}
+.bl_param .bl_txt {
+	float: left;
+	margin-right: 10px;
+}
+.bl_param .bl_enter {
+	margin-left: 275px;
+	margin-left: 210px;
+}
+.bl_param .bl_enter2 {
+	margin-left: 310px;
+}
+.bl_param .inp_check {
+	margin-right: 5px;
+}
+.err_mess_settings {
+    color: #FF0000;
+    margin-top: 10px;
+}

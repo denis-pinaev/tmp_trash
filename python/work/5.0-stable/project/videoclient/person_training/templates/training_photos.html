@@ -1,0 +1,92 @@
+{% extends "base_notab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Выбор добавленных фотографий' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/list_photos.css?v=v{{ version }}" />
+<script src="/files/js-global/FancyZoom.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js-global/FancyZoomHTML.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript" src="/files/js/list_photos.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+var del_photo_ids = [];
+
+$(function() {
+	initSelectFaces();
+});
+  
+//person urls help array
+var urls_arr = [];
+{% for key,value in urls_arr.items %}
+urls_arr[{{ key }}] = '{{ value }}';
+{% endfor %}
+  
+function personLink(){
+	location.href = urls_arr[{{ person.group.pk }}] + "{{ person.pk }}/?group={{ person.group.pk }}";
+}
+
+function saveEditChanges(){
+	del_photo_ids = [];
+	$('#list_photos li').each(function(index) {
+		if($(this).attr('class') != 'lp_act'){
+	    	del_photo_ids.push($(this).attr('photo_id'));
+		}
+	});
+	
+	if(del_photo_ids.length > 0){
+		
+		var d = {'photos': del_photo_ids.join(','), 'persons': {{ bal_id }}};
+		$.ajax({
+            type: "POST",
+            url: "{% url vc_delete_person %}",
+            data: d,
+            success: function(data){
+            	personLink();
+            }
+    	});
+	}else{
+		personLink();
+	}
+}
+</script>
+{% endblock %}
+{% block language %}<input type="button" class="language {{ LANGUAGE_CODE }}" name="" id="change_language" value="{{ LANGUAGE_CODE|upper }}" onClick="javascript: showMessage('<span class=\'error\'>{% trans 'Внимание!' %}</span> {% trans 'Невозможно сменить язык на этой странице' %}.');" />{% endblock %}
+{% block subcontent %}
+                <h2><a href="/lists/">{% trans "Списки" %}</a> - <a href="{% if person_list %}{{ person_list.type.url }}?group={{ person.group.pk }}{% else %}#{% endif %}">{{ person.group.name }}</a> - <a href="#" onClick="personLink();">{{ person.first_name }} {{ person.last_name }} {{ person.middle_name }}</a> - {% if selected_camera %}<a href="{{ back_camera_url }}">{% trans "Обучение с камеры" %} {% if selected_camera.name %}{{ selected_camera.name }} {{ selected_camera.type }} ({{ selected_camera.ip }} {{ selected_camera.type }}){% else %}{{ selected_camera.ip }} {{ selected_camera.type }}{% endif %}</a>{% endif %} - Выбор добавленных фотографий<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Обучение Редактирование добавленных лиц" %}');" /></h2>
+                {% include "current_time.html" %}
+                	{% if page_show %}
+       				<form method="POST" action="" name="frm_learn">
+					<div class="message_action">{% trans 'Данные фотографии персоны добавлены в систему' %}.
+						<div>{% trans 'Снимите отметку с тех лиц, которые не должны быть добавлены в базу, и нажмите на кнопку' %} <strong>{% trans 'Сохранить изменения' %}</strong>.</div>
+					</div>
+					<div class="block dist_top">
+						<ul class="menu_cutfaces" id="menu_cutfaces">
+							<li class="mcf_first mcf_act"><a href="#">{% trans "Все" %} ({{ total_photos }})</a></li>
+							<li class="mcf_dis"><a href="#" class="link_choose">{% trans "Только выделенные" %} (<span id="count_choose">0</span>)</a></li>
+						</ul> 
+						<div class="bl_btn_check short_descr" id="bl_btn_check_up" title="{% trans 'Выделить все записи на данной странице' %}">
+							<div><input type="checkbox" name="" value="" class="inp_check choose_all" id="choose_all" checked="checked" /><label for="choose_all">{% trans 'Выделить всё' %}</label></div>
+						</div>
+					</div>					
+					<ul class="block list_photos" id="list_photos">
+						{% for photo in all_photos %}
+						<li photo_id="{{ photo.photo_id }}">
+							<div class="block_photo">{% if not photo.error%}<img src="data:image/gif;base64,{{ photo.image }}" />{% endif %}</div>
+							<div class="photo_info"><div class="photo_param eyes short_descr" title="Расстояние между глазами">{{ photo.eyes_distance }}</div><div class="photo_param">{% if not photo.error %}{{ photo.w }}x{{ photo.h }}{% else %}{% trans "Проверьте УС" %}{% endif %}</div></div>
+							<div class="block_check"><input type="checkbox" name="" value="" class="inp_check" class="inp_check" checked="checked" {% if photo.error %}style="display: none;"{% endif %}/></div>
+							{% if not photo.error %}<a href="/image/?id={{ bal_id }}&photo={{ photo.photo_id }}&big=.jpg&eyes=" class="btn_loupe short_descr" target="_blank" title="{% trans 'Увеличить изображение' %}"><span></span></a>{% endif %}
+						</li>
+						{% endfor %}
+					</ul>
+					<ul class="list_photos" id="list_photos_choose" style="display: none;"></ul>
+					<div class="block">
+						<div class="bl_btn_check short_descr" id="bl_btn_check_down" title="{% trans 'Выделить все записи на данной странице' %}">
+							<div><input type="checkbox" name="" value="" class="inp_check choose_all" id="choose_all2" checked="checked" /><label for="choose_all2">{% trans 'Выделить всё' %}</label></div>
+						</div>					
+					</div>
+					<div class="block dist_top">
+						<input type="button" name="" value="{% trans "Сохранить изменения" %}" class="inp_btn btn_save" onclick="saveEditChanges();"/>
+					</div>
+				</form>
+				{% else %}
+				{% trans "Для данной персоны нет новых обученных лиц" %}.
+				{% endif%}
+{% endblock %}

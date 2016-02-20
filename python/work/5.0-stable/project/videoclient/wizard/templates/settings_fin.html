@@ -1,0 +1,16 @@
+{% extends "wizard_base.html" %}
+{% load i18n %}
+{% load templatetags %}
+{% block wizard_content %}
+<script type="text/javascript" src="/files/js/lib/jquery.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script> 
+<script type="text/javascript" src="/files/control_settings/js/funcs.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/funcs.js?v=v{{ version }}"></script>
+
+<div class="step"><strong>{% trans "Настройка системы завершена" %}.</strong></div>
+<div class="message_action dist_top">{% trans 'Для перезапуска управляющей системы нажмите на кнопку' %} <strong>{% trans 'Завершить' %}</strong>, {% trans 'после чего Вы будете перенаправлены на страницу настроек камеры' %}.</div>
+<div class="dist_top">
+<input type="button" name="" value="{% trans "Завершить" %}" class="inp_btn btn_blue" onclick="javascript: executeCMD();"/>
+</div>
+
+{% endblock wizard_content %}

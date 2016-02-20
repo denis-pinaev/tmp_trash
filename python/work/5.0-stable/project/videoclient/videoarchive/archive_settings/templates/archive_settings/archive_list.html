@@ -1,0 +1,8 @@
+{% load i18n %}
+{% load a_templatetags %}
+<label for="archive_sel">{% trans "Видеоархив" %}:</label>
+<select name="archive" id="archive_sel" class="select dist_left" onChange="javascript: window.location.replace('{% url archive_settings_archive "" %}'+this.options[this.selectedIndex].value+'/')">
+	{% for archive in archives %}
+	    <option value="{{ archive.id }}"{% if archive_selected.id|tostr == archive.id|tostr %} selected="selected"{% endif %}>{{ archive.host }}:{{ archive.port }}</option>
+    {% endfor %}
+</select>

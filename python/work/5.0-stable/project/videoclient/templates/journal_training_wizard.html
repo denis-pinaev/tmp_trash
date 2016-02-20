@@ -1,0 +1,88 @@
+{% load i18n %}
+{% load templatetags %}
+{% ifequal di_name 'group' %}
+<script type="text/javascript">
+function personSearchQuery(){
+	$.ajax({
+		type: "GET",
+		url: "{{ project_url }}/get_journal_training_form/?search=" + $('#searchInputField').val(),
+		data: {},
+		success: function(msg){
+			$('#searchResultContent').show('normal');
+			$('#searchResultContent').html(msg);
+		},
+		error: function(msg) {
+		}
+	});
+}
+function startPersonSearch(s_val){
+	if(s_val != "{% trans 'Фамилия Имя Отчество' %}" && s_val.length > 3){
+		$('#personGroupField').hide('normal');
+		$('#trainingGroupFooter').hide();
+		personSearchQuery();
+	}
+}
+function showSearchResult(s_val){
+	startPersonSearch(s_val);
+	if(s_val.length == 0){
+		$('#personGroupField').show('normal');
+		$('#searchResultContent').hide('hide');
+		$('#trainingGroupFooter').show();
+	}
+}
+function clearSearchField(s_val){
+	startPersonSearch(s_val);
+	if(s_val == "{% trans 'Фамилия Имя Отчество' %}"){
+		$('#searchInputField').val("");
+	}
+	if(s_val == ""){
+		$('#searchInputField').val("{% trans 'Фамилия Имя Отчество' %}");
+		$('#personGroupField').show('normal');
+		$('#searchResultContent').hide('normal');
+		$('#trainingGroupFooter').show();
+	}
+}
+var delay = (function(){
+	 var timer = 0;
+	 return function(callback, ms){
+		clearTimeout (timer);
+		timer = setTimeout(callback, ms);
+	 };
+})();
+$('#searchInputField').keyup(function() {
+   delay(function(){
+	showSearchResult($('#searchInputField').val());
+   }, 500 );
+});
+</script>
+{% trans "Выберите список для обучения персоны из журнала или найдите персону для дообучения" %}
+<div>
+	<form method="post" class="form">{% csrf_token %}
+		<div class="form_block" style="margin-bottom: 20px;margin-top: 5px;">
+			<div class="fb_content">
+				<label for="state" class="fbc_text">{% trans "Поиск" %}:</label>
+				<div class="fb_enter">
+					<input id="searchInputField" type="text" size="30" onfocus="clearSearchField(this.value);" onblur="clearSearchField(this.value);" value="{% trans 'Фамилия Имя Отчество' %}"/>
+				</div>
+			</div>
+		</div>
+		<div id="searchResultContent"><!----></div>
+		<div class="form_block" style="margin-bottom: 20px;margin-top: 5px;" id="personGroupField">
+			<div class="fb_content">
+				<label for="state" class="fbc_text">{% trans "Список" %}:</label>
+				<div class="fb_enter">
+				{% for field in form %}
+				{{ field }}
+				{% endfor %}
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+{% endifequal %}
+{% ifequal di_name 'training' %}
+<div>
+	{% if count %}{% if count > 0 %}<script type="text/javascript">$('#trainingFormButtonSend').hide();$('#trainingFormButtonClose').show();</script>{% endif %}{% endif %}
+	{% if count > 0 %}{% trans "Обучение прошло успешно. Персона добавлена в систему" %}{% else %}{% trans "Система не смогла распознать персону" %}{% endif %}
+</div>
+{% endifequal %}

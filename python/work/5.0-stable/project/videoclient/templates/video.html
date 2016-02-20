@@ -1,0 +1,317 @@
+{% extends "base_notab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Видеоролики' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/video.css?v=v{{ version }}" />
+<script type="text/javascript">
+var MESSAGES = {
+	"delete": "{% trans 'Вы действительно хотите удалить выбранные видеоролики' %} ({} {% trans 'шт' %}.)?"
+}
+var ERRORS = {
+	"delete": "{% trans 'Вы должны выбрать хотя бы одну запись' %}."
+}
+var TEXT_MORE_SEARCH = "{% trans 'Дополнительные параметры поиска' %}";
+var TEXT_MORE_SEARCH_HIDE = "{% trans 'Скрыть дополнительные параметры поиска' %}";
+// удалить выделенные
+function showMessageDelete() {
+	var count_sel = $("#table tr td input[type=checkbox]:checked").size();
+	if (count_sel > 0) {
+		changeWindow({id: 'win_del', css: {width: '300px', height: '200px'}, txt: replace_string(MESSAGES["delete"], '{}', count_sel)});
+	} else {
+		showMessage(ERRORS["delete"]);
+	}
+}
+// функция на удаление
+function DelPick(num){
+	showIndicator(true);
+	var inp = $("#delid");
+	if (inp.size() > 0) inp.val(num);
+	document.getElementById("mainForm").submit();
+}
+// выделение всех строк
+function selectedAllRow(inp) {
+	var checks = $("#table td input[type=checkbox]");
+	var checks_all = $("input[type=checkbox].check_all");
+	if (inp.attr("checked")) {
+		$.each(checks, function() {
+			$(this).attr("checked", "checked");
+		});
+		checks_all.attr("checked", "checked");
+	} else {
+		$.each(checks, function() {
+			$(this).attr("checked", false);
+		});
+		checks_all.attr("checked", false);	
+	}
+}
+// выделение одной строки
+function selectedRow(inp) {
+	var checks_all = $("input[type=checkbox].check_all");
+	var count = $("#table tr td input[type=checkbox]").size();
+	var count_sel = 0;
+	if (inp.attr("checked")) {
+		count_sel = $("#table tr td input[type=checkbox]:checked").size();
+		if (count_sel == count) {
+			checks_all.attr("checked", "checked");
+		}
+	} else {	
+		checks_all.attr("checked", false);
+	}
+}
+// проверка данных для фильтра
+function checkForm() {
+	$.validator.addMethod("checkDateReq", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) return true;
+		return false;
+	}, "{% trans 'Введите дату' %}" );
+	$.validator.addMethod("checkDateFormat", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			var regexp = /^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})$/;
+			if (regexp.test(val)) return true;
+			return false
+		}
+		return true;
+	}, "{% trans 'Некорректный формат даты (ДД.ММ.ГГГГ)' %}" );		
+	$.validator.addMethod("checkDate", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			if (checkDateValidator(val)) return true;
+			return false;
+		}
+		return true;
+	}, "{% trans 'Некорректное значение даты' %}" );
+	$.validator.addMethod("checkDateRangeReq", function(value, element) {
+		if (!$("#dateBegin").val() && !$("#dateEnd").val()) return false;
+		return true;
+	}, "{% trans 'Введите период' %}" );		
+	$.validator.addMethod("checkDateRange", function(value, element) {
+		var date1 = $("#dateBegin").val();
+		var date2 = $("#dateEnd").val();
+		if (date1 && (date1 != "") && date2 && (date2 != "")) {
+			if (checkDateValidator(date1) && checkDateValidator(date2)) { 
+				var dates = checkDateRangeValidator('dateBegin', 'dateEnd');
+				if (dates[0] <= dates[1]) return true;
+				return false;
+			}
+			return true;
+		}
+		return true;
+	}, "{% trans 'Дата окончания меньше даты начала' %}" );	
+	var validator = $("#mainForm").validate({
+		rules: {
+			dateBegin: {
+				checkDateRangeReq: true,
+				checkDateReq: true,
+				checkDateFormat: true,
+				checkDate: true
+			},
+			dateEnd: {
+				checkDateRangeReq: true,
+				checkDateReq: true,
+				checkDateFormat: true,
+				checkDate: true,
+				checkDateRange: true
+			}
+		},
+		messages: {
+			dateBegin: {
+				checkDateRangeReq: "{% trans 'Укажите период' %}",
+				checkDateReq: "{% trans 'Введите дату начала' %}",
+				checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+				checkDate: "{% trans 'Введено некорректное значение' %}"
+			},
+			dateEnd: {
+				checkDateRangeReq: "{% trans 'Укажите период' %}",
+				checkDateReq: "{% trans 'Введите дату окончания' %}",	
+				checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+				checkDate: "{% trans 'Введено некорректное значение' %}",
+				checkDateRange: "{% trans 'Указан некорректный период дат' %}"
+			}
+		},		
+		errorPlacement: function(error, element) {
+			var block_error = $("#error_ext_search");
+			var id = element.attr("id");
+			if ((id == "dateBegin") || (id == "dateEnd")) {
+				block_error = element.parent().prev();
+			} 
+			block_error.html("");
+			error.appendTo( block_error ); 
+		},	
+		submitHandler: function() {
+			if (!$("#filter_status").attr("checked")) {
+				$("#select_status").attr("name", "")
+			}
+			if (!$("#filter_type").attr("checked")) {
+				$("#select_type").attr("name", "")
+			}			
+			document.getElementById("mainForm").submit();
+		}
+	});
+}
+// функции для фильтров
+function initFilters() {
+	$("#link_more_search").click(function() {
+		var block = $("#block_more_search");
+		if (block.css("display") == "none") {
+			block.slideDown("normal");
+			$(this).html(TEXT_MORE_SEARCH_HIDE);
+			var checks = $("#block_more_search input[type=checkbox].check_filter");
+			$.each(checks, function() {
+				blockFilter($(this));
+			});
+		} else {
+			block.slideUp("normal");
+			$(this).html(TEXT_MORE_SEARCH);
+		}
+		return false;
+	});
+	var block = $("#block_more_search");
+	if (block.css("display") == "none") {
+		$("#link_more_search").html(TEXT_MORE_SEARCH);
+	} else {
+		var checks = $("#block_more_search input[type=checkbox].check_filter");
+		$.each(checks, function() {
+			blockFilter($(this));
+		});
+		$("#link_more_search").html(TEXT_MORE_SEARCH_HIDE);
+	}
+	$("#block_more_search input[type=checkbox].check_filter").click(function() {
+		blockFilter($(this));
+	});
+}
+function blockFilter(inp) {
+	var block = inp.parent();
+	var enter_inp = block.find("input[type=text]");
+	if (inp.attr("checked")) {
+		block.removeClass("filter_param_dis");
+		enter_inp.attr("disabled", false);
+		enter_inp.removeClass("err_forms");
+		block.find("select").attr("disabled", false);
+	} else {
+		block.addClass("filter_param_dis");
+		enter_inp.attr("disabled", "disabled");
+		block.find("select").attr("disabled", "disabled");
+	}
+}
+function init() {
+	initTooltip();
+	checkForm();
+	initFilters();
+	$("input.check_all").click(function() {
+		selectedAllRow($(this));
+	});
+	$("#table tr").mouseover(function() {
+		overRow($(this))
+	});	
+	$("#table tr").mouseout(function() {
+		outRow($(this))
+	});
+	$("#table tr td input[type=checkbox].inp_check").click(function() {
+		selectedRow($(this));
+	});		
+}
+$(function() {
+    init();
+});
+</script>
+{% endblock %}
+{% block subcontent %}
+<h2><a href="/ident/">{% trans "Просмотр" %}</a> - {% trans "Видеоролики" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Видеоролики Просмотр' %}');" /></h2>
+{% include "current_time.html" %}
+<div class="block">{% trans "Общее количество видеороликов" %}: <strong>{{ all_rollers }}</strong></div>				
+{% if all_rollers > 0 %}
+	<form method="post" action="" name="" id="mainForm">
+		<input type="hidden" value="0" name="delo" id="delid" />
+		<div class="block_filter dist_top" id="filters">
+			<div class="bl_error"></div>
+			<div class="block block_filter_param">
+				<input class="inp_txt inp_date" type="text" value="{{ dateBegin|date:"d.m.Y" }}" id="dateBegin" name="dateBegin" maxlength="10" />
+				<input type="button" title="{% trans "Выбрать дату начала" %}" class="btn_calend short_descr" value="" name="" />
+				<span class="dist_date">{% trans "по" %}</span>
+				<input type="text" class="inp_txt inp_date" value="{{ dateEnd|date:"d.m.Y" }}" id="dateEnd" name="dateEnd" maxlength="10" />
+				<input type="button" title="{% trans "Выбрать дату окончания" %}" class="btn_calend short_descr" value="" name="" />
+				<a href="#" class="link_ext_search blue" id="link_more_search">{% trans "Дополнительные параметры поиска" %}</a>
+			</div>
+			<div class="block_filter_param" id="block_more_search" style="display: {% if communicator or camera %}block{% else %}none{% endif %};">
+				<div class="bl_error" id="error_ext_search"></div>
+				<div class="block">
+					<div class="filter_param{% if not communicator %} filter_param_dis{% endif %}">
+						<input type="checkbox" name="" {% if communicator %}checked="checked"{% endif %} id="filter_communicator" value="" class="inp_check check_filter" /><label for="filter_communicator" class="filter_txt">{% trans 'Коммуникатор' %}</label>
+						<div class="filter_param_enter">
+							<select name="communicator" id="communicator" class="select">
+								<option value="0">--- {% trans "Все" %} ---</option>
+								{% for c in communicators %}
+									<option value="{{ c.id }}"{% if c.id == communicator %} selected="selected"{% endif %}>{{ c.host }}:{{ c.port }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<div class="filter_param{% if not camera %} filter_param_dis{% endif %}">
+						<input type="checkbox" name="" {% if camera %}checked="checked"{% endif %} id="filter_camera" value="" class="inp_check check_filter" /><label for="filter_camera" class="filter_txt">{% trans 'Камера' %}</label>
+						<div class="filter_param_enter">
+							<select name="camera" class="select">
+								<option value="0">--- {% trans "Все" %} ---</option>
+								{% for c in dcameras %}
+									<option value="{{ c.id }}"{% if c.id == camera %} selected="selected"{% endif %}>{{ c.display_name|truncchar:40 }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>					
+				</div>
+			</div>
+			<div><input type="submit" class="inp_btn btn_apply" value="{% trans 'Применить' %}" name="" />
+			<input type="button" class="inp_btn inp_btn140 dist_left" value="{% trans 'Сбросить фильтр' %}" name="" id="btn_clear_filter" onClick="javascript: window.location.href='/video';" /></div>				
+		</div>
+		<div class="block_results">{% trans 'Отфильтровано' %} <strong>{{ found_rollers }}</strong> {% trans 'из' %} <strong>{{ all_rollers }}</strong> {% trans 'записей' %}</div>
+		{% if rollers|length > 0 %}
+			<div class="block">
+				<div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}">
+					<div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all" /><label for="choose_all">{% trans "Выделить всё" %}</label></div>
+				</div>
+				<!--<input type="button" name="" value="{% trans "Экспорт роликов" %}" class="inp_btn inp_btn140" />-->
+				<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170" onClick="javascript: showMessageDelete()" />
+			</div>
+			{% include "po4NavigationBlock.html" %}
+			<table cellpadding="0px" cellspacing="0px" class="table" id="table">
+				<tr>
+					<th class="first">&nbsp;</th>
+					<th><a href="?start={{start}}&sorto=1&up={% if sorto == 1 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if camera %}&camera={{camera}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if communicator %}&communicator={{communicator}}{% endif %}" class="btn_arrow {% if sorto == 2 and up == 1  %}up{% else %}down{% endif %}">ID</a></th>
+					<th><a href="?start={{start}}&sorto=2&up={% if sorto == 2 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if camera %}&camera={{camera}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if communicator %}&communicator={{communicator}}{% endif %}" class="btn_arrow {% if sorto == 2 and up == 1  %}up{% else %}down{% endif %}">{% trans "Коммуникатор" %}</a></th>
+					<th><a href="?start={{start}}&sorto=3&up={% if sorto == 3 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if camera %}&camera={{camera}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if communicator %}&communicator={{communicator}}{% endif %}" class="btn_arrow {% if sorto == 3 and up == 1  %}up{% else %}down{% endif %}">{% trans "Камера" %}</a></th>
+					<th><a href="?start={{start}}&sorto=4&up={% if sorto == 4 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if camera %}&camera={{camera}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if communicator %}&communicator={{communicator}}{% endif %}" class="btn_arrow {% if sorto == 4 and up == 1  %}up{% else %}down{% endif %}">{% trans "Дата начала" %}</a></th>
+					<th><a href="?start={{start}}&sorto=5&up={% if sorto == 5 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if camera %}&camera={{camera}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if communicator %}&communicator={{communicator}}{% endif %}" class="btn_arrow {% if sorto == 5 and up == 1  %}up{% else %}down{% endif %}">{% trans "Время начала" %}</a></th>
+					<th><a href="?start={{start}}&sorto=6&up={% if sorto == 6 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if camera %}&camera={{camera}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if communicator %}&communicator={{communicator}}{% endif %}" class="btn_arrow {% if sorto == 6 and up == 1  %}up{% else %}down{% endif %}">{% trans "Дата окончания" %}</a></th>
+					<th><a href="?start={{start}}&sorto=7&up={% if sorto == 7 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if camera %}&camera={{camera}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}{% if defined %}&defined=1{% endif %}{% if communicator %}&communicator={{communicator}}{% endif %}" class="btn_arrow {% if sorto == 7 and up == 1  %}up{% else %}down{% endif %}">{% trans "Время окончания" %}</a></th>
+					<th>{% trans "Ссылка для скачивания" %}</th>
+				</tr>
+				{% for roller in rollers %}
+					<tr{% cycle "" " class=odd" %}>
+						<td class="td_check first"><input type="checkbox" name="pi{{ forloop.counter }}" value="{{ roller.id }}" class="inp_check" id="check{{ forloop.counter }}" /></td>
+						<td class="td_id">{{ roller.id }}</td>
+						<td>{{ roller.com.host }}:{{ roller.com.port }}</td>
+						<td class="short_descr" title="{{ roller.camera.full_name }}">{{ roller.camera.display_name|truncchar:32 }}</td>
+						<td>{{ roller.dt_start|date:"d.m.Y" }}</td>
+						<td>{{ roller.tm_start }}</td>
+						<td>{{ roller.dt_stop|date:"d.m.Y" }}</td>
+						<td>{{ roller.tm_stop }}</td>
+						<td>{% if roller.file_exists %}<a href="/videoclip_download/?id={{ roller.pk }}" class="blue">{% trans "Скачать видеоролик" %}</a>{% else %}{% trans "Файл не найден" %}{% endif%}</td>
+					</tr>
+				{% endfor %}
+			</table>
+			{% include "po4NavigationBlock.html" %}
+			<div class="frm_block">
+				<div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}">
+					<div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all2" /><label for="choose_all2">{% trans "Выделить всё" %}</label></div>
+				</div>
+				<!--<input type="button" name="" value="{% trans "Экспорт роликов" %}" class="inp_btn inp_btn140" />-->
+				<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170" onClick="javascript: showMessageDelete()" />
+			</div>
+		{% else %}
+			<div class="message_action">{% trans "Не найдены записи, соответствующие заданным условиям поиска" %}.</div>
+		{% endif %}                                                           
+	</form>
+{% endif %}
+{% endblock %}
+{% block windows %}{% include "window_video.html" %}{% endblock %}

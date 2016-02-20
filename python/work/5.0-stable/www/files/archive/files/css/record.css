@@ -1,0 +1,48 @@
+﻿.inp_btn120 {
+	background: url("/files/images/button120x24_up.gif") no-repeat left top;
+	width: 120px;
+}
+.btn_calend {
+	padding: 0px;
+	margin: 0px;
+	border: none;
+	height: 16px;
+	width: 16px;
+	cursor: pointer;
+	background: url('/files/images/calend.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/calend.png', sizingMethod='crop');
+	margin-left: 1px;
+}
+.frm_head {
+	margin-top: 10px;
+	font-weight: bold;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.frm_block .block_txt {
+	float: left;
+	width: 150px;
+}
+.frm_block .block_date {
+	float: left;
+}
+.frm_block .delim {
+	float: left;
+	margin: 0px 2px;
+}
+.frm_block .delim_txt {
+	float: left;
+}
+.frm_block .select {
+	float: left;
+}
+.frm_block .select_video {
+	width: 100px;
+}
+.frm_block .btn_quest {
+	margin-top: 2px;
+}

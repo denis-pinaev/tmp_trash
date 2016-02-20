@@ -1,0 +1,51 @@
+﻿.btn_blue {
+	width: 90px;
+	background: url('/files/images/btn_blue_90.png') top left no-repeat;
+	-background: none;
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_90.png', sizingMethod='scale');
+	color: #ffffff;
+}
+.inp_btn120 {
+	background: url('/files/images/btn_blue_120.png') top left no-repeat;
+	-background: none;
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_120.png', sizingMethod='scale');
+    width: 120px;
+    color: #ffffff;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.frm_block .inp_txt {
+	width: 200px;
+}
+.frm_block .inp_access {
+	width: 120px;
+}
+.frm_block .select {
+	width: 206px;
+}
+.frm_block .frm_head {
+	font-weight: bold;
+}
+.frm_block .bl_left {
+	float: left;
+	margin-right: 30px;
+}
+.frm_block .bl_info {
+	width: auto;
+	overflow: hidden;
+	margin-top: 5px;
+}
+.frm_block .bl_info .bl_txt {
+	float: left;
+	width: 100px;
+}
+.block_error {
+    color: #FF6600;
+    margin-left: 100px;         
+}
+.error_border {
+    border: 1px solid #FF6600;
+}

@@ -1,0 +1,34 @@
+﻿{% load i18n %}
+{% load templatetags %}
+<div id="win_reboot_offer_dialog" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_reboot_offer_dialog');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Сохранение настроек" %}</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add" id="win_reboot_offer_dialog_contWF">
+            <div class="dist_top"><input type="radio" name="save_settings" value="" id="save_settings1" checked="checked" class="inp_check" /><label for="save_settings1">{% trans "Сохранить без применения настроек?" %}</label></div>
+            <div style="margin-top: 5px;"><input type="radio" name="save_settings" value="" id="save_settings2" class="inp_check" /><label for="save_settings2">{% trans "Сохранить и перезапустить систему для применения настроек?" %}</label></div>
+        </div></div>
+        <div class="footerWF">
+            <input type="button" name=""  value="{% trans "Сохранить" %}" class="btn_wf_blue" id="win_reboot_offer_dialog_btn_yes" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_reboot_offer_dialog');" />
+        </div>
+    </div>
+</div>
+<div id="win_mess" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Предупреждение" %}</div>
+        </div>
+        <div class="contWF" id="win_mess_contWF"></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />    
+        </div>
+    </div>
+</div>
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>

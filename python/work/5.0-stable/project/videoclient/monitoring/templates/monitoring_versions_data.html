@@ -1,0 +1,30 @@
+{% load i18n %}
+{% load templatetags %}
+{% for component in components %}
+	<tr{% cycle '' ' class="odd"' %}>
+		<td class="first td_name_comp">
+			{% if not component.cameras %}
+			{% trans component.name %}
+			{% else %}
+				<a href="#" class="link_head arrow_down">{% trans component.name %}</a>
+				<div class="block detailed_log" style="display: block;">
+					<table cellpadding="0px" cellspacing="0px">
+						<tr>
+							<th class="th_first">{% trans "Камера" %}</th>
+							<th>{% trans "Версия демона видеоаналитики" %}</th>
+						</tr>
+						{% for camera in component.cameras %}
+						<tr>
+							<td class="td_first short_descr" {% if camera.name %} title="<strong>{% trans "Псевдоним" %}</strong>: {{camera.name}}<br /><strong>{% trans "IP-адрес" %}</strong>: {{camera.ip}}<br /><strong>{% trans "Тип" %}</strong>: {{camera.type}}<br />"{% endif %}>{{camera.info}}</td>
+							<td>{{camera.version}}</td>
+						</tr>
+						{% endfor %}
+					</table>
+				</div>
+			{% endif %}
+		</td>
+		<td class="td_ip short_descr" title="{{ component.ip }}:{{ component.port }}">{{ component.ip|truncchar:64 }}:{{ component.port }}</td>
+		<td{% if not component.active %} class="error"{% endif %}>{% trans component.version %}</td>
+		<td class="td_time">{% if component.license_days != None %}{{ component.license_days }}{% else %}&nbsp;{% endif %}</td>
+	</tr>
+{% endfor %}

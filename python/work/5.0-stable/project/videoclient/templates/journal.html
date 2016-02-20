@@ -1,0 +1,507 @@
+{% load i18n %}
+{% include "header.html" %}
+{% load templatetags %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/journal.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/js/lib/carusel/skin_journal_identification.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/lib/carusel/jquery.jcarousel.min.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/additional-methods.js?v=v{{ version }}"></script>
+<script src="/files/js/jquery.maskedinput-1.3.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript" src="/files/js/jquery.autocomplete.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/tooltip/easyTooltip.js?v=v{{ version }}"></script>
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript" src="/files/js/journal_identification.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+
+function refreshPage() {
+	var refresh_journal = readCookie('refresh_journal');
+	if (refresh_journal==null || refresh_journal == 'True'){
+		window.location.reload();
+	}
+}
+setInterval('refreshPage()', 600000);  // перезагрузка страницы раз в 10 мин.
+
+var MAX_COUNT_PHOTOS = 30000; // лимит фотографий для экспорта
+var AUTO_OFF = "{% trans "Автообновление для журнала отключено" %}";
+var AUTO_ON = "{% trans "Автообновление для журнала включено" %}";
+var LEARN_AS_NOISE = "{% trans "Обучить выделенные изображения {} как шум?" %}";
+var urls_arr = [];
+var params = new Array();
+{% for key,value in urls_arr.items %}
+urls_arr[{{ key }}] = '{{ value }}';
+{% endfor %}
+function setData(msg) {
+	if (msg == 'reload'){
+		window.location.reload();
+		return;
+	}
+	var data = document.getElementById('dataJournal');
+	data.innerHTML = '';
+	data.innerHTML = msg;
+	var all_data_journal_i = document.getElementById('all_data_journal_i')
+	if (all_data_journal_i) {
+		var all_data_journal = document.getElementById('all_data_journal')
+		if (all_data_journal) {
+			all_data_journal.innerHTML = all_data_journal_i.value
+		}	
+	}		
+	var all_ident_data_journal_i = document.getElementById('all_ident_data_journal_i')
+	if (all_ident_data_journal_i) {
+		var all_ident_data_journal = document.getElementById('all_ident_data_journal')
+		if (all_ident_data_journal) {
+			all_ident_data_journal.innerHTML = all_ident_data_journal_i.value
+		}
+	}
+	var search_data_journal_i = document.getElementById('search_data_journal_i')
+	if (search_data_journal_i) {
+		var search_data_journal = document.getElementById('search_data_journal')
+		if (search_data_journal) {
+			search_data_journal.innerHTML = search_data_journal_i.value
+		}	
+	}
+	var search_ident_data_journal_i = document.getElementById('search_ident_data_journal_i');
+	if (search_ident_data_journal_i) {
+		var search_ident_data_journal = document.getElementById('search_ident_data_journal')
+		if (search_ident_data_journal) {
+			search_ident_data_journal.innerHTML = search_ident_data_journal_i.value
+		}	
+	}
+}
+function stopTimeRefresh() {
+	clearTimeout(cleartime);
+	doTimeRefresh();
+}
+function doTimeRefresh() {
+	cleartime = setTimeout('refreshDataJournal()', 15000);
+}
+function refreshDataJournal(){
+	var w1 = $('#win_persontraining_group').is(':visible');
+	var w2 = $('#win_persontraining_wrong').is(':visible');
+	var w3 = readCookie('refresh_journal');
+	if(!w1 && !w2 && (w3==null || w3 == 'True')){
+		$.ajax({
+			type: "GET",
+			url: "{{ project_url }}/journal/?{{ dataGet }}&data=True",
+			data: {},
+			success: function(msg){
+				doTimeRefresh();
+				setData(msg);
+				setFreeSpaceDisk();
+				initTooltip();
+			},
+			error: function(msg) {
+				doTimeRefresh();
+			}
+		});
+	}
+}
+function clearJournal() {
+	$("#periods option:first").attr("selected", "selected");
+	$("#otherPeriod").hide();
+	$("#otherPeriod .error").hide();
+	changeWindow({id: 'win_clear', css: {width: '320px', height: '200px'}});	
+}
+function selectPeriod(obj) {
+	var list = $(obj);
+	var selected = list.find("option:selected").attr("value");
+	if (selected == 3) {
+		$("#otherPeriod").show();
+	} else {
+		$("#otherPeriod").hide();
+		closeDatePicker();
+	}
+}
+function clearJournalOk(name_block) {
+	closeChangeWindow('win_clear');
+	var txt = createTextMessage({name_block: name_block});
+	changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: txt});	
+}
+function clearJournalOkCheckdate(name_block) {
+	if($("#periods").val() == 3){
+		var datestring = $("#dataClear").val();
+		var brokenstring = datestring.split(".");
+		if(brokenstring[0] < 32 && brokenstring[0] > 0 && brokenstring[1] < 13 && brokenstring[1] > 0 && brokenstring[2] > 1900){
+			clearJournalOk(name_block);
+			$("#form_date_warning").hide();
+		}else{
+			$("#form_date_warning").show();
+		}
+	}else{
+		$("#form_date_warning").hide();
+		clearJournalOk(name_block);
+	}
+}
+function getPeriodClear() {
+	var select = byId('periods');
+	var info = getSelectedElem(select);
+	if (info.value == (select.options.length - 1)) {
+		return '{% trans "старше" %} ' + byId('dataClear').value;
+	}
+	return '{% trans "за период" %} "' + info.text + '"';
+}
+								
+function clearJournalData(){
+	showIndicator(true);
+	$.ajax({
+		type: "GET",
+		url: "/clearjournal",
+		data: {'period':document.getElementById('periods').value, 'dataClear': document.getElementById('dataClear').value},
+		success: function(msg){
+			showIndicator(false);
+			obj = msg;
+			if (obj && obj.status) {
+				showProgressBar(obj.thread_id, 0);
+				return true;
+			} else {
+				if (obj.message) {
+					//changeWindow({id: 'win_mess_import', css: {width: '300px', height: '200px'}, txt: obj.message});
+				} else {
+					//changeWindow({id: 'win_mess_import', css: {width: '300px', height: '200px'}, txt: "{% trans 'Ошибка экспорта' %}"});
+				}
+			}
+			
+			//if  (msg=="True"){
+			//	location.reload();
+			//}
+			//showIndicator(false);
+		},
+		error: function(msg){
+			//showIndicator(false);
+		}
+	});
+}
+// функции для экспорта фото по фильтру
+function journalPhotosExportAll(){
+	if(checkDataFields()){
+		getJournalFilteredRowsCount();
+	}
+}
+function getJournalFilteredRowsCount() {
+	showIndicator(true);
+	$.ajax({
+		type: "GET",
+		url: "{{ project_url }}/journal/?" + $("#mainForm").serialize() + "&data=True&countrows=True",
+		data: {},
+		success: function(msg){
+			showIndicator(false);
+			var obj = msg;
+			var txt;
+			var head;
+			if (obj.countrows > 0) {
+				txt = replace_string('{% trans "Экспортировать записи {} из отфильтрованного списка?" %}', '{}', '(' + obj.countrows + ' {% trans "шт" %}.)');
+				changeWindow({id: 'win_export_filter', css: {width: '300px', height: '200px'}, txt: txt});
+				initTooltip();
+			} else {
+				txt = '{% trans "Нет данных для экспорта" %}.';
+				changeWindow({id: 'win_export_mess_filter', css: {width: '300px', height: '200px'}, txt: txt });
+			}
+		},
+		error: function(msg) {
+			showIndicator(false);
+			var txt = '{% trans "При экспорте записей возникли проблемы" %}.';
+			changeWindow({id: 'win_export_mess_filter', css: {width: '300px', height: '200px'}, txt: txt });
+		}
+	});
+}
+function checkForm() {
+	$.validator.addMethod("checkDateReq", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) return true;
+		return false;
+	}, "{% trans 'Введите дату' %}" );
+	$.validator.addMethod("checkDateFormat", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			var regexp = /^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})$/;
+			if (regexp.test(val)) return true;
+			return false
+		}
+		return true;
+	}, "{% trans 'Некорректный формат даты (ДД.ММ.ГГГГ)' %}" );		
+	$.validator.addMethod("checkDate", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			if (checkDateValidator(val)) return true;
+			return false;
+		}
+		return true;
+	}, "{% trans 'Некорректное значение даты' %}" );
+	$.validator.addMethod("checkDateRangeReq", function(value, element) {
+		if (!$("#dateBegin").val() && !$("#dateEnd").val()) return false;
+		return true;
+	}, "{% trans 'Введите период' %}" );		
+	$.validator.addMethod("checkDateRange", function(value, element) {
+		var date1 = $("#dateBegin").val();
+		var date2 = $("#dateEnd").val();
+		if (date1 && (date1 != "") && date2 && (date2 != "")) {
+			if (checkDateValidator(date1) && checkDateValidator(date2)) { 
+				var dates = checkDateRangeValidator('dateBegin', 'dateEnd');
+				if (dates[0] <= dates[1]) return true;
+				return false;
+			}
+			return true;
+		}
+		return true;
+	}, "{% trans 'Дата окончания меньше даты начала' %}" );
+	$.validator.addMethod("checkUserName", function(value, element) {
+		var value = $.trim($(element).attr("value"));
+		if (value) {
+			var reg = /^\s*[a-zA-Zа-яА-ЯёЁ-]+(\s+[a-zA-Zа-яА-ЯёЁ-]+)*\s*$/;
+			if (reg.test(value)) return true;
+			return false;
+		}
+		return true;
+	}, "{% trans "Введено некорректное значение" %}" );		
+	var validator = $("#mainForm").validate({
+		rules: {
+			dateBegin: {
+				checkDateRangeReq: true,
+				checkDateReq: true,
+				checkDateFormat: true,
+				checkDate: true
+			},
+			dateEnd: {
+				checkDateRangeReq: true,
+				checkDateReq: true,
+				checkDateFormat: true,
+				checkDate: true,
+				checkDateRange: true
+			}
+		},
+		messages: {
+			dateBegin: {
+				checkDateRangeReq: "{% trans 'Укажите период' %}",
+				checkDateReq: "{% trans 'Введите дату начала' %}",
+				checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+				checkDate: "{% trans 'Введено некорректное значение' %}"
+			},
+			dateEnd: {
+				checkDateRangeReq: "{% trans 'Укажите период' %}",
+				checkDateReq: "{% trans 'Введите дату окончания' %}",	
+				checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+				checkDate: "{% trans 'Введено некорректное значение' %}",
+				checkDateRange: "{% trans 'Указан некорректный период дат' %}"
+			}			
+		},		
+		errorPlacement: function(error, element) {
+			var block_error = $(element).parent().parent().prev();
+			var id = element.attr("id");
+			if ((id == "dateBegin") || (id == "dateEnd")) {			
+				block_error.html("");
+			}
+			if (id == "person_fio") {
+				block_error = $("#bl_error_person_fio");
+			}
+			error.appendTo( block_error ); 
+		},	
+		submitHandler: function() {
+			mainFormFilters();
+		}
+	});	
+}
+function addRulesIdPerson() {
+	$("#id_person").rules("add", {
+		number: true,
+		min: 0,
+		messages: {
+			number: "{% trans 'Введено некорректное значение' %}",
+			min: "{% trans 'Введено некорректное значение' %}"
+		}
+	});
+}
+function removeRulesIdPerson() {
+	$("#id_person").rules("remove");
+}	
+function addRulesIdRecord() {
+	$("#id_record").rules("add", {
+		number: true,
+		min: 0,
+		messages: {
+			number: "{% trans 'Введено некорректное значение' %}",
+			min: "{% trans 'Введено некорректное значение' %}"
+		}
+	});
+}
+function removeRulesIdRecord() {
+	$("#id_record").rules("remove");
+}
+function addRulesFIOPerson() {
+	$("#person_fio").rules("add", {
+		checkUserName: true,
+		messages: {
+			checkUserName: "{% trans 'Введено некорректное значение' %}"
+		}
+	});
+}	
+function removeRulesFIOPerson() {
+	$("#person_fio").rules("remove");
+}						
+</script>
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_settings">
+		{% include "menu_journal.html" %}
+		<div class="block_cont">
+			<div class="block_cont_top2">
+				<div class="block_cont_bottom min_height">
+					<h2><div id="bodyid"></div>{% trans "Журнал идентификаций" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Журнал идентификаций" %}');" /></h2>
+					{% include "current_time.html" %}
+					{% include "free_space_disk.html" %}
+					<form method="get" action="" name="" id="mainForm">
+						<div class="frm_block">			
+							{% if journals_count > 0 %}
+								{% if perms.user_perms.perm_logs_clear %}<input type="button" name="" value="{% trans "Очистить журнал" %}" class="inp_btn inp_btn140 dist_left" style="float: right;" onClick="javascript: clearJournal();" />{% endif %}
+								<a href="#" class="inp_btnAuto"><span>{% trans "Автообновление" %}</span></a>	
+							{% endif %}
+							<div>{% trans "Общее количество записей" %}: <span title="{% trans 'Результат может изменяться из-за сбора статистики, обновляемой каждые 15 сек.' %}" class="short_descr"><span class="info_important" id="all_data_journal">{{ journals_count }}</span><span>*</span></span>, {% trans "из них идентифицировано" %}: <span title="{% trans 'Результат может изменяться из-за сбора статистики, обновляемой каждые 15 сек.' %}" class="short_descr"><span class="info_important" id="all_ident_data_journal">{{ journals_ident_count }}</span><span>*</span></span></div>
+							{% comment %}
+							{% if journals_count > 0 %}<div>{% trans "Количество отфильтрованных записей" %}: <span class="info_important" id="search_data_journal">{{ all_users }}</span>, {% trans "из них идентифицировано" %}: <span class="info_important" id="search_ident_data_journal">{{ all_ident_users }}</span></div>{% endif %}
+							{% endcomment %}
+						</div>
+						{% if journals_count > 0 %}
+							<div id="block_all_filter" class="block_all_filter">
+								<select name="" id="filter_journal" class="select select_filters">
+									<option value="0" selected="selected">--- {% trans "Добавить фильтр" %} ---</option>
+									<option value="1"{% if time_check %} disabled="disabled"{% endif %}>{% trans "По времени" %}</option>
+									<option value="2"{% if defined %} disabled="disabled"{% endif %}>{% trans "По идентифицированным персонам" %}</option>
+									<option value="3"{% if cameras %} disabled="disabled"{% endif %}>{% trans "По ID видеокамеры" %}</option>
+									<option value="4"{% if fio %} disabled="disabled"{% endif %}>{% trans "По ФИО персоны" %}</option>
+									<option value="5"{% if id_person != None %} disabled="disabled"{% endif %}>{% trans "По ID персоны" %}</option>
+									<option value="6"{% if id_record != None %} disabled="disabled"{% endif %}>{% trans "По ID события" %}</option>
+									<option value="7"{% if filter %} disabled="disabled"{% endif %}>{% trans "Расширенный фильтр" %}</option>
+								</select>							
+								<fieldset class="block_filter">
+									<legend>{% trans "Фильтры" %}</legend>	
+									<div id="block_all_filters">
+										<div class="block block_filter_param" id="block_filter_date" style="display: block;">
+											<div class="bl_error"></div>
+											<div class="block">
+												<div class="bl_txt"><label for="filter_date">{% trans "Фильтр по дате:" %}</label></div>
+												<div class="bl_enter">{% trans "просмотр записей" %} <span class="dist_date">{% trans "с" %}</span> <input class="inp_txt" type="text" value="{{ dateBegin|date:"d.m.Y" }}" id="dateBegin" name="dateBegin" /><input type="button" onclick="javascript: displayDatePicker('dateBegin', false, 'dmy', '.');" title="{% trans "Выбрать дату" %}" class="btn_calend short_descr" value="" name=""/>
+												<span class="dist_date">{% trans "по" %}</span> <input type="text" class="inp_txt" value="{{ dateEnd|date:"d.m.Y" }}" id="dateEnd" name="dateEnd" /><input type="button" onclick="javascript: displayDatePicker('dateEnd', false, 'dmy', '.');" title="{% trans "Выбрать дату" %}" class="btn_calend short_descr" value="" name=""/></div>
+											</div>
+										</div>
+										<div class="block block_filter_param" id="block_filter_time" style="display: {% if time_check %}block{% else %}none{% endif %};">
+											<div class="bl_txt"><input type="checkbox" name="" value="" class="inp_check check_filter" id="filter_time" checked="checked" /><label for="filter_time">{% trans "Фильтр по времени:" %}</label></div>
+											<div class="bl_enter">
+												<div class="block_ie"><div class="block">
+													{% spinbox "time_hour_beg" "hour_beg" timeBegin.hour "25" "0" "23" "1" %}
+													<div class="delim_time">:</div>
+													{% spinbox "time_min_beg" "min_beg" timeBegin.minute "25" "0" "59" "1" %}
+													<div class="delim_time2">{% trans "по" %}</div>
+													{% spinbox "time_hour_end" "hour_end" timeEnd.hour "25" "0" "23" "1" %}
+													<div class="delim_time">:</div>
+													{% spinbox "time_min_end" "min_end" timeEnd.minute "25" "0" "59" "1" %}											
+												</div></div>
+											</div>
+										</div>								
+										<div class="block block_filter_param" id="block_filter_ident" style="display: {% if defined %}block{% else %}none{% endif %};">
+											<input type="checkbox" name="defined" value="on" class="inp_check check_filter" id="filter_ident" {% if defined %}checked="checked"{% endif %} /><label for="filter_ident">{% trans "Отобразить идентифицированные записи" %}</label>
+										</div>
+										<div class="block block_filter_param" id="block_filter_cameras" style="display: {% if cameras %}block{% else %}none{% endif %};">
+											<div class="bl_txt"><input type="checkbox" name="" value="" class="inp_check check_filter" id="filter_cameras" checked="checked" /><label for="filter_cameras">{% trans "Фильтр по ID видеокамеры:" %}</label></div>
+											<div class="bl_enter">
+												<div class="block_ie">
+													<div class="block">
+														<input type="hidden" name="cameras" value="" id="cameras" />
+														<ul class="list_cameras" id="list_cameras">
+														{% for camera in all_cameras %}
+															<li class="list_cameras_camera{% if camera.id in cameras %} lc_check{% endif %}"><input type="checkbox" name="" {% if camera.id in cameras %}checked="checked"{% endif %} value="{{camera.id}}|{{camera.ip}}|{{camera.type}}{% for act_cam in act_cameras %}{% ifequal camera.id act_cam.id %}|{{ act_cam.host }}|{{ act_cam.port }}|{{ act_cam.numcamera }}{% endifequal %}{% endfor %}"  class="inp_check" id="camera_{{camera.id}}" /><label for="camera_{{camera.id}}">{{ camera.ip|truncchar:14 }}:{{ camera.type|truncchar:8 }}</label></li>
+														{% endfor %}
+														</ul>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="block_auto block_filter_param" id="block_filter_fio" style="display: {% if fio %}block{% else %}none{% endif %};">
+											<div class="bl_error" id="bl_error_person_fio"></div>
+											<div class="block">
+												<div class="bl_txt"><input type="checkbox" name="" value="" class="inp_check check_filter" id="filter_fio" {% if fio %}checked="checked"{% endif %} /><label for="filter_fio">{% trans "Фильтр по ФИО персоны:" %}</label></div>
+												<div id="block_search_fio">
+													<script type="text/javascript">			
+													//автоподстановка имён персон
+													jQuery().ready(function() { jQuery($("#person_fio")).autocomplete("{% url person_autocomplete %}", { 
+														multiple: false,
+														width: 414,
+														maxItemsToShow: 5
+													}); });
+													</script>
+													<div class="bl_enter">
+														<input type="text" id="person_fio" name="fio" value="{{ fio }}" class="inp_txt dist_filter_enter inp_fio" />
+													</div>
+												</div>
+											</div>
+										</div>
+										
+										<div class="block block_filter_param" id="block_filter_id_person" style="display: {% if id_person != None %}block{% else %}none{% endif %};">
+											<div class="bl_error"></div>
+											<div class="block">
+												<div class="bl_txt"><input type="checkbox" value="" class="inp_check check_filter" id="filter_id_person" {% if id_person != None %}checked="checked"{% endif %} /><label for="filter_id_person">{% trans "Фильтр по ID персоны:" %}</label></div>
+												<div class="bl_enter">
+													<input type="text" name="id_person" value={% if id_person != None %}"{{ id_person }}"{% else %}""{% endif %} class="inp_txt" id="id_person" />
+												</div>
+											</div>
+										</div>	
+										
+										<div class="block block_filter_param" id="block_filter_id_record" style="display: {% if id_record != None %}block{% else %}none{% endif %};">
+											<div class="bl_error"></div>
+											<div class="block">										
+												<div class="bl_txt"><input type="checkbox" value="" class="inp_check check_filter" id="filter_id_record" {% if id_record != None %}checked="checked"{% endif %} /><label for="filter_id_record">{% trans "Фильтр по ID события:" %}</label></div>
+												<div class="bl_enter">
+													<input type="text" name="id_record" value={% if id_record != None %}"{{ id_record }}"{% else %}""{% endif %} class="inp_txt" id="id_record" />
+												</div>
+											</div>
+										</div>	
+										
+										<div class="block block_filter_param" id="block_filter_colspans" style="display: {% if filter %}block{% else %}none{% endif %};">
+											<div class="bl_txt"><input type="checkbox" name="" value="" class="inp_check check_filter" id="filter_colspans" {% if filter %}checked="checked"{% endif %} /><label for="filter_colspans">{% trans "Расширенный фильтр:" %}</label></div>
+											<div class="bl_enter">
+												<input type="text" name="filter" value="{{ filter }}" class="inp_txt dist_filter_enter inp_fio" id="filter" /><span class="dist_left">{% trans "фильтр по всем столбцам" %}</span>
+											</div>									
+										</div>
+									</div>
+									<div>
+										<input type="submit" id="apply_filters" class="inp_btn inp_btn90_blue" value="{% trans 'Применить' %}" name="" />
+										<input type="button" onClick="javascript: resetFilters();" class="inp_btn inp_btn140 dist_left" value="{% trans 'Сбросить фильтр' %}" name="" />
+									</div>
+								</fieldset>
+							</div>
+						{% endif %}
+						<div id="dataJournal">{% include "datajournal.html" %}</div>
+						<script type="text/javascript">doTimeRefresh();</script>	
+						</ul>
+						{%  if all_pages = 'True' %}
+							<input type="hidden" name="all_pages" value="{{all_pages}}" id="cameras" />
+						{% endif  %}
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "footer.html" %}
+<div id="easyTooltip_auto" style="display: none;"></div>
+
+<div id="easyTooltip_camera" class="tooltip" style="display: none;">
+	<div class="indicator_camera" style="display: none;"><div>{% trans "Идёт загрузка данных" %}.<br />{% trans "Пожалуйста, подождите" %}...</div></div>
+	<div class="info_camera" style="display: none;">
+		<div id="camera_name"></div>
+		<div id='camera_frame'></div><!-- <img src="" width='200px' alt='' /> -->
+	</div>
+</div>
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% include "window_journalphoto.html" %}
+{% include "window_export_journalphoto.html" %}
+{% include "window_journal_trainingperson.html" %}
+{% include "status_thread_progress_bar.html" %}
+<script>    
+	//var jtimer = setTimeout('JournalReload()', 60000);
+</script>
+
+</body>
+</html>

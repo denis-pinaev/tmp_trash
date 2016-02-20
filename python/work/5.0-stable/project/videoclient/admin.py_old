@@ -1,0 +1,17 @@
+# charset=utf-8
+from videoclient.models import *
+from django.contrib import admin
+
+class TranslationAdmin(admin.ModelAdmin):
+    list_display = ('phrase', 'language', 'translate', 'group', 'active')
+    list_filter = ('group', 'active', 'language')
+    search_fields = ['phrase']
+    fields = ('group', 'phrase', 'language', 'translate','active')
+    list_per_page = 20
+
+admin.site.register(Translation, TranslationAdmin)
+admin.site.register(Language)
+admin.site.register(Group)
+admin.site.register(Communicator)
+admin.site.register(Balancer)
+

@@ -1,0 +1,255 @@
+﻿/* content */
+.content .block_result {
+	width: 662px;
+	height: 692px;
+	background: url("/files/images/security/fon_active.png") top left no-repeat;
+	float: left;
+}
+.content .block_result.unknow {
+	background-image: url("/files/images/security/fon_unknow.png");
+}
+.content .block_result.noactive {
+	background-image: url("/files/images/security/fon_noactive.png");
+}
+.content .block_result .block_photos {
+	width: 628px;
+	height: 310px;
+	overflow: hidden;
+	margin: 16px auto 9px auto;
+}
+.content .block_result .block_photos .photo {
+	float: left;
+	width: 310px;
+	height: 310px;
+	background: url("/files/images/security/fon_photo.png") top left no-repeat;
+	position: relative;
+}
+.content .block_result .block_photos .photo.camera .label_camera {
+	width: 19px;
+	height: 19px;
+	background: url("/files/images/security/label_camera.png") top left no-repeat;
+	position: absolute;
+	top: 5px;
+	left: 5px;
+}
+.content .block_result .block_photos .photo .image {
+	width: 310px;
+	height: 310px;
+	line-height: 310px;
+	text-align: center;
+	vertical-align: middle;
+	display: table-cell;
+}
+.content .block_result .block_photos .photo .image img {
+	vertical-align: middle;
+	max-width: 300px;
+	max-height: 300px; 
+}
+.content .block_result .block_photos .dist_photo {
+	margin-left: 8px;
+}
+.content .block_result .block_card {
+	width: 634px;
+	height: 343px;
+	background: url("/files/images/security/fon_card.png") top left no-repeat;
+	margin: 0px auto;
+}
+.content .block_result .block_card .fio {
+	width: 617px;
+	margin: 0px auto;
+	color: #555555;
+	font-family: "PT_SANS_wide_bold", arial, helvetica, sans-serif;
+	font-size: 32px;
+	text-align: center;
+	vertical-align: middle;	
+	padding-top: 9px;
+}
+.content .block_result .block_card .fio .fon_fio {
+	height: 78px;
+	line-height: 76px;
+	background: url("/files/images/security/fon_fio.png") top left no-repeat;
+	text-shadow: 1px 1px 1px #ffffff;
+}
+.content .block_result .block_card .fio .txt_fio {
+	width: 607px;
+	margin: 0px auto;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.content .block_result .block_card .fio.unknow {
+	color: #bcbcbc;
+}
+.content .block_result .block_card .block_info {
+	font-family: "PT_SANS_wide_bold", arial, helvetica, sans-serif;
+	margin: 0px 90px;
+}
+.content .block_result .block_card .block_info .field_name {
+	float: left;
+	width: 234px;
+	background: url("/files/images/security/bg_field_card.gif") left 13px repeat-x;
+	line-height: 1;
+	margin-top: 7px;
+}
+.content .block_result .block_card .block_info .field_name div {
+	float: left;
+	background: url("/files/images/security/bg_field_card2.gif") left 13px repeat-x;
+	padding-right: 2px;
+	text-transform: uppercase;
+	color: #75797b;
+	text-shadow: 1px 1px 1px #ffffff;
+	font-size: 16px;	
+}
+.content .block_result .block_card .block_info .field_answer {
+	font-size: 20px;
+	color: #4c5052;
+	margin-left: 242px;
+	text-shadow: 1px 1px 1px #ffffff;
+}
+.content .block_result .block_card .block_info .field_answer.time {
+	width: 91px;
+	height: 32px;
+	background: url("/files/images/security/fon_time.png") top left no-repeat;
+	text-align: center;
+	line-height: 32px;
+	vertical-align: middle;
+	margin-left: 234px;
+}
+.content .block_result .block_card .block_info .field_answer.unknow {
+	color: #bcbcbc;
+}
+.content .block_result .block_card .dist_info1 {
+	margin-top: 16px;
+}
+.content .block_result .block_card .dist_info2 {
+	margin-top: 30px;
+}
+/* menu buttons action */
+.content .block_buttons {
+	width: 304px;
+	height: 683px;
+	background: url("/files/images/security/fon_gray.png") top left no-repeat;
+	margin-left: 664px;
+	margin-top: 4px;
+}
+.content .menu_action {
+	width: 295px;
+	margin: 0px auto;
+	padding-top: 12px;
+}
+.content .menu_action li {
+	margin-bottom: 3px;
+}
+.content .menu_action li button {
+	text-transform: uppercase;
+	font-family: "PT_SANS_wide_bold", arial, helvetica, sans-serif;
+	text-align: center;
+	cursor: pointer;
+	width: 295px;
+}
+.content .menu_action li button span.txt {
+	display: block;
+}
+.content .menu_action li button.pass {
+	height: 198px;
+	text-shadow: 1px 0px 2px #000000;
+	color: #eeeeee;
+	font-size: 34px;
+}
+.content .menu_action li button.pass span.txt {
+	padding-bottom: 7px;
+}
+.content .menu_action li button.pass span.txt span {
+	padding-left: 35px;
+	background: url("/files/images/security/ico_tick.png") left center no-repeat;
+}
+.content .menu_action li button.noactive {
+	cursor: default;
+}
+.content .menu_action li button.pass {
+	background: url("/files/images/security/buttons.png") 0px 0px no-repeat;
+}
+.content .menu_action li button.pass.over {
+	background: url("/files/images/security/buttons.png") -305px 0px no-repeat;
+}
+.content .menu_action li button.pass.pressed {
+	background: url("/files/images/security/buttons.png") -610px 0px no-repeat;
+}
+.content .menu_action li button.pass.noactive {
+	background: url("/files/images/security/buttons.png") -915px 0px no-repeat;
+	color: #434343;
+	text-shadow: 1px 0px 2px #9b9b9b;	
+}
+.content .menu_action li button.pass.noactive span.txt span {
+	background: url("/files/images/security/ico_tick_noact.png") left center no-repeat;
+}
+.content .menu_action li button.solve,
+.content .menu_action li button.danger {
+	color: #3c3c3c;
+	font-size: 30px;
+	text-shadow: 1px 0px 2px #ffffbe;
+}
+.content .menu_action li button.solve {
+	height: 110px;	
+}
+.content .menu_action li button.solve span.txt {
+	padding-bottom: 12px;
+	padding-top: 4px;	
+}
+.content .menu_action li button.solve span.txt span {
+	padding-left: 44px;
+	background: url("/files/images/security/ico_eye.png") left center no-repeat;
+}
+.content .menu_action li button.solve {
+	background: url("/files/images/security/buttons.png") 0px -201px no-repeat;
+}
+.content .menu_action li button.solve.over {
+	background: url("/files/images/security/buttons.png") -305px -201px no-repeat;
+}
+.content .menu_action li button.solve.pressed {
+	background: url("/files/images/security/buttons.png") -610px -201px no-repeat;
+}
+.content .menu_action li button.solve.noactive {
+	background: url("/files/images/security/buttons.png") -915px -201px no-repeat;
+	color: #434343;
+	text-shadow: 1px 0px 2px #9b9b9b;		
+}
+.content .menu_action li button.solve.noactive span.txt span {
+	background: url("/files/images/security/ico_eye_noact.png") left center no-repeat;
+}
+.content .menu_action li button.danger {
+	height: 83px;
+	width: 296px;
+	line-height: 1;
+	text-shadow: 1px 0px 1px #ffffbe;
+}
+.content .menu_action li button.danger span.txt {
+	padding-bottom: 11px;
+	padding-top: 3px;
+}
+.content .menu_action li button.danger span.txt span {
+	padding-left: 39px;
+	background: url("/files/images/security/ico_danger.png") left center no-repeat;	
+}
+.content .menu_action li button.danger {
+	background: url("/files/images/security/buttons.png") 0px -316px no-repeat;
+}
+.content .menu_action li button.danger.over {
+	background: url("/files/images/security/buttons.png") -305px -316px no-repeat;
+}
+.content .menu_action li button.danger.pressed {
+	background: url("/files/images/security/buttons.png") -610px -316px no-repeat;
+}
+.content .menu_action li button.danger.noactive {
+	background: url("/files/images/security/buttons.png") -915px -316px no-repeat;
+	color: #434343;
+	text-shadow: 1px 0px 2px #9b9b9b;		
+}
+.content .menu_action li button.danger.noactive span.txt span {
+	background: url("/files/images/security/ico_danger_noact.png") left center no-repeat;
+}
+.content .menu_action li.dist_danger {
+	margin-top: 270px;
+	margin-bottom: 0px;
+}
+/* end content */

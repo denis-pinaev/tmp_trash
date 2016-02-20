@@ -1,0 +1,242 @@
+﻿{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Идентификация из файлов' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/monitoring_upload_recognition.css?v=v{{ version }}" />
+<script src="/files/js-global/FancyZoom.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js-global/FancyZoomHTML.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/file_no_distortion.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript">
+{% if was_files %}
+	function drawFaces() {
+		faces = []
+{% for face in faces %}
+	{% if face.0.full_face %}
+		faces.push([[{{face.0.full_face}}],"canvas_{{ forloop.counter }}",{{face.0.face_width}},{{face.0.face_height}}])
+	{% endif %}
+	{% if face.1 %}
+		{% for person in face.1 %}
+			{% if person.face_string %}
+				faces.push([[{{person.face_string}}],"canvas_{{ forloop.counter }}_{{forloop.parentloop.counter}}",{{person.face_width}},{{person.face_height}}])
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+{% endfor %}
+		for (face in faces) {
+			drawFace(faces[face]);
+		}
+	}
+	
+	function drawFace(face){
+			var params = face[0];
+			var original_width = face[2];
+			var original_height = face[3];
+			var imgSize = 120;
+			var dx = 0;
+			var dy = 0;
+			var coef = 1;
+			if (original_width > original_height) {
+				coef = 120/original_width;
+				dy = (120 - original_height*coef)/2;
+			} else {
+				coef = 120/original_height;
+				dx = (120 - original_width*coef)/2;
+			}
+			var canvas = document.getElementById(face[1]);
+			if (canvas) {
+				var ctx = canvas.getContext('2d');
+				var list = [];
+				var res = [];
+				if (params.length >= 14){
+					res['face'] = [params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7]];
+					res['is_face'] = parseInt(params[8]);
+					
+					if(params[9]<=1 && params[10]<=1 && params[12]<=1 && params[13]<=1){
+						params[9] = params[0]+params[9]*(params[2]-params[0]);
+						params[10] = params[1]+params[10]*(params[7]-params[1]);
+						params[12] = params[0]+params[12]*(params[2]-params[0]);
+						params[13] = params[1]+params[13]*(params[7]-params[1]);
+					}
+					res['eye1'] = [params[9], params[10]];
+					res['is_eye1'] = parseInt(params[11]);
+					res['eye2'] = [params[12], params[13]];
+					res['is_eye2'] = parseInt(params[14]);
+					list = ['eye1', 'eye2']
+					if (params.length >= 17){
+						res['nouse'] = [params[15], params[16]];
+						res['is_nouse'] = parseInt(params[17]);
+						list.push('nouse')
+						if(params[15]<=1 && params[16]<=1){
+							params[15] = params[0]+params[15]*(params[2]-params[0]);
+							params[16] = params[1]+params[16]*(params[7]-params[1]);
+						}
+						if (params.length >= 21){
+							res['chin'] = [params[18], params[19]];
+							res['is_chin'] = parseInt(params[20]);
+							list.push('chin')
+							if(params[18]<=1 && params[19]<=1){
+								params[18] = params[0]+params[18]*(params[2]-params[0]);
+								params[19] = params[1]+params[19]*(params[7]-params[1]);
+							}
+						}
+					}
+					var color = '#ff9900';
+					ctx.strokeStyle = color;
+					ctx.lineWidth   = 2;
+					for (var i in list){
+						ctx.beginPath();				
+						ctx.arc(res[list[i]][0]*coef+dx, res[list[i]][1]*coef+dy, 3, 0, Math.PI*2, false); 
+						ctx.closePath();
+						ctx.stroke();
+					}
+					ctx.beginPath();
+					drawLine(ctx,res['face'][0]*coef+dx,res['face'][1]*coef+dy,res['face'][2]*coef+dx,res['face'][3]*coef+dy,0.3)
+					drawLine(ctx,res['face'][2]*coef+dx,res['face'][3]*coef+dy,res['face'][4]*coef+dx,res['face'][5]*coef+dy,0.3)
+					drawLine(ctx,res['face'][4]*coef+dx,res['face'][5]*coef+dy,res['face'][6]*coef+dx,res['face'][7]*coef+dy,0.3)
+					drawLine(ctx,res['face'][6]*coef+dx,res['face'][7]*coef+dy,res['face'][0]*coef+dx,res['face'][1]*coef+dy,0.3)
+					ctx.closePath();
+					ctx.stroke();
+				}
+			}
+	}
+	
+	function drawLine(ctx,x1,y1,x2,y2,k){
+		var p1x = x1 + (x2-x1)*k;
+		var p1y = y1 + (y2-y1)*k;
+		var p2x = x1 + (x2-x1)*(1-k);
+		var p2y = y1 + (y2-y1)*(1-k);
+		ctx.moveTo(x1,y1);
+		ctx.lineTo(p1x,p1y);
+		ctx.moveTo(p2x,p2y);
+		ctx.lineTo(x2,y2);
+	}
+	
+	function showResultDetect(inp) {
+		if (inp.attr("checked")) {
+			setCookie('draw_detects', 'True');
+			$("canvas").parent().css("display", "block");
+		} else {
+			setCookie('draw_detects', 'False');
+			$("canvas").parent().css("display", "none");
+		}
+	}
+	
+	function setCheckbox(){
+		var dd = readCookie('draw_detects');
+		if (dd == 'True') {
+		    $("#check_ident" ).attr("checked", true);
+		    $("canvas").parent().css("display", "block");
+		} else {
+		    $("#check_ident").attr("checked", false);
+		    $("canvas").parent().css("display", "none");
+		}    
+	}
+{% endif %}	
+
+$(function() {
+	setupZoom();
+	$(".short_descr").easyTooltip();
+	showBlockFileUpload();
+	{% if was_files %}
+	drawFaces();
+	setCheckbox();
+	{% endif %}
+});
+</script>
+{% endblock %}
+{% block submenu %}{% include "monitoring_menu.html" %}{% endblock %}
+{% block subcontent %}
+<h2>{% trans 'Идентификация из файлов' %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Мониторинг_Идентификация из файлов" %}');" /></h2>
+{% include "current_time.html" %}
+{% if was_files %}
+<div class="message_action" id="block_message">{% trans 'Просмотр результатов идентификации выбранных фотографий' %}.
+	<div>{% trans 'Для обработки новых изображений из файлов нажмите на кнопку' %} <strong>{% trans 'Загрузить файлы' %}</strong>.</div>
+</div>
+{% else %}
+<div class="message_action" id="block_message">{% trans 'Для идентификации фотографий персон из файлов нажмите на кнопку' %} <strong>{% trans 'Загрузить файлы' %}</strong>.</div>
+{% endif %}
+<form method="POST" action="{% url upload_recognition %}" id="formUploadFile" class="form" enctype="multipart/form-data">					
+	<div id="upload_single_file" style="display: none;">
+		<div class="block_req">{% trans 'Поля, отмеченные звёздочкой (<span class="req">*</span>), являются обязательными для заполнения' %}.</div>
+		<div id="content_file">
+			<div class="form_block">
+				<div class="error_field"></div>
+				<div class="fb_content">						
+					<label for="file0" class="fbc_text"><span class="req">*</span>{% trans "Выберите файлы" %} (<strong id="current_count_file">0</strong> {% trans "из" %} <strong>20</strong>):</label>
+					<div class="fb_enter">
+						<input type="file" value="" id="file0" name="file" accept="image/*"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form_block">
+			<input type="submit" name="" id="btn_single_file" value="{% trans "Загрузить" %}" class="inp_btn inp_btn_blue120 btn_single_file noact_btn" disabled="disabled" />			
+		</div>
+	</div>
+	<div class="block" id="upload_multiple_file" style="display: none;">
+		<div class="upload_multiple_file">
+			<div class="block_multiple">
+				<div class="block_multiple_txt">{% trans "Загрузить файлы" %}</div>
+				<input type="file" name="files" value="" multiple="" id="multiple_file" />
+			</div>
+		</div>
+	</div>
+</form>
+<div class="block_loader" id="block_loader" style="display: none;">
+	<img src="/files/images/loader.gif" alt="" />
+	<div class="dist_top">{% trans "Идёт процесс обработки данных." %}</div>
+	<div>{% trans "Пожалуйста, подождите." %}</div>						
+</div>
+{% if was_files %}
+<div id="block_faces">
+<div class="dist_top"><strong>{% trans 'Порог идентификации' %} (K<sub>sm</sub>): {{coeff|cut:".0"}}%</strong></div>
+<div class="block dist_bottom">
+	{% if faces_count > 0 %}<div class="block_detect"><input type="checkbox" name="" value="" class="inp_check" id="check_ident" checked="checked" onClick="javascript: showResultDetect($(this));" /><label for="check_ident">{% trans 'Отображать результаты детектирования' %}</label></div>{% endif %}
+	<div class="block_results">{% trans 'Обработано файлов' %} - <strong>{{files_count}}</strong>, {% trans 'найдено лиц' %} - <strong>{{faces_count}}</strong>, {% trans 'идентифицированных' %} - <strong>{{ident_count}}</strong>.</div>	
+</div>
+{% if faces_count > 0 %}
+	<div class="block block_names">
+		<div class="name_faces">{% trans "Найденные лица" %}</div>
+		<div class="name_persons">{% trans "Результаты идентификации по базе" %}</div>
+	</div>
+	{% for face in faces %}
+	<div class="block">
+		<div class="block_face">
+			{% if face.0.url_photo_face %}
+			<div class="block_photo"><a href="#" onClick="javascript: return false;" style="cursor: default;"><img id="photo_{{ forloop.counter }}" src="{{face.0.url_photo_face}}" /></a><div class="block_ident"><canvas id="canvas_{{ forloop.counter }}" width="120px" height="120px"></canvas></div></div>						
+			<div class="photo_info"><div class="photo_param eyes short_descr" title="{% trans 'Расстояние между глазами' %}: {{face.0.face_dist}}">{{face.0.face_dist}}</div><div class="photo_param short_descr" title="{% trans 'Разрешение изображения' %}: {{face.0.face_width}}x{{face.0.face_height}}">{{face.0.face_width}}x{{face.0.face_height}}</div></div>
+			<a href="{{face.0.url_photo}}?big={{ forloop.counter }}.jpg" class="btn_loupe short_descr" target="_blank" title="{% trans 'Увеличить изображение' %}"><span></span></a>						
+			{% else  %}
+			<div class="block_photo"><a href="#"><img src="/files/images/exception_photo120x120.gif" /></a></div>
+			{% endif %}
+		</div>	
+		{% if face.1 %}
+			<div class="block_arrow"></div>
+				{% for person in face.1 %}
+				<ul class="list_photos" id="list_photos">
+					<li{% if person.k >= coeff %} class="lp_act"{% endif %}>
+						{% if person.person_info.fio_small %}
+							<div class="block_name short_descr" title="{{person.person_info.fio}}">{{person.person_info.fio_small}}</div>
+						{% else %}
+							<div class="block_name short_descr" title="">{% trans 'Нет данных.' %}{% if person.person_info.fio and person.person_info.fio != 'null' %} ID: {{person.person_info.fio}}{% endif %}</div>
+						{% endif %}
+						{% if person.url_photo_face %}
+							<div class="block_photo"><a{% if person.person_info.person_id != "#" %} href="{{person.person_info.person_id}}" target="_blank"{% else %} href="#" onClick="javascript: return false;" style="cursor: default;"{% endif %} class="photo"><img id="photo_{{ forloop.counter }}_{{forloop.parentloop.counter}}" src="{{person.url_photo_face}}" /></a><a{% if person.person_info.person_id != "#" %} href="{{person.person_info.person_id}}" target="_blank"{% else %} href="#" onClick="javascript: return false;" style="cursor: default;"{% endif %} class="link_go"></a><div class="param_ksm short_descr" title="{% trans 'Коэффициент похожести' %} (C<sub>sm</sub>): {{person.k|floatformat:4}}%">C<sub>sm</sub>={{person.k|floatformat:2}}%</div><div class="block_ident"><canvas id="canvas_{{ forloop.counter }}_{{forloop.parentloop.counter}}" width="120px" height="120px"></canvas></div></div>
+							<div class="photo_info"><div class="photo_param eyes short_descr" title="{% trans 'Расстояние между глазами' %}: {{person.face_dist}}">{{person.face_dist}}</div><div class="photo_param short_descr" title="{% trans 'Разрешение изображения' %}: {{person.face_width}}x{{person.face_height}}">{{person.face_width}}x{{person.face_height}}</div></div>
+							<a href="{{person.url_photo_face}}?big={{ forloop.counter }}_{{forloop.parentloop.counter}}.jpg" class="btn_loupe short_descr" target="_blank" title="{% trans 'Увеличить изображение' %}"><span></span></a>
+						{% else  %}
+							<div class="block_photo"><a href="{{person.person_info.person_id}}" target="_blank"><img src="/files/images/exception_photo120x120.gif" /></a><div class="param_ksm short_descr" title="{% trans 'Коэффициент похожести' %} (C<sub>sm</sub>): {{person.k|floatformat:4}}%">C<sub>sm</sub>={{person.k|floatformat:2}}%</div></div>
+							<div class="photo_info">&nbsp;</div>
+						{% endif %}
+					</li>
+				</ul>
+				{% endfor %}
+			{% endif %}
+		</div>
+		{% if not forloop.last %}<div class="block_delim"></div>{% endif %}
+	{% endfor %}
+{% endif %}
+</div>
+{% endif %}
+{% endblock %}

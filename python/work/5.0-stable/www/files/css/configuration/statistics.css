@@ -1,0 +1,179 @@
+﻿.inp_check {
+    margin-right: 5px;
+}
+.list_period {
+    float: right;
+    margin-top: 3px;
+}
+.list_period li {
+    display: inline;
+}
+.list_period li a {
+    border-right: 1px solid #cccccc;
+    padding: 0 12px;
+}
+.list_period li.lp_last a {
+    border-right: 0px;
+    padding-right: 0px;
+}
+.list_period li.lp_active a {
+    color: #333333;
+}
+.list_period li a.noact {
+    cursor: default;
+    color: #9b9b9b;
+}
+.head_period {
+    float: left;
+    margin-top: 3px;
+}
+.block_head {
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-align: center;
+}
+.block_table {
+    margin-bottom: 25px;
+}
+.table {
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    border-top: 1px solid #6e7d98;
+}
+.table.dist_top {
+    margin-top: 10px;
+}
+.table tr.odd {
+    background-color: #DBE2F0;
+}
+.table th {
+    vertical-align:top;
+    text-align: center;
+    border-right: 1px solid #6e7d98;
+    border-bottom: 1px solid #6e7d98;
+    background-color: #d9dee7;
+    padding: 3px 5px;
+    font-weight: normal;
+}
+.table th a,
+.table th a.sort_up,
+.table th a.sort_down {
+    padding-left: 14px;
+    background: url("/files/images/sort_arrow_down_noact.png") left center no-repeat;
+}
+.table th a.sort_up {
+    background: url("/files/images/sort_arrow_up.png") left center no-repeat;
+}
+.table th a.sort_down {
+    background: url("/files/images/sort_arrow_down.png") left center no-repeat;
+}
+.table th.th_first {
+    border-left: 1px solid #6e7d98;
+}
+.table td {
+    border-bottom: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;
+    vertical-align: top;
+    padding: 3px 5px;
+    width: 20%;
+}
+.table td.td_first {
+    border-left: 1px solid #cccccc;
+}
+.block_upload,
+.block_error {
+    text-align: center;
+}
+.block_error {
+    color: #ff0000;
+}
+.block_result {
+    width: 100%;
+    position: relative;
+    margin-top: 10px;
+}
+.block_result .graph {
+    width: 100%;
+    height: 300px;  
+}
+.block_result .axisX {
+    position: absolute;
+    bottom: 24px;
+    right: 5px;
+    font-size: 85%;
+    padding: 0px 1px;
+    background-color: #ffffff;    
+}
+.block_result .axisY {    
+    position: absolute;
+    top: -18px;
+    left: 15px;
+    font-size: 85%;
+    padding: 0px 1px;
+    background-color: #ffffff;    
+}
+.block_result .block_upload,
+.block_result .block_error {
+    width: 100%;
+    padding-bottom: 15px;
+}
+.graphTooltip {
+    max-width: 350px;
+    padding: 5px;
+    background-color: #ffffff;
+    border: 1px solid #999999;
+    display: none;
+    position: absolute;
+    z-index: 3101;
+    border-radius: 4px;
+    moz-border-radius: 4px;
+    box-shadow: 2px 2px 5px rgba(122,122,122,0.3);
+    overflow: hidden;
+    word-wrap: break-word;               
+}
+.graphTooltip .tooltip_time {
+    font-size: 90%;
+}
+.graphTooltip .tooltip_prop {
+    color: #006699;
+}
+.graph_options {
+    margin-top: 5px;
+}
+.graph_options .choices {
+    float: left;
+    vertical-align: middle;
+}
+.graph_options .choices span {
+    margin-right: 20px;
+}
+.graph_options .type_graphs,
+.graph_options .type_graphs li {
+    float: right;
+}
+.graph_options .type_graphs li {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+}
+.graph_options .type_graphs li.tg_act {
+    background: url("/files/images/graph_border_act.png") top left no-repeat;                                    
+}
+.graph_options .type_graphs li input {
+    margin-top: 2px;
+    margin-left: 2px;
+    width: 16px;
+    height: 16px;
+    border: 0px;
+    cursor: pointer;                        
+}
+.graph_options .type_graphs li input.graph_line_points {
+    background: url("/files/images/ico_graph_line_points.gif") top left no-repeat;
+}
+.graph_options .type_graphs li input.graph_line {
+    background: url("/files/images/ico_graph_line.gif") top left no-repeat;
+}
+.graph_options .type_graphs li input.graph_bar {
+    background: url("/files/images/ico_graph_bar.gif") top left no-repeat;
+}

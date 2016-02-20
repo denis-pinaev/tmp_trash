@@ -1,0 +1,27 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+function runStrFunc(func) {
+    eval(func);
+}
+
+function executeCommunicatorMethod(methodName, params, answer_type, host, port, mjpeg_port, successFunc, errorFunc){
+    var successFunc = successFunc;
+    var errorFunc = errorFunc;
+    var d = {'params': params, 'methodName': methodName, 'answer_type': answer_type, 'host': host, 'port': port, 'mjpeg_port': mjpeg_port };
+
+    $.ajax({
+            type: "GET",
+            url: "{% url execute-communicator-method %}",
+            data: d,
+            success: function(data){
+                obj = data;
+                if (obj.result == 'success') {
+                    runStrFunc(successFunc);
+                } else {
+                    runStrFunc(errorFunc);
+                }
+            }
+    });
+}
+</script>

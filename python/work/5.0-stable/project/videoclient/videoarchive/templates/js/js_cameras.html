@@ -1,0 +1,311 @@
+{% load i18n %}
+{% load a_templatetags %}
+<script type="text/javascript">
+	var MESSAGE = {
+		"0": "{% trans 'Выберите, пожалуйста, хотя бы одину камеру' %}.",
+		"1": "{% trans 'Вы действительно хотите удалить выбранные камеры ({} шт.)?' %}",
+		"2": "{% trans 'Камера успешно добавлен' %}.",
+		"3": "{% trans 'Камеры успешно удалены' %}."				
+	}
+	var ERROR = {
+		"0": "{% trans 'Введите хост' %}",
+		"1": "{% trans 'Введите порт' %}",
+		"2": "{% trans 'Введено некорректное значение' %}",
+		"3": "{% trans 'Введено некорректное значение' %}",
+		"4": "{% trans 'Ошибка добавления коммуникатора' %}",
+		"5": "{% trans 'Ошибка добавления: коммуникатор уже добавлен' %}",
+		"6": "{% trans 'Ошибка! Не удалось удалить коммуникатор' %}"
+	}
+	var URL = {
+	    "0": "{% url archive_command 'delete_cameras/' %}",
+	}
+function checkAllCameras(inp, isBtn) {
+	if (isBtn) {
+		if (inp.attr("checked")) inp.attr("checked", false)
+		else inp.attr("checked", "checked")
+	}
+	var rows = $("#table_add_cameras input[type=checkbox]");
+	var count = rows.length;
+	$.each(rows, function(key, value) {
+	    if (inp.attr("checked")){
+		    if ($(this).css("display") == 'block'){
+		        $(this).attr("checked", "checked");
+		        checkCheckedCameras(this, count);
+		    }
+		}else{
+		    $(this).css("display", "block")
+		    $(this).attr("checked", false);
+		}
+	});	
+	/*
+	if (inp.attr("checked")) {
+		$("#table_add_cameras input[type=checkbox]").attr("checked", "checked");
+	} else {
+		$("#table_add_cameras input[type=checkbox]").attr("checked", false);
+	}
+	*/
+}
+function setNewCameras(obj) {
+	var html = "";
+    for (var i = 0; i<obj.length; i++) {
+        if (i%2 == 0) {
+            html+='<tr>';
+        } else {
+            html+='<tr class="odd">';
+        }
+        html+='<td class="td_first td_check">' + (i+1)+'.<input type="checkbox" class="inp_check" name="" value="'+ obj[i].ip +'\:'+obj[i].type+'\:'+obj[i].com_id+'" id="check'+(i+1)+'" onClick="javascript: checkCheckedCameras(this, '+obj.length+');" /></td><td><label id="lable'+(i+1)+'" for="check'+(i+1)+'">'+obj[i].ip+' '+obj[i].type+'</label></td><td><label id="comm'+(i+1)+'" for="check'+(i+1)+'">'+obj[i].com_host+':'+obj[i].com_port+'</label></td>';
+    }	
+	$("#allAddCameras").html(obj.length);
+	var rows = $("#table_add_cameras tr");
+	$.each(rows, function(key, value) {
+		if (key > 0) {
+			$(this).remove();
+		}
+	})
+	$("#table_add_cameras tr:first").after(html);
+}
+function refreshCameras(){
+	showIndicator(true);
+    $.ajax({
+        type: "POST",
+        url: "{% url archive_page "cameras" %}/",
+        data: {},
+        success: function(msg){
+			showIndicator(false);
+            obj = msg;
+            setNewCameras(obj.addCameras);
+            addCameras('step1', obj.addCameras.length );
+        }
+    });
+}
+function addAjax(cameras, count) {
+    showIndicator(true);
+    $.ajax({
+        type: "POST",
+        url: "{{ root_path }}/command/add_cameras/",
+        data: {cameras: cameras},
+        success: function(msg){
+            obj = eval("(msg)");
+            //closeChangeWindow('win_del');
+            showIndicator(false);
+            if (obj.status){
+                if (obj.count) var check = obj.count;
+                else var check = isChecked(count);
+                var txt = createTextMessage({name_block: "addcameras", count: check});
+                changeWindow({id: 'win_add2', css: {width: '300px', height: '200px'}, txt: txt});
+            }else{
+                var txt = createTextMessage({name_block: "notaddcameras"});
+                changeWindow({id: 'win_add2', css: {width: '300px', height: '200px'}, txt: txt});
+            }
+            //setTimeout('location.reload(true)', 1000);
+        }
+    });
+}
+function addCameras(step, count) {
+    if (step == 'step1') {        
+        if (count > 0) {
+            var error = byId("block_error_add");
+            error.style.display = "none";
+            for (var i = 1; i <= count; i++) {
+                byId('check'+i).checked = false;
+            }
+            byId('choose_all').checked = false;        
+            changeWindow({id: 'win_add', css: {width: '500px', height: '375px'}});
+        } else {
+            changeWindow({id: 'win_add', css: {width: '300px', height: '200px'}});
+        }
+    } else if (step == 'step2') {
+        addAjax(clickDelete(count), count);
+    }
+}
+function checkAddCameras(count) {
+    var check = isChecked(count);
+    if (check < 1) {
+        var error = $("#block_error_add");
+        error.html('{% trans "Выберите камеру для добавления" %}.');
+        error.show();
+		if ($("#table_add_cameras").height() >= $("#block_add_cameras").height()) {
+			$("#win_add").css("height", "395px");
+		}
+    } else {
+        closeChangeWindow('win_add');
+        addCameras('step2', count);
+    }
+}
+
+function checkCheckedCameras(inp, count){
+    check(inp, count);
+    var val = inp.value.split(":");
+    if (val.length > 2) {
+        var rows = $("#table_add_cameras input[type=checkbox]");
+	    var count = rows.length;
+	    var checked = inp.checked;
+	    var re = new RegExp('^'+val[0]+':'+val[1]+':', 'i');
+	    $.each(rows, function(key, value) {
+	        if (inp!=this && re.test($(this).attr("value"))) {
+	            var c = $(this).attr("id").replace("check", "");
+				var lable = $("#lable"+c);
+				var comm = $("#comm"+c);
+		        if (checked){ 
+				    $(this).css("display", "none");				        
+				    if (lable) lable.css("color", "#999999"); 
+				    if (comm) comm.css("color", "#999999");
+				}else{
+				    $(this).css("display", "block");
+				    if (lable) lable.css("color", "#333333");
+				    if (comm) comm.css("color", "#333333");
+				}
+		    }
+	    });	
+	}
+}
+
+var oldNameCamera = "";
+function renameCamera(id, name) {
+	var oldName = byId('object_name' + id).innerHTML
+	byId('object_name' + id).innerHTML = name
+	$.ajax({
+		type: "POST",
+		url: "{{ root_path }}/command/rename_camera/",
+		data: {id: id, name: name},
+		success: function(msg){
+			obj = msg;
+			if (!obj.status) {
+				byId('object_name' + id).innerHTML = oldName;
+			}
+			return obj.status
+		},
+		error: function(msg) {
+			byId('object_name' + id).innerHTML = oldName
+			return false
+		}
+	});
+}
+function sendEnter(e) {
+    if (e.keyCode == 13) {    
+        var input = getObject(e);
+        var parent = input.parentNode;
+        var num = parent.id.substr(6, parent.id.length);
+		renameCamera(num, input.value);
+        parent.removeChild(input);
+        byId('object_name'+num).style.display = 'inline';
+        return false;
+    }
+    return true;
+}
+function editName(elem, num) {
+    var parent = byId('object'+num);
+    var input = searchChild(parent, 'INPUT', 'text');
+    if (!input) {
+        var el = byId(elem);
+        var txt = el.innerHTML;
+        oldNameCamera = txt;
+        el.style.display = 'none';
+        input = createElem('INPUT', {value: el.innerHTML, name: '', type: 'text', _class: 'inp_txt'}, parent);
+        input.style.width = parent.offsetWidth - 42 + 'px';
+        setCaretTo(input, txt.length);
+        addEvent(input, 'keypress', sendEnter);
+        addEvent(input, 'blur', finishEditing);   
+    }
+}
+function finishEditing(e) {
+    var input = getObject(e);
+    var parent = input.parentNode;
+    var num = parent.id.substr(6, parent.id.length);
+    parent.removeChild(input);
+    byId('object_name'+num).innerHTML = oldNameCamera;
+    byId('object_name'+num).style.display = 'inline';    
+}
+// выделение всех камер
+function selectAllCameras(inp) {
+    if (inp.attr("checked")) {
+		$("div.bl_btn_check div input[type=checkbox]").attr("checked", "checked");
+		$("#list_cameras tr td.td_check input[type=checkbox]").attr("checked", "checked");
+		$("div.bl_btn_check2 div input[type=checkbox]").attr("checked", true);
+    } else {
+		$("div.bl_btn_check div input[type=checkbox]").attr("checked", false);
+		$("#list_cameras tr td.td_check input[type=checkbox]").attr("checked", false);
+		$("div.bl_btn_check2 div input[type=checkbox]").attr("checked", false);
+    }
+}
+// получить кол-во выделенных строк
+function getCountCamerasChoose() {
+	return $("#list_cameras tr td.td_check input[type=checkbox]:checked").size();
+}
+// получить кол-во строк на странице
+function getCountCamerasAll() {
+	return $("#list_cameras tr td.td_check input[type=checkbox]").size();
+}
+// выбрать строку
+function selectCamera(inp) {
+    var count_choose = getCountCamerasChoose();
+	var count_all = getCountCamerasAll();
+	if (count_all == count_choose) $("div.bl_btn_check2 div input[type=checkbox]").attr("checked", "checked");
+	else $("div.bl_btn_check2 div input[type=checkbox]").attr("checked", false);
+}
+// инициализация функций
+function initFuncs() {
+    $("#choose_all").click(function() {
+        selectAllCameras($(this));
+    });    
+	$("#choose_all2").click(function() {
+        selectAllCameras($(this));
+    });
+	$("#list_cameras tr td.td_check input[type=checkbox]").click(function() {
+		selectCamera($(this));
+	});
+}
+function getCountAddCameras(){
+    return $("#table_add_cameras").find("input[type=checkbox]").length;
+}
+// удалить камеру
+function deleteCameras() {
+	var count_choose = getCountCamerasChoose();
+	if (count_choose > 0)  {
+		changeWindow({id: 'win_del', css: {width: '300px', height: '200px'}, txt: replace_string(MESSAGE[1], '{}', count_choose)});
+	} else {
+		changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: MESSAGE[0]});
+	}
+}
+function getInputs(name){
+	var c = 1;
+	var val = "";
+	obj = byId(name+c);
+	while (obj) {	    
+		if (obj.checked) {
+			val = val + obj.value + ",";			
+		}
+		c++;
+		obj = byId(name+c);
+	}
+	return val;
+}
+function delSelectCameras(url){
+	closeChangeWindow('win_del');
+	showIndicator(true);
+	$.ajax({
+		type: "POST",
+		url: URL[0],
+		data: {ids: getInputs("camera"), sort: $("#id_sort").val(), order: $("#id_order").val()},
+		success: function(msg){
+			showIndicator(false);					
+			if (msg.status != "error") {
+			    showMessage(MESSAGE[3]);
+			    if (msg.data){
+			         $('#cameras_list').html(msg.data);
+			         initFuncs();
+			    }
+			} else{
+				showMessage(ERROR[6]);
+			}
+		},
+		error: function(msg) {
+		    showIndicator(false);		
+		    showMessage(ERROR[6]);  		    
+		}
+	});    
+}
+$(function() {
+        initFuncs();
+});   
+</script>

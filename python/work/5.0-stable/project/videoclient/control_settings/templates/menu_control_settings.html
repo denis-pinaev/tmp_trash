@@ -1,0 +1,7 @@
+{% load i18n %}
+{% load templatetags %}
+<ul class="menu_vkl_inner">
+    <li><a href="/control_settings/" {% if select_page == 'control_settings_users' %}class="first act"{% else %}class="first"{% endif %}>{% trans "Пользователи" %}</a></li>
+    <li><a href="/control_settings/settings/" {% if select_page == 'control_settings_settings' %}class="act"{% endif %}>{% trans "Общие настройки" %}</a></li>
+    <li><a href="/control_settings/default/" {% if select_page == 'control_settings_default' %}class="last act"{% else %}class="last"{% endif %}>{% trans "Настройки по умолчанию" %}</a></li>
+</ul>

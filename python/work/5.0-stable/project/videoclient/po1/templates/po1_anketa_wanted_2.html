@@ -1,0 +1,150 @@
+﻿{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<script type="text/javascript" src="js/funcs.js?v=v{{ version }}"></script>
+
+<link rel="stylesheet" type="text/css" href="css/main.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="css/page.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="css/windows.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="css/po1_anketa_wanted.css?v=v{{ version }}" />
+
+</head>
+<body>
+<div class="body1">
+<!-- BEGIN: header -->
+<div class="header">
+	<div class="block_tm">
+		<div class="block_rtm"></div>
+		<div class="block_ltm"></div>
+		<div class="logo"><a href="#"><img src="images/logo.png" alt="" /></a></div>
+		<div class="lang" onClick="javascript: chooseLang(this);" title="Выбор языка">RU</div>
+		<ul class="right_menu">
+			<li><a href="#">Выход</a></li>	
+			<li><span class="user">Пользователь</span></li>
+		</ul>
+		<ul class="top_menu">
+			<li><a href="po1_journal.html">Журнал</a></li>
+			<li><a href="po1_signal.html">Сигналы</a></li>
+			<li><a href="po1_wanted.html" class="tm_active">Розыск</a></li>
+			<li><a href="po1_user.html">Пользователи</a></li>
+			<li><a href="po1_record.html">Запись</a></li>
+			<li><a href="po1_kpp.html">КПП</a></li>
+			<li><a href="po1_help.html" class="last">Помощь</a></li>
+		</ul>
+	</div>
+</div>
+<!-- END: header -->
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_wanted">
+		<ul class="menu_vkl">
+			<li>
+				<div>
+					<div>
+						<a href="po1_wanted.html">База разыскиваемых лиц</a>
+					</div>
+				</div>
+			</li>
+			<li class="menu_vkl_act">
+				<div>
+					<div>
+						<a href="po1_report_wanted.html">Отчёт за день</a>
+					</div>
+				</div>
+			</li>
+		</ul>
+		<div class="block_cont">
+			<div class="block_cont_top">
+				<div class="block_cont_bottom min_height">
+					<h2><a href="po1_report_wanted.html">Отчёт за день</a> - Иванов Иван Иванович<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+					<form method="post" action="" name="">
+						<div class="frm_block">
+							<div class="bl_photo_btn">
+								<div class="photo_user">
+									<a href="#"><img src="images/image_test3.jpg" width="120" height="120" alt="" /></a>
+									<div class="all_photo"><a href="po1_wanted_photos_2.html">Все фотографии (3)</a></div>
+								</div>
+							</div>
+							<div class="bl_info_all">
+								<div class="bl_info">
+									<div class="bl_txt">ФИО:</div>
+									<input type="text" name="" value="Иванов Иван Иванович" class="inp_txt" />
+								</div>
+								<div class="bl_info">
+									<div class="bl_txt">Дата рождения:</div>
+									<input type="text" name="" value="12.12.1980" class="inp_txt" style="width: 90px;" /><input type="button" name="" value="" title="Выберите дату" class="btn_calend" />
+								</div>
+								<div class="bl_info">
+									<div class="bl_txt">Дополнительная информация:</div>
+									<textarea name="" class="textarea"></textarea>
+								</div>
+								<div class="bl_info">
+									<div class="bl_txt">Фотографии:</div>
+									<input type="button" name="" class="inp_btn inp_btn170" value="Добавить фотографии" />
+								</div>
+							</div>					
+						</div>
+						<div class="frm_block">
+							<input type="button" name="" value="Сохранить" class="inp_btn inp_btn90" />
+						</div>					
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+<!-- BEGIN: footer -->
+<div class="footer">
+	<div class="foot_menu_ver">
+		<div class="version">Версия: 1.0.0</div>
+		<ul class="bottom_menu">
+			<li><a href="po1_journal.html" class="first">Журнал</a></li>
+			<li><a href="po1_signal.html">Сигналы</a></li>
+			<li><a href="po1_wanted.html" class="act">Розыск</a></li>
+			<li><a href="po1_user.html">Пользователи</a></li>
+			<li><a href="po1_record.html">Запись</a></li>
+			<li><a href="po1_kpp.html">КПП</a></li>
+			<li><a href="po1_help.html" class="last">Помощь</a></li>
+		</ul>
+	</div>
+	<div class="contacts">
+		<div class="block_contacts">
+			Контакты:
+			<ul class="list_contacts">
+				<li>информация: <a href="mailto:info@smilart.com">info@smilart.com</a></li> 
+				<li>техподдержка: <a href="mailto:support@smilart.com">support@smilart.com</a></li>
+			</ul>
+			<div class="copyright">Copyright &#169; 2010 "Простые решения". Все права защищены. <a href="http://www.smilart.com/">http://www.smilart.com/</a></div>
+		</div>
+	</div>	
+</div>
+<!-- END: footer -->
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+<div id="win_help" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_help');" title="Закрыть окно" /></div>
+			<div class="headWF_txt">Помощь</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_help_contWF"></div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="ОК" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_help');" />	
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

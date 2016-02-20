@@ -1,0 +1,13 @@
+{% extends "base_notab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Загрузка файлов с компьютера' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/learn.css?v=v{{ version }}" />
+{% endblock %}
+{% block subcontent %}
+{% include "content/addphotoperson_content.html" %}
+{% endblock %}
+{% block windows %}{% include "window_learn.html" %}{% endblock %}
+
+
+

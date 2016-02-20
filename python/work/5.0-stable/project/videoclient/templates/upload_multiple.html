@@ -1,0 +1,97 @@
+{% extends "base_notab.html" %}
+{% load i18n templatetags %}
+{% load pagination_tags %}
+{% block title %}{% trans "Загрузка файлов с компьютера" %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/list_photos.css?v=v{{ version }}" />
+<script src="/files/js-global/FancyZoom.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js-global/FancyZoomHTML.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript" src="/files/js/list_photos.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+    $(function() {
+        initSelectFaces();
+    });    
+</script>
+{% endblock %}
+{% block language %}<input type="button" class="language {{ LANGUAGE_CODE }}" name="" id="change_language" value="{{ LANGUAGE_CODE|upper }}" onClick="javascript: showMessage('<span class=\'error\'>{% trans 'Внимание!' %}</span> {% trans 'Невозможно сменить язык на этой странице' %}.');" />{% endblock %}
+{% block subcontent %}
+<h2><a href="/lists/">{% trans "Списки" %}</a> - 
+	{% if select_page == 'persons' or select_sub_page == 'persons' %}
+		<a href="{{ project_url }}/persons/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketaperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a>
+	{% endif %}
+
+	{% if select_page == 'visitors' or select_sub_page == 'visitors' %}
+		<a href="{{ project_url }}/visitorslist/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketavisitor/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a>
+	{% endif %}
+
+	{% if select_page == 'staff' or select_sub_page == 'staff' %}
+		<a href="{{ project_url }}/stafflist/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketastaff/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a>
+	{% endif %}
+
+	{% if select_page == 'auto' or select_sub_page == 'auto' %}
+		<a href="{{ project_url }}/autolist/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketaauto/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a>
+	{% endif %}
+
+	  - <a href="{{ project_url }}/addphotoperson/{% if select_page == "lists" %}{{ select_sub_page }}{% else %}{{ select_page }}{% endif %}/{{ id }}/{% if group %}?group={{ group }}{% endif %}">{% trans "Загрузка файлов с компьютера" %}</a> - {% trans "Вырезанные лица" %} ({{ faces|length }})<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Загрузка файлов с компьютера' %}');" /></h2>
+{% include "current_time.html" %}
+<form method="post" action="{% url upload_multiple_resault select_sub_page id %}{% if group %}?group={{ group }}{% endif %}" name="">
+	<div class="message_action">
+		{% if not faces or faces|length == 0 %}
+			{% if errors %}
+				{% trans "Форматы загружаемых файлов не поддерживаются системой, для загрузки фотографий нажмите на кнопку" %} <strong>{% trans "Назад" %}</strong>.
+			{% else %}
+				{% trans "Лиц не найдено, для повторной загрузки фотографий нажмите на кнопку" %} <strong>{% trans "Назад" %}</strong>. 
+			{% endif %}
+		{% else %}
+			{% trans "Выберите интересующие фотографии для персоны и нажмите на кнопку" %} <strong>{% trans "Продолжить обучение" %}</strong>.
+		{% endif %}
+	</div>
+	{% if faces|length > 0 %}
+		<div class="block dist_top">
+			<ul class="menu_cutfaces" id="menu_cutfaces">
+				<li class="mcf_first mcf_act"><a href="#">{% trans "Все" %} ({{ faces|length }})</a></li>
+				<li class="mcf_dis"><a href="#" class="link_choose">{% trans "Только выделенные" %} (<span id="count_choose">0</span>)</a></li>
+			</ul>    
+			<div class="bl_btn_check short_descr" id="bl_btn_check_up" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all" /><label for="choose_all">{% trans "Выделить всё" %}</label></div></div>
+		</div>
+		<ul class="block list_photos" id="list_photos">
+			{% for face in faces %}
+				<li>
+					<div class="block_photo"><img src="{{ face.url_photo_face }}" {% if face.size_height %}height="{{ face.size_height }}"{% endif %} {% if face.size_width %}width="{{ face.size_width }}"{% endif %} alt="" /></div>
+					<div class="photo_info"><div class="photo_param eyes short_descr" title="{% trans "Расстояние между глазами" %}: {{ face.face_dist|floatformat }}">{{ face.face_dist|floatformat }}</div><div class="photo_param size short_descr" title="{% trans 'Разрешение' %}: {{ face.face_width }}x{{ face.face_height }}">{{ face.face_width }}x{{ face.face_height }}</div></div>
+					<div class="block_check"><input type="checkbox" name="face{{ forloop.counter0 }}" value="{{ forloop.counter0 }}" class="inp_check" id="check{{ forloop.counter }}" class="inp_check" /></div>
+					<a href="{{ face.url_photo }}?big={{ forloop.counter }}.jpg" class="btn_loupe" target="_blank"><span class="short_descr" title="{% trans "Увеличить изображение" %}"></span></a>
+				</li>
+			{% endfor %}
+		</ul>
+		<ul class="list_photos" id="list_photos_choose" style="display: none;"></ul>
+		<div class="block" id="bl_btn_check_down">
+			<div class="bl_btn_check short_descr" id="bl_btn_check_up" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all2" /><label for="choose_all2">{% trans "Выделить всё" %}</label></div></div>
+		</div>
+		<div class="block dist_top">
+			<input type="hidden" name="faces_json" value="{{ faces_json }}" />
+			<input type="hidden" name="distortion" value="{{ distortion }}" />
+			<input type="submit" name="" value="{% trans "Продолжить обучение" %}" class="inp_btn btn_save" />                        
+			<a href="/addphotoperson/{% if select_page == "lists" %}{{ select_sub_page }}{% else %}{{ select_page }}{% endif %}/{{ id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel dist_left"><span>{% trans "Назад" %}</span></a>
+		</div>
+	{% else %}
+		<div class="block dist_top">
+			<a href="/addphotoperson/{% if select_page == "lists" %}{{ select_sub_page }}{% else %}{{ select_page }}{% endif %}/{{ id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel"><span>{% trans "Назад" %}</span></a>
+		</div>
+	{% endif %}
+</form>
+{% endblock %}
+{% block windows %}
+<div id="win_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF" id="win_mess_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />	
+		</div>
+	</div>
+</div>
+{% endblock %}

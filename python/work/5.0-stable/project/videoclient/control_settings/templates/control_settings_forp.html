@@ -1,0 +1,69 @@
+{% load i18n %}
+{% load templatetags %}
+{% for info1 in info.info %}
+    {% if info1.name and info1.index != "params" %}<ul class="list_settings"><li class="out">{% endif %}
+    {% with info1 as inf %}
+        {% if inf.name and inf.index != "params" %}
+             <div class="name">{% if not inf.index and inf.index != 0 %}<span>{{ forloop.counter }}.</span>{% endif %}<a href="#" onClick="showSettings(this, 'settings_base1_{{ forloop.counter }}'); return false;" {% if forloop.counter > 1 %}class="arrow_left"{% endif %}>{{ inf.name }} {{ inf.index }}</a></div>
+        {% endif %}    
+        <form method="post" action="">
+        {% include "control_settings_params.html"%}
+    {% endwith %}
+    {% if info1.info %}
+        <div id="settings_base1_{{ forloop.counter }}" style="display:{% if forloop.counter > 1 and info1.name != "" %}none{% else %}block{% endif %};">
+        {% for info2 in info1.info %}
+            {% if info2.name and info2.index != "params" %}<ul><li>{% endif %}                        
+            {% with info2 as inf %}
+                {% if inf.name and inf.index != "params" %}
+                    <div class="name">{% if not inf.index and inf.index != 0 %}<span>{{ forloop.counter }}.</span>{% endif %}<a href="#" onClick="showSettings(this, 'settings_base2_{{ forloop.counter }}'); return false;">{{ inf.name }} {{ inf.index }}</a></div>
+                {% endif %}
+                {% include "control_settings_params.html"%}
+            {% endwith %}
+            {% if info2.info %}
+                <div id="settings_base2_{{ forloop.counter }}" style="display: block;">
+                    {% for info3 in info2.info %}
+                        {% if info3.name and info3.index != "params" %}<ul><li>{% endif %}            
+                        {% with info3 as inf %}
+                            {% if inf.name and inf.index != "params" %}
+                                 <div class="name">{% if not inf.index and inf.index != 0 %}<span>{{ forloop.counter }}.</span>{% endif %}<a href="#" onClick="showSettings(this, 'settings_base3_{{ forloop.counter }}'); return false;">{{ inf.name }} {{ inf.index }}</a></div>
+                            {% endif %}
+                            {% include "control_settings_params.html"%}
+                        {% endwith %}
+                        {% if info3.info %}
+                            <div id="settings_base3_{{ forloop.counter }}" style="display: block;">
+                                {% for info4 in info3.info %}
+                                    {% if info4.name and info4.index != "params" %}<ul><li>{% endif %}            
+                                    {% with info4 as inf %}
+                                        {% if inf.name and inf.index != "params" %}
+                                            <div class="name">{% if not inf.index and inf.index != 0 %}<span>{{ forloop.counter }}.</span>{% endif %}<a href="#" onClick="showSettings(this, 'settings_base4_{{ forloop.counter }}'); return false;">{{ inf.name }} {{ inf.index }}</a></div>
+                                        {% endif %}
+                                        {% include "control_settings_params.html"%}
+                                    {% endwith %}
+                                    {% if info4.info %}
+                                        <div id="settings_base4_{{ forloop.counter }}" style="display: block;">
+                                            {% for info5 in info4.info %}
+                                                {% if info5.name and info5.index != "params" %}<ul><li>{% endif %}            
+                                                {% with info5 as inf %}
+                                                    {% include "control_settings_params.html"%}
+                                                {% endwith %}
+                                                {% if info5.name and info5.index != "params" %}</li></ul>{% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}            
+                                    {% if info4.name and info4.index != "params" %}</li></ul>{% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}            
+                        {% if info3.name and info3.index != "params" %}</li></ul>{% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}            
+            {% if info2.name and info2.index != "params" %}</li></ul>{% endif %}
+        {% endfor %}
+        <div class="block_btn"><input type="submit" value="{% trans "Сохранить" %}" class="inp_btn btn_blue"><input type="hidden" name="save" value="1" /></div>
+        </div>
+    {% endif %}    
+    </form>
+    {% if info1.name and info1.index != "params" %}</li></ul>{% endif %}    
+{% endfor %}
+<ul>

@@ -1,0 +1,83 @@
+{% extends "wizard_base.html" %}
+{% load i18n %}
+{% load templatetags %}
+{% block wizard_content %}
+<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/jquery.validate.js?v=v{{ version }}"></script>
+<div class="step"><strong>{% trans "Шаг 2 из" %} {{ all_steps }}. <span class="dist_left">{% trans "Ввод адреса основного компьютера" %}.</span></strong></div>
+{% if error_msg %}<div class="error dist_top">{{ error_msg }}</div>{% endif %}
+<script type="text/javascript">
+$(function() {
+    checkMainHostForm();
+});
+function checkMainHostForm() {
+	var validator = $("#MainHostForm").validate({
+		rules: {
+			host: {
+				required: true
+			}
+		},
+		messages: {
+			host: {
+				required: "{% trans 'Введите адрес основного компьютера' %}",
+			}
+		},
+		errorPlacement: function(error, element) {
+			error.appendTo( element.parent().prev() ); 
+		},
+        submitHandler: function() {
+			insertParameters();
+        }		
+	});
+}
+function insertParameters() {
+	var options = {
+	  url: "/wizard/communicator/",
+	  type: "POST",
+	  dateType: "json",
+	  success: function(msg) {
+			showIndicator(false);
+			if (msg && msg.status) {
+				window.location.href = "/wizard/balancer/";
+			} else if(msg && msg.errors) {
+				message = '';
+				errors = msg.errors
+				for(i=0; i<errors.length; i++) {
+					error = errors[i]; 
+					if (i!=0){
+						message += "\n";
+					}
+					message += error;
+				}
+				showMessage(message);
+			} else {
+				showMessage("{% trans 'Внимание! Произошла ошибка. Настройки не могут быть сохранены.' %}");
+			}
+		},
+		error: function(msg){
+			showIndicator(false);
+			showMessage("{% trans 'Внимание! Произошла ошибка. Настройки не могут быть сохранены.' %}");
+			window.location.href = "/wizard/communicator/";            
+		}
+	};
+	showIndicator(true);
+	$("#MainHostForm").ajaxSubmit(options);
+}
+</script>
+<form method="post" action="" class="dist_top" id="MainHostForm">
+	<div class="block_req">Поля, отмеченные звёздочкой (<span class="req">*</span>), являются обязательными для заполнения.</div>
+    <div class="frm dist_top">
+		<div class="bl_error3">{% if errors.host %}{{ errors.host }}{% endif %}</div>
+		<div class="block">
+			<label for="ip_address" class="bl_txt3"><span class="req">*</span>{% trans "Адрес основного компьютера" %}:</label>
+			<input type="text" id="ip_address" name="host" value="{{ HOST }}" class="inp_txt" />
+		</div>  
+    </div>
+    <div class="frm_btn dist_top">
+        <input type="hidden" name="action" value="next" id="inp_action" />
+        <input type="button" name="" value="{% trans "Назад" %}" class="inp_btn inp_btn90" onClick="javascript: document.location='/wizard/';" />
+        <input type="submit" name="" value="{% trans "Далее" %}" class="inp_btn btn_blue dist_left" />
+        <input type="hidden" name="save" value="true" />
+    </div>
+</form>
+{% endblock wizard_content %}

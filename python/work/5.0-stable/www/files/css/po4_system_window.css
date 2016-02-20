@@ -1,0 +1,65 @@
+﻿.winSystem {
+	border: 2px solid #AAAAAA;
+	z-index: 3100;
+	background-color: #ffffff;
+	width: 300px;
+	display: none;
+	right: 2px;
+	bottom: 0px;
+	overflow: hidden;
+}
+.winSystem .bodyWS {
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+.winSystem .headWS {
+	width: 100%;
+	overflow: hidden;
+	border-bottom: 1px solid #AAAAAA;
+	background-color: #f2f2f2;
+	font-weight: bold;
+}
+.winSystem .headWS_txt {
+	float: left;
+	margin: 2px 4px;
+	color: #FF0000;
+	cursor: default;
+}
+.winSystem .contWS {
+	overflow: auto;
+	width: 100%;
+	position: relative;
+}
+.winSystem .contWS_add {
+	padding: 4px 2px 2px 4px;
+}
+.winSystem .btn_min {
+	width: 16px;
+	height: 16px;
+	background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAADpSURBVHjapFNLCoMwEB1LFHHlTtDLpBdx6aGydNsrFPQk3Sm4qisXfpsXTKBYbCQDA2Z48/IyvvG2bSOX8EAghMB3xRjjQRCQTnlWoHmeaRxHk/Jcy/K9KApSiHVdqyzLeJqmVre2bcubpqlActtv4EmS0LIsVgksetCrFKAImVcCPYZgmiaVV0LjmR4SCn3f/yXyfZ/iODaKjQJMdxgGyvP8lKAsS4qi6FuBfgJYX+9z6VrtgQAKEM+HOCWAN4D9OYMwDK0HeJiB019w8YF2Yi2tae1EYPd9MLtwh7e7rru0TGYbXeIjwADyUf86yz+/bQAAAABJRU5ErkJggg==") top left no-repeat;
+	border: none;
+	float: right;
+	margin-top: 4px;
+	margin-right: 4px;
+	cursor: pointer;
+}
+.winSystem .btn_max {
+	background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAFESURBVHjapFM7a4RAEF6DL7QRLAT9M16dFMEmXJPSv5PeKoRASCMJpPf+ioWChWCl4DPOxB334iUkODDu7MznvHZGmqaJ7SEZPlEUwZHIsuyrqso4z3cE9X3P2rYlnu+nWX0Iw/DLwTiOied5vuu6f4qa57mfZVkCTuQlgu84DhuGgUBlWWI0IMjGtm2yATZNU59KgB8hTZGapmFBEKAcx/HGzoOhg67rkEWCH4Zxlb/b+V0WAVVVnQG7cY02142yoijMsizKiDKAeuu6Zrd39+SgXVpyHRxJ9/b6xAzDOM+Al4DPNfz+AjzbjQPe8fg5IvDNMcTz42XVwWwA9mIPdF0nIPZDaCLULTZw04Ndr3BpDiRJYu+PD5T2T3NwtUQ4zaOJSs6apjHTNJFBFm2AXfaBduEAs10Uxb+WCTPdu86fAgwA4uoU1viDGFwAAAAASUVORK5CYII=") top left no-repeat;	
+}
+.list_system_problem {
+	line-height: 1.2;
+}
+.list_system_problem li {
+	border-bottom: 1px dotted #cccccc;
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+	color: #000000;
+}
+.list_system_problem li .date_time {
+	color: #666666;
+}
+.list_system_problem li.lsp_li_last {
+	border-bottom: none;
+	margin-bottom: 0px;
+}

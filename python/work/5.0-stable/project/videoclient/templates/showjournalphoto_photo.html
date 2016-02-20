@@ -1,0 +1,136 @@
+{% load i18n %}
+{% load templatetags %}
+<div class="csm short_descr" title='{% trans "Коэффициент похожести" %} (C<sub>sm</sub>): {{ journal.coeff }}%'>{% trans "Коэффициент похожести" %} (C<sub>sm</sub>): {{ journal.coeff|floatformat:"-1" }}%</div>
+<div class="block_detect"><input type="checkbox" name="" class="inp_check" id="draw_face" onClick="javascript: clickCheckbox();" /><label for="draw_face">{% trans 'Отображать результаты детектирования' %}</label></div>
+<div class="block">
+	<div class="block_photo_camera">
+		<div class="photo_name">{% trans "Лицо с камеры" %}</div>
+		<div class="photo_camera" id="photo_cam"><div class="photo_camera_add">
+			<div class="photo_loader" id="photo_loader" style="display: none;"></div>
+			<!--<img src="{% url get-journal-photo journal.pk 'original' %}" width="{{ sizes.original.width }}" height="{{ sizes.original.height }}" alt="" />-->
+			<canvas id="photo_canvas" style="display: none;"></canvas>
+			
+		</div></div>
+		
+		<div class="photo_info">
+			<div class="photo_param time short_descr" title="{% trans "Время" %}: {{ journal.dt_first_fixed|date:"H:i:s" }}">{{ journal.dt_first_fixed|date:"H:i:s" }}</div>
+			{% if journal.get_found_distance %}<div class="photo_param eyes"><span class='short_descr' title='{% trans "Расcтояние между глазами на вырезанном изображении" %}: {{ journal.get_found_distance|floatformat:0 }}'>{{ journal.get_found_distance|floatformat:0 }}</span>{% if journal.get_distance %} (<span class="short_descr" title="{% trans "Расcтояние между глазами на оригинальном изображении" %}: {{ journal.get_distance|floatformat:0 }}">{{ journal.get_distance|floatformat:0 }}</span>){% endif %}</div>{% endif %}		
+			{% if journal.original %}<div class="photo_param size short_descr" title="{% trans "Разрешение изображения" %}: {{ journal.get_original_info.resol }}">{{ journal.get_original_info.resol }}</div>{% endif %}
+		</div>		
+	</div>
+	<div class="block_photo_camera block_photo_base">
+		<div class="photo_name">{% trans "Лицо из базы" %}</div>
+		<div class="photo_camera"><div class="photo_camera_add">
+			<img src="{% if not journal or not journal.finded or not journal.person %}/files/images/no_photo240x240.gif{% else %}{% url get-journal-photo journal.pk 'detected' %}{% endif %}" {% if not journal or not journal.finded or not journal.person  %}width="180" height="180"{% else %}width="{{ sizes.finded.width }}" height="{{ sizes.finded.height }}"{% endif %} alt="" />
+		</div></div>
+		<div class="photo_info">{% if not journal or not journal.finded or not journal.person %}{% else %}<div class="photo_param size short_descr" title="{% trans "Разрешение изображения" %}: {{ journal.get_found_info.resol }}">{{ journal.get_found_info.resol }}</div>{% endif %}
+			<div class="photo_param short_descr" title="{% trans "Порог идентификации" %} (K<sub>sm</sub>): {{ journal.bound_coeff }}%">K<sub>sm</sub>={{ journal.bound_coeff|floatformat:"-1" }}%</div>
+		</div>
+		{% if journal.coeff >= 99 %}<div class="photo_learn short_descr" title="{% trans "Лицо добавлено в базу" %}"></div>{% endif %}
+	</div>
+	<input type="hidden" id="journal_pk" value="{{journal.pk}}" />
+	<input type="hidden" id="journal_found_face" value="[{{journal.found_face}}]" />
+
+
+<script type="text/javascript">
+	
+	var coef = 1
+	
+	function drawFacesPerson(ctx){
+		if ($("#draw_face").attr("checked")){
+			params = eval($("#journal_found_face").val());
+			if (params.length >= 21){
+				var res = [];
+				res['face'] = [params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7]];
+				
+				res['is_face'] = parseInt(params[8]);
+				
+				res['eye1'] = [params[9], params[10]];
+				res['is_eye1'] = parseInt(params[11]);
+				
+				res['eye2'] = [params[12], params[13]];
+				res['is_eye2'] = parseInt(params[14]);
+				
+				res['nouse'] = [params[15], params[16]];
+				res['is_nouse'] = parseInt(params[17]);
+				
+				res['chin'] = [params[18], params[19]];
+				res['is_chin'] = parseInt(params[20]);
+				
+				var color = '#ff9900';
+				ctx.strokeStyle = color;
+				ctx.lineWidth   = 2;
+				
+				var list = ['eye1', 'eye2', 'nouse', 'chin'];
+				for (var i in list){
+					ctx.beginPath();				
+					ctx.arc(res[list[i]][0]*coef, res[list[i]][1]*coef, 3, 0, Math.PI*2, false); 
+					ctx.closePath();
+					ctx.stroke();
+				}
+				
+				ctx.beginPath();
+				ctx.moveTo(res['face'][0]*coef,res['face'][1]*coef);
+				ctx.lineTo(res['face'][2]*coef,res['face'][3]*coef);        
+				ctx.lineTo(res['face'][4]*coef,res['face'][5]*coef);    
+				ctx.lineTo(res['face'][6]*coef,res['face'][7]*coef);    
+				ctx.lineTo(res['face'][0]*coef,res['face'][1]*coef);    
+				ctx.closePath();
+				ctx.stroke();
+				
+			}
+
+		}	
+	
+	}
+	
+	
+	function drawPhoto() {
+	    var canvas = document.getElementById('photo_canvas');
+	    canvas.width={{ sizes.original.width }};
+	    canvas.height={{ sizes.original.height }};
+	    
+	    var ctx = canvas.getContext('2d');	
+	    var img = new Image();	
+	    $(img).attr("src", "/journal/"+ $("#journal_pk").val() + "/original/");
+	    $(img).load(function(){	
+		var imgSizeH = img.height;
+		var imgSizeW = img.width;
+
+		coef = canvas.width/imgSizeW<canvas.height/imgSizeH?canvas.width/imgSizeW:canvas.height/imgSizeH;
+		
+		canvas.width = canvas.width; //clear canvas
+		ctx.drawImage(img, 0, 0, img.width*coef, img.height*coef);
+		drawFacesPerson(ctx);		
+		$("#photo_loader").hide();		
+		$("#photo_canvas").show();
+	    })	    
+	}
+	
+	function clickCheckbox() {
+		if ($("#draw_face").attr("checked")){
+			setCookie('draw_detects', 'True');
+		}else{
+			setCookie('draw_detects', 'False');
+		}
+		drawPhoto();
+	}
+	
+	function setCheckboxAndDraw(){
+		var dd = readCookie('draw_detects');
+		if (dd == 'True') {
+		    $("#draw_face" ).attr("checked", true);
+		} else {
+		    $("#draw_face").attr("checked", false);
+		}    
+		drawPhoto();
+	}
+	
+	$(function() {	
+		setCheckboxAndDraw();
+	}); 
+	
+</script>
+	
+	
+</div>

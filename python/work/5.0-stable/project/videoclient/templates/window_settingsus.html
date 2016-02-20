@@ -1,0 +1,85 @@
+{% load i18n %}
+{% load templatetags %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+<div id="win_mess" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" /></div>
+            <div class="headWF_txt">{% trans "Перезапуск демона" %}</div>
+        </div>
+        <div class="contWF" id="win_mess_contWF"></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" /> 
+        </div>
+    </div>
+</div>
+<div id="win_restart_daemon" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_restart_daemon');" /></div>
+            <div class="headWF_txt">{% trans "Перезапуск демона" %}</div>
+        </div>
+        <div class="contWF" id="win_restart_daemon_contWF"></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Перезапуск" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_restart_daemon'); rebootDaemon();" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_restart_daemon');" />    
+        </div>
+    </div>
+</div>
+<div id="win_alert" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_alert');" /></div>
+            <div class="headWF_txt">{% trans "Предупреждение" %}</div>
+        </div>
+        <div class="contWF" id="win_alert_contWF"></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_alert');" />    
+        </div>
+    </div>
+</div>
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>
+<div id="win_switch" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_switch');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Включение/Выключение демона" %}</div>
+        </div>
+        <div class="contWF" id="win_switch_contWF">&nbsp;</div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="
+                javascript: closeChangeWindow('win_switch'); setBalancerState();"/>         
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_switch');" />       
+        </div>
+    </div>
+</div>
+<div id="win_balan" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_balan');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Включение/Выключение балансировщика" %}</div>
+        </div>
+        <div class="contWF" id="win_balan_contWF">&nbsp;</div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="
+                javascript: closeChangeWindow('win_balan'); setBalancerState(); "/>           
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_balan');" />     
+        </div>
+    </div>
+</div>
+<div id="win_reboot" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_reboot');" /></div>
+            <div class="headWF_txt">{% trans "Перезапуск серверов" %}</div>
+        </div>
+        <div class="contWF" id="win_reboot_contWF">&nbsp;</div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Перезапуск" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_reboot'); execute({cmd:'True', reboot: 'True'});" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_reboot');" />          
+        </div>
+    </div>
+</div>

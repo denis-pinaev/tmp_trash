@@ -1,0 +1,37 @@
+{% load i18n %}
+{% load templatetags %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+<div id="win_help" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_help');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Помощь" %}</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_help_contWF"></div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_help');" />	
+		</div>
+	</div>
+</div>
+<div id="win_add_terminal" title="{% trans "Добавить терминал" %}" style="display: none;"><!--  --></div>
+<div id="win_info_terminal" style="display: none;" title="{% trans "Информация о терминале" %}"><!--  --></div>
+<div id="win_add_camera" title="{% trans "Добавить камеру к терминалу" %}" style="display: none;"><!-- --></div>
+<div id="message" title="{% trans "Предупреждение" %}" style="display: none;"></div>
+<div id="win_delete" title="{% trans "Удаление" %}" style="display: none;"></div>
+<div id="video" style="display: none;" title="{% trans "Видео с камеры" %}">
+	<div class="block">
+		<div class="video" id="video_info_frame"><img id="video_info_img" src=""/><span id="video_info_message">{% trans "Загрузка" %}</span></div>
+		<div class="video_info"><!--  --></div>
+	</div>
+</div>
+<div id="win_add_map" style="display: none;" title="{% trans "Добавление карты" %}"><!----></div>
+<div id="win_map_indicator" style="display: none;">
+	<div style="text-align: center; margin-top: 20px;">
+	<img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+	<div class="dist_top"><strong>{% trans "Пожалуйста, подождите..." %}</strong></div>
+	</div>
+</div>
+<div id="win_map_alert" style="display: none;" title="{% trans "Сообщение" %}">
+	<div id="map_alert_div"><!-- --></div>
+</div>
+<div id="win_clear_map" style="display: none;" title="{% trans "Удаление терминалов" %}"><!----></div>

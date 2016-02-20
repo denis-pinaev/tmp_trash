@@ -1,0 +1,163 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+// обучение
+function learnJournal() {
+	var checks = $("#list_records input[type=checkbox]:checked");
+	var count_sel = checks.size();
+	if (count_sel > 0) {
+		persIdVals = new Array();
+		var ident = false;
+		var num = 0;
+		$.each(checks, function(key, value) {
+			persIdVals[key] = $(this).val();
+			num = $(this).attr("id").split("check")[1];
+			if ($('#img_id_' + num).attr('ident') == 1) {
+				ident = true;
+			}
+		});
+		if (ident) {
+			showMessage('{% trans "Выбранные персоны уже обучены." %}');
+		} else {
+			//showChooseLearn(count_sel); убрано, так как список типа Шум пока убрали из интерфейса
+			trainingPage();
+		}
+	} else {
+		showMessage('{% trans "Вы должны выбрать хотя бы одну запись." %}');
+	}
+}
+// выбор для типа обучения
+function showChooseLearn(count_sel) {
+	$("#count_learn").val(count_sel);
+	$("input[name=learn_as]:first").attr("checked", "checked");
+	changeWindow2({id: 'win_choose_learn'});
+}
+// в зависимости от типа - показываем окно
+function checkTypeLearn(count) {
+	closeChangeWindow('win_choose_learn');
+	var type = $("input[name=learn_as]:checked").attr("id");
+	if (type == "learn_as_person") {
+		trainingPage();
+		//showPersonTrainingDialog('group');
+	} else {
+		personsForNoise(count);
+	}
+}
+function personsForTraining(count) {	
+	persIdVals = new Array();
+	var ident = false;
+	var a = 0;
+	for (i=1; i<=count;i++)	{
+		if($('#check' + i).is(':checked')) {
+			if($('#img_id_' + i).attr('ident') == 1){
+				ident = true;
+			}
+			persIdVals[a] = $('#check' + i).val();
+			a++;
+		}
+	}
+	if (ident || persIdVals.length == 0){
+		showMessage('{% trans "Возможно, не выбрана ни одна запись или выбранные персоны уже обучены." %}');
+	} else {
+		showPersonTrainingDialog('group');
+	}	
+}
+function showPersonTrainingDialog(di_name) {
+	closeChangeWindow('win_persontraining_group');
+	var txt;
+	var eid = '';
+	if(di_name == 'form'){
+		eid = $('#person_group').val();
+	}
+	showIndicator(true);
+	$.ajax({
+		type: "GET",
+		url: "{{ project_url }}/get_journal_training_form/?di_name=" + di_name + "&eId=" + eid,
+		data: {},
+		success: function(msg) {
+			showIndicator(false);
+			switch (di_name) {
+				case 'group':
+					$('#trainingGroupFooter').show();
+					changeWindow({id: 'win_persontraining_group', css: {width: '400px', height: '300px'}});
+					$("#win_persontraining_group_contWF").html(msg);
+				break;
+				case 'form':
+					obj = msg;
+					var url = obj.redirect + '&journal_ids=' + persIdVals.join(',');
+					location.href = url;
+				break;
+			}
+		},
+		error: function(msg) {
+			showIndicator(false);
+			showMessage('{% trans "Сбой операции" %}');
+		}
+	});
+}
+function updateGroupFormButton() {
+	closeChangeWindow('win_persontraining_group');
+	var url1 = urls_arr[$('#person_group').val()];
+	var url2 = '?group=' + $('#person_group').val();
+	var url3 = '&journal_ids=' + persIdVals.join(',');
+	var url = url1 + url2 + url3;
+	$('#formGroupButton').attr('href', url);
+	doTimeRefresh();
+}
+// обучение как шум
+function personsForNoise() {
+	changeWindow2({id: 'win_learn', txt: replace_string(LEARN_AS_NOISE, '{}', '(' + $("#count_learn").val() + ')')});
+}
+function onClickLearningNoise() {
+	closeChangeWindow('win_learn');
+    var url = '/noiselist_result/?journal_ids=' + persIdVals.join(',');
+    document.location = url;
+}
+</script>
+<div id="win_choose_learn" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" /></div>
+			<div class="headWF_txt">{% trans "Обучение" %}</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add">
+			<input type="hidden" name="" id="count_learn" />
+			<div class="bl_learn">
+				<div><input type="radio" name="learn_as" value="" class="inp_check" id="learn_as_person" checked="checked" /><label for="learn_as_person">{% trans "Обучить персону" %};</label></div>
+				<div style="margin-top: 5px;"><input type="radio" name="learn_as" value="" class="inp_check" id="learn_as_noise" /><label for="learn_as_noise">{% trans "Обучить как шум" %}.</label></div>
+			</div>
+		</div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Обучить" %}" class="btn_wf_blue" onClick="javascript: checkTypeLearn();" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf close" />		
+		</div>
+	</div>
+</div>
+<div id="win_persontraining_group" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: stopTimeRefresh(); closeChangeWindow('win_persontraining_group');doTimeRefresh();" /></div>
+			<div class="headWF_txt">{% trans "Выбор группы или персоны" %}</div>
+		</div>
+		<div class="contWF1" style="height: 268px;"><div class="contWF_add" id="win_persontraining_group_contWF">&nbsp;</div></div>
+		<div class="footerWF" id="trainingGroupFooter">
+			<div class="win_block_btn">
+				<a id="formGroupButton" class="btn_wf_blue_link" href="#" target="_blank" onclick="javascript: updateGroupFormButton();"><span>{% trans "Далее" %}</span></a>
+				<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_persontraining_group');" />
+			</div>
+		</div>
+	</div>
+</div>
+<div id="win_learn" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close short_descr" /></div>
+			<div class="headWF_txt">{% trans 'Обучение "шумящих" фотографий' %}</div>
+		</div>
+		<div class="contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Обучить" %}" class="btn_wf_blue" onClick="javascript: onClickLearningNoise();" />
+			<input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf close" />			
+		</div>
+	</div>
+</div>

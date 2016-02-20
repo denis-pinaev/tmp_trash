@@ -1,0 +1,100 @@
+{% load i18n %}
+<script type="text/javascript">
+function updateProgressBar(id) {
+	var dateObj = new Date;
+    var unixtime_ms = dateObj.getTime();
+    var intervalUpdate = 500;
+	$.ajax({
+	    type: "POST",
+	    url: "{% url api_status_thread_list %}?rand="+unixtime_ms,
+	    data: {id: id},
+	    success: function(obj){
+	    	if (obj && obj.status && obj.threads && obj.threads.length>0) {
+	    		thread = obj.threads[0];
+    			if(thread.state<2) {
+				percent = thread.percent;
+				if (percent>100){
+					percent = 100;
+				}
+    				$('#status_thread_progress_bar_percent').html(percent);
+    				setTimeout('updateProgressBar('+id+')', intervalUpdate);
+    			} else {
+    				showProgressBar(false);
+    				if (thread.answer && thread.answer.status) {
+    					if (thread.answer.url) {
+							location.replace(thread.answer.url);
+						} else {
+							location.reload();
+						}
+					} else {
+						if (tread.message) {
+							changeWindow({id: 'win_mess_import', css: {width: '300px', height: '200px'}, txt: thread.answer	});
+						} else {
+							changeWindow({id: 'win_mess_import', css: {width: '300px', height: '200px'}, txt: "{% trans 'Ошибка экспорта' %}"});
+						}
+					}
+    			}
+	    	} else {
+	    		setTimeout('updateProgressBar('+id+')', intervalUpdate);
+	    	}
+	    },
+	    error: function(msg) {
+	    	setTimeout('updateProgressBar('+id+')', intervalUpdate);
+	    }
+	});
+	
+}
+
+function listValidateProgressBar() {
+	var dateObj = new Date;
+    var unixtime_ms = dateObj.getTime();
+    var thread = readCookie('thread');
+    if (thread) {
+		$.ajax({
+		    type: "POST",
+		    url: "{% url api_status_thread_list %}?active=true&rand="+unixtime_ms,
+		    data: {id: thread},
+		    success: function(obj){
+		    	if (obj && obj.status && obj.threads && obj.threads.length>0) {
+					for (var i = 0; i<obj.threads.length; i++) {
+						t = obj.threads[i];
+						if (t.id == thread) {
+							showProgressBar(t.id, t.percent);
+						}
+					}				
+		    	} 
+		    },
+		    error: function(msg) {
+		    }
+		});
+	}
+}
+listValidateProgressBar();
+
+function showProgressBar(id, percent) {
+	if (typeof percent !== 'undefined') {
+		$('#status_thread_progress_bar_percent').html(percent);
+	}
+
+	setCookie('thread', id);
+	var win = $('#status_thread_progress_bar');
+	var fon = $('#block_fon');
+	if (id) {
+		var w = 200;
+		var h = 60;
+		var scr = screenSize();
+		win.css("top", (100 - h * 100 / scr.height) / 3 / 100 * scr.height + 'px');
+		win.css("left", (scr.width - w) / 2 + 'px')
+		fon.show();
+		win.show();
+		setTimeout('updateProgressBar('+id+')', 500);
+	} else {
+		fon.hide();
+		win.hide();
+	}
+}
+</script>
+<div class="indicator" id="status_thread_progress_bar" style="display: none;">
+	<b><div><span id="status_thread_progress_bar_percent">0</span>%</div></b>
+	<div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>

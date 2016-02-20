@@ -1,0 +1,21 @@
+﻿.block_navigation {
+    margin-top: 10px;
+    width: 100%;
+    overflow: hidden;
+}
+.block_navigation .page {
+    float: left;
+    margin-right: 0.3em;
+    padding: 0.2em 0.5em;
+    border: 1px solid #EAEAEA;
+    background-color: #F9F9F9;
+    cursor: pointer;
+}
+.block_navigation a:hover{
+    border: 1px solid #bbbaba;
+    text-decoration: none;
+}
+.block_navigation .active {
+    border: 1px solid #ff6600;
+    cursor: default;
+}

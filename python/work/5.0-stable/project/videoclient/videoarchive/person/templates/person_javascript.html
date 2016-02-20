@@ -1,0 +1,67 @@
+{% load a_templatetags %}
+<script type="text/javascript">
+function createTextMessage(param) {
+	switch (param.name_block) {
+		case "persons": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одну персону" %}.';
+			break;
+		case "person": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одну фотографию персоны" %}.';
+			break;
+		case "visitors": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одного посетителя" %}.';
+			break;
+		case "staffs": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одного сотрудника" %}.';
+			break;
+		case "photos": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одну фотографию" %}.';
+			break;
+		case "users": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одного пользователя" %}.';
+			break;
+		case "visitingcards": 
+			return '{% trans "Выберите, пожалуйста, хотя бы одну карточку" %}.';
+			break;											
+		case "persons_del": 
+			return '{% trans "Вы, действительно, хотите удалить выбранных персон" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "person_del": 
+			return '{% trans "Вы, действительно, хотите удалить выбранные фотографии" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "photos_del": 
+			return '{% trans "Вы, действительно, хотите удалить выбранные фотографии" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "photos_export": 
+			return '{% trans "Сохранить выделенные фотографии" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;					
+		case "visitors_del": 
+			return '{% trans "Вы, действительно, хотите удалить выбранных посетителей" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "staffs_del": 
+			return '{% trans "Вы, действительно, хотите удалить выбранных сотрудников" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "users_del": 
+			return '{% trans "Вы, действительно, хотите удалить выбранных пользователей" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;
+		case "visitingcards_del": 
+			return '{% trans "Вы, действительно, хотите удалить выбранные карточки" %} ('+param.count+' {% trans "шт" %}.)?';
+			break;										
+		case "persons_zeroing": 
+			return '{% trans "Вы, действительно, хотите удалить базу персон" %}?';
+			break;
+		case "restart": 
+			return '{% trans "Вы, действительно, хотите перезапустить систему" %}?';
+			break;
+		case "reboot": 
+			return '{% trans "Вы, действительно, хотите перезагрузить компьютер" %}?';
+			break;
+		case "journal": 
+			return '{% trans "Очистить данные журнала " %}'+getPeriodClear()+'?';
+			break;											
+		default: 
+			return '{% trans "Выберите, пожалуйста, хотя бы одно изображение" %}.';
+			break;
+	}
+}
+</script>

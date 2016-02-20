@@ -1,0 +1,112 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Администрирование' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/configuration/setup/setup.css?v=v{{ version }}" />
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript">
+var params = new Array(); // глобальный массив для хранения значений в спинбоксах
+var curr_val = '{% if  period%}{{period}}{% else %}30{% endif %}';
+
+// функция для сбрасывания настройки периода хранения данных
+function resetParamsForm() {
+	$("#storage_data").val(curr_val);
+}
+
+// инициализация списка функционалов
+function initListFunctionals() {
+	$("#list_functionals li:last").addClass("lf_last");
+}
+
+$(function() {
+	
+	initListFunctionals();
+});	
+
+function changePeriod(){
+	var d = {'period_storage_data': $("#storage_data").val()};
+	$.ajax({
+		type: "POST",
+		url: "",
+		data: d,
+		success: function(msg){
+			if (msg == 'True') {
+				curr_val = $("#storage_data").val();
+				showMessage('{% trans "Параметр успешно применён" %}');
+			} else {
+				showMessage('{% trans "Ошибка применения параметра" %}');
+			}
+		}, 
+		error: function(msg) {
+			showMessage('{% trans "Ошибка" %}');
+		}
+	});
+}
+	
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+<h2>{% trans "Администрирование" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% help 'Администрирование' %}');" /></h2>
+{% include "current_time.html" %}
+<ul class="list_functionals" id="list_functionals">
+	
+	<!-- интерфейс для периода хранения данных -->
+	<li>
+		<div class="head">{% trans "Период хранения данных" %}</div>
+		<div class="cont">{% trans "После истечения указанного периода данные в системе (журнал идентификаций, логи ошибок) будут удалены." %}</div>
+		<form method="post" action="" id="form_storage_data">
+			<div class="bl_param">
+				<div class="block">
+					<label for="storage_data" class="bl_txt">Период хранения данных (в днях):</label>
+					{% spinbox "storage_data" "storage_data" period "38" "1" "365" "1" %}
+				</div>
+			</div>		
+			<div class="block bl_param">
+			<div class="block bl_param">
+				<input type="button" name="" value="{% trans 'Сохранить' %}" class="inp_btn btn_save" onclick="javascript: changePeriod()" />
+				<input type="button" name="" value="{% trans 'Отменить' %}" class="inp_btn inp_btn90 dist_left" onClick="javascript: resetParamsForm();" />
+			</div>			
+		</form>
+	</li>
+		
+	<li>
+		<div class="head">{% trans "Перезапуск системы" %}</div>
+		<div class="cont">{% trans "Перезагрузка программного комплекса." %}</div>
+		<a href="#" target="_blank" class="link_btn" onClick="javascript: reboot_system_window(); return false;"><span>{% trans "Перезапуск системы" %}</span></a>
+	</li>
+	<li>
+		<div class="head">{% trans "Мастер настроек" %}</div>
+		<div class="cont">{% trans "Первичная настройка системы." %}
+			<div>{% trans "Используйте при добавлении дополнительных серверов, изменении IP-адресов, запуска дополнительных сервисов." %}</div>
+		</div>
+		<a href="/wizard/" target="_blank" class="blue"><span>{% trans "Мастер настроек" %}</span></a>
+	</li>
+	{% if perms.user_perms.perm_system_settings %}
+	<li>
+		<div class="head">{% trans "Дополнительные настройки" %}</div>
+		<div class="cont">{% trans "Специальные параметры системы." %}
+			<div>{% trans "Не рекомендуется использовать конечным пользователям." %}</div>
+			<div>{% trans "Перед изменением проконсультируйтесь со специалистами" %} <a href="mailto:support@smilart.com" class="blue">{% trans "технической поддержки" %}</a> {% trans 'компании OOO "Простые решения"' %}.</div>
+		</div>
+		<a href="/admin/" target="_blank" class="blue"><span>{% trans "Дополнительные настройки" %}</span></a>
+	</li>
+	{% endif %}
+</ul>
+{% endblock %}
+{% block windows %}
+{% include "window_reboot_us.html" %}
+<div id="win_mess" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Предупреждение" %}</div>
+        </div>
+        <div class="contWF" id="win_mess_contWF"></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />    
+        </div>
+    </div>
+</div>
+{% endblock %}

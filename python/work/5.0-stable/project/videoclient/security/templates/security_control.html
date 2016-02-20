@@ -1,0 +1,90 @@
+{% load i18n %}
+{% load templatetags %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{% trans "КПП" %}</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	
+	<script type="text/javascript" src="/files/js/lib/jquery-ui/jquery-1.8.2.min.js?v=v{{ version }}"></script>
+	<script type="text/javascript" src="/files/js/lib/jquery-ui/jquery-ui-1.8.24.custom.min.js?v=v{{ version }}"></script>
+	<link rel="stylesheet" type="text/css" href="/files/js/lib/jquery-ui/css/vader/jquery-ui-1.8.24.custom.css?v=v{{ version }}" />	
+	
+	<link rel="stylesheet" type="text/css" href="/files/css/security/style.css?v=v{{ version }}" />
+	<link rel="stylesheet" type="text/css" href="/files/css/security/main.css?v=v{{ version }}" />
+	{% comment %}<link rel="stylesheet" type="text/css" href="/files/css/security/perimetr.css?v=v{{ version }}" />{% endcomment %}
+	
+	<script type="text/javascript" src="/files/js/security/util.js?v=v{{ version }}"></script>
+	
+	<script type="text/javascript">
+	var hour = {{ now_hour|default:0 }};      // инициализация для часа
+	var minute = {{ now_minute|default:0 }};  // инициализация для минуты
+	var second = {{ now_second|default:0 }};  // инициализация для секунды
+	
+	var BUTTONS = {
+		"exit": "{% trans 'Выйти' %}",
+		"cancel": "{% trans 'Отменить' %}",
+		"ok": "{% trans 'ОК' %}"
+	}
+	
+	var URLS = {
+		"security": "{% url security %}"
+	}
+	
+	var ERRORS = {
+		"kpp": "{% trans 'Для пользователя' %} <strong>{% if login_user %}{{ login_user }}{% else %}{{ user }}{% endif %}</strong> {% trans 'отсутствует КПП' %}.<p>{% trans 'Идентификации не будут отображаться.' %}</p><p>{% trans 'Для настройки обратитесь к системному администратору' %}.</p>",
+		"cameras": "{% trans 'Для КПП' %} \"<strong>{{ kpp }}</strong>\" {% trans 'отсутствуют камеры' %}.<p>{% trans 'Идентификации не будут отображаться.' %}</p><p>{% trans 'Для настройки обратитесь к системному администратору' %}.</p>"
+	}
+	
+	$(function() {
+		init();	
+		{% if not kpp %}
+			showWarning("win_warning", ERRORS["kpp"]);
+		{% else %}
+			{% if not kpp.cameras or kpp.cameras|length == 0 %}
+				showWarning("win_warning", ERRORS["cameras"]);
+			{% endif %}
+		{% endif %}
+	});	
+	</script>	
+</head>
+<body>
+<div class="body1" id="body1">
+	<div class="fon">
+		<!-- BEGIN: header -->
+		<div class="header">
+			<div class="header_block">
+				<div class="block">
+					<ul class="menu_right">
+						<li><input type="button" name="" value="" class="button close" onClick="javascript: exit();" /></li>
+						<!--<li><input type="button" name="" value="" class="button help" title="Помощь" /></li>
+						<li><input type="button" name="" value="" class="button settings" title="Настройки" /></li>-->
+					</ul>
+					<div class="logo"><img src="/files/images/security/logo.png" alt="{% trans 'Логотип' %} Smilart" /></div>
+					<div class="product">{% trans "Кпп" %}</div>
+					<div class="add_info">
+						<div class="time_date">{{ now_datetime|date:"d.m.Y" }} {% if now_hour and now_minute and now_second %}<span id="current_time">{{ now_hour }}:{{ now_minute }}:{{ now_second }}</span>{% endif %}</div>
+						<div class="operator">{% trans "Оператор" %}: {% if login_user %}{{ login_user }}{% else %}{{ user }}{% endif %}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- END: header -->
+		<!-- BEGIN: content -->
+		<div class="content">
+			<div class="content_block">
+				<div class="block" id="dataSecurity">{% include "security_control_content.html" %}</div>
+			</div>
+		</div>
+		<!-- END: content -->
+	</div>
+</div>
+<div id="win_warning" title="{% trans 'Предупреждение' %}" style="display: none;">
+	<div class="block block_msg">
+		<div class="ui-icon ui-icon-circle-check"></div>
+		<div class="text"></div>
+	</div>
+</div>
+</body>
+</html>

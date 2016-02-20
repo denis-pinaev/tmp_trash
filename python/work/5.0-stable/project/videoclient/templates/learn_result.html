@@ -1,0 +1,121 @@
+{% load i18n %}
+{% include "header.html" %}
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>{% trans "Результат обучения базы персон" %} - Имя персоны</h2>
+				{% include "current_time.html" %}
+				<table cellspacing="0" cellpadding="0" border="0" class="table_info_learn">
+					<tr>
+						<td>
+							<div class="td_head">{% trans "Затрачено времени" %}:</div>
+							<div>{% trans "Среднее на одно изображение" %}: 1.2 {% trans "c." %}</div>
+							<div>{% trans "Всего на все изображения" %}: 10 {% trans "c." %}</div>
+						</td>
+						<td class="last">
+							<div class="td_head">{% trans "Изображения</div>
+							<div>{% trans "загружено" %} - 1</div>	
+							<div>{% trans "обработано" %} - 1</div>								
+							<div>{% trans "неверный формат" %} - 10</div>
+							<div>{% trans "неверный размер" %} - 10</div>
+						</td>
+					</tr>
+				</table>
+				<div class="dist_top">{% trans "Всего персон в базе" %}: <span class="info_important">20</span></div>		
+				<form method="post" action="" name="">
+					<div class="frm_block">
+						{% trans "Для того, чтобы продолжить обучение базы персон, нажмите кнопку" %}: <input type="button" name="" value="Обучить" class="inp_btn inp_btn90 dist_left" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+					</div>
+					<div class="frm_block">
+						<label for="choose_all"><input type="checkbox" name="" id="choose_all" value="" class="inp_check" onClick="javascript: checkAll(this, 9);" />{% trans "Выбрать всё на странице" %}</label>
+						<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_left" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" onClick="javascript: showMessageDelete(9, 'person')" />
+					</div>				
+					<div class="block_navigation">
+						<a href="#" class="page" title="{% trans "Первая страница" %}">{% trans "Начало" %}</a>
+						<a href="#" class="page" title="{% trans "Последняя страница" %}">{% trans "Конец" %}</a>
+						<a href="#" class="page" title="{% trans "Предыдущая страница" %}">&#8592;&nbsp;{% trans "Назад" %}</a>
+						<a href="#" class="page" title="{% trans "Следующая страница" %}">{% trans "Вперёд" %}&nbsp;&#8594;</a>
+						<span class="page active">1</span>
+						<a href="#" class="page" title="">2</a>
+						<a href="#" class="page" title="">3</a>
+						<a href="#" class="page" title="">4</a>
+						<a href="#" class="page" title="">5</a>
+						<a href="#" class="page" title="">6</a>
+						<span class="page" style="border: none;">...</span>
+						<a href="#" class="page" title="">100</a>
+					</div>				
+					<ul class="list_photos">
+						<li>
+							<div class="block_photo"><img src="images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check0" onClick="javascript: checkPhoto(this, 9);" />
+						</li>
+						<li>
+							<div class="block_photo"><img src="images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check1" onClick="javascript: checkPhoto(this, 9);" />
+						</li>
+						<li>
+							<div class="block_photo"><img src="images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check2" onClick="javascript: checkPhoto(this, 9);" />
+						</li>
+						<li>
+							<div class="block_photo"><img src="images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check3" onClick="javascript: checkPhoto(this, 9);" />
+						</li>
+						<li>
+							<div class="block_photo"><img src="images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check4" onClick="javascript: checkPhoto(this, 9);" />
+						</li>
+						<li>
+							<div class="block_photo"><img src="images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check5" onClick="javascript: checkPhoto(this, 9);" />
+						</li>
+						<li>
+							<div class="block_photo"><img src="images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check6" onClick="javascript: checkPhoto(this, 9);" />
+						</li>
+						<li>
+							<div class="block_photo"><img src="images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check7" onClick="javascript: checkPhoto(this, 9);" />
+						</li>
+						<li>
+							<div class="block_photo"><img src="images_examples/2.jpg" width="120px" height="120px" alt="" /></div>
+							<input type="checkbox" name="" value="" class="inp_check" id="check8" onClick="javascript: checkPhoto(this, 9);" />
+						</li>																																																
+					</ul>
+					<div class="block_navigation">
+						<a href="#" class="page" title="{% trans "Первая страница" %}">{% trans "Начало" %}</a>
+						<a href="#" class="page" title="{% trans "Последняя страница" %}">{% trans "Конец" %}</a>
+						<a href="#" class="page" title="{% trans "Предыдущая страница" %}">&#8592;&nbsp;{% trans "Назад" %}</a>
+						<a href="#" class="page" title="{% trans "Следующая страница" %}">{% trans "Вперёд" %}&nbsp;&#8594;</a>
+						<span class="page active">1</span>
+						<a href="#" class="page" title="">2</a>
+						<a href="#" class="page" title="">3</a>
+						<a href="#" class="page" title="">4</a>
+						<a href="#" class="page" title="">5</a>
+						<a href="#" class="page" title="">6</a>
+						<span class="page" style="border: none;">...</span>
+						<a href="#" class="page" title="">100</a>						
+					</div>
+					<div class="frm_block">
+						<label for="choose_all2"><input type="checkbox" name="" id="choose_all2" value="" class="inp_check" onClick="javascript: checkAll(this, 9);" />{% trans "Выбрать всё на странице" %}</label>
+						<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170 dist_left" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" onClick="javascript: showMessageDelete(9, 'person')" />
+					</div>
+					<div class="frm_block">
+						{% trans "Для того, чтобы продолжить обучение базы персон, нажмите кнопку" %}: <input type="button" name="" value="Обучить" class="inp_btn inp_btn90 dist_left" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" />
+					</div>	
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>
+</div>
+<!-- END: content -->
+</div>
+{% include "footer.html" %}
+
+{% include "window_person.html" %}
+
+</body>
+</html>

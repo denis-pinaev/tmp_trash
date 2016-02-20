@@ -1,0 +1,48 @@
+﻿.btn_blue {
+    width: 90px;
+    color: #ffffff;
+    background: url('/files/images/btn_blue_90.png') top left no-repeat;
+    -background: none;  
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_90.png', sizingMethod='crop');  
+}
+.req {
+    color: #ff0000;
+    font-weight: bold;
+}
+.req_hid {
+	font-weight: bold;
+	visibility: hidden;
+}
+.bl_param {
+    margin-top: 10px;
+}
+.bl_param .bl_txt {
+    float: left;
+    width: 200px;
+}
+.bl_param .bl_enter {
+    margin-left: 200px;
+}
+.bl_param .bl_enter .inp_txt {
+    width: 220px;
+}
+.bl_param .bl_enter .select {
+    width: 226px;
+}
+.bl_btn {
+    margin-top: 10px; 
+}
+.bl_btn .btn_blue,
+.bl_btn .link_btn {
+    float: left;
+    margin-right: 10px;
+}
+.bl_error {
+    clear: both;
+    color: #FF0000;
+    padding-left: 200px;
+}
+.error_border,
+.inp_txt.err_forms {
+    border-color: #FF0000;
+}

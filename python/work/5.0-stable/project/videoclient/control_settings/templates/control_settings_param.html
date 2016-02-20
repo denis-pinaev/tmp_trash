@@ -1,0 +1,164 @@
+{% load i18n %}
+{% load control_settings_templatetags %}
+<script type="text/javascript">
+    allparams = [];
+    count_li=0;
+    {% for p in params %}
+        allparams[{{ forloop.counter }}] = {name: '{{ p.name }}', val: '{{ p.val }}', type: '{{ p.type }}', min: '{{ p.min_val|default:0 }}', max: '{{ p.max_val|default:1000000 }}', step: '{{ p.step|default:0 }}', info: '{{ p.info|default_if_none:'' }}', error:'{{ p.error|default_if_none:'' }}', permit:'{{ p.permit|default_if_none:'' }}'};
+    {% endfor %}            
+    {% comment %}
+        allparams[1] = {name: 'balancer.0.address', val: '127.0.0.1', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[2] = {name: 'balancer.0.daemon.DD.0.log4cxx', val: '/opt/smilart/daemons/dd/log4cxx.properties', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[3] = {name: 'balancer.0.daemon.DD.0.path', val: '/opt/smilart/daemons/dd/ddupp2', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[4] = {name: 'balancer.0.daemon.DD.0.socket', val: '192.168.0.236:19000', type: '0', min: '0', max: '1000000', step: '1', info: 'sdfdfsdfsdf', error:''};
+    
+        allparams[5] = {name: 'balancer.0.daemon.DD.0.start', val: 'socket,sysdir,log4cxx', type: '0', min: '0', max: '1000000', step: '1', info: 'sdfsdfsdfs', error:''};
+    
+        allparams[6] = {name: 'balancer.0.daemon.DD.0.sysdir', val: '/opt/smilart/data/dd', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[7] = {name: 'balancer.0.daemon.DD.count', val: '0', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[8] = {name: 'balancer.0.daemon.FD.0.gpu', val: '0', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[9] = {name: 'balancer.0.daemon.FD.0.log4cxx', val: '/opt/smilart/daemons/fd/0/log4cxx.properties', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[10] = {name: 'balancer.0.daemon.FD.0.path', val: '/opt/smilart/daemons/fd/dfdet5p', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[11] = {name: 'balancer.0.daemon.FD.0.socket', val: '127.0.0.1:15000', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[12] = {name: 'balancer.0.daemon.FD.0.start', val: 'socket,sysdir,log4cxx,gpu', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[13] = {name: 'balancer.0.daemon.FD.0.sysdir', val: '/opt/smilart/data/fd/__so_all', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[14] = {name: 'balancer.0.daemon.FD.1.address', val: '192.168.0.233', type: '0', min: '1', max: '3', step: '1.0', info: '', error:''};
+    
+        allparams[15] = {name: 'balancer.0.daemon.FD.1.port', val: '15000', type: '0', min: '0', max: '1000000', step: '1.0', info: '', error:''};
+    
+        allparams[16] = {name: 'balancer.0.daemon.FD.count', val: '2', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[17] = {name: 'balancer.0.daemon.FD.distortion3', val: 'true', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[18] = {name: 'balancer.0.daemon.FD.focus_factor', val: 'true', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[19] = {name: 'balancer.0.daemon.FD.histogram32', val: 'true', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[20] = {name: 'balancer.0.daemon.FD.noise_standard_deviation', val: 'true', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[21] = {name: 'balancer.0.daemon.FD.noisefactor', val: 'true', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[22] = {name: 'balancer.0.daemon.FR.0.barbars', val: '/opt/smilart/daemons/fr/barbars.db', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[23] = {name: 'balancer.0.daemon.FR.0.gpu', val: '1', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[24] = {name: 'balancer.0.daemon.FR.0.log4cxx', val: '/opt/smilart/daemons/fr/0/log4cxx.properties', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[25] = {name: 'balancer.0.daemon.FR.0.path', val: '/opt/smilart/daemons/fr/dfrec5p', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[26] = {name: 'balancer.0.daemon.FR.0.settings', val: '/opt/smilart/config/fr/settings.ini', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[27] = {name: 'balancer.0.daemon.FR.0.socket', val: '127.0.0.1:16000', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[28] = {name: 'balancer.0.daemon.FR.0.start', val: 'socket,sysdir,log4cxx,settings,barbars,gpu', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[29] = {name: 'balancer.0.daemon.FR.0.sysdir', val: '/opt/smilart/data/fr/0/', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[30] = {name: 'balancer.0.daemon.FR.count', val: '1', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[31] = {name: 'balancer.0.daemon.FS.0.gpu', val: '0', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[32] = {name: 'balancer.0.daemon.FS.0.log4cxx', val: '/opt/smilart/daemons/fs/log4cxx.properties', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[33] = {name: 'balancer.0.daemon.FS.0.path', val: '/opt/smilart/daemons/fs/dfans2p', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[34] = {name: 'balancer.0.daemon.FS.0.socket', val: '127.0.0.1:17000', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[35] = {name: 'balancer.0.daemon.FS.0.start', val: 'socket,log4cxx,gpu', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[36] = {name: 'balancer.0.daemon.FS.convert.request.to.bitmap', val: 'false', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[37] = {name: 'balancer.0.daemon.FS.convert.result.from.bitmap', val: 'true', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[38] = {name: 'balancer.0.daemon.FS.count', val: '1', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[39] = {name: 'balancer.0.daemon.FS.distortion3', val: 'true', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[40] = {name: 'balancer.0.port', val: '16545', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[41] = {name: 'balancer.time.interval.alert', val: '900000', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[42] = {name: 'balancer.time.interval.max', val: '180000', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[43] = {name: 'balancer.time.interval.min', val: '5000', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[44] = {name: 'balancer.time.interval.step', val: '10000', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[45] = {name: 'balancers.count', val: '1', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[46] = {name: 'control.address', val: '0.0.0.0', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[47] = {name: 'control.balancer.answer.time', val: '20000', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[48] = {name: 'control.balancer.start.daemons', val: 'true', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[49] = {name: 'control.client.0.address', val: '192.168.0.154', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[50] = {name: 'control.client.0.port', val: '12600', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[51] = {name: 'control.client.0.type', val: 'communicator', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[52] = {name: 'control.client.0.user', val: 'oxion', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[53] = {name: 'control.clients.count', val: '1', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[54] = {name: 'control.cutting.dx', val: '0', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[55] = {name: 'control.cutting.dy', val: '0', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[56] = {name: 'control.cutting.ke', val: '2', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[57] = {name: 'control.cutting.sx', val: '300', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[58] = {name: 'control.cutting.sy', val: '300', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[59] = {name: 'control.haar.max.answers', val: '50', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[60] = {name: 'control.hibernate.configure.file', val: 'hibernateMySql.cfg.xml', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[61] = {name: 'control.log4j.configure.file', val: '/opt/smilart/config/control/log4j.xml', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[62] = {name: 'control.need.alert', val: 'true', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[63] = {name: 'control.needLoginCheck', val: 'false', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[64] = {name: 'control.path.to.log.pictures', val: '/pictures/0', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[65] = {name: 'control.path.to.preview', val: '/opt/smilart/data/control/preview', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[66] = {name: 'control.path.to.temp.files', val: '/opt/smilart/data/control/temp', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[67] = {name: 'control.poolSize', val: '8', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[68] = {name: 'control.port', val: '16544', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[69] = {name: 'control.preview.height', val: '120', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[70] = {name: 'control.preview.width', val: '120', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[71] = {name: 'control.properties.reload', val: 'false', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[72] = {name: 'control.request.timeout', val: '10000', type: '2', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[73] = {name: 'control.scripts.path', val: '/opt/smilart/daemons/control/scripts', type: '0', min: '0', max: '1000000', step: '1', info: '', error:''};
+    
+        allparams[74] = {name: 'control.use.async', val: 'true', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+        allparams[75] = {name: 'control.use.atomic.queues', val: 'false', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+        allparams[76] = {name: 'control.use.fd.bitmaps', val: 'true', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+        allparams[77] = {name: 'control.use.fd.bitmaps.horizontal', val: 'true', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+        allparams[78] = {name: 'control.use.fd.to.alert', val: 'true', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};    
+        allparams[79] = {name: 'control.use.ssl.sockets', val: 'false', type: '1', min: '0', max: '1000000', step: '1', info: '', error:''};
+        {% endcomment %}
+</script>
+<div id="params_content" style="display: block;"></div>    

@@ -1,0 +1,60 @@
+{% load i18n templatetags %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>{% block title %}{% trans "Мастер настроек" %}{% endblock %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<link rel="stylesheet" type="text/css" href="/files/css/main.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/windows.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/wizard.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/lib/draw/jquery-1.6.2.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/util.js?v=v{{ version }}"></script>
+{% include "system_blocks/system_windows.html" %}
+<script type="text/javascript">
+function byId(node) {
+    return typeof node == 'string' ? document.getElementById(node) : node;
+}
+</script>
+{% block js %}{% endblock %}
+</head>
+<body>
+<div class="body1">
+<div class="header">
+	<form method="post" action="/i18n/setlang/" class="frm_language" id="frm_language">
+		{% for lang in LANGUAGES %}
+		{% if lang.0 != LANGUAGE_CODE %}
+		<input type="hidden" name="language" value="{% if lang.0 != 'en' %}ru{% else %}en{% endif %}" />
+		{% endif %}
+		{% endfor %}
+		<div class="language {{ LANGUAGE_CODE }}" onClick="javascript: $('#frm_language').submit();">{{ LANGUAGE_CODE|upper }}</div>
+	</form>
+</div>
+<!-- BEGIN: content-->
+<div class="content" id="content">
+    <div class="block_cont">
+        <div class="block_cont_top">
+            <div class="block_cont_bottom min_height">                
+                <h2>{% trans "Мастер настроек" %}</h2>
+                {% include "current_time.html" %}
+                {% block wizard_content %}{% endblock wizard_content %}
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div> 
+<div class="footer">
+	{% if version %}<div class="foot_menu_ver"><div class="version">{% trans "Версия" %}: {{ version }}</div></div>{% endif %}
+	{% include "footer_contacts.html" %}
+</div>           
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>
+{% include "window_message.html" %}
+</body>
+</html>

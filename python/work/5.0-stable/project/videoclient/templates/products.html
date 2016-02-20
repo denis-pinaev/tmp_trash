@@ -1,0 +1,58 @@
+{% load i18n %}
+{% load templatetags %}
+{% include "header.html" %}
+<link rel="stylesheet" type="text/css" href="/files/css/products.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>{% trans "Продукты" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Идентификация" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				{% include "current_time.html" %}
+
+				<ul class="menu_products">
+					<li class="bl_products">
+						<span class="nomer">1.</span><a href="/po1/" target="_blank">{% trans "ПО" %} №1</a>
+						<ul class="sub_menu_products">
+							<li><a href="/po1/" target="_blank">{% trans "Интерфейс администратора" %}</a></li>
+							<li><a href="/po1/pageemployee/" target="_blank" onClick="false">{% trans "Интерфейс сотрудника" %}</a></li>
+						</ul>
+					</li>
+					<li class="bl_products">
+						<span class="nomer">2.</span><a href="/po2/" target="_blank">{% trans "ПО" %} №2</a>
+						<ul class="sub_menu_products">
+							<li><a href="/po2/" target="_blank" onClick="false">{% trans "Интерфейс администратора" %}</a></li>
+							<li><a href ="/po2/pageemployee/" target="_blank" onClick="false">{% trans "Интерфейс сотрудника" %}</a></li>
+						</ul>						
+					</li>
+					<li class="bl_products">
+						<span class="nomer">3.</span><a href="/po3/" target="_blank">{% trans "ПО" %} №3</a>
+						<ul class="sub_menu_products">
+							<li><a href="/po3/" target="_blank" onClick="false">{% trans "Интерфейс администратора" %}</a></li>
+							<li><a href="/po3/pageemployee/" target="_blank" onClick="false">{% trans "Интерфейс сотрудника" %}</a></li>
+						</ul>						
+					</li>
+					<li class="bl_products">
+						<span class="nomer">4.</span><a href="/po4/" target="_blank">{% trans "ПО" %} №4 ({% trans "Спецлаб" %})</a>
+						<ul class="sub_menu_products">
+							<li><a href="/po4/" target="_blank" onClick="false">{% trans "Интерфейс администратора" %}</a></li>
+							<li><a href="/po4/pageemployee/" target="_blank" onClick="false">{% trans "Интерфейс сотрудника" %}</a></li>
+						</ul>						
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>			
+
+{% include "footer.html" %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+{% include "window_help.html" %}
+
+</body>
+</html>

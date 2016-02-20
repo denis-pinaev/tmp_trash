@@ -1,0 +1,148 @@
+{% load i18n templatetags %}
+<script type="text/javascript">
+function init() {
+	initTooltip();
+	$("input.check_all").click(function() {
+		selectedAllRow($(this));
+	});
+	$("#table tr").mouseover(function() {
+		overRow($(this))
+	});	
+	$("#table tr").mouseout(function() {
+		outRow($(this))
+	});
+	$("#table tr td input[type=checkbox].inp_check").click(function() {
+		selectedRow($(this));
+	});	
+}
+function initTooltip() {
+	$(".short_descr").easyTooltip();
+}
+// выделение всех строк
+function selectedAllRow(inp) {
+	var checks = $("#table td input[type=checkbox]");
+	var checks_all = $("input[type=checkbox].check_all");
+	if (inp.attr("checked")) {
+		$.each(checks, function() {
+			$(this).attr("checked", "checked");
+		});
+		checks_all.attr("checked", "checked");
+	} else {
+		$.each(checks, function() {
+			$(this).attr("checked", false);
+		});
+		checks_all.attr("checked", false);	
+	}
+}
+// выделение одной строки
+function selectedRow(inp) {
+	var checks_all = $("input[type=checkbox].check_all");
+	var count = $("#table tr td input[type=checkbox]").size();
+	var count_sel = 0;
+	if (inp.attr("checked")) {
+		count_sel = $("#table tr td input[type=checkbox]:checked").size();
+		if (count_sel == count) {
+			checks_all.attr("checked", "checked");
+		}
+	} else {	
+		checks_all.attr("checked", false);
+	}
+}
+// выделение при наведении
+function overRow(tr) {
+	tr.addClass("act");
+}
+function outRow(tr) {
+	tr.removeClass("act");
+}
+// экспорт персон
+function showMessageExport() {
+	var count_sel = $("#table tr td input[type=checkbox]:checked").size();
+	if (count_sel > 0) {
+		var content = '<div class="choose_export"><div><input type="radio" name="group1" value="0" id="export_group_0" class="inp_check" checked="checked" /><label for="export_group_0">' + replace_string(MESSAGES["export_choose"], '{}', count_sel) + '</label></div><input type="radio" name="group1" id="export_group_1" value="1" class="inp_check" /><label for="export_group_1">' + MESSAGES["export_all"] + '</label><input type="hidden" value="{{ group }}" id="export_group"/></div>';
+		changeWindow({id: 'win_export', css: {width: '350px', height: '200px'}, txt: content});
+	} else {
+		changeWindow({id: 'win_mess_export_all', css: {width: '300px', height: '200px'}, txt: MESSAGES["export_all"]});
+	}
+}
+// удалить выделенные
+function showMessageDelete() {
+	var count_sel = $("#table tr td input[type=checkbox]:checked").size();
+	if (count_sel > 0) {
+		changeWindow({id: 'win_del', css: {width: '300px', height: '200px'}, txt: replace_string(MESSAGES["delete"], '{}', count_sel)});
+	} else {
+		changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: ERRORS["delete"]});
+	}
+}
+// объединение
+function showMessageConcat(count, name_block) {
+	var count_sel = $("#table tr td input[type=checkbox]:checked").size();
+	if (count_sel > 0) {
+		changeWindow({id: 'win_concat', css: {width: '300px', height: '200px'}, txt: replace_string(MESSAGES["concat"], '{}', count_sel)});
+	} else {
+		changeWindow({id: 'win_mess', css: {width: '300px', height: '200px'}, txt: ERRORS["delete"]});
+	}
+}
+function ConcatPick(num){
+	showIndicator(true);
+	var inp = $("#delid");
+	if (inp.size() > 0) {
+		inp.attr("name", "concato");
+		inp.val(num);
+	}
+	document.getElementById("mainForm").submit();
+}
+// функция на удаление
+function DelPick(num){
+	showIndicator(true);
+	var inp = $("#delid");
+	if (inp.size() > 0) inp.val(num);
+	document.getElementById("mainForm").submit();
+}
+function clickDelete(count) {
+	closeChangeWindow('win_del');
+	var obj = getValueIsChecked(count);
+	var res = '';
+	for(var i = 0; i<obj.c; i++){
+		if (i!=0){
+			res=res+',';
+		}
+		res = res + obj.array[i];
+	}
+	return res;
+}
+function getValueIsChecked(count) {
+	var c = 0;
+	var arr_value = new Array();
+	if (count > 0) {
+		var inps = $("#table tr td input[type=checkbox]:checked");
+		$.each(inps, function() {
+			arr_value[c] = $(this).val();
+			c++;
+		});
+	}
+	return {c: c, array: arr_value};
+}
+// удаление списков
+function deleteLists(count) {
+	var res = true;
+	var inps = $("#table tr td input[type=checkbox]:checked");
+	var num = 0;
+	$.each(inps, function() {
+		num = replace_string($(this).attr("id"), "check", "");
+		if ($("#lCount" + num).html() != "0") {
+			res = false;
+		}
+	});
+	if (res) {
+		showMessageDelete()
+	} else {
+		changeWindow({id: 'win_zeroing', css: {width: '300px', height: '200px'}, txt: ERRORS["full"]});
+	}
+}
+
+// удаление списков
+function deleteAllPersons() {
+	changeWindow({id: 'win_del_all_persons', css: {width: '300px', height: '200px'}, txt: MESSAGES["delete_all_persons"]});
+}
+</script>

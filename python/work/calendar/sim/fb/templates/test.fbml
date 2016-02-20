@@ -1,0 +1,8 @@
+
+<fb:fbml>
+<fb:request-form action="" method="POST" invite="true" type="TestApp"
+content="Join my app &lt;fb:req-choice url=&quot;http://apps.facebook.com/stat_gale/&quot; label=&quot;Go Test app&quot; /&gt;">
+<fb:multi-friend-selector showborder="false" actiontext="Invite your friends to use Test app.">
+</fb:request-form>
+</body>
+</html>

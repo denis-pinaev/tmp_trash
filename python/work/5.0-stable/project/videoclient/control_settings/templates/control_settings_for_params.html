@@ -1,0 +1,6 @@
+{% load i18n %}
+{% load control_settings_templatetags %}
+{% if inf.name and inf.index != "params" %}
+        <div class="name">{% if not inf.index and inf.index != 0 %}<span>{{ forloop.counter }}.</span>{% endif %}<a href="#" onClick="showSettings(this, 'settings_base{{ forloop.counter }}'); return false;">{{ inf.name }} {{ inf.index }}</a></div>
+{% endif %}
+{% include "control_settings_params.html" %}

@@ -1,0 +1,243 @@
+﻿.block_error {
+	color: #FF0000;
+	padding-left: 10px;
+}
+.block_error2 {
+	color: #FF0000;
+	text-align: center;
+}
+.error_border {
+	border-color: #FF6600;
+}
+.inp_btn140 {
+	width: 140px;
+	background: url('/files/control_settings/images/button140x24_up.gif') top left no-repeat;
+	position: absolute;
+	top: 61px;
+	*top: 59px;
+	right: 10px;
+}
+.btn_blue {
+    width: 90px;
+	background: url('/files/images/btn_blue_90.png') top left no-repeat;
+	-background: none;
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_90.png', sizingMethod='scale');
+    color: #ffffff;
+}
+.btn_blue120 {
+    width: 120px;
+	background: url('/files/images/btn_blue_120.png') top left no-repeat;
+	-background: none;
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_120.png', sizingMethod='scale');
+    color: #ffffff;
+}
+.inp_btn170 {
+	width: 140px;
+	background: url('/files/control_settings/images/button140x24_up.gif') top left no-repeat;			
+}
+.inp_check {
+	margin-right: 5px;
+}
+.block {
+	width: 100%;
+	overflow: hidden;
+}
+/* add param */
+.frm_add {
+	margin-top: 5px;
+}
+.frm {
+	width: 100%;
+	overflow: hidden;
+	margin-bottom: 10px;
+}
+.frm label {
+	cursor: pointer;
+}
+.frm .bl_txt {
+	float: left;
+	width: 165px;
+}
+.frm .bl_enter {
+	float: left;
+}
+.frm .inp_txt,
+.frm .textarea {
+	width: 180px;
+}
+.frm .select {
+	width: 186px;
+}
+.frm .inp_num {
+	width: 70px;
+}
+.frm .bl_error {
+	color: #FF6600;
+	margin-left: 355px;
+}
+.frm .inp_check {
+	margin-right: 5px;
+}
+.btn_add,
+.btn_del {
+	padding: 0px;
+	margin: 0px;
+	border: 0px;
+	width: 14px;
+	height: 14px;
+	background: url("/files/images/add3.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/add3.png', sizingMethod='crop');	
+	cursor: pointer;
+	margin-left: 5px;
+}
+.btn_del {
+	background: url("/files/images/delete3.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/delete3.png', sizingMethod='crop');			
+}
+/* enter parameters*/
+.btn_add,
+.btn_del,
+.btn_dupl,
+.btn_help,
+.btn_edit {
+	padding: 0px;
+	margin: 0px 0px 0px 5px;
+	border: 0px;
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+.btn_add {
+	background: url("/files/images/add4.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/add4.png', sizingMethod='crop');	
+}
+.btn_del {
+	background: url("/files/images/delete4.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/delete4.png', sizingMethod='crop');			
+}
+.btn_dupl {
+	background: url("/files/images/duplicate4.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/duplicate4.png', sizingMethod='crop');
+}
+.btn_edit {
+	background: url("/files/images/edit_name.png") left top no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/edit_name.png', sizingMethod='crop');
+}
+.btn_help {
+	background: url("/files/images/help4.png") left top no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/help4.png', sizingMethod='crop');
+}
+.settings_head {
+	font-weight: bold;
+	margin-top: 10px;
+}
+.link_head,
+.link_head2 {
+	background: url("/files/images/arrowB_bottom.gif") left 50% no-repeat;
+	padding-left: 15px;
+}
+.link_head.arrow_left,
+.link_head2.arrow_left {
+	background: url("/files/images/arrowB_left.gif") left 50% no-repeat;
+}
+.link_head2 {
+	float: right;
+}
+.settings_cont {
+	/*margin-left: 15px;*/
+}
+.settings_cont li {
+	margin-top: 2px;
+}
+.settings_cont .number {
+	margin-right: 5px;
+}
+.settings_cont .selection {
+	/*border-left: 1px solid #cccccc;*/
+	border-left: 1px dotted #999999;
+	margin-left: 13px;
+}
+.inner_cont {
+	width: 100%;
+	overflow: hidden;
+	padding: 3px 0px;
+}
+.inner_cont .txt_param {
+	float: left;
+	margin-left: 2px;
+}
+.inner_cont .inner_enter {
+	margin-left: 360px;
+}
+.settings_cont .inner_cont .inner_enter .inner_enter_add {
+	float: left;
+}
+.settings_cont .inner_cont.set_act {
+	background-color: #eeeeee;
+}
+.settings_cont li ul {
+	margin-left: 2px;
+}
+.settings_cont li ul li {
+	margin-top: 0px;
+}
+.frm_rename {
+	margin-top: 10px;
+	text-align: center;
+}
+.frm_rename .inp_txt {
+	width: 250px;
+}
+.block .blue {
+    float: right;
+}
+/* поиск */
+.search {
+	float: right;
+	width: 250px;
+	position: relative;
+}
+.search .left {
+	float: left;
+	width: 3px;
+	height: 24px;
+	background: url('/files/images/search_left.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/search_left.png', sizingMethod='crop');		
+}
+.search .btn_search {
+	float: right;
+	width: 23px;
+	height: 24px;
+	background: url('/files/images/search_right.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/search_right.png', sizingMethod='crop');			
+	padding: 0px;
+	margin: 0px;
+	border: none;
+	cursor: pointer;
+}
+.search .center {
+	width: 224px;
+	height: 24px;
+	background: url('/files/images/search_bg.gif') top left repeat-x;
+	position: absolute;
+	top: 0px;
+	left: 3px;		
+}
+.search .txt_search {
+	margin: 0px;
+	padding: 3px 2px 2px 0px;
+	border: none;
+	font: 13px Tahoma;
+	color: #868686;
+	background: none;
+	width: 190px;
+}

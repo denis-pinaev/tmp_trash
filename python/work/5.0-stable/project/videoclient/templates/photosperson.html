@@ -1,0 +1,209 @@
+{% extends "base_notab.html" %}
+{% load i18n templatetags %}
+{% load pagination_tags %}
+{% block title %}{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }} - {% trans 'Все фотографии' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/list_photos.css?v=v{{ version }}" />
+<script src="/files/js-global/FancyZoom.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js-global/FancyZoomHTML.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript">
+function showPhotoMetaWindow(person_id, photo_id) {
+	showIndicator(true);
+	$.ajax({
+		type: "POST",
+		url: "/get_photo_meta/",
+		data: {person_id: person_id, photo_id: photo_id},
+		success: function(msg){
+			var obj = msg;
+			showIndicator(false);
+			changeWindow({id: 'win_photometa', css: {width: '400px', height: '400px'}, txt: obj.meta});
+		}
+	});
+}
+function setEyes() {
+	var inp = $("#checkEye");
+	if (inp.attr("checked")) {
+		setCookie("eyes", "true");
+	} else {
+		setCookie("eyes", "false");
+	}
+	location.reload(true);
+}
+{% if allphotos.photos|length == 0 %}
+	{% if select_page == "photosperson" %}location.replace('{{ project_url }}/anketaperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}');{% endif %}
+	{% if select_page == "photosvisitor" %}location.replace('{{ project_url }}/anketavisitor/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}');{% endif %}
+	{% if select_page == "photosstaff" %}location.replace('{{ project_url }}/anketastaff/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}');{% endif %}
+	{% if select_page == "photosauto" %}location.replace('{{ project_url }}/anketaauto/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}');{% endif %}
+{% endif %}
+$(function() {
+	initTooltip();
+	setupZoom();
+	$("input.check_all").click(function() {
+		selectAllPhotos($(this));
+	});	 
+    $("#list_photos li input[type=checkbox]").click(function() {                                                                  
+        selectPhoto($(this));
+    });  	
+    $("#list_photos li div.block_photo").click(function() { 
+        var inp = $(this).parent().find("input[type=checkbox]");
+		if (inp.attr("checked")) inp.attr("checked", false)
+		else inp.attr("checked", "checked");		
+        selectPhoto(inp);
+    });	
+	$("#list_photos li input[type=checkbox].inp_check").hide();
+});
+// выделение всех фото
+function selectAllPhotos(inp) {
+    if (inp.attr("checked")) {
+		$("div.bl_btn_check div input[type=checkbox]").attr("checked", "checked");
+		$("#list_photos li").addClass("lp_act");
+		$("#list_photos li input[type=checkbox]").attr("checked", "checked");
+    } else {
+		$("div.bl_btn_check div input[type=checkbox]").attr("checked", false);
+		$("#list_photos li").removeClass("lp_act");
+		$("#list_photos li input[type=checkbox]").attr("checked", false);			
+    }
+} 
+// выделение фото
+function selectPhoto(inp) {
+    if (inp.attr("checked")) {
+		inp.parent().parent().addClass("lp_act");
+    } else {
+		inp.parent().parent().removeClass("lp_act");
+    }
+	var count_all = $("#list_photos li input[type=checkbox]").size();
+	var count_choose = $("#list_photos li input[type=checkbox]:checked").size();
+	if (count_all == count_choose) $("div.bl_btn_check div input[type=checkbox]").attr("checked", "checked");
+	else $("div.bl_btn_check div input[type=checkbox]").attr("checked", false);
+}
+// экспорт
+function showMessageExport() {
+	var count_choose = $("#list_photos li input[type=checkbox]:checked").size();
+	if (count_choose > 0) {
+		var txt = '{% trans "Сохранить выделенные фотографии" %} ({})?';
+		changeWindow({id: 'win_export', css: {width: '300px', height: '200px'}, txt: replace_string(txt, '{}', count_choose)});	
+	} else {
+		showMessage('{% trans "Выберите, пожалуйста, хотя бы одну фотографию" %}.');
+	}
+}
+function showMessageDelete() {
+	var count_choose = $("#list_photos li input[type=checkbox]:checked").size();
+	var txt = '{% trans "Сохранить выделенные фотографии" %} ({})?';
+	if (count_choose > 0) {
+		var txt = '{% trans "Вы действительно хотите удалить выбранные фотографии" %} ({})?';
+		changeWindow({id: 'win_del', css: {width: '300px', height: '200px'}, txt: replace_string(txt, '{}', count_choose)});		
+	} else {
+		showMessage('{% trans "Выберите, пожалуйста, хотя бы одну фотографию" %}.');
+	}
+}
+function clickDelete(count) {
+	var obj = getValueIsChecked(count);
+	var res = '';
+	for(var i = 0; i<obj.c; i++){
+		if (i!=0){
+			res=res+',';
+		}
+		res = res + obj.array[i];
+	}
+	return res;
+}
+function getValueIsChecked(count) {
+	var c = 0;
+	var arr_value = new Array();
+	if (count > 0) {
+		var inps = $("#list_photos li input[type=checkbox]:checked");
+		$.each(inps, function() {
+			arr_value[c] = $(this).val();
+			c++;
+		});
+	}
+	return {c: c, array: arr_value};
+}
+</script>
+{% endblock %}
+{% block subcontent %}
+	<h2><a href="/lists/">{% trans "Списки" %}</a> - 
+	{% if select_page == "photosperson" or select_sub_page == "photosperson" %}
+		<a href="{{ project_url }}/persons/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketaperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> - {% trans "Все фотографии" %} ({{ allphotos.count }})
+	{% endif %}
+	{% if select_page == "photosvisitor" or select_sub_page == "photosvisitor" %}
+		<a href="{{ project_url }}/visitorslist/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketavisitor/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> - {% trans "Все фотографии" %} ({{ allphotos.count }})
+	{% endif %}
+	{% if select_page == "photosstaff" or select_sub_page == "photosstaff" %}
+		<a href="{{ project_url }}/stafflist/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketastaff/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> - {% trans "Все фотографии" %} ({{ allphotos.count }})
+	{% endif %}
+	{% if select_page == "photosauto" or select_sub_page == "photosauto" %}
+		<a href="{{ project_url }}/autolist/{% if group %}?group={{ group }}{% endif %}">{% trans  name_group  %}</a> - <a href="{{ project_url }}/anketaauto/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}</a> - {% trans "Все фотографии" %} ({{ allphotos.count }})
+	{% endif %}
+	<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Фотографии персоны' %}');" /></h2>
+	{% include "current_time.html" %}
+	<form method="post" action="" name="">
+		{% if allphotos.count > 0 %}
+			<div class="block">
+				{% if select_page == "photosperson" or select_sub_page == "photosperson" %}<a href="{{ project_url }}/anketaperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel">{% endif %}
+				{% if select_page == "photosvisitor" or select_sub_page == "photosvisitor" %}<a href="{{ project_url }}/anketavisitor/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel">{% endif %}
+				{% if select_page == "photosstaff" or select_sub_page == "photosstaff" %}<a href="{{ project_url }}/anketastaff/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel">{% endif %}
+				{% if select_page == "photosauto" or select_sub_page == "photosauto" %}<a href="{{ project_url }}/anketaauto/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel">{% endif %}
+				{% trans "Назад" %}</a>
+			</div>	
+
+			<div class="block dist_top">
+				<div class="block_eye"><input type="checkbox" id="checkEye" name="" value="" {% if eyes %}checked="checked"{% endif %} class="inp_check" onClick="javascript: setEyes();" /><label for="checkEye">{% trans "Отображать результаты детектирования" %}</label></div>
+				
+				<div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all" /><label for="choose_all">{% trans "Выделить всё" %}</label></div></div>
+				<input type="button" name="" value="{% trans "Экспорт фотографий" %}" class="inp_btn inp_btn170" onClick="javascript: showMessageExport()" />
+				<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170" style="margin-left: 30px;" onClick="javascript: showMessageDelete()" />
+			</div>
+			{% if res_interface == "1" %}
+				{% autopaginate photos_ 30 %}
+			{% else %}
+				{% autopaginate photos_ 21 %}
+			{% endif %}
+			{% paginate %}
+			<ul class="block list_photos" id="list_photos">
+			{% for photo in photos_ %}
+				<li>
+					<div class="block_photo"><img src="/image/?id={{ allphotos.id }}&photo={{ photo.num }}{% if eyes %}&eyes=true{% endif %}" alt="" /></div>
+					<div class="block_check"><input type="checkbox" name="photo{{ photo.num }}" value="{{ photo.num }}" class="inp_check" id="check{{ forloop.counter }}" /></div>
+					<a href="/image/?id={{ allphotos.id }}&photo={{ photo.num }}&big=.jpg" target="_blank" class="btn_loupe short_descr" title="{% trans "Увеличить изображение" %}"><span></span></a>
+					{% if person_id|ifphotoexif:photo.num %}<input type="button" name="" title="{% trans 'Метаданные изображения' %}" class="btn_metadata short_descr" onclick="javascript: showPhotoMetaWindow('{{ person_id }}', '{{ photo.num }}');" />{% endif %}
+					<div class="photo_info"><div class="photo_param size short_descr" title="{% trans 'Разрешение' %}: {{ photo.size.width }}x{{ photo.size.height }}">{{ photo.size.width }}x{{ photo.size.height }}</div></div>
+				</li>
+			{% endfor %}
+			</ul>
+			{% paginate %}
+			
+			<div class="block">					
+				<div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check check_all" id="choose_all2" /><label for="choose_all2">{% trans "Выделить всё" %}</label></div></div>
+				<input type="button" name="" value="{% trans "Экспорт фотографий" %}" class="inp_btn inp_btn170" onClick="javascript: showMessageExport()" />
+				<input type="button" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170" style="margin-left: 30px;" onClick="javascript: showMessageDelete()" />				
+			</div>
+
+			<div class="block dist_top">
+				{% if select_page == "photosperson"  or select_sub_page == "photosperson" %}<a href="{{ project_url }}/anketaperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel">{% endif %}
+				{% if select_page == "photosvisitor"  or select_sub_page == "photosvisitor" %}<a href="{{ project_url }}/anketavisitor/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel">{% endif %}
+				{% if select_page == "photosstaff"  or select_sub_page == "photosstaff" %}<a href="{{ project_url }}/anketastaff/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel">{% endif %}
+				{% if select_page == "photosauto"  or select_sub_page == "photosauto" %}<a href="{{ project_url }}/anketaauto/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel">{% endif %}
+				{% trans "Назад" %}</a>
+			</div>
+		{% else %}
+			<div class="message_action">{% trans "Нет изображений данной персоны" %}.
+				<div class="block"><div class="message_action_txt">{% trans "Для добавления в анкету фотографий персоны нажмите на кнопку" %}</div>
+				{% if select_page == "photosperson"  or select_sub_page == "photosperson" %}<a href="{{ project_url }}/addphotoperson/persons/{{ user.id_person }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_ok dist_left">{% endif %}
+				{% if select_page == "photosvisitor"  or select_sub_page == "photosvisitor" %}<a href="{{ project_url }}/addphotoperson/visitors/{{ user.id_person }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_ok dist_left">{% endif %}
+				{% if select_page == "photosstaff"  or select_sub_page == "photosstaff" %}<a href="{{ project_url }}/addphotoperson/staff/{{ user.id_person }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_ok dist_left">{% endif %}
+				{% if select_page == "photosauto"  or select_sub_page == "photosauto" %}<a href="{{ project_url }}/addphotoperson/auto/{{ user.id_person }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_ok dist_left">{% endif %}
+				<span>{% trans "Добавить" %}</span></a>
+			</div>
+			</div>
+			<div class="block dist_top">
+				{% if select_page == "photosperson" or select_sub_page == "photosperson" %}<a href="{{ project_url }}/anketaperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel">{% endif %}
+				{% if select_page == "photosvisitor" or select_sub_page == "photosvisitor" %}<a href="{{ project_url }}/anketavisitor/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel">{% endif %}
+				{% if select_page == "photosstaff" or select_sub_page == "photosstaff" %}<a href="{{ project_url }}/anketastaff/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel">{% endif %}
+				{% if select_page == "photosauto" or select_sub_page == "photosauto" %}<a href="{{ project_url }}/anketaauto/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}" class="link_btn_cancel">{% endif %}
+				{% trans "Назад" %}</a>
+			</div>						
+		{% endif %}
+	</form>			
+{% endblock %}
+{% block windows %}{% include "po4window_photos.html" %}{% endblock %}

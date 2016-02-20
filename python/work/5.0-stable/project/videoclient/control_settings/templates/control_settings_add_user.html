@@ -1,0 +1,150 @@
+{% extends "control_settings_base.html" %}
+{% load i18n %}
+{% load templatetags %}
+{% block page_content %}
+<link rel="stylesheet" type="text/css" href="/files/control_settings/css/add_user.css?v=v{{ version }}" />
+<script type="text/javascript" src="/files/js/lib/additional-methods.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+$(function() {
+    $("#fullname").focus();
+	$.validator.addMethod("checkUserName", function(value, element) {
+		var value = $.trim($(element).attr("value"));
+		if (value) {
+			var reg = /^\s*[a-zA-Zа-яА-ЯёЁ-]+(\s+[a-zA-Zа-яА-ЯёЁ-]+)*\s*$/;
+			if (reg.test(value)) return true;
+			return false;
+		}
+		return true;
+	}, "{% trans "Введено некорректное значение" %}" );		
+    $.validator.addMethod("checkLogin", function(value, element) {
+        var value = $(element).attr("value");
+        var reg = /^[a-zA-Z0-9_]{3,30}$/;
+        if (reg.test(value)) return true;
+        return false;
+    }, "{% trans "Логин может содержать только латинские буквы, цифры и знак подчёркивания." %}" ); 
+    $.validator.addMethod("checkNameBase", function(value, element) {
+        var value = $.trim($(element).attr("value"));
+        if (value) {
+            var reg = /^[a-zA-Z0-9_]{3,30}$/;
+            if (reg.test(value)) return true;
+            return false;                    
+        }
+        return true;
+    }, "{% trans "Наименование базы может содержать только латинские буквы, цифры и знак подчёркивания." %}" );                  
+    var validator = $("#frm_add").validate({
+        rules: {
+            fullname: {
+                required: true,
+				checkUserName: true,
+                maxlength: 128                       
+            },
+            user: {
+                minlength: 3,
+                maxlength: 30,
+                checkNameBase: true
+            },
+            login: {
+                required: true,                
+                minlength: 3,
+                maxlength: 30,
+                checkLogin: true        
+            },
+            password1: {
+                required: true,
+                minlength: 6,
+                maxlength: 32                    
+            },
+            password2: {
+                required: true,
+                minlength: 6,
+                maxlength: 32,
+                equalTo: "#password1" 
+            }            
+        },
+        messages: {
+            fullname: {
+                required: "{% trans "Введите ФИО пользователя" %}",
+                checkUserName: "{% trans "Введено некорректное значение" %}",
+                maxlength: "{% trans "Недопустимое количество введённых символов" %}"                
+            },
+            user: {
+                minlength: "{% trans "Введено некорректное значение" %}",
+                maxlength: "{% trans "Недопустимое количество введённых символов" %}"
+            },
+            login: {
+                required: "{% trans "Введите логин" %}",
+                minlength: "{% trans "Логин должен содержать не менее 3 символов" %}",
+                maxlength: "{% trans "Логин должен содержать не более 30 символов" %}",
+                checkLogin: "{% trans "Логин может содержать только латинские буквы, цифры и знак подчёркивания" %}"
+            },
+            password1: {
+                required: "{% trans "Введите пароль" %}",
+                minlength: "{% trans "Пароль должен содержать не менее 6 символов" %}",
+                maxlength: "{% trans "Пароль должен содержать не более 32 символов" %}"
+            },
+            password2: {
+                required: "{% trans "Введите пароль" %}",
+                minlength: "{% trans "Пароль должен содержать не менее 6 символов" %}",
+                maxlength: "{% trans "Пароль должен содержать не более 32 символов" %}",
+                equalTo: "{% trans "Введённые пароли не совпадают" %}"
+            }            
+        },
+        errorPlacement: function(error, element) {
+            error.appendTo( element.parent().parent().prev() ); 
+        },
+		submitHandler: function() {
+			document.getElementById("frm_add").submit();
+		}        
+    });
+});    
+</script>
+{% include "menu_control_settings.html" %}
+<h2><a href="/control_settings/">{% trans "Пользователи управляющей системы" %}</a> - {% trans "Добавление пользователя" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Добавление пользователя управляющей системы" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+<form method="post" action="" id="frm_add">
+   <div class="block_req">{% trans "Поля, отмеченные звёздочкой" %} (<span>*</span>), {% trans "являются обязательными для заполнения." %}</div>
+    <div class="bl_param">
+        {% if errors.fullname %}<div class="bl_error">{{ errors.fullname }}</div>{% endif %}
+        <div class="bl_error"></div>
+        <div class="block">    
+            <label for="fullname" class="bl_txt"><span class="req">*</span>{% trans "ФИО пользователя" %}:</label>
+            <div class="bl_enter"><input type="text" name="fullname" id="fullname" value="{{ fullname }}" class="inp_txt" maxlength="128" /></div>            
+        </div>
+    </div>    
+    <div class="bl_param">
+        {% if errors.user %}<div class="bl_error">{{ errors.user }}</div>{% endif %}
+        <div class="bl_error"></div>
+        <div class="block">    
+            <label for="login" class="bl_txt"><span class="req_hid">*</span>{% trans "Наименование базы" %}:</label>
+            <div class="bl_enter"><input type="text" name="user" id="user" value="{{ user }}" class="inp_txt" /></div>
+        </div>
+    </div>  
+    <div class="bl_param">
+        {% if errors.login %}<div class="bl_error">{{ errors.login }}</div>{% endif %}
+        <div class="bl_error"></div>
+        <div class="block">    
+            <label for="login" class="bl_txt"><span class="req">*</span>{% trans "Логин" %}:</label>
+            <div class="bl_enter"><input type="text" name="login" id="login" value="{{ login }}" class="inp_txt" /></div>            
+        </div>
+    </div>
+    <div class="bl_param">
+        {% if errors.password1 %}<div class="bl_error">{{ errors.password1 }}</div>{% endif %}
+        <div class="bl_error"></div>
+        <div class="block">    
+            <label for="password1" class="bl_txt"><span class="req">*</span>{% trans "Пароль" %}:</label>
+            <div class="bl_enter"><input type="password" id="password1" name="password1" value="" class="inp_txt" /></div>            
+        </div>
+    </div>
+    <div class="bl_param">
+        <div class="bl_error">{% if errors.password2 %}{{ errors.password2 }}{% else %} {% if password_wrong %}{% trans "Пароли не совпадают" %}.{% endif %}{% endif %}</div>
+        <div class="bl_error"></div>
+        <div class="block">    
+            <label for="password2" class="bl_txt"><span class="req">*</span>{% trans "Повтор пароля" %}:</label>
+            <div class="bl_enter"><input type="password" name="password2" id="password2" value="" class="inp_txt inp_user" /></div>            
+        </div>
+    </div>
+    <div class="block bl_btn">
+        <input type="submit" name="" value="{% trans "Сохранить" %}" class="inp_btn btn_blue" />
+        <a href="/control_settings/" class="link_btn_cancel"><span>{% trans "Отменить" %}</span></a>
+    </div>
+</form>
+{% endblock page_content %}

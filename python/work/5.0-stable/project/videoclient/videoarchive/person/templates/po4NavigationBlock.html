@@ -1,0 +1,25 @@
+{% load a_templatetags %}
+{% if allpages > 1 %}
+						
+	<div class="block_navigation">
+		
+		<a href="?start=1{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="page" title="{% trans "Первая страница" %}">{% trans "Начало" %}</a>
+		<a href="?start={{ allpages|item }}{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="page" title="{% trans "Последняя страница" %}">{% trans "Конец" %}</a>
+		<a href="?start={{ page|last }}{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="page" title="{% trans "Предыдущая страница" %}">&#8592;&nbsp;{% trans "Назад" %}</a>
+		<a href="?start={{ page|next:allpages }}{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="page" title="{% trans "Следующая страница" %}">{% trans "Вперёд" %}&nbsp;&#8594;</a>
+		
+		{% for p in pages %}
+			{% if p == page %}
+				<span class="page active">{{ p }}</span>
+			{% else %}
+				<a href="?start={{ p|item }}{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="page" title="">{{ p }}</a>
+			{% endif %}
+		{% endfor %}
+		{% if allpages in pages %}
+		{% else %}
+			<span class="page" style="border: none;">...</span>
+			<a href="?start={{ allpages|item }}{% if sorto %}&sorto={{ sorto }}{% endif %}{% if up %}&up={{ up }}{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="page" title="">{{ allpages }}</a>
+		{% endif %}					
+	</div>
+	
+{% endif %}

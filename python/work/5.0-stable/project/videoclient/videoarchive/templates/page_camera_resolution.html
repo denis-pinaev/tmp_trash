@@ -1,0 +1,12 @@
+{% load i18n %}
+{% load a_templatetags %}
+<select class="select select_video el_enter{% if errors.resol %} err_forms{% endif %}" id="video_resolution" name="video_resolution">
+    {% for r in all_resolutions %}
+        <option value="{{ r.id }}"{% if task and r.name == task.resolution and task.resolution != camera_resolution %} selected="selected"{% endif %}>{{ r.name }}</option>        
+    {% endfor %}   
+    {% if camera_resolution %}
+	    <option value="0"{% if not task or task.resolution == camera_resolution %} selected="selected"{% endif %}>{% trans "Разрешение камеры" %} ({{ width }}*{{ height }})</option>
+	{% endif %}
+	<option value="-1" {% if enother_resolution %}selected="selected"{% endif %} >{% trans "Другое" %}</option>
+</select>
+<input type="hidden" name="" id="camera_resolution" value="{% if not task %}{{ camera_resolution }}{% else %}{{ task.resolution }}{% endif %}">

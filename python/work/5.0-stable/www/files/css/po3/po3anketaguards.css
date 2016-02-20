@@ -1,0 +1,139 @@
+.inp_btn170 {
+	width: 170px;
+	background: url('/files/images/button170x24_up.gif') top left no-repeat;
+}
+.btn_calend {
+	padding: 0px;
+	margin: 0px;
+	border: none;
+	height: 16px;
+	width: 16px;
+	cursor: pointer;
+	font: 13px Tahoma;
+	background: url('/files/images/calend.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/calend.png', sizingMethod='crop');
+	margin-left: 5px;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+/* anketa */
+.bl_photo_btn {
+	float: left;
+	width: 170px;
+}
+.bl_photo_btn .photo_user {
+	border: 1px solid #AAAAAA;
+	padding: 5px;
+	background-color: #eeeeee;
+	text-align: center;
+	margin-bottom: 10px;
+}
+.bl_photo_btn .photo_user .all_photo {
+	text-align: center;
+	margin-top: 5px;
+}
+.bl_photo_btn .photo_user .all_photo a {
+	color: #0088CC;
+	text-decoration: underline;
+}
+.bl_info_all {
+	margin-left: 10px;
+	float: left;
+}
+.bl_info,
+.bl_passport {
+	margin-bottom: 10px;
+}
+.bl_info .bl_txt,
+.bl_passport .bl_txt {
+	float: left;
+	width: 200px;
+}
+.bl_info .inp_txt {
+	width: 220px;
+}
+.bl_info .bl_phone {
+	margin-bottom: 3px;
+	margin-left: 160px;
+}
+.bl_info .bl_phone div {
+	width: 100px;
+	float: left;
+}
+.bl_info .bl_phone .inp_txt {
+	width: 120px;
+}
+.bl_info .bl_phone.last {
+	margin-bottom: 0px;
+}
+.bl_info .select {
+	width: 226px;
+}
+.bl_info_btn {
+	width: 380px;
+	text-align: center;
+}
+
+.bl_passport span {
+	margin-right: 10px;
+}
+.bl_passport .inp_txt {
+	width: 53px;
+	margin-left: 5px;
+} 
+.info_passport {
+	margin-left: 200px;
+}
+.passport_field {
+	margin-bottom: 5px;
+}
+
+.bl_info .bl_phone {
+	margin-bottom: 3px;
+	margin-left: 200px;
+}
+.bl_info .bl_phone div {
+	width: 100px;
+	float: left;
+}
+.bl_info .bl_phone .inp_txt {
+	width: 120px;
+}
+.bl_info .bl_phone.last {
+	margin-bottom: 0px;
+}
+.bl_access {
+	float: left;
+	margin-left: 20px;
+}
+.head_block {
+	margin-bottom: 10px;
+}
+.access_info {
+	margin-bottom: 10px;
+}
+.access_info div {
+	float: left;
+	width: 65px;
+}
+.access_info .inp_txt {
+	width: 100px;
+}
+
+.no_photo_user {
+	border: 1px solid #AAAAAA;
+	padding: 5px;
+	background-color: #eeeeee;
+	margin-bottom: 10px;
+}
+.no_photo_user div {
+	width: 120px;
+	height: 80px;
+	text-align: center;
+	padding-top: 40px;
+	margin: 0px auto;
+}

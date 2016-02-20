@@ -1,0 +1,116 @@
+{% extends "base_archive_tab.html" %}
+{% load i18n a_templatetags %}
+{% block title %}{% trans 'Просмотр видеоролика' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/view_video.css?v=v{{ version }}" />
+{% if roller %}
+<script type="text/javascript">
+function addFlash() {    
+    return ('<object id="flash-app" name="flash-app" width="{% if res_interface == "0" or res_interface == 0 %}1230{% else %}1870{% endif %}" height="626" data="{{ root_path }}/files/swf/video/video.swf" type="application/x-shockwave-flash">'+
+    '<param value="{{ root_path }}/files/swf/video/video.swf" name="movie">'+
+    '<param value="always" name="AllowScriptAccess">'+
+    '<param value="all" name="allowNetworking">'+
+    '<param value="true" name="allowFullScreen">'+
+    '<param name="quality" value="hight" />'+
+    '<param name="bgcolor" value="#666666" />'+
+    '<param name="wmode" value="opaque" />'+
+    '<param name="FlashVars" value="'+
+		'roller_id={{ roller.id }}'+
+		'&source='+encodeURIComponent('{{ video_url }}{{ roller.source }}')+
+		'&width={{ roller.width }}'+
+		'&height={{ roller.height }}'+
+		'&roller_data_url='+encodeURIComponent('{{ video_url }}/varchive/api?action=get_clip_frames&')+
+        '&rollers_data_url='+encodeURIComponent('{{ video_url }}/varchive/api?action=process_clips&')+
+		'&process_roller=process_roller'+
+		'&roller_info=roller_info'+
+		'&person_url='+encodeURIComponent('')+//{{ roller.id_command.id_archive.url }}files/video')+
+		'&person_info_url={% url person_info_url %}'+
+		'&frames_count={{ frames_count }}'+
+		'&info='+encodeURIComponent('{{ roller.startDate }} {% trans "с" %} {{ roller.startTime }} {% trans "до" %} {{ roller.endTime }}. {% trans "Источник" %}: {{ camera.ip }} {{ camera.type }}. {% trans "Запуск задачи" %}: {% trans  roller.signalType|sygnal_name  %}. {% trans "Частота кадров" %}: {{ roller.fps }} {% trans "кадр/сек" %}. {% trans "Размер" %}: {{ roller.size|fdiv:1024|fdiv:1024|floatformat:3 }} {% trans "Мб" %}. {% trans "Формат" %}: {{ roller.format }}. {% trans "Разрешение" %}: {{ roller.resolution }}.')+
+		'&locale={{ LANGUAGE_CODE }}'+
+        {% if start_time %}'&start_time={{ start_time }}'+{% endif %}
+		'" />'+ 
+    '<embed src="{{ root_path }}/files/swf/video/video.swf" FlashVars="'+
+		'roller_id={{ roller.id }}'+
+		'&source='+encodeURIComponent('{{ video_url }}{{ roller.source }}')+
+		'&width={{ roller.width }}'+
+		'&height={{ roller.height }}'+
+		'&roller_data_url='+encodeURIComponent('{{ video_url }}/varchive/api?action=get_clip_frames&')+
+        '&rollers_data_url='+encodeURIComponent('{{ video_url }}/varchive/api?action=process_clips&')+
+		'&process_roller=process_roller'+
+		'&roller_info=roller_info'+
+		'&person_url='+encodeURIComponent('')+//{{ roller.id_command.id_archive.url }}files/video')+
+		'&person_info_url={% url person_info_url %}'+
+		'&frames_count={{ frames_count }}'+
+		'&info='+encodeURIComponent('{{ roller.startDate }} {% trans "с" %} {{ roller.startTime }} {% trans "до" %} {{ roller.endTime }}. {% trans "Источник" %}: {{ camera.ip }} {{ camera.type }}. {% trans "Запуск задачи" %}: {% trans  roller.signalType|sygnal_name  %}. {% trans "Частота кадров" %}: {{ roller.fps }} {% trans "кадр/сек" %}. {% trans "Размер" %}: {{ roller.size|fdiv:1024|fdiv:1024|floatformat:3 }} {% trans "Мб" %}. {% trans "Формат" %}: {{ roller.format }}. {% trans "Разрешение" %}: {{ roller.resolution }}.')+
+		'&locale={{ LANGUAGE_CODE }}'+
+        {% if start_time %}'&start_time={{ start_time }}'+{% endif %}
+	'" wmode="opaque" quality="best" bgcolor="#666666" width="{% if res_interface == "0" or res_interface == 0 %}1230{% else %}1870{% endif %}" height="626" name="flash-app" align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer" />'+
+    '</object>'
+    );
+}
+function export_roller() {
+    if ($("#export_video").css("display") && $("#roller_url").val()){ 
+        location.replace($("#roller_url").val());
+    }
+	return false;
+}
+function export_video_with_face() {
+	saveVideoWithface($("#roller_id").val());
+	return false;
+}
+function showVideo() {
+    if (flashVersion()) {
+		$("#video").html('<div class="video">' + addFlash() + '</div>');
+    } else {
+		$("#video").html('<div class="message_action">{% trans 'У Вас отсутствует или установлена старая версия flash плеера. Новую версию плеера можно скачать' %} <a target="_blank" href="http://get.adobe.com/flashplayer/">{% trans 'здесь' %}</a>.</div>');
+    }
+}
+function process_roller(id, mode, diffFramesProc) {
+	$.ajax({
+		type: "POST",
+		url: "{{ root_path }}/command/process_roller/",
+		data: {id: id, mode:mode, diffFramesProc: diffFramesProc},
+		success: function(msg){
+			return 1;
+		}, 
+		error: function(msg) {
+			return 0;
+		}
+	});
+}
+function roller_info(id){
+    $("#export_a").attr("href", "{% url archive_download_video "" %}"+id);
+}
+{% include "func_saverollers.html" %}
+</script>
+{% endif %}
+{% endblock %}
+{% block submenu %}{% include "menu/menu_archive.html" %}{% endblock %}
+{% block subcontent %}
+	<h2><a href="{% url archive_page "video" %}">{% trans "Сохраненное видео" %}</a> - {% trans "Просмотр видеоролика" %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Видеоархив Просмотр видеоролика' %}');" /></h2>
+	{% include "current_time.html" %}
+{% if roller %}
+	<input type="hidden" value="{{ roller.id }}" id="roller_id">
+	<input type="hidden" value="{{ roller.id }}" id="roller_url">
+	{% if perms.user_perms.perm_videoarchive_export_video %}
+	<div class="block">
+		<a href="{% url archive_download_video "" %}{{roller.id}}" id="export_a"><input type="button" name="" id="export_video" class="inp_btn inp_btn140" value="{% trans 'Скачать видеоролик' %}" /></a>
+  	    {% if count_face == None or count_face > 0 %}		
+      	    <input type="button" name="" id="export_video" class="inp_btn inp_btn140 dist_left" value="{% trans 'Экспорт с лицами' %}" onClick="javascript: export_video_with_face();" />
+  	    {% endif %}
+	</div>
+	{% endif %}
+	<div id="video"></div>
+	<script type="text/javascript">showVideo();</script>
+{% else %}
+	<div id="video" class="message_action">{% trans "Нет видео." %}</div>
+{% endif %}
+{% endblock %}
+{% block windows %}
+<div class="indicator" id="indicator" style="display: none;">
+	<img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+	<div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>
+{% endblock %}

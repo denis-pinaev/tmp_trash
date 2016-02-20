@@ -1,0 +1,48 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% load pagination_tags %}
+{% block title %}{% trans 'Пользователи WEB API' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/configuration/users.css?v=v{{ version }}" />
+<script type="text/javascript">
+    $(function() {  
+        initTooltip(); 
+    });
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}
+	<h2>{% trans "Пользователи WEB API" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Пользователи WEB API' %}');" /></h2>
+	{% include "current_time.html" %}
+	<form method="get" action="" name="" id="mainForm">
+		<div class="block">
+			{% if all_users > 0 %}{% include "search.html" %}{% endif %}
+			<div class="bl_count">{% trans "Общее количество пользователей:" %} <span class="info_important">{{ all_users }}</span></div>
+			{% if filter %}			
+				<div class="bl_count">{% trans "Количество отфильтрованных записей" %}: <span class="info_important">{{ users|length }}</span></div>							
+			{% endif %}		
+		</div>
+	{% autopaginate users 10%}
+	{% paginate %}
+	{% if users|length > 0 %}
+		<table cellpadding="0px" cellspacing="0px" class="table dist_top">
+			<tr>
+				<th class="th_first">№</th>
+				<th><a href="?{% if page %}page={{page}}&{% endif %}sorto=1&up={% if sorto == 1 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}" {% if sorto == 1 and up == 1 %}class="sort_up" {% endif %}  {% if sorto == 1 and up == 0 %} class="sort_down"{% endif %} >{% trans "Логин" %}</a></th>
+				<th>{% trans "IP-адреса" %}</th>
+				<th>{% trans "Статистика" %}</th>
+			</tr>
+			{% for user in users %}
+			<tr {% cycle '' 'class="odd"' %}>
+				<td class="td_first">{{ forloop.counter }}.</td>
+				<td class="td_login short_descr" title="{% trans "Просмотреть настройки" %}"><a href="{% url user_ip %}?user_login={{user.login}}">{{user.login}}</a></td>
+				<td class="td_ip short_descr" title="<strong>{% trans "Разрешённые IP-адреса" %}</strong><div class='lists_ip'>{% for ip in user.ip_list %}<span>{{ ip }}</span> {% endfor %}</div>">{% for ip in user.light_ip_list %}<span>{{ ip }}</span> {% endfor %}</td>
+				<td class="td_stat short_descr" title="{% trans "Просмотреть статистику" %} {{user.login}}"><a href="{% url user_statistics %}?user_login={{user.login}}">{% trans "Просмотреть" %}</a></td>
+			</tr>
+			{% endfor %}
+		</table>
+	{% endif %}
+	{% paginate %}
+	</form>
+{% endblock %}

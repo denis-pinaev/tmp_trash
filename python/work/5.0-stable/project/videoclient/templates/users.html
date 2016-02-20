@@ -1,0 +1,26 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Настройки пользователей' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4users.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+{% include "js/js_list.html" %}
+<script type="text/javascript">
+var ERRORS = {
+	"delete": "{% trans 'Выберите, пожалуйста, хотя бы одного пользователя' %}."
+}
+var MESSAGES = {
+	"delete": "{% trans 'Вы действительно хотите удалить выбранных пользователей' %} ({} {% trans 'шт' %}.)?",
+	"export_all": "{% trans 'Экспортировать весь список?' %}",
+	"export_choose": "{% trans 'Экспортировать выбранные персоны' %} ({} {% trans 'шт' %}.)?"
+}
+$(function() {
+    init();
+});    
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu_insert.html" %}{% endblock %}
+{% block subcontent %}{% include "content/users_content.html" %}{% endblock %}
+{% block windows %}
+{% include "window_delete.html" %}
+{% endblock %}

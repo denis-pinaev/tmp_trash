@@ -1,0 +1,164 @@
+{% load i18n %}
+{% load a_templatetags %}				
+				<div class="block_diagram" id="diagram{{forloop.counter}}" style="display: none;">
+					<div class="legenda">
+						<div class="legenda_value first"><div class="signal1"></div> - <span>1</span> - {% trans "Движение" %}</div>
+						<div class="legenda_value"><div class="signal2"></div> - <span>2</span> - {% trans "Детектирование" %}</div>
+						<div class="legenda_value"><div class="signal3"></div> - <span>3</span> - {% trans "Идентификация" %}</div>
+						<div class="legenda_value"><div class="signal4"></div> - <span>4</span> - {% trans "Постоянная запись" %}</div>
+						<div class="legenda_value"><div class="signal5"></div> - <span>5</span> - {% trans "Cигнал тревоги" %}</div>		
+					</div>				
+					<table cellpadding="0px" cellspacing="0px" border="0px" class="scale_signal">
+						<tr><td>5</td></tr>
+						<tr><td>4</td></tr>
+						<tr><td>3</td></tr>
+						<tr><td>2</td></tr>
+						<tr><td>1</td></tr>
+					</table>				
+					<table cellpadding="0px" cellspacing="0px" border="0px" class="diagram">
+						<tr>
+							<td><div class="reel signal5" style="width: 10px;" onMouseOver="javascript: showTitleVideo(this, {format: 'AVI', size: '120 Mб', signal: '{% trans "служебная запись" %}', fps: '5 кадр/сек', faces: '100', persons: '10'});" onMouseOut="javascript: closeTitle('win_video');"></div></td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td><div class="reel signal5" style="width: 5px;" onMouseOver="javascript: showTitleVideo(this, {format: 'AVI', size: '120 {% trans "Mб" %}', signal: '{% trans "служебная запись" %}', fps: '5 {% trans "кадр/сек" %}', faces: '100', persons: '10'});" onMouseOut="javascript: closeTitle('win_video');"></div></td>
+							<td>&nbsp;</td>
+							<td><div class="reel signal5" style="width: 20px;" onMouseOver="javascript: showTitleVideo(this, {format: 'AVI', size: '120 {% trans "Mб" %}', signal: '{% trans "служебная запись" %}', fps: '5 {% trans "кадр/сек" %}', faces: '100', persons: '10'});" onMouseOut="javascript: closeTitle('win_video');"></div></td>
+							<td>&nbsp;</td>
+							<td colspan="3"><div class="reel signal5" onMouseOver="javascript: showTitleVideo(this, {format: 'AVI', size: '120 {% trans "Mб" %}', signal: '{% trans "служебная запись" %}', fps: '5 {% trans "кадр/сек" %}', faces: '100', persons: '10'});" onMouseOut="javascript: closeTitle('win_video');"></div></td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td colspan="9"><div class="reel signal4" onMouseOver="javascript: showTitleVideo(this, {format: 'AVI', size: '120 {% trans "Mб" %}', signal: '{% trans "служебная запись" %}', fps: '5 {% trans "кадр/сек" %}', faces: '100', persons: '10'});" onMouseOut="javascript: closeTitle('win_video');"></div></td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td><div class="reel signal3" style="width: 20px;" onMouseOver="javascript: showTitleVideo(this, {format: 'AVI', size: '120 {% trans "Mб" %}', signal: '{% trans "служебная запись" %}', fps: '5 кадр/сек', faces: '100', persons: '10'});" onMouseOut="javascript: closeTitle('win_video');"></div></td>
+							<td>&nbsp;</td>
+							<td><div class="reel signal3" style="width: 30px;" onMouseOver="javascript: showTitleVideo(this, {format: 'AVI', size: '120 {% trans "Mб" %}', signal: '{% trans "служебная запись" %}', fps: '5 кадр/сек', faces: '100', persons: '10'});" onMouseOut="javascript: closeTitle('win_video');"></div></td>
+							<td>&nbsp;</td>
+							<td><div class="reel signal3" style="width: 40px;" onMouseOver="javascript: showTitleVideo(this, {format: 'AVI', size: '120 {% trans "Mб" %}', signal: '{% trans "служебная запись" %}', fps: '5 кадр/сек', faces: '100', persons: '10'});" onMouseOut="javascript: closeTitle('win_video');"></div></td>
+							<td>&nbsp;</td>
+							<td><div class="reel signal3" style="width: 3px;" onMouseOver="javascript: showTitleVideo(this, {format: 'AVI', size: '120 {% trans "Mб" %}', signal: '{% trans "служебная запись" %}', fps: '5 кадр/сек', faces: '100', persons: '10'});" onMouseOut="javascript: closeTitle('win_video');"></div></td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td colspan="4"><div class="reel signal2" onMouseOver="javascript: showTitleVideo(this, {format: 'AVI', size: '120 {% trans "Mб" %}', signal: '{% trans "служебная запись" %}', fps: '5 кадр/сек', faces: '100', persons: '10'});" onMouseOut="javascript: closeTitle('win_video');"></div></td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td colspan="3"><div class="reel signal1" onMouseOver="javascript: showTitleVideo(this, {format: 'AVI', size: '120 {% trans "Mб" %}', signal: '{% trans "служебная запись" %}', fps: '5 {% trans "кадр/сек" %}', faces: '100', persons: '10'});" onMouseOut="javascript: closeTitle('win_video');"></div></td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td><div class="reel signal1" onMouseOver="javascript: showTitleVideo(this, {format: 'AVI', size: '120 {% trans "Mб" %}', signal: '{% trans "служебная запись" %}', fps: '5 {% trans "кадр/сек" %}', faces: '100', persons: '10'});" onMouseOut="javascript: closeTitle('win_video');"></div></td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+						</tr>
+					</table>
+					<table cellpadding="0px" cellspacing="0px" border="0px" class="scale_time">
+						<tr>
+							<td>00</td>
+							<td>01</td>
+							<td>02</td>
+							<td>03</td>
+							<td>04</td>
+							<td>05</td>
+							<td>06</td>
+							<td>07</td>
+							<td>08</td>
+							<td>09</td>
+							<td>10</td>
+							<td>11</td>
+							<td>12</td>
+							<td>13</td>
+							<td>14</td>
+							<td>15</td>
+							<td>16</td>
+							<td>17</td>
+							<td>18</td>
+							<td>19</td>
+							<td>20</td>
+							<td>21</td>
+							<td>22</td>
+							<td>23</td>
+							<td>24</td>
+						</tr>
+					</table>
+				</div>

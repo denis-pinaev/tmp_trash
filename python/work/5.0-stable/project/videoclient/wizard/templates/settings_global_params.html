@@ -1,0 +1,78 @@
+{% extends "wizard_base.html" %}
+{% load i18n %}
+{% load templatetags %}
+{% block wizard_content %}
+<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script>
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript">
+    // Измиенить цвет границы блока
+    function changeBorder(obj, err) {
+        if (err) {
+            obj.style.border = "1px solid #FF6600";
+        } else {
+            obj.style.border = "1px solid #AAAAAA";
+        }
+    }
+    
+    // Применить параметры
+    function insertParameters() {
+        if (checkForInteger("server_frame_minification")) {
+        var options = {
+          url: "/wizard/globalparams/",
+          type: "POST",
+          success: function(msg) {
+                if (msg != ""){
+                    alert(msg);
+                }
+                else {
+                    alert("{% trans "Настройки успешно сохранены." %}");
+                    window.location.href = "/wizard/fin/";
+                }          
+          },
+            error: function(msg){
+                alert("{% trans "Внимание! Произошла ошибка. Настройки не могут быть сохранены." %}");            
+            }      
+        };
+        $("#ImportParamsForm").ajaxSubmit(options);
+        }
+    }
+    
+    // проверка на целое число
+    function checkForInteger(id) {
+	    var inp = document.getElementById(id);
+	    var value = $("#" + id).attr("value");
+	    var reg = /^[0-9]*$/;
+	    if (reg.test(value)) {
+		    changeBorder(inp, false);
+		    $("#err_mess").html("");
+		    return true;
+	    }
+	    changeBorder(inp, true);
+	    $("#err_mess").html("{% trans 'Установлено некорректное значение' %}");
+	    return false;
+    }
+
+</script>
+<div class="step"><strong>{% trans "Шаг 5 из" %} <span id="step_end">{{ all_steps }}</span>.</strong></div>
+
+<div class="message_action dist_top" id="message_cpu_versions">{% trans 'Выполните необходимые настройки общих параметров системы и нажмите на кнопку' %} <strong>{% trans 'Далее' %}</strong>.</div>
+
+<form method="post" action="" class="dist_top" id="ImportParamsForm">
+    <div id="err_mess" class="err_mess_settings"></div>
+	<div class="block bl_param frame_minification_block">
+		<label for="server_frame_minification" class="bl_txt">{% trans "Коэффициент масштабирования кадра" %} (1..16):</label>
+		<div class="spinbox">
+			<input type="text" id="server_frame_minification" name="frame_minification" value="{{ frame_minification }}" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 1, 1, 16);" />
+			<div class="spinbtns">
+				<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 1, 16, 1, 'server_frame_minification');" onMouseUp="javascript: clearTimer();" />
+				<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 1, 16, 1, 'server_frame_minification');" onMouseUp="javascript: clearTimer();" />
+			</div>
+		</div>
+	</div>
+    <div class="frm_btn dist_top">
+        <input type="hidden" name="action" value="next" id="inp_action" />
+        <input type="button" name="" value="{% trans "Назад" %}" class="inp_btn inp_btn90" onClick="javascript: window.location.href = '/wizard/balancer/';" />
+        <input type="button" name="" value="{% trans "Далее" %}" class="inp_btn btn_blue dist_left" onClick="javascript: insertParameters();" />
+    </div>
+</form>
+{% endblock wizard_content %}

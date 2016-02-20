@@ -1,0 +1,44 @@
+{% load i18n %}
+{% load templatetags %}
+{% load pagination_tags %}
+{% if events|length > 0 %}
+{% include "page_navigation/main.html" %}
+	<table cellpadding="0px" cellspacing="0px" class="table" id="table_sys_log">
+		<tr>
+			<th class="first"><a href="?{% if getvars %}{{ getvars }}&{% endif %}{% if sortvars %}{{ sortvars }}&{% endif %}sorto=1&up={% if sorto == 1 and up == 1 %}0" class="up"{% else %}1"{% endif %}>ID</a></th>
+			<th class="date_time"><a href="?{% if getvars %}{{ getvars }}&{% endif %}{% if sortvars %}{{ sortvars }}&{% endif %}sorto=2&up={% if sorto == 2 and up == 1 %}0" class="up"{% else %}1"{% endif %}>{% trans "Дата" %}</a></th>
+			<th class="date_time"><a href="?{% if getvars %}{{ getvars }}&{% endif %}{% if sortvars %}{{ sortvars }}&{% endif %}sorto=3&up={% if sorto == 3 and up == 1 %}0" class="up"{% else %}1"{% endif %}>{% trans "Время" %}</a></th>                        
+			<th><a href="?{% if getvars %}{{ getvars }}&{% endif %}{% if sortvars %}{{ sortvars }}&{% endif %}sorto=4&up={% if sorto == 4 and up == 1 %}0" class="up"{% else %}1"{% endif %}>{% trans "Объект" %}</a></th>
+			<th><a href="?{% if getvars %}{{ getvars }}&{% endif %}{% if sortvars %}{{ sortvars }}&{% endif %}sorto=8&up={% if sorto == 8 and up == 1 %}0" class="up"{% else %}1"{% endif %}>{% trans "Источник" %}</a></th>
+			<th><a href="?{% if getvars %}{{ getvars }}&{% endif %}{% if sortvars %}{{ sortvars }}&{% endif %}sorto=9&up={% if sorto == 9 and up == 1 %}0" class="up"{% else %}1"{% endif %}>{% trans "Тэг" %}</a></th>
+			<th><a href="?{% if getvars %}{{ getvars }}&{% endif %}{% if sortvars %}{{ sortvars }}&{% endif %}sorto=5&up={% if sorto == 5 and up == 1 %}0" class="up"{% else %}1"{% endif %}>{% trans "Статус" %}</a></th>
+			<th><a href="?{% if getvars %}{{ getvars }}&{% endif %}{% if sortvars %}{{ sortvars }}&{% endif %}sorto=6&up={% if sorto == 6 and up == 1 %}0" class="up"{% else %}1"{% endif %}>{% trans "Сервер" %}</a></th>
+			<th><a href="?{% if getvars %}{{ getvars }}&{% endif %}{% if sortvars %}{{ sortvars }}&{% endif %}sorto=7&up={% if sorto == 7 and up == 1 %}0" class="up"{% else %}1"{% endif %}>{% trans "Описание" %}</a></th>
+		</tr>
+
+		{% for event in events %}
+			<tr{% cycle '' ' class="odd"' %} onMouseOver="javascript: overRow(this);" onMouseOut="javascript: outRow(this);">
+				<td class="td_check first">{{ event.id }}</td>
+				<td>{{ event.receivedat|date:"d.m.Y" }}</td>
+				<td>{{ event.receivedat|time:"H:i:s.u" }}</td>
+				<td>{{ event.facility }}</td>
+				<td>{{ event.eventsource|default_if_none:'&nbsp;' }}</td>
+				<td>{{ event.syslogtag|default_if_none:'&nbsp;' }}</td>
+				<td {% if event.priority_id < 5 %}class="error"{% endif %}>{{ event.priority }}</td>
+				<td>{{ event.hostname|default_if_none:'' }}</td>
+				<td class="td_sys_mes">
+					<div class="block">
+						<input type="button" value="" name="" class="btn_copy short_descr" id="btn_copy_{{ event.id }}" title="{% trans 'Скопировать системное сообщение' %}" onClick="javascript: copySystemMessage({{ event.id }});" />
+						<div id="txt_{{ event.id }}" class="txt_mes short_descr"{% if event.message|length > 128 %} title="{{ event.message }}"{% endif %} onClick="javascript: copySystemMessage({{ event.id }});">{% if res_interface == "0" or res_interface == 0 %}{{ event.message|truncchar:128 }}{% else %}{{ event.message }}{% endif %}</div>
+						{% if event.message|length > 128 %}<textarea class="textarea txt_copy" rows="4" id="txt_copy_{{ event.id }}" readonly="readonly" onClick="javascript: selectRowCopy($(this));">{{ event.message }}</textarea>
+						{% else %}<input type="text" readonly="readonly" class="inp_txt txt_copy" id="txt_copy_{{ event.id }}" value="{{ event.message }}" onClick="javascript: selectRowCopy($(this));" />
+						{% endif %}
+					</div>
+				</td>										
+			</tr>
+		{% endfor %}
+	</table>
+{% include "page_navigation/main_bottom.html" %}
+{% else %}
+<div class="message_action">{% trans "Не найдены записи, соответствующие заданным условиям поиска" %}.</div>
+{% endif %}

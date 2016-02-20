@@ -1,0 +1,63 @@
+{% load i18n %}
+{% load templatetags %}
+<div id="win_journalphoto" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_journalphoto');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">ID: <span id="win_journalphoto_id"></span>, {% trans "камера" %} "<span id="win_journalphoto_camera" class="short_descr"></span>"</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add" id="win_journalphoto_contWF">
+            <div class="block_img" id="original_image"><!--  --></div>
+        </div></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript:  closeChangeWindow('win_journalphoto');" />    
+        </div>
+    </div>
+</div>
+<div id="win_clear" style="display: none;" class="winFloating">
+    <form method="post" action="/clearjournal/" class="bodyWF" id="ClearJournalData">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_clear');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Очистка журнала" %}</div>
+        </div>
+        <div class="contWF1"><div class="contWF_add" id="win_clear_contWF">
+            <div class="form">
+                <div class="block">
+                    <label for="periods" class="fb_txt">{% trans "Очистить данные" %}:</label>
+                    <select name="period" class="select" id="periods" onChange="javascript: selectPeriod(this);">
+                        <option value="0">{% trans "Старше одной недели" %}</option>                
+                        <option value="1">{% trans "Старше одного месяца" %}</option>
+                        <option value="2">{% trans "Старше трёх месяцев" %}</option>
+                        <option value="3">{% trans "Старше указанной даты" %}</option>
+			<option value="4">{% trans "Все записи" %}</option>
+                    </select>
+                </div>
+                <div id="otherPeriod" style="display: none;" class="fb_period">
+                    <div id="error_date_clear" class="error"></div>
+                    <input type="text" name="dataClear" id="dataClear" value="{% now "d.m.Y" %}" maxlength="10" class="inp_txt inp_date" /><input type="button" name="" value="" class="btn_calend" title="{% trans "Выбрать дату" %}" />
+                </div>                
+            </div>    
+        </div></div>
+        <div class="footerWF">
+            <input type="submit" name="" value="{% trans "Далее" %}" class="btn_wf_blue" />
+            <input type="button" name="" value="{% trans "Отмена" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_clear');" />
+        </div>
+    </form>
+</div>
+<div id="win_mess" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Предупреждение" %}</div>
+        </div>
+        <div class="contWF" id="win_mess_contWF"></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans 'Удалить' %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess'); clearJournalData();" />
+            <input type="button" name="" value="{% trans 'Отмена' %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_mess');" />    
+        </div>
+    </div>
+</div>
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>

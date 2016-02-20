@@ -1,0 +1,352 @@
+{% load i18n %}
+{% load a_templatetags %}
+<script type="text/javascript">
+    {% include "func_saverollers.html" %}
+</script>
+<div id="win_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt" id="win_mess_headWF">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF" id="win_mess_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />    
+		</div>
+	</div>
+</div>
+<div id="win_del" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_del');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Удаление" %}</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_del_contWF"></div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Удалить" %}" class="btn_wf_blue" onClick="javascript: del(clickDelete({{ rollers|length }}));" />
+			<input type="button" name="" value="{% trans "Отменить" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_del');" />
+		</div>
+	</div>
+</div>
+<div id="win_all_del" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_all_del');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Удаление" %}</div>
+		</div>
+		<div class="contWF1"><div class="contWF_add" id="win_all_del_contWF"></div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Удалить" %}" class="btn_wf_blue" onClick="javascript: deleteAllRollers(); " />
+			<input type="button" name="" value="{% trans "Отменить" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_all_del');" />
+		</div>
+	</div>
+</div>
+<div id="win_export" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_export');" /></div>
+			<div class="headWF_txt">{% trans "Параметры для экспорта видеороликов" %}</div>
+		</div>
+		<div class="contWF" id="win_export_contWF">
+			<form method="post" action="">
+				<div class="frm_export">
+					<div>{% trans "Формат" %}:</div>
+					<select name="" class="select">
+						<option value="0" selected="selected">AVI</option>
+						<option value="1">FLV</option>
+					</select>
+				</div>
+				<div class="frm_export">
+					<div>{% trans "Разрешение" %}:</div>
+					<select name="" class="select">
+						<option value="0" selected="selected">640x480</option>
+						<option value="1">800x600</option>
+					</select>
+				</div>
+				<div class="frm_export">
+					<div>FPS:</div>
+					<select name="" class="select">
+						<option value="0" selected="selected">1</option>
+						<option value="1">2</option>
+					</select>                    
+				</div>
+			</form>
+		</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Далее" %}" class="btn_wf_blue" onClick="javascript: showTimeLine();" />        
+			<input type="button" name="" value="{% trans "Отменить" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_export');" />
+		</div>
+	</div>
+</div>
+<div id="win_progressbar" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_progressbar');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt" id="win_mess_headWF">{% trans "Экспорт видеороликов" %}</div>
+		</div>
+		<div class="contWF" id="win_progressbar_contWF">
+			<div class="block_progressBar">
+			<div>{% trans "Подготовка видеороликов к сохранению..." %}</div>
+				<div class="progressBar">
+					<div class="percent_b" id="percent_b">0%</div>
+					<div class="percent_w" id="percent_w">0%</div>
+					<div class="active" id="active"></div>
+				</div>
+			</div>
+		</div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Отменить" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_progressbar');" />    
+		</div>
+	</div>
+</div>
+<div id="win_save" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_save');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Сохранение видеороликов" %}</div>
+		</div>
+		<div class="contWF">
+			{% trans "Сохранить архив с видеороликами" %} <b>video.zip (3,93Мб)</b>?
+		</div>
+		<div class="footerWF">
+			<input type="button" name="" value="Сохранить" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_save');" />
+			<input type="button" name="" value="Отменить" class="btn_wf" onClick="javascript: closeChangeWindow('win_save');" />
+		</div>
+	</div>
+</div>
+<div id="win_import0" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_import0');" /></div>
+			<div class="headWF_txt">{% trans "Загрузка видеоролика для импорта" %}</div>
+		</div>
+		<form method="post" class="frm_imp0" enctype="multipart/form-data" id="form_import">
+		<div class="contWF" id="win_import0_contWF">
+			    <div class="error" id="error_file" style="margin-bottom: 5px;"></div>
+				<label for="file_imp">{% trans "Файл" %}:</label>
+				<input type="file" class="dist_left" id="file_imp" name="file" value="" accept="" size="20" accept="video/*"/>
+				<input type="hidden" id="id" name="id"/>
+		</div>
+		<div class="footerWF">
+			<input type="submit" name="" value="{% trans "Загрузить" %}" class="btn_wf_blue" />        
+			<input type="button" name="" value="{% trans "Отменить" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_import0');" />
+		</div>
+		</form>
+	</div>
+</div>
+<div id="win_import" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_import');" /></div>
+			<div class="headWF_txt">{% trans "Параметры для импорта видеоролика" %}</div>
+		</div>
+		<form method="post" action="{{ root_path }}/command/import_roller/" class="frm frm_import" target="forimport" id="importform">
+		<div class="contWF" id="win_import_contWF">
+			<iframe name="forimport" width="0" height="0" frameborder="0"></iframe>
+				<div id="infoRoller"></div>
+				<div class="field">				
+					<label for="name_imp" class="label_txt2">{% trans "Источник" %}:</label>
+					<div class="enter">
+						<input type="hidden" name="path" value="" id="pathValue" /> 
+						<select name="source" class="select" id="name_imp" style="width: 180px;" onChange="javascript: showTimeOther(this, 'new_source');">
+							{% for camera in cameras %}
+								<option value="{{ camera.id }}">{% if camera.name %}{{ camera.name }}{% else %}{{ camera.ip }} {{ camera.type }}{% endif %}</option>
+							{% endfor %}
+							<option value="0">--- {% trans "Создать новый" %} ---</option>
+						</select>
+						<span {% if cameras|length > 0 %}style="display: none;"{% endif %} id="new_source" ><span style="margin: 0px 5px;">&rarr;</span><input type="text" name="new_name_source" value="" class="inp_txt" style="width: 174px;" maxlength="128" /></span>
+						<span class="error dist_left" id="source_error"></span>
+					</div>
+				</div>
+				<div class="bl_error" id="error_date_imp"></div>
+				<div class="field">
+					<label for="date_imp" class="label_txt2">{% trans "Дата" %}:</label>
+					<div class="enter">
+						<input type="text" name="date_imp" id="date_imp" value="date" class="inp_txt inp_date" style="width: 75px;" /><input type="button" name="" value="" class="btn_calend" title="{% trans "Выбрать дату" %}" /><span class="error dist_left" id="date_imp_error"></span>
+					</div>
+					<script type="text/javascript">getCurrentDate(".", "date_imp");</script>
+				</div>
+				<div class="bl_error" id="error_time_imp"></div>
+				<div class="field">
+					<label for="time_imp" class="label_txt2">{% trans "Время" %}:</label>
+					<div class="enter">
+						{% spinbox "hour_imp" "hour_imp" now_hour "25" "0" "23" "1" %}
+						<div class="delim">:</div>
+						{% spinbox "minute_imp" "minute_imp" now_minute "25" "0" "59" "1" %}
+						<div class="delim">:</div>
+						{% spinbox "second_imp" "second_imp" now_second "25" "0" "59" "10" %}  
+						<span class="error dist_left" id="hour_imp_error"></span>
+						<span class="error dist_left" id="minute_imp_error"></span>
+						<span class="error dist_left" id="second_imp_error"></span>                 
+					</div>
+					{% if not now_hour or not now_minute or not now_second %}
+					    <script type="text/javascript">getCurrentTime({hour1: 'hour_imp', minute1: 'minute_imp', second1: 'second_imp'});</script>
+					{% endif %}
+				</div>
+				<div class="field">
+					<label for="" class="label_txt2">{% trans "Включить" %}:</label>
+					<div class="enter">
+						<script type="text/javascript">
+							function clickCh(obj) {
+								if (obj.checked) {
+									obj.value = 1;
+								} else {
+									obj.value = 0;
+								}
+							}
+						</script>
+						<input type="checkbox" name="fd" value="0" class="inp_check" id="face_det" onClick="javascript: clickCh(this); chooseFPS({id1: 'face_det', id2: 'face_rec'});" /><label for="face_det">{% trans "Детектирование" %}</label>
+						<input type="checkbox" name="fr" value="0" class="inp_check dist_left" id="face_rec" onClick="javascript: clickCh(this); chooseFPS({id1: 'face_det', id2: 'face_rec'});" /><label for="face_rec">{% trans "Идентификация" %}</label>
+					</div>
+				</div>
+				<div class="inner_block" id="block_fps_imp" style="display: none;">
+					<div class="field last">
+						<label for="" class="label_txt">{% trans "Обрабатывать" %}:</label>
+						<div class="enter">
+							<div class="block_radio"><input type="radio" name="fps_imp" value="0" id="all_fps_imp" class="inp_check" checked="checked" /><label for="all_fps_imp">{% trans "Все кадры" %}</label></div>
+							<div class="other dist_right"><input type="radio" name="fps_imp" value="1" id="other_fps_imp" class="inp_check" /><label for="other_fps_imp">{% trans "Каждый" %}</label></div>
+							<div class="spinbox dist_left">
+								<input type="text" id="enter_fps_imp" name="enter_fps_imp" value="2" onClick="javascript: byId('other_fps_imp').checked = 'checked';" class="inp_txt" style="width: 30px;" onBlur="javascript: checkSpin(this, 2, 0, 30);"/>
+								<div class="spinbtns">
+									<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 60, 10, 'enter_fps_imp');" onMouseUp="javascript: clearTimer();" />
+									<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 60, 10, 'enter_fps_imp');" onMouseUp="javascript: clearTimer();" />
+								</div>                                
+							</div>
+							<div class="other dist_left">{% trans "кадр" %}</div>
+							<span class="error dist_left" id="fps_imp_error"></span>
+							<span class="error dist_left" id="enter_fps_imp_error"></span>
+						</div>
+					</div>
+				</div>
+				{% comment %}
+				<div class="field">
+					<label for="" class="label_txt">{% trans "Конвертировать" %}:</label>
+					<div class="enter">
+						<input type="radio" name="convert" value="1" class="inp_check" id="convert_yes" checked="checked" onClick="javascript: showParamConvert(true);" /><label for="convert_yes">{% trans "Да" %}</label>
+						<input type="radio" name="convert" value="0" class="inp_check dist_left" id="convert_no" onClick="javascript: showParamConvert(false);" /><label for="convert_no">{% trans "Нет" %}</label>
+						<span class="error dist_left" id="convert_error"></span>
+					</div>
+				</div>
+				{% endcomment %}
+				<input type="hidden" name="convert" value="1" id="convert_yes">
+				<div id="parameters_convert" class="inner_block">
+					<div class="head">{% trans "Параметры конвертирования для одного видеоролика" %}</div>
+					<div class="field">
+						<label for="time_video" class="label_txt">{% trans "Продолжительность" %}:</label>
+						<div class="enter">
+							<select name="interval" class="select select_video" id="time_video_imp" onChange="javascript: showTimeOther(this, 'otherPeriod_imp');">
+								<option value="600" selected="selected">10 {% trans "мин." %}</option>
+								<option value="1200">20 {% trans "мин." %}</option>
+								<option value="1800">30 {% trans "мин." %}</option>
+								<option value="2400">40 {% trans "мин." %}</option>
+								<option value="3000">50 {% trans "мин." %}</option>
+								<option value="3600">60 {% trans "мин." %}</option>
+								<option value="0">{% trans "Другая" %}</option>
+							</select>
+							<span class="error dist_left" id="interval_error"></span>
+							<div id="otherPeriod_imp" class="other_time" style="display: none;">
+								<span class="arrow_left">&rarr;</span>
+								<div class="spinbox">
+									<input type="text" id="hour_video" name="hour_video" value="00" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 00, 00, 23);"/>
+									<div class="spinbtns">
+										<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 23, 1, 'hour_video');" onMouseUp="javascript: clearTimer();" />
+										<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 23, 1, 'hour_video');" onMouseUp="javascript: clearTimer();" />
+									</div>
+								</div>
+								<div class="delim">:</div>
+								<div class="spinbox">
+									<input type="text" id="minute_video" name="minute_video" value="00" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 00, 00, 60);"/>
+									<div class="spinbtns">
+										<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 60, 10, 'minute_video');" onMouseUp="javascript: clearTimer();" />
+										<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 60, 10, 'minute_video');" onMouseUp="javascript: clearTimer();" />
+									</div>
+								</div>
+								<div class="delim">:</div>
+								<div class="spinbox">
+									<input type="text" id="second_video" name="second_video" value="00" class="inp_txt" style="width: 38px;" onBlur="javascript: checkSpin(this, 00, 00, 60);"/>
+									<div class="spinbtns">
+										<input type="button" name="" value="" class="btnSpUp upU" onMouseDown="javascript: spinButton('up', 00, 60, 10, 'second_video');" onMouseUp="javascript: clearTimer();" />
+										<input type="button" name="" value="" class="btnSpDown upD" onMouseDown="javascript: spinButton('down', 00, 60, 10, 'second_video');" onMouseUp="javascript: clearTimer();" />
+									</div>
+								</div>
+								<span class="error dist_left" id="hour_video_error"></span>
+								<span class="error dist_left" id="minute_video_error"></span>
+								<span class="error dist_left" id="second_video_error"></span>
+							</div>
+							<input type="hidden" name="time" value="0" id="value_time_video" />
+						</div>
+					</div>
+					<div class="bl_error" id="error_resol"></div>
+					<div class="field">
+						<label class="label_txt" id="scale">{% trans "Масштаб" %}:</label>
+						<div class="enter">
+							<div class="block_ie">
+								<div class="block">
+									<label for="check_permit" class="label_txt" style="width: 120px;"><input type="radio" name="check_permit" value="0" checked="checked" id="check_permit" class="inp_check" />{% trans "точный размер" %}:</label>
+									<div class="enter">						
+										<input type="text" value="1280" class="inp_txt" style="width: 38px;" id="resol_width" name="resol_width" /><span style="margin: 0px 5px;">x</span><input type="text" value="1024" class="inp_txt" style="width: 38px;" id="resol_height" name="resol_height" />
+										<span class="error dist_left" id="permit_video_error"></span>
+									</div>
+								</div>
+								<div class="block" id="compression_div" style="margin-top: 5px;">
+									<label for="check_permit1" class="label_txt" style="width: 120px;"><input type="radio" name="check_permit" value="1" id="check_permit1" class="inp_check" />{% trans "уменьшить в" %}:</label>
+									{% spinbox "permit" "permit" 2 "38" "0.5" "100" "1" %} <span style="margin-left: 5px;">{% trans "раз" %}</span>
+									<input type="hidden" value="1280x1024" name="resol" id="resol">
+									<input type="hidden" value="1280" id="video_width">
+									<input type="hidden" value="1024" id="video_height">
+								</div>							
+							</div>
+						</div>
+					</div>
+					{% comment %}
+					<div class="field">
+						<label for="codec" class="label_txt">{% trans "Кодек" %}:</label>
+						<div class="enter">
+							<select name="codec" class="select select_video" id="codec">
+								<option value="3" selected="selected">mjpeg</option>
+								<option value="4" selected="selected">mpeg4</option>
+							</select>
+							<span class="error dist_left" id="codec_error"></span>
+						</div>
+					</div>
+					{% endcomment %}
+					{% for c in all_codecs %}
+                        {% if c.number == default_codec %}
+                            <input type="hidden" name="codec" value="{{ c.id }}" />
+                        {% endif %}
+                    {% endfor %}
+                    <div class="field">
+						<label for="gop" class="label_txt">{% trans "Частота ключевых кадров" %}:</label>
+						{% spinbox "gop" "gop" gop_size "38" "1" "20" "1" %}
+					</div>
+					<div class="field last">                            
+                        <label for="compress" class="label_txt">{% trans "Степень сжатия" %}:</label>
+                        {% spinbox "compress" "compress" compress "38" "0" "1" "0.1" %}                                
+                   </div>
+				</div>
+			
+		</div>
+		<div class="footerWF">
+			<input type="submit" name="" value="{% trans "Импорт" %}" class="btn_wf_blue" />        
+			<input type="button" name="" value="{% trans "Отменить" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_import');" />
+		</div>
+		</form>
+	</div>
+</div>
+<div id="win_save_orig" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_save_orig');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Экспорт видеороликов" %}</div>
+		</div>
+		<div class="contWF" id="win_save_orig_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "Экспорт" %}" class="btn_wf_blue" onClick="javascript: saveRollers(clickDelete({{ rollers|length }}));" />
+			<input type="button" name="" value="{% trans "Отменить" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_save_orig');" />
+		</div>
+	</div>
+</div>
+<div class="indicator" id="indicator" style="display: none;">
+	<img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+	<div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>

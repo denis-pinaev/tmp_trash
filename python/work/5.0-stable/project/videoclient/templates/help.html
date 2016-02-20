@@ -1,0 +1,15 @@
+{% extends "base_notab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Помощь' %}{% endblock %}
+{% block js_css %}<link rel="stylesheet" type="text/css" href="/files/css/help.css?v=v{{ version }}" />{% endblock %}
+{% block subcontent %}
+<h2>{% trans "Помощь" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Помощь' %}');" /></h2>
+{% include "current_time.html" %}
+{% if distr_version %}{% trans "Версия дистрибутива" %}: {{ distr_version }}{% endif %}
+<ul class="list_docs dist_top">
+	<li class="ld_first ld_last"><a href="/files/docs/Recognition_System_of_Faces_Objects_Events_Interface_Description_v2_05042012.pdf" class="pdf" target="_blank">{% trans "Комплекс Распознавания Лиц, Объектов, Событий. Описание интерфейса" %}</a> <span>(v2, 05.04.2012)</span></li>
+</ul>							
+{% if perms.user_perms.perm_wizard %}
+	<div class="block dist_top"><a href="/wizard/" target="_blank" class="link_btn_ok"><span>{% trans "Мастер настроек" %}</span></a></div>
+{% endif %}
+{% endblock %}

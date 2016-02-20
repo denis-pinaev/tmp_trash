@@ -1,0 +1,627 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+var ERROR = "{% trans 'Параметр не применён. Пожалуйста, попробуйте ещё раз' %}.";
+var ERROR_TIMEOUT = "{% trans ' Пожалуйста, повторите попытку позднее' %}.";
+var SUCCESS_PARAM = "{% trans 'Параметр успешно применён.' %}";
+var ERROR_CAMERA = "{% trans 'Камера не добавлена. Пожалуйста, попробуйте ещё раз' %}.";
+var SUCCESS_CAMERA = "{% trans 'Камера успешно добавлена' %}";
+function saveProfile() {
+   var txt = createTextMessage({name_block: "save_profile"});
+   changeWindow({id: "win_save_profile", css: {width: '320px', height: '240px'}, txt: txt});
+}
+function uploadProfile() {
+    var txt = createTextMessage({name_block: "upload_profile"});
+    changeWindow({id: 'win_upload_profile', css: {width: '300px', height: '200px'}, txt: txt});
+}
+function saveProfileOK() {
+    closeChangeWindow('win_save_profile');
+    universalExecutingMethod({ hooks: {hook_upload: 'showIndicator(true)', hook_success: 'saveUploadProfileOKFuncs("' + SUCCESS_PARAM + '")', hook_timeout: 'saveUploadProfileOKFuncs("' + ERROR_TIMEOUT + '")', hook_error: 'saveUploadProfileOKFuncs("' + ERROR + '")', hook_error_undefinded: 'saveUploadProfileOKFuncs("' + ERROR + '")', hook_error_global: 'saveUploadProfileOKFuncs("' + ERROR + '")'}, method: 'saveCameras'});
+}
+function uploadProfileOK() {
+    closeChangeWindow('win_upload_profile');
+    universalExecutingMethod({ hooks: {hook_upload: 'showIndicator(true)', hook_success: 'saveUploadProfileOKFuncs("' + SUCCESS_PARAM + '")', hook_error: 'saveUploadProfileOKFuncs("' + ERROR + '")', hook_error_undefinded: 'saveUploadProfileOKFuncs("' + ERROR + '")', hook_error_global: 'saveUploadProfileOKFuncs("' + ERROR + '")'}, method: 'configureCameras'});
+}
+function saveUploadProfileOKFuncs(text) {
+    showIndicator(false);
+    showMessage(text);
+}
+// Проверка наличия камеры в системе
+function checkSimilarCamera(){
+    var check = false;   
+    var host = $("#bl_aip");
+    if (host.css('display') == "block"){
+        var data = {ip: $("#aip").val(), port: $("#aport").val()};
+    }else{
+        var data = {url: $("#aurl").val()};
+    }
+	$.ajax({
+    	type: "POST",
+    	async: false,
+	   	url: "{% url check_similar_camera %}",
+	    data: data,
+	    success: function(msg){
+	        if (msg.status) check = true;
+	    },
+	    error: function(msg) {}
+	});
+	return check;
+}
+//Проверка наличия камеры перед добавлением 
+function checkAddCamera(){
+    //var els = $("#add_camera_form select:visible, #add_camera_form input:visible").serializeArray();  
+    if (checkSimilarCamera()){
+        var host = $("#bl_aip");
+        if (host.css('display') == "block"){                
+    	    var txt = "{% trans "Камера с таким IP-адресом ({1}:{2}) уже добавлена в систему (или уже существует). Продолжить?" %}"    	    
+    	    txt = replace_string(txt, '{1}', $("#aip").val());
+    	    txt = replace_string(txt, '{2}', $("#aport").val());
+    	}else{    	                
+    	    var txt = "{% trans "Камера с таким URL ({}) уже добавлена в систему (или уже существует). Продолжить?" %}"
+    	    txt = replace_string(txt, '{}', $("#aurl").val());
+    	}    	    	
+    	changeWindow({id: 'win_add_message', css: {width: '300px', height: '200px'}, txt: txt});       
+        return false;
+    }
+    addCameraOK();
+}
+// Добавление камеры
+function addCameraOK() {
+    closeChangeWindow('win_add');
+    closeChangeWindow('win_add_message');
+    showIndicator(true);
+    executeCommunicatorMethod('addCamera', '{\'type\': "' + $("#types_cameras option:selected").attr("value") + '", \'ip\': "' + $("#aip").val() + '", \'bitrate\': "' + $("#abitrate").val() + '", \'fps\': "' + $("#afps").val() + '", \'mac\': "' + $("#amac").val() + '", \'port\': "' + $("#aport").val() + '", \'num\': "' + $("#anum").val() + '", \'user\': "' + $("#ause_r").val() + '", \'psw\': "' + $("#apas_s").val() + '", \'url\': "' + $("#aurl").val() + '", \'uid\': "' + $("#auid").val() + '"}', 'IsTrue', com_host[$("#communicators-select").attr("value")], com_port[$("#communicators-select").attr("value")], com_mjpeg_port[$("#communicators-select").attr("value")], 'addCameraOKFuncs("' + SUCCESS_CAMERA + '", true)', 'addCameraOKFuncs("' + ERROR_CAMERA + '")');
+    //universalExecutingMethod({index: $("#communicators-select").attr("value"), method: 'addCamera', url: '/execute_method/', arguments: [ $("#types_cameras option:selected").attr("value"), $("#aip").val(), $("#amac").val(), $("#aport").val(), $("#anum").val(), $("#ause_r").val(), $("#apas_s").val(), $("#aurl").val()], hooks: {hook_upload: 'showIndicator(true)', hook_success: 'addCameraOKFuncs("' + SUCCESS_CAMERA + '", true)', hook_error: 'addCameraOKFuncs("' + ERROR_CAMERA + '")', hook_error_undefinded: 'addCameraOKFuncs("' + ERROR_CAMERA + '")', hook_error_global: 'addCameraOKFuncs("' + ERROR_CAMERA + '")'}});
+}
+function addCameraOKFuncs(text, success) {
+    showIndicator(false);
+    showMessage(text);
+    if ( success ) setTimeout('location.reload(true)', 2000);                               
+}
+
+function showOther(select, id_block, id_elem) {
+    var select = byId(select);
+    var info = getSelectedElem(select);
+    byId(id_block).style.display = 'none';
+    byId("other_profile_name_error").style.display = 'none';
+    byId(id_elem).className = replace_string(byId(id_elem).className, 'error_border', '');
+    if (select.selectedIndex == (select.options.length - 1)) {
+        byId(id_block).style.display = 'block';
+        byId(id_elem).focus();
+    }
+	if (select.value == "") {
+	    $("#" + select.id + "_delete").hide();
+	} else {
+	    $("#" + select.id + "_delete").show();
+	}    
+}
+function hideError(e) {
+    var target = e.target != null ? e.target : e.srcElement;
+    if (target.value) {
+        byId(target.id + '_error').style.display = "none";
+        target.className = replace_string(target.className, 'error_border', '');
+    } else {
+        byId(target.id + '_error').style.display = "block";
+        target.className = target.className + ' error_border';
+    }
+}
+function checkSaveProfile() {
+    if ((byId("other_profile").style.display == 'block') && (!byId("other_profile_name").value)) {
+        byId("other_profile_name_error").innerHTML = "{% trans 'Введите, пожалуйста, название профиля.' %}";
+        byId("other_profile_name_error").style.display = "block";
+        var name = byId("other_profile_name");
+        name.className = name.className + ' error_border';
+        name.focus();
+        addEvent(name, 'keyup', hideError);
+    }
+    closeChangeWindow('win_save_profile');
+}
+function descriptionProfile(name) {
+    byId("profile_name").innerHTML = '"' + name + '"';
+    changeWindow({id: 'win_profile', css: {width: '600px', height: '300px'}});
+}
+var settings_timeout;
+// обновление списка камер
+function refreshDataSettings() {
+    if (settings_timeout) clearTimeout(settings_timeout);
+    var only_active = $("#only_active_cameras").attr("checked")=="checked"?1:0;
+    save_checks();
+    $.ajax({
+        type: "GET",
+        url: "/settings/?{{ dataGet }}",
+        data: {data: "True", only_active: only_active},
+        success: function(msg){
+			if (isProcessing <= 0) {
+				setData(msg);
+				checkPlayVideo();
+				$(".tooltip").easyTooltip();
+				$(".short_descr").easyTooltip();
+				checkCountAndErrorsCameras();			
+			}
+            settings_timeout = setTimeout('refreshDataSettings()', 10000);
+
+        },
+        error: function(msg) {
+            settings_timeout = setTimeout('refreshDataSettings()', 10000);
+        }
+    });
+
+}
+// проверка на наличие камер и ошибок
+function checkCountAndErrorsCameras() {
+    var count = $("#count_cameras").val();
+    var error = $("#error_cameras").val();
+    var block = $("#block_show_camera");
+	var block_data = $("#dataSettings");
+	if (error != 'False') {
+		block.hide();
+		block_data.removeClass("block_info_cameras")
+		return;
+	}	
+	if (count == 0) {
+		block.hide();
+		block_data.removeClass("block_info_cameras")
+		return;
+	} 	
+	block_data.addClass("block_info_cameras")
+    block.show()
+}
+
+function funcsCamerasModelArecont(type) {
+    showIndicator(false);
+    switch (type) {
+        case "success":          
+            refreshDataSettings();
+            showMessage("{% trans 'Камеры успешно добавлены.' %}");
+            break; 
+        case "error":
+            showMessage("{% trans 'Новых камер не найдено.' %}");
+            break;
+        default:
+            showMessage("{% trans 'Произошла неизвестная ошибка.' %}"); 
+            break;
+    }
+}
+// новый функционал
+var curr_obj = false;
+
+var DETECTORS = {
+	"face": "{% trans 'Детектор распознавания лиц' %}",
+	"person": "{% trans 'Детектор идентификации лиц' %}",
+	"people": "{% trans 'Детектор скопления людей' %}",
+	"stream": "{% trans 'Детектор подсчёта пассажиропотока' %}",
+	"things": "{% trans 'Детектор оставленных вещей' %}",
+	"smoke": "{% trans 'Детектор дыма' %}",
+	"fire": "{% trans 'Детектор огня' %}",
+	"explosion": "{% trans 'Детектор вспышки' %}",
+	"on": "{% trans 'включен' %}",
+	"off": "{% trans 'выключен' %}"
+}
+var CAMERAS = {
+	"on": "{% trans 'включена' %}",
+	"off": "{% trans 'выключена' %}",
+	"delete": "{% trans 'Вы действительно хотите удалить выделенные камеры ({})?' %}"
+}
+var ERRORS = {
+	1: "<span class='error'>{% trans 'Введено некорректное значение' %}.</span>",
+	2: "<span class='error'>{% trans 'Произошла неизвестная ошибка.' %}</span>",
+	3: "<span class='error'>{% trans 'Новых камер не найдено.' %}</span>",
+	4: "<span class='error'>{% trans 'Ошибка!' %}</span>",
+	5: "<span class='error'>{% trans 'Камера не добавлена. Пожалуйста, попробуйте ещё раз' %}.</span>",
+	6: "<span class='error'>{% trans 'Произошла ошибка. Пожалуйста, повторите запрос позже'%}.</span>",
+	7: "{% trans 'Параметр не применён. Пожалуйста, попробуйте ещё раз' %}."
+}
+var SUCCESS = {
+	1: "{% trans 'Камеры успешно добавлены.' %}",
+	2: "{% trans 'Камера успешно добавлена' %}",
+	3: "{% trans 'Камера успешно добавлена' %}"
+}
+var FLASH_VERSION = {
+	1: "{% trans 'У Вас отсутствует или установлена старая версия flash плеера. Новую версию плеера можно скачать' %}",
+	2: "{% trans 'здесь' %}"
+}	
+var isProcessing = 0;         // переменная, которая обозначает выполняется ли процесс. нужно для обновления списка.
+var video_play_id = 0;        // текущее видео, которое запущено с камеры
+// создать всплывающее окно
+function createTitleWindow(param) {
+	var distX = param.distX ? param.distX : 0; 
+	var distY = param.distY ? param.distY : 0; 
+	var win = $("#" + param.id);   
+	var pos_win = positionScreen({obj: param.obj, win_width: parseInt(win.css("max-width")), win_height: parseInt(win.css("max-height")), distX: distX, distY: distY});
+	var coord_left = pos_win.left + "px";
+	var coord_top = pos_win.top + "px";
+	win.css("left", coord_left);
+	win.css("top", coord_top);
+	if (param.txt) win.html(param.txt);
+	win.show();
+}
+function overDetector(obj) {
+	var row = obj.parent().parent().parent();
+	if (row.attr("class") != "tr_lock") {
+		var det = getNameDetector(obj.find("a"));
+		if (obj.attr("class") && (obj.attr("class").indexOf("det_noact") > -1)) {
+			det = det + " <strong>" + DETECTORS["off"] + "</strong>"
+		} else {
+			det = det + " <strong>" + DETECTORS["on"] + "</strong>"
+		}
+		createTitleWindow({id: "easyTooltip_camera", obj: obj, width: 200, height: 200, distY: -25, distX: 5, txt: det });
+	}
+}
+function outDetector() {
+	$("#easyTooltip_camera").hide();
+}
+// получить название детектора
+function getNameDetector(obj) {
+	var det = obj.attr("class").split("_")[1];
+	switch (det) {
+		case "fire": return DETECTORS["fire"];
+		case "smoke": return DETECTORS["smoke"];
+		case "explosion": return DETECTORS["explosion"];
+		case "things": return DETECTORS["things"];
+		case "people": return DETECTORS["people"];
+		case "stream": return DETECTORS["stream"];
+		case "face": return DETECTORS["face"];
+		case "person": return DETECTORS["person"];
+	}
+}
+// добавить удалить детектор
+function addRemoveDetector(obj) {
+	var block = obj.parent();
+	var det = getNameDetector(obj);
+	if (block.attr("class") && (block.attr("class").indexOf("det_noact") > -1)) {
+		block.removeClass("det_noact");
+		$("#easyTooltip_camera").html(det + " <strong>" + DETECTORS["on"] + "</strong>");
+	} else {
+		block.addClass("det_noact");
+		$("#easyTooltip_camera").html(det + " <strong>" + DETECTORS["off"] + "</strong>");
+	}
+}
+// текущее состояние детектора
+function checkOnOffDetector(obj) {
+	var block = obj.parent();
+	if (block.attr("class") && (block.attr("class").indexOf("det_noact") > -1)) {
+		return "off";
+	} else {	
+		return "on";
+	}
+}
+// детекторы
+// показать/убрать крутишку при вкл./выкл. детектора
+function showLoaderDetector(obj, show) {
+	var block = obj.parent();
+	var link = block.find("a");
+	var loader = block.find("div.det_loader");
+	if (show) {
+		link.hide();
+		link.after('<div class="det_loader"></div>');
+	} else {
+		if (loader.size() > 0) {
+			loader.remove();
+		}
+		link.show();
+	}
+}
+//детектор распознавания и идентификация
+function turnModeScheduler(obj, uuid, mode, mode_need){
+	isProcessing++;
+	showLoaderDetector(obj, true);
+	var state = checkOnOffDetector(obj);
+	curr_obj = obj
+	if (state == "off") {
+		executeCommunicatorMethod('setModeScheduler', '{\'uuid\': \''+uuid+'\', \'mode\': \''+ mode_need +'\' }', 'IsTrue', '', '', '', 'turnDetectSuccessMode('+ mode + ','+ mode_need +')', 'turnDetectError()');
+	} else {
+		var mode_need2 = 0
+		if (mode == 2) {//если текущие режим идентификации
+			if (mode_need == 2) {//и ещё раз кликаем по идентификации
+				mode_need2 = 1;//то требуется включить режим детектирования
+			}
+		}
+		executeCommunicatorMethod('setModeScheduler', '{\'uuid\': \''+uuid+'\', \'mode\': \''+ mode_need2 +'\' }', 'IsTrue', '', '', '', 'turnDetectSuccessMode('+ mode + ','+ mode_need2 +')', 'turnDetectError()');
+	}
+}
+// детектор скопления людей
+function turnCrowdDetect(obj, uuid){
+	curr_obj = obj
+	var state = checkOnOffDetector(curr_obj);
+	/*var btn_ok = $("#win_crowd div.footerWF input[type=button].btn_wf_blue");
+	btn_ok.unbind("click");
+	btn_ok.bind("click", function() {*/
+		isProcessing++;
+		showLoaderDetector(curr_obj, true);
+		//closeChangeWindow('win_crowd');
+		if (state == "off") {
+			//executeMethodCrowdDetect(turnDetectSuccess, turnDetectError, 'setParameter','true',  'control.detector.crowd.need.alert');
+			executeMethodCrowdDetect(turnDetectSuccess, turnDetectError, 'setCameraParameter', uuid, 'true', '', '', '', 'crowdNeedAlert');
+		} else {
+			//executeMethodCrowdDetect(turnDetectSuccess, turnDetectError, 'setParameter', 'false', 'control.detector.crowd.need.alert');
+			executeMethodCrowdDetect(turnDetectSuccess, turnDetectError, 'setCameraParameter', uuid, 'false', '', '', '', 'crowdNeedAlert');
+		}		
+	/*});	
+	var txt = "{% trans 'Детектор скопления людей будет отключён для всех камер данного коммуникатора. Продолжить?' %}";
+	btn_ok.val("{% trans 'Отключить' %}");
+	if (state == "off") {
+		txt = "{% trans 'Детектор скопления людей будет включён для всех камер данного коммуникатора. Продолжить?' %}";
+		btn_ok.val("{% trans 'Включить' %}");
+	}
+	changeWindow({id: 'win_crowd', css: {width: '300px', height: '200px'}, txt: txt});*/
+}
+// остальные детекторы
+function turnDetector(obj, uuid, com_host, com_port, nameDetect) { 
+	isProcessing++;
+	showLoaderDetector(obj, true);
+	var state = checkOnOffDetector(obj);	
+	curr_obj = obj;
+	if (state == "off") {
+		executeCommunicatorMethod('turnOnModeDetectScheduler', '{\'uuid\': \''+uuid+'\', \'detect\': \''+nameDetect+'\' }', 'IsTrue', '', '', '', 'turnDetectSuccess()', 'turnDetectError()');
+		//setDetectorsMethod('turnOnModeDetectScheduler', '{\'numcamera\': \''+num_camera+'\' , \'detect\': \''+nameDetect+'\' }', 'IsTrue', com_host, com_port, obj, turnDetectSuccess, turnDetectError);
+	} else {
+		executeCommunicatorMethod('turnOffModeDetectScheduler', '{\'uuid\': \''+uuid+'\', \'detect\': \''+nameDetect+'\' }', 'IsTrue', '', '', '', 'turnDetectSuccess()', 'turnDetectError()');
+	}
+}
+function turnDetectSuccess() {
+	obj = curr_obj
+	var state = checkOnOffDetector(obj);
+	var block = obj.parent();
+	showLoaderDetector(obj, false);
+	if (state == "off") {
+		block.removeClass('det_noact');
+	} else {
+		block.addClass('det_noact');
+	}
+	isProcessing--;
+}
+// для распознавания и идентификации
+function turnDetectSuccessMode(mode, mode_need) {
+	var state = checkOnOffDetector(curr_obj);
+	var block = curr_obj.parent();
+	showLoaderDetector(curr_obj, false);
+	if (state == "off") {
+		block.removeClass('det_noact');
+	} else {
+		block.addClass('det_noact');
+	}
+	if (mode == 0) {
+		if (mode_need == 2) {
+			block.parent().find("li a.det_face").parent().removeClass('det_noact');
+		} 		
+	} else if (mode == 2) {
+		if (mode_need == 0) {		
+			block.parent().find("li a.det_person").parent().addClass('det_noact');
+		} else if (mode_need == 2) {
+			block.parent().find("li a.det_face").parent().removeClass('det_noact');
+		}
+	}	
+	isProcessing--;
+}
+function turnDetectError() {
+	showLoaderDetector(curr_obj, false);
+	showMessage(ERRORS[6]);
+	isProcessing--;
+}
+
+// для вкл./выкл. детектора скопления людей
+function executeMethodCrowdDetect(){
+	var d = {name: arguments[2]};
+	var successFunc = arguments[0];
+	var errorFunc = arguments[1];
+	for (var i=3; i < arguments.length; i++) {
+		var z = i - 2;
+		d['arg'+z] = arguments[i];
+	}
+	$.ajax({
+		type: "POST",
+		url: "/execute_method_balancer/",
+		data: d,
+		success: function(msg){
+			if (msg == 'True') {
+				successFunc();
+			} else {
+				errorFunc();
+			}
+		}, 
+		error: function(msg) {
+			errorFunc();
+		}
+	});
+}
+// для вкл./выкл. остальных детекторов
+function setDetectorsMethod(methodName, params, answer_type, com_host, com_port, arg1, successFunc, errorFunc){
+    var successFunc = successFunc;
+    var errorFunc = errorFunc;
+    var d = {'params': params, 'methodName': methodName, 'answer_type': answer_type, 'host': com_host, 'port': com_port };
+    $.ajax({
+            type: "POST",
+            url: "{% url execute-communicator-method %}",
+            data: d,
+            success: function(data){
+                obj = data;
+                if (obj.result == 'success') {
+                    successFunc(arg1);
+                } else {
+                    errorFunc(arg1);
+                }
+            }
+    });
+}
+
+// функционал для включения/отключени камер
+// текущее состояние кнопки включения
+function checkOnOffPower(obj) {
+	if (obj.attr("class") && (obj.attr("class").indexOf("on") > -1)) {
+		return "on";
+	} else { 
+		return "off";
+	}
+}
+// Удаление трансляции при выключении камеры
+function removeVideoTranslate(hide) {
+	$('#numcamera').html("");
+	$("#host").html("");
+	$("#port").html("");
+	lastbuffer = emptybuffer;
+    $("#video-frame").attr("src", lastbuffer);
+	$("#video-frame-block").hide();
+    setActiveCameraSignal(false, false);
+}
+// проверить с выключаемой камеры или нет идет видеотрансляция
+function checkCameraVideo(id) {
+    var name = "btn_play"+id;
+    if (video_play_id == name) {
+        video_play_id = 0;
+        var obj = $("#"+name);
+        playVideo(obj);
+        playVideoJSVersion(obj);
+    }
+}
+//включить/выключить камеру
+function turnModePower(obj, uuid, id){
+	isProcessing++;
+	var state = checkOnOffPower(obj);
+	curr_obj = obj;
+	if (state == "off") {
+		executeCommunicatorMethod('setModeScheduler', '{\'uuid\': \''+uuid+'\', \'mode\': \'0\' }', 'IsTrue', '', '', '', 'turnPowerSuccessMode()', 'turnPowerError()');
+	} else {   
+		executeCommunicatorMethod('setModeScheduler', '{\'uuid\': \''+uuid+'\', \'mode\': \'-1\' }', 'IsTrue', '', '', '', 'turnPowerSuccessMode()', 'turnPowerError()');
+		checkCameraVideo(id);
+	}
+}
+// для включени-отключения камеры
+function turnPowerSuccessMode() {
+	var state = checkOnOffPower(curr_obj);
+	isProcessing--;
+	if (state == "off") {  
+		curr_obj.addClass('on'); 
+		refreshDataSettings();
+	} else {
+		curr_obj.removeClass('on');
+		var list = curr_obj.parent().parent().find("td.td_dets ul.list_detectors li");
+		$.each(list, function() {
+			$(this).addClass("det_noact");
+			$(this).find("a").unbind("click");
+		});
+	}
+	
+}
+// ошибка включения - отключения камеры
+function turnPowerError() {
+	isProcessing--;
+}
+// всплывающая подсказка на кнопку Вкл./Выкл. камеру
+function overTurnOnOffCamera(obj, camera) {
+	var turn = obj.attr("class");
+	if (turn.indexOf("on") < 0) {
+		camera = camera + " <strong>" + CAMERAS["off"] + "</strong>";
+	} else {
+		camera = camera + " <strong>" + CAMERAS["on"] + "</strong>";	
+	}
+	createTitleWindow({id: "easyTooltip_camera", obj: obj, width: 200, height: 200, distY: -25, distX: 5, txt: camera });
+}
+function outTurnOnOffCamera() {
+	$("#easyTooltip_camera").hide();
+}
+function overSelectedRow(tr) {
+	tr.addClass("act");
+}
+function outSelectedRow(tr) {
+	var check = tr.find("td.td_check input[type=checkbox]");
+	if (!check.attr("checked"))	tr.removeClass("act");
+}
+
+
+// проиграть видео
+function getStateVideo(btn) {
+	if (btn.attr("class").indexOf("play_act") > -1) {
+		return "on";
+	} else {
+		return "off";
+	}
+}
+function playVideo(btn, uuid, com_host, com_port, com_mjpeg_port, camera_ip) {
+    removeVideoTranslate(true);
+	var state = getStateVideo(btn);
+	var btns = $("table.table tr td.td_play input[type=button]");
+	if (state == "on") {
+		btn.removeClass("play_act");
+		video_play_id = 0;
+	} else {
+		btns.removeClass("play_act");
+		btn.addClass("play_act");
+		video_play_id = btn.attr("id");
+		$("#host").html(com_host);
+		$("#port").html(com_port);
+		$("#mjpeg_port").html(com_mjpeg_port);
+		$("#selected_camera_ip").html(camera_ip);
+		$("#uuid").html(uuid);
+		$("#video-frame-block").find("img").remove();
+		window.stop();
+		var time_ms = (new Date()).getTime(); // текущее время в миллисекундах
+		var buffer = 'http://'+com_host+':'+com_mjpeg_port+'/video?uuid='+uuid+'&width=640&height=480&fps={{ fps_of_the_cameras }}&current_time=' + time_ms;;
+		$("#video-frame-block").append("<img alt='' src='" + buffer + "' width='400px' id='video-frame' />");		
+	}
+}
+// видео для js-интерфейса
+function playVideoJSVersion(btn, camera_name) {
+    var host = "";
+    var port = ""
+    var numcamera = "";
+	var state = getStateVideo(btn);
+	if (state == "on") {
+	    numcamera = $("#number_camera").val();
+	    host = $("#communicator_host").val();
+	    port = $("#communicator_port").val();	
+		$("#mini_camera_info").hide();
+		$("#nameCamera").html(camera_name);
+		$("#nameCamera").show();
+		$("#video-frame-block").show();
+	} else {
+		$("#video-frame-block").hide();
+	    $("#video-frame").attr("src", emptybuffer);
+		$("#mini_camera_info").show();
+		$("#nameCamera").hide();
+	}
+	$('#numcamera').html(numcamera);
+	$("#host").html(host);
+	$("#port").html(port);
+	updateVideoInfoFrame(0, video_play_id);
+}
+// проверка для кнопки play
+function checkPlayVideo() {
+	if (video_play_id != 0) {
+		$("#" + video_play_id).addClass("play_act");
+	}
+}
+// добавление флэшки
+function addFlash(numcamera, host, port){
+	var lang = "{{ LANGUAGE_CODE }}";
+	return '<object id="flash-app" name="flash-app" width="400" height="300" data="/files/swf/settings/flash.swf" type="application/x-shockwave-flash">'+
+			'<param value="/files/swf/settings/flash.swf" name="movie">'+
+			'<param value="always" name="AllowScriptAccess">'+
+			'<param value="all" name="allowNetworking">'+
+			'<param value="true" name="allowFullScreen">'+
+			'<param name="quality" value="high" />'+
+			'<param name="bgcolor" value="#ffffff" />'+
+			'<param name="wmode" value="opaque" />'+
+			'<param name="FlashVars" value="server='+host+'&port='+port+'&camera='+numcamera+'&locale='+lang+'" />'+
+			'<embed src="/files/swf/settings/flash.swf" wmode="opaque" FlashVars="server='+host+'&port='+port+'&camera='+numcamera+'&locale='+lang+'" quality="high" bgcolor="#ffffff" width="400" height="300" name="flash-app" align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer" />'+
+		'</object>';									
+}
+// видео для flash-интерфейса
+function playVideoFlashVersion(btn, camera_name) {
+	var state = getStateVideo(btn);
+	if (state == "on") {
+		$("#mini_camera_info").hide();
+		$("#nameCamera").html(camera_name);	
+		$("#video-flash").show();
+		if (flashVersion()) {
+			$("#video-flash").html(addFlash($("#number_camera").val(), $("#communicator_host").val(), $("#communicator_port").val()));
+			$("#nameCamera").show();
+		} else {
+			$("#video-flash").html('<div class="camera_noFlash">' + FLASH_VERSION[1] + ' <a target="_blank" href="http://get.adobe.com/flashplayer/">' + FLASH_VERSION[2] + '</a></div>');
+		}	
+	} else {
+		$("#video-flash").hide();
+		$("#mini_camera_info").show();
+		$("#nameCamera").hide();
+	}
+}
+</script>

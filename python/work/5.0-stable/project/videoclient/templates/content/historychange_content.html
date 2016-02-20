@@ -1,0 +1,102 @@
+{% load i18n %}
+{% load templatetags %}
+<h2>{% trans "Журнал изменений" %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Журнал изменений' %}');" /></h2>
+{% include "current_time.html" %}
+<form method="get" action="" name="" id="mainForm">
+	<div class="frm_block">
+		{% if all_history > 0 %}{% include "search.html" %}{% endif %}
+		<div class="block_results">{% trans "Общее количество записей" %}: <strong>{{ all_history }}</strong></div>						
+	</div>
+	{% if all_history > 0 %}
+		<div class="block_filter dist_top" id="filters">
+			<div class="bl_error"></div>
+			<div class="block block_filter_param">
+				<input class="inp_txt inp_date" type="text" value="{{ dateBegin|date:"d.m.Y" }}" id="dateBegin" name="dateBegin" maxlength="10" />
+				<input type="button" title="{% trans "Выбрать дату начала" %}" class="btn_calend short_descr" value="" name="" />
+				<span class="dist_date">{% trans "по" %}</span>
+				<input type="text" class="inp_txt inp_date" value="{{ dateEnd|date:"d.m.Y" }}" id="dateEnd" name="dateEnd" maxlength="10" />
+				<input type="button" title="{% trans "Выбрать дату окончания" %}" class="btn_calend short_descr" value="" name="" />
+			</div>
+			<div class="block">
+				<input type="submit" id="apply_filters"  class="inp_btn btn_apply" value="{% trans 'Применить' %}" name="" /><input type="button" class="inp_btn inp_btn140 dist_left" value="{% trans 'Сбросить фильтр' %}" name="" id="btn_clear_filter" onClick="javascript: window.location.href='/historychange/';" />
+			</div>			
+		</div>
+		{% if all_users > 0 %}
+			<div class="block block_results">
+				{% trans "Отфильтровано" %} <strong id="search_data_journal">{{ users|length }}</strong> {% trans "из" %} <strong id="search_all_data_journal">{{ all_history }}</strong> {% trans "записей" %}
+			</div>		
+			{% include "po4NavigationBlock.html" %}						
+			<div class="frm_block">
+				<table cellspacing="0" cellpadding="0" class="table">
+					<tr>
+						<th rowspan="2" class="first"><a href="?start={{start}}&sorto=1&up={% if sorto == 1 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 1 and up == 1  %}up{% else %}down{% endif %}">{% trans "Дата" %}</a></th>							
+						<th rowspan="2"><a href="?start={{start}}&sorto=1&up={% if sorto == 1 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 1 and up == 1  %}up{% else %}down{% endif %}">{% trans "Время" %}</a></th>
+						<th rowspan="2"><a href="?start={{start}}&sorto=2&up={% if sorto == 2 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 2 and up == 1  %}up{% else %}down{% endif %}">{% trans "Тип" %}</a></th>
+						<th rowspan="2"><a href="?start={{start}}&sorto=3&up={% if sorto == 3 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 3 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "ФИО пользователя системы" %}</a></th>
+						<th rowspan="2"><a href="?start={{start}}&sorto=4&up={% if sorto == 4 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 4 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "ФИО персоны" %}</a></th>
+						<th rowspan="2"><a href="?start={{start}}&sorto=5&up={% if sorto == 5 and up == 1 %}0{% else %}1{% endif %}{% if filter %}&filter={{filter}}{% endif %}{% if dateBegin %}&dateBegin={{dateBegin|date:"d.m.Y"}}{% endif %}{% if dateEnd %}&dateEnd={{dateEnd|date:"d.m.Y"}}{% endif %}" class="btn_arrow {% if sorto == 5 and up == 1  %}up{% else %}down{% endif %} not_wrap">{% trans "Статус" %}</a></th>
+						<th colspan="2">{% trans "Данные" %}</th>
+					</tr>
+					<tr>
+						<th class="th_prim">{% trans "Исходные данные" %}</th>
+						<th><div class="th_head">{% trans "Внесённые изменения" %}</div></th>
+					</tr>
+					{% for user in users %}
+						{% if forloop.counter >= start and forloop.counter < finish %}
+							<tr {% cycle '' 'class="odd"' %} onMouseOver="javascript: overRow(this);" onMouseOut="javascript: outRow(this);">
+								<td class="td_date first">{{ user.date|date:"d.m.Y" }}</td>							
+								<td class="td_date">{{ user.date|date:"H:i:s"  }}</td>
+								<td class="td_action">
+									{% if user.action == 0 %}
+										<div class="action_add short_descr" title="{% trans 'Создание' %}"></div>
+									{% endif %}
+									{% if user.action == 1 %}
+										<div class="action_edit short_descr" title="{% trans 'Редактирование' %}"></div>
+									{% endif %}
+									{% if user.action == 2 %}
+										<div class="action_addphoto short_descr" title="{% trans 'Добавление фотографий' %}"></div>
+									{% endif %} 
+									{% if user.action == 3 %}
+										<div class="action_delete short_descr" title="{% trans 'Удаление' %}"></div>
+									{% endif %}
+								</td>
+								<td>{% if not user.user %}{% trans "Администратор" %}{% else %}{% if res_interface == "0" or res_interface == 0 %}<div class="fio">{{ user.user.get_fio }}</div>{% else %}{{ user.user.get_fio }}{% endif %}{% endif %}</div></td>
+								<td>
+									{% if res_interface == "0" or res_interface == 0 %}<div class="fio">{% endif %}
+										<a {% if user.division == "Персоны" %}href="{{ project_url }}/anketaperson/{{ user.id }}/?select_page=historychange{% if user.group %}&group={{ user.group.id}}{% endif %}"{% endif %}
+											{% if user.division == "Посетители" %}href="{{ project_url }}/anketavisitor/{{ user.id }}/?select_page=historychange{% if user.group %}&group={{ user.group.id}}{% endif %}"{% endif %}
+											{% if user.division == "Сотрудники" %}href="{{ project_url }}/anketastaff/{{ user.id }}/?select_page=historychange{% if user.group %}&group={{ user.group.id}}{% endif %}"{% endif %}
+											{% if user.division == "Автообученные" %}href="{{ project_url }}/anketaauto/{{ user.id }}/?select_page=historychange{% if user.group %}&group={{ user.group.id}}{% endif %}"{% endif %}>
+										{{ user.get_fio }}</a>
+									{% if res_interface == "0" or res_interface == 0 %}</div>{% endif %}
+								</td>
+								<td>{% if user.status %}{% trans user.status %}{% endif %}</td>
+								<td>{% if user.userold == None %}&nbsp;{% else %}		
+									{% if res_interface == "0" or res_interface == 0 %}<div class="fio">{% endif %}
+									{% if user.division == "Персоны" %}<a href="{{ project_url }}/anketaperson/{{ user.userold.id }}/{{ user.id}}/?select_page=historychange{% if user.group %}&group={{ user.group.id}}{% endif %}">{% endif %}
+									{% if user.division == "Посетители" %}<a href="{{ project_url }}/anketavisitor/{{ user.userold.id }}/{{ user.id }}/?select_page=historychange{% if user.group %}&group={{ user.group.id}}{% endif %}">{% endif %}
+									{% if user.division == "Сотрудники" %}<a href="{{ project_url }}/anketastaff/{{ user.userold.id }}/{{ user.id }}/?select_page=historychange{% if user.group %}&group={{ user.group.id}}{% endif %}">{% endif %}
+									{{ user.userold.get_fio }}</a>
+									{% if res_interface == "0" or res_interface == 0 %}</div>{% endif %}
+									{% endif %}
+								</td>
+								<td>{% if user.action != 3 %}
+									{% if res_interface == "0" or res_interface == 0 %}<div class="fio">{% endif %}
+									{% if user.division == "Персоны" %}<a href="{{ project_url }}/anketaperson/{{ user.id }}/{{ user.userold.id }}/?select_page=historychange{% if user.group %}&group={{ user.group.id}}{% endif %}">{% endif %}
+									{% if user.division == "Посетители" %}<a href="{{ project_url }}/anketavisitor/{{ user.id }}/{{ user.userold.id }}/?select_page=historychange{% if user.group %}&group={{ user.group.id}}{% endif %}">{% endif %}
+									{% if user.division == "Сотрудники" %}<a href="{{ project_url }}/anketastaff/{{ user.id }}/{{ user.userold.id }}/?select_page=historychange{% if user.group %}&group={{ user.group.id}}{% endif %}">{% endif %}
+									{{ user.get_fio }}</a>
+									{% if res_interface == "0" or res_interface == 0 %}</div>{% endif %}
+									{% else %}&nbsp;{% endif %}
+								</td>
+							</tr>
+						{% endif %}								
+					{% endfor %}
+				</table>
+			</div>
+			{% include "po4NavigationBlock.html" %}
+		{% else %}
+			<div class="message_action dist_top">{% trans "Не найдены записи, соответствующие заданным условиям поиска" %}.</div>
+		{% endif %}	
+	{% endif %}
+</form>

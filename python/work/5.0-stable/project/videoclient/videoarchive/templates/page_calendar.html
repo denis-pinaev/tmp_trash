@@ -1,0 +1,59 @@
+{% extends "base_archive_tab.html" %}
+{% load i18n a_templatetags %}
+{% block title %}{% trans 'Календарь' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/calendar.css?v=v{{ version }}" />
+{% if res_interface == 1 or res_interface == "1" %}
+	<link rel="stylesheet" type="text/css" href="{{ root_path }}/files/css/1920/calendar.css?v=v{{ version }}" />
+{% endif %}
+{% include "js/js_calendar.html" %}
+<script type="text/javascript">
+$(function() {	
+	initTooltip();
+	checkForm();
+});
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu/menu_archive.html" %}{% endblock %}
+{% block subcontent %}
+<h2>{% trans "Календарь" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Видеоархив Календарь' %}');"  /></h2>
+{% include "current_time.html" %}
+{% if perms.user_perms.perm_videoarchive_videos %}
+<form action="{% url archive_page "video" %}" method="get" class="block" id="mainForm">
+	<div id="date_warning" class="error" style="margin-left: 0px;"></div>
+	<div class="filter">{% trans "Период" %}
+		{% trans "с:" %} <input type="text" name="dateBegin" id="dateBegin" value="{{ date_from }}" class="inp_txt inp_date" maxlength="10" /><input type="button" name="" value="" class="btn_calend short_descr" title="{% trans 'Выбрать дату' %}" />
+		<span class="dist_left">{% trans "по:" %} </span><input type="text" name="dateEnd" id="dateEnd" value="{{ date_to }}" class="inp_txt inp_date" maxlength="10" /><input type="button" name="" value="" class="btn_calend short_descr" title="{% trans 'Выбрать дату' %}" />
+	</div>	
+	<div class="filter_sources">
+		<label for="source" class="dist_left">{% trans "Источник:" %}</label> <select name="source" class="select" id="source" style="width: 206px;">
+						<option value="0" {% if not params.source %}selected="selected"{% endif %}>{% trans "Любой" %}</option>										
+						{% if cameras and cameras|length > 0 %}
+							{% for camera in cameras %}										    
+								<option value="{{ camera.id }}" {% if params.source and params.source == camera.id %}selected="selected"{% endif %}>{% if camera.name %}{{ camera.name }}{% else %}{{ camera.ip }} {{ camera.type }}{% endif %}</option>
+							{% endfor %}
+						{% endif %}
+		</select>
+		<input type="hidden" name="interval" value="1" />
+		<input type="submit" value="{% trans "Найти" %}" name="" class="inp_btn inp_btn80 dist_left" id="btn_search" />						
+		{% if perms.user_perms.perm_videoarchive_delete_video %}
+		    <input type="button" value="{% trans "Удалить" %}" class="inp_btn inp_btn80 dist_left" onClick="javascript: deleteRoller();" />
+		{% endif %}
+	</div>
+</form>
+{% endif %}
+
+<div class="cal_block">
+	<div class="cal_cont_month4">					   
+	   {% for inf in info %}				   
+		   {% include "page_calendar_month.html" %}
+		   {% if forloop.counter == 4 or forloop.counter == 8 %}
+			   </div>
+			   <div class="cal_cont_month4">
+		   {% endif %} 					       
+	   {% endfor %}
+	</div>
+</div>	
+{% endblock %}
+{% block windows %}{% include "window_calendar.html" %}{% endblock %}

@@ -1,0 +1,355 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Общий журнал системы' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/system_events.css?v=v{{ version }}" />
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript" src="/files/js/system_events.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+var TEXT_MORE_SEARCH = "{% trans 'Дополнительные параметры поиска' %}";
+var TEXT_MORE_SEARCH_HIDE = "{% trans 'Скрыть дополнительные параметры поиска' %}";
+var params = new Array();
+$(function() {
+	checkForm();
+	initRulesForm();
+	init();
+});	
+// экспорт событий
+function exportEventsJournal() {
+	changeWindow({id: 'win_events_export', css: {width: '300px', height: '200px'}, txt: '{% trans "Экспортировать журнал событий?" %}'});
+}
+function showExportErrorAlert(){
+	changeWindow({id: 'win_events_export_error', css: {width: '300px', height: '200px'}, txt: '<span class="error">{% trans "Ошибка экспорта" %}.</span>'});
+}
+function downloadJournalZip(){
+	closeChangeWindow('win_events_export');
+	showIndicator(true);
+	$.ajax({
+		type: "GET",
+		url: "{% url export_events_journal %}",
+		data: {},
+		success: function(msg){
+			showIndicator(false);
+			var obj = msg;
+			if (obj.status == 'success') {
+				location.href="{% url download_zip_journal %}";
+			} else {
+				showExportErrorAlert();
+			}
+		},
+		error: function(msg){
+			showIndicator(false);
+			showExportErrorAlert();
+		}
+	});
+}
+function checkForm() {
+	$.validator.addMethod("checkDateReq", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) return true;
+		return false;
+	}, "{% trans 'Введите дату' %}" );
+	$.validator.addMethod("checkDateFormat", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			var regexp = /^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{4})$/;
+			if (regexp.test(val)) return true;
+			return false
+		}
+		return true;
+	}, "{% trans 'Некорректный формат даты (ДД.ММ.ГГГГ)' %}" );		
+	$.validator.addMethod("checkDate", function(value, element) {
+		var val = $(element).val();
+		if (val && (val != "")) {
+			if (checkDateValidator(val)) return true;
+			return false;
+		}
+		return true;
+	}, "{% trans 'Некорректное значение даты' %}" );
+	$.validator.addMethod("checkDateRangeReq", function(value, element) {
+		if (!$("#dateBegin").val() && !$("#dateEnd").val()) return false;
+		return true;
+	}, "{% trans 'Введите период' %}" );		
+	$.validator.addMethod("checkDateRange", function(value, element) {
+		var date1 = $("#dateBegin").val();
+		var date2 = $("#dateEnd").val();
+		if (date1 && (date1 != "") && date2 && (date2 != "")) {
+			if (checkDateValidator(date1) && checkDateValidator(date2)) { 
+				var dates = checkDateRangeValidator('dateBegin', 'dateEnd');
+				if (dates[0] <= dates[1]) return true;
+				return false;
+			}
+			return true;
+		}
+		return true;
+	}, "{% trans 'Дата окончания меньше даты начала' %}" );		
+	$.validator.addMethod("checkTimeHoursRange", function(value, element) {
+		if ($("#hour_beg").val() && $("#min_beg").val() && $("#sec_beg").val() && $("#hour_end").val() && $("#min_end").val() && $("#sec_beg").val()) {
+			var intStart = parseInt($("#hour_beg").val())*60*24+parseInt($("#min_beg").val())*60+parseInt($("#sec_beg").val());
+			var intStop = parseInt($("#hour_end").val())*60*24+parseInt($("#min_end").val())*60+parseInt($("#sec_end").val());
+			if ($("#dateBegin").val() ==  $("#dateEnd").val()) {
+				if (intStart <= intStop) {
+					return true;
+				}	
+				return false; 
+			}
+			return true;
+		}
+		return true;
+	}, "{% trans 'Указан некорректный период времени' %}" );	
+	$.validator.addMethod("checkTimeMinutesRange", function(value, element) {
+		if ($("#hour_beg").val() && $("#min_beg").val() && $("#hour_end").val() && $("#min_end").val()) {
+            var intStart = parseInt($("#hour_beg").val())*60*24+parseInt($("#min_beg").val())*60+parseInt($("#sec_beg").val());
+			var intStop = parseInt($("#hour_end").val())*60*24+parseInt($("#min_end").val())*60+parseInt($("#sec_end").val());
+			if (($("#dateBegin").val() == $("#dateEnd").val()) && ($("#hour_beg").val() == $("#hour_end").val())) {
+				if (intStart <= intStop) {
+					return true;
+				}	
+				return false; 
+			}
+			return true;
+		}
+		return true;
+	}, "{% trans 'Указан некорректный период времени' %}" );	
+	var validator = $("#mainForm").validate({
+		rules: {
+			dateBegin: {
+				checkDateRangeReq: true,
+				checkDateReq: true,
+				checkDateFormat: true,
+				checkDate: true
+			},
+			dateEnd: {
+				checkDateRangeReq: true,
+				checkDateReq: true,
+				checkDateFormat: true,
+				checkDate: true,
+				checkDateRange: true
+			}
+		},
+		messages: {
+			dateBegin: {
+				checkDateRangeReq: "{% trans 'Укажите период' %}",
+				checkDateReq: "{% trans 'Введите дату начала' %}",
+				checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+				checkDate: "{% trans 'Введено некорректное значение' %}"
+			},
+			dateEnd: {
+				checkDateRangeReq: "{% trans 'Укажите период' %}",
+				checkDateReq: "{% trans 'Введите дату окончания' %}",	
+				checkDateFormat: "{% trans 'Некорректный формат введенной даты (ДД.ММ.ГГГГ)' %}",
+				checkDate: "{% trans 'Введено некорректное значение' %}",
+				checkDateRange: "{% trans 'Указан некорректный период дат' %}"
+			}			
+		},		
+		errorPlacement: function(error, element) {
+			var block_error = $("#error_ext_search");
+			var id = element.attr("id");
+			if ((id == "dateBegin") || (id == "dateEnd")) {
+				block_error = element.parent().prev();
+			} 
+			block_error.html("");
+			error.appendTo( block_error ); 
+		},	
+		submitHandler: function() {
+			if (!$("#filter_status").attr("checked")) {
+				$("#select_status").attr("name", "")
+			}
+			if (!$("#filter_type").attr("checked")) {
+				$("#select_type").attr("name", "")
+			}			
+			document.getElementById("mainForm").submit();
+		}
+	});
+}
+function addRulesTime() {
+	$("#hour_end").rules("add", {
+		checkTimeHoursRange: true,
+		messages: {
+			checkTimeHoursRange: "{% trans 'Указан некорректный период времени' %}"
+		}
+	});
+	$("#min_end").rules("add", {
+		checkTimeMinutesRange: true,
+		messages: {
+			checkTimeMinutesRange: "{% trans 'Указан некорректный период времени' %}"
+		}
+	});		
+	$("#sec_end").rules("add", {
+		checkTimeMinutesRange: true,
+		messages: {
+			checkTimeMinutesRange: "{% trans 'Указан некорректный период времени' %}"
+		}
+	});	
+}
+function removeRulesTime() {
+	$("#hour_end").rules("remove");
+	$("#min_end").rules("remove");
+	$("#sec_end").rules("remove");
+}
+function addRulesIdRecord() {
+	$("#id_record").rules("add", {
+		number: true,
+		min: 0,
+		messages: {
+			number: "{% trans 'Введено некорректное значение' %}",
+			min: "{% trans 'Введено некорректное значение' %}"
+		}
+	});
+}
+function removeRulesIdRecord() {
+	$("#id_record").rules("remove");
+}
+//изменение количества отображаемых записей                                                                                                                                                                         
+function onChange_per_pages(){                                                                                                                                                                                      
+    $("#apply_filters").click();                                                                                                                                                                                 
+}
+// скопировать системное сообщение
+function copySystemMessage(id_event, length_mes) {
+	var btn = $("#btn_copy_" + id_event);
+	var inp = $("#txt_copy_" + id_event);
+	var inps = $("#table_sys_log tr td .txt_copy:visible");
+	var id_event_old;
+	if (inps.size() > 0) {
+		$.each(inps, function() {
+			if ($(this).attr("id") != inp.attr("id")) {
+				id_event_old = $(this).attr("id").split("txt_copy_")["1"];
+				rowCopySystemMessage(id_event_old);
+			}
+		});
+	}
+	rowCopySystemMessage(id_event);
+}
+// показать / скрыть строку для копирования
+function rowCopySystemMessage(id_event) {
+	var padding = 30;
+	var btn = $("#btn_copy_" + id_event);
+	var inp = $("#txt_copy_" + id_event);
+	var txt = $("#txt_" + id_event);
+	if (inp.css("display") == "none") {
+		txt.hide();
+		inp.css("width", txt.parent().width() - padding + "px");
+		inp.show();
+		selectRowCopy(inp);
+	} else {
+		inp.hide();
+		txt.show();
+	}
+}
+// выделить текст для копирования
+function selectRowCopy(inp) {
+	inp.select();
+}
+</script>
+{% endblock %}
+{% block submenu %}{% include "monitoring_menu.html" %}{% endblock %}
+{% block subcontent %}
+<h2>{% trans "Общий журнал системы" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_События_системы' %}');" /></h2>
+{% include "current_time.html" %}
+<form method="get" action="" name="" id="mainForm">
+	<div class="block_results">{% trans "Общее количество записей" %}: <strong>{{ count }}</strong></div>
+	{% if count > 0 %}
+		{%  if all_pages = 'True' %}
+			<input type="hidden" name="all_pages" value="{{all_pages}}" />
+		{% endif %}	
+		<div class="block_filter dist_top">
+			<div class="bl_error"></div>
+			<div class="block block_filter_param">
+				<input class="inp_txt inp_date" type="text" value="{{ dateBegin|date:"d.m.Y" }}" name="dateBegin" id="dateBegin" maxlength="10" />
+				<input type="button" title="{% trans "Выбрать дату начала" %}" class="btn_calend short_descr" value="" name=""/>
+				<span class="dist_date">{% trans 'по' %}</span> <input class="inp_txt inp_date" type="text" value="{{ dateEnd|date:"d.m.Y" }}" name="dateEnd" id="dateEnd" maxlength="10" />
+				<input type="button" title="{% trans "Выбрать дату окончания" %}" class="btn_calend short_descr" value="" name=""/>
+				<a href="#" class="link_ext_search blue" id="link_more_search">{% trans 'Дополнительные параметры поиска' %}</a>
+			</div>
+			<div class="block_filter_param" style="display: {% if time_check or id_record or facility >= 0 or priority >= 0 or description %}block{% else %}none{% endif %};" id="block_more_search">
+				<div class="bl_error" id="error_ext_search"></div>
+				<div class="block">
+					<div class="filter_param filter_param_dis">
+						<input type="checkbox" name="" {% if time_check %}checked="checked"{% endif %} id="filter_time" value="" class="inp_check check_filter" /><label for="filter_time" class="filter_txt">{% trans 'Время' %}</label>
+						<div class="filter_param_enter" id="filter_time_param">
+							{% spinbox "hour_beg" "hour1" hour1 "25" "0" "23" "1" %}
+							<div class="delim_time">:</div>
+							{% spinbox "min_beg" "minute1" minute1 "25" "0" "59" "1" %}
+							<div class="delim_time">:</div>
+							{% spinbox "sec_beg" "second1" second1 "25" "0" "59" "1" %}
+							<div class="delim_time2">{% trans "по" %}</div>
+							{% spinbox "hour_end" "hour2" hour2 "25" "0" "23" "1" %}
+							<div class="delim_time">:</div>
+							{% spinbox "min_end" "minute2" minute2 "25" "0" "59" "1" %}
+							<div class="delim_time">:</div>
+							{% spinbox "sec_end" "second2" second2 "25" "0" "59" "1" %}
+						</div>
+					</div>
+					<div class="filter_param filter_param_dis">
+						<input type="checkbox" name="" {% if id_record %}checked="checked"{% endif %} id="filter_id" value="" class="inp_check check_filter" /><label for="filter_id" class="filter_txt">{% trans 'ID записи' %}</label>
+						<div class="filter_param_enter"><input class="inp_txt" type="text" value="{{ id_record }}" name="id_record" id="id_record" /></div>
+					</div>
+					<div class="filter_param filter_param_dis">
+						<input type="checkbox" name="" {% if facility >= 0 %}checked="checked"{% endif %} id="filter_status" value="" class="inp_check check_filter" /><label for="filter_status" class="filter_txt">{% trans 'Объект' %}</label>
+						<div class="filter_param_enter">
+							<select name="facility" class="select select_log" id="select_status">
+                                {% for fnum, fval in facility_list.items %}
+                                    <option value="{{ fnum }}" {% if facility == fnum %}selected="selected"{% endif %} > {{ fval }}
+                                {% endfor %}
+							</select>
+						</div>
+					</div>
+					<div class="filter_param filter_param_dis">
+						<input type="checkbox" name="" {% if priority >= 0 %}checked="checked"{% endif %} id="filter_type" value="" class="inp_check check_filter" /><label for="filter_type" class="filter_txt">{% trans 'Статус' %}</label>
+						<div class="filter_param_enter">
+							<select name="priority" class="select select_log" id="select_type">
+                                 {% for fnum, fval in priority_list.items %}
+                                     <option value="{{ fnum }}" {% if priority == fnum %}selected="selected"{% endif %} > {{ fval }}
+                                 {% endfor %}
+							</select>
+						</div>
+					</div>
+					<div class="filter_param no_dist_right filter_param_dis">
+						<input type="checkbox" name="" {% if description %}checked="checked"{% endif %} id="filter_descr" value="" class="inp_check check_filter" /><label for="filter_descr" class="filter_txt">{% trans 'Описание' %}</label>
+						<div class="filter_param_enter">
+							<input type="text" name="description" value="{{ description }}" class="inp_txt" style="width: 250px;" maxlength="128" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div><input type="submit" class="inp_btn btn_apply" value="{% trans 'Применить' %}" name="" id="apply_filters"/>
+			<input type="button" class="inp_btn inp_btn140 dist_left" value="{% trans 'Сбросить фильтр' %}" name="" id="btn_clear_filter" onClick="javascript: window.location.href='{% url syslog_journal %}';" /></div>						
+		</div>										
+		{% if all_pages and find_events %}<div class="block_results">{% trans 'Отфильтровано' %} <strong>{{ find_events }}</strong> {% trans 'из' %} <strong>{{ count }}</strong> {% trans 'записей' %}</div>{% endif %}
+		<!--<div class="block"><input type="button" value="{% trans "Экспорт записей" %}" class="inp_btn inp_btn140" onClick="javascript: exportEventsJournal();"/></div>-->
+	{% endif %}						
+	{% include "syslog_journal_data.html" %}
+</form>
+{% endblock %}
+{% block windows %}
+<div id="win_events_export" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_events_export');" /></div>
+            <div class="headWF_txt">{% trans "Экспорт событий системы" %}</div>
+        </div>
+        <div class="contWF" id="win_events_export_contWF"></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans 'Экспорт' %}" class="btn_wf_blue" onClick="javascript: downloadJournalZip();" />
+            <input type="button" name="" value="{% trans 'Отмена' %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_events_export');" />
+        </div>
+    </div>
+</div>
+<div id="win_events_export_error" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_events_export_error');" /></div>
+            <div class="headWF_txt">{% trans "Предупреждение" %}</div>
+        </div>
+        <div class="contWF" id="win_events_export_error_contWF"></div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans 'ОК' %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_events_export_error');" />
+        </div>
+    </div>
+</div>
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>
+{% endblock %}

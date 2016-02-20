@@ -1,0 +1,30 @@
+{% include "header.html" %}
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+    <div class="block_settings">
+        <div class="block_cont">
+            <div class="block_cont_top">
+                <div class="block_cont_bottom min_height">
+                    <h2>Перезапуск системы</h2>
+                    <div>
+                        <a style="color:#0088CC;" href="#" onClick="javascript: reboot_system(); return false;">Перезапуск системы</a></div>
+                    </div>
+                </div>                                
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>       
+</div>
+
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>Пожалуйста, подождите...</div>
+</div>
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>            
+
+{% include "footer.html" %}
+</body>
+</html>
+ 

@@ -1,0 +1,33 @@
+{% load i18n %}
+{% load templatetags %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>
+<div id="win_restart" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_restart');" /></div>
+            <div class="headWF_txt">{% trans "Перезапуск системы" %}</div>
+        </div>
+        <div class="contWF" id="win_restart_contWF">&nbsp;</div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Да" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_restart'); showIndicator(true); execute({cmd:'True', restart: 'True'});" />
+            <input type="button" name="" value="{% trans "Нет" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_restart');" />        
+        </div>
+    </div>
+</div>
+<div id="win_reboot" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_reboot');" /></div>
+            <div class="headWF_txt">{% trans "Перезапуск компьютера" %}</div>
+        </div>
+        <div class="contWF" id="win_reboot_contWF">&nbsp;</div>
+        <div class="footerWF">
+            <input type="button" name="" value="{% trans "Да" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_reboot'); showIndicator(true); execute({cmd:'True', reboot: 'True'});" />
+            <input type="button" name="" value="{% trans "Нет" %}" class="btn_wf" onClick="javascript: closeChangeWindow('win_reboot');" />          
+        </div>
+    </div>
+</div>

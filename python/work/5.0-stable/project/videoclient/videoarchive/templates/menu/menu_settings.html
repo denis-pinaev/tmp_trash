@@ -1,0 +1,43 @@
+{% load i18n %}
+{% load a_templatetags %}
+<ul class="menu_vkl">
+    {% if perms.user_perms.perm_videoarchive_settings %}
+	<li{% if select_page == 'archive_settings_archive' %} class="menu_vkl_act"{% endif %}>
+        <div>
+            <div>
+                <a href="{% url archive_settings_archive "" %}">{% trans "Архивы" %}</a>
+            </div>
+        </div>
+    </li>
+    {% comment %}
+    <li{% if select_page == 'archive_settings_communicators' %} class="menu_vkl_act"{% endif %}>
+        <div>
+            <div>
+                <a href="{% url archive_settings_communicators %}">{% trans "Коммуникаторы" %}</a>
+            </div>
+        </div>
+    </li>    
+    <li{% if select_page == 'page_cameras' %} class="menu_vkl_act"{% endif %}>
+        <div>
+            <div>
+                <a href="{% url archive_page "cameras" %}">{% trans "Камеры" %}</a>
+            </div>
+        </div>
+    </li>
+    {% endcomment %}
+    <li{% if select_page == 'archive_settings_tasks' %} class="menu_vkl_act"{% endif %}>
+        <div>
+            <div>
+                <a href="{% url archive_settings_tasks %}">{% trans "Задачи" %}</a>
+            </div>
+        </div>
+    </li>
+    {% endif %}
+    <li{% if select_page == 'page_interface' %} class="menu_vkl_act"{% endif %}>
+        <div>
+            <div>
+                <a href="{% url archive_page "interface" %}">{% trans "Интерфейс" %}</a>
+            </div>
+        </div>
+    </li>	
+</ul>

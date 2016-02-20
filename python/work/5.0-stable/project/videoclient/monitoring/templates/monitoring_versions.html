@@ -1,0 +1,100 @@
+{% extends "base_tab.html" %}
+{% load i18n templatetags %}
+{% block title %}{% trans 'Версии компонентов' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="/files/css/system_events.css?v=v{{ version }}" />
+<script type="text/javascript">
+var MESSAGE_SAVE = "{% trans 'Экспортировать журнал версий компонентов?' %}";
+var MESSAGE_ERROR = "{% trans 'Ошибка экспорта' %}.";
+$(document).ready(function(){
+	$("#btnSaveInfo").click(function() {
+		changeWindow2({id: "win_save", txt: MESSAGE_SAVE});
+	});
+	$("a.link_head").click(function() {
+		showBlock($(this));
+		return false;
+	});	
+	initTooltip();
+});
+// показать/скрыть блок с камерами
+function showBlock(link) {
+	var block = link.next();
+	if (block.css("display") == "none") {
+		block.slideDown("normal");
+		link.addClass("arrow_down");
+	} else {
+		block.slideUp("normal");
+		link.removeClass("arrow_down");
+	}	
+}
+function downloadMonitoringVersion(){
+	closeChangeWindow('win_events_export');
+	showIndicator(true);
+	$.ajax({
+		type: "GET",
+		url: '{% url monitoring_versions %}?export=true',
+		data: {},
+		success: function(msg){
+			showIndicator(false);
+			var obj = msg;
+			if (obj.status == 'success') {
+				location.href='{% url monitoring_versions %}?download=true';
+			} else {
+				showMessage('<span class="error">' + MESSAGE_ERROR + '</span>');
+			}
+		},
+		error: function(msg){
+			showIndicator(false);
+			showMessage('<span class="error">' + MESSAGE_ERROR + '</span>');
+		}
+	});
+}
+</script>
+{% endblock %}
+{% block submenu %}{% include "monitoring_menu.html" %}{% endblock %}
+{% block subcontent %}
+	<h2>{% trans "Версии компонентов" %} <input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Мониторинг_Версии компонентов" %}');" /></h2>
+	{% include "current_time.html" %}
+	<div><input type="button" name="" value="{% trans "Экспорт" %}" class="inp_btn inp_btn90" id="btnSaveInfo" /></div>
+	<table cellpadding="0px" cellspacing="0px" class="table">
+		<tr>
+			<th class="first">{% trans "Название" %}</th>
+			<th>{% trans "IP-адрес:Порт" %}</th>
+			<th>{% trans "Версия" %}</th>
+			<th>{% trans "Окончание лицензии" %}</th>
+		</tr>
+		{% include "monitoring_versions_data.html" %}
+	</table>
+{% endblock %}
+{% block windows %}
+<div id="win_save" style="display: none;" class="winFloating">
+    <div class="bodyWF">
+        <div class="headWF">
+            <div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close short_descr" title="{% trans "Закрыть окно" %}" /></div>
+            <div class="headWF_txt">{% trans "Экспорт версий компонентов" %}</div>
+        </div>
+        <div class="contWF"></div>
+        <div class="footerWF">
+        	<input type="button" name="" value="{% trans "Экспорт" %}" class="btn_wf_blue close" onClick="javascript: downloadMonitoringVersion();" />
+            <input type="button" name="" value="{% trans "Отменить" %}" class="btn_wf close" />
+        </div>
+    </div>
+</div>
+<div id="win_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close short_descr" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF" id="win_mess_contWF"></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />	
+		</div>
+	</div>
+</div>
+<div class="indicator" id="indicator" style="display: none;">
+    <img src="/files/images/loader.gif" alt="loader" width="20px" height="20px" />
+    <div>{% trans "Пожалуйста, подождите" %}...</div>
+</div>
+{% endblock %}

@@ -1,0 +1,361 @@
+{% load i18n %}
+{% load templatetags %}
+<script type="text/javascript">
+	var DEFAULT_MESSAGE = "{% trans 'Параметр не применён. Пожалуйста, попробуйте ещё раз' %}.";
+	var SUCCESS_MESSAGE = "{% trans 'Параметр успешно применён.' %}";
+	var ERROR_UNDEFINDED = "{% trans 'Произошла неизвестная ошибка.' %}";
+	var ERROR_CAMERA = "{% trans 'Камера не добавлена. Пожалуйста, попробуйте ещё раз' %}."
+	var SUCCESS_CAMERA = "{% trans 'Камера успешно добавлена' %}."
+	var message = DEFAULT_MESSAGE;
+	function setMessage(mes) {
+		message = mes;
+	}
+	function getMessage() {
+		res = message
+		message = DEFAULT_MESSAGE;
+		return res;
+	}
+	function executeMethod() {
+		d = {index: document.getElementById('communicator').value,
+			 name: arguments[0]};
+
+		for (var i=1; i < arguments.length; i++) {
+			 d['arg'+i]=arguments[i];
+		}
+
+		$.ajax({
+				type: "POST",
+				url: "/execute_method/",
+				data: d,
+				success: function(msg){
+					if (msg == 'True') {
+						showMessage(SUCCESS_MESSAGE);
+
+					} else if (msg == 'False') {
+						showMessage(getMessage());
+					} else {
+						showMessage(ERROR_UNDEFINDED);
+					}
+				}
+		});
+	}
+	function executeMethodUni(){		
+		d = {index: document.getElementById('communicator').value,
+			 name: arguments[3]};
+
+		var successFunc = arguments[0];
+		var errorFunc = arguments[1];
+		var undefindedFunc = arguments[2];
+
+		for (var i = 4; i < arguments.length; i++) {
+			var z = i - 3;
+			d['arg'+z] = arguments[i];
+		}
+		$.ajax({
+				type: "POST",
+				url: "/execute_method/",
+				data: d,
+				success: function(msg){							
+					if (msg == 'True') {
+						runStrFunc(successFunc);					
+					} else if (msg == 'False') {
+						runStrFunc(errorFunc);
+					} else {
+						runStrFunc(undefindedFunc);
+					}
+				},
+				error: function(msg) {
+					runStrFunc(undefindedFunc);
+				}
+		});
+	}
+	function executeMethodBalancer(){
+		d = {name: arguments[0]};
+
+		for (var i=1; i < arguments.length; i++) {
+			 d['arg'+i]=arguments[i];
+		}
+
+		$.ajax({
+				type: "POST",
+				url: "/execute_method_balancer/",
+				data: d,
+				success: function(msg){
+					if (msg != 'True') {
+						showMessage(DEFAULT_MESSAGE);
+					} else {
+						showMessage(SUCCESS_MESSAGE);						
+					}
+				}
+		});
+	}
+	function executeMethodBalancer2(){
+
+		d = {name: arguments[0]};
+
+		for (var i=1; i < arguments.length; i++) {
+			 d['arg'+i]=arguments[i];
+		}
+
+		$.ajax({
+				type: "POST",
+				url: "/execute_method_balancer/",
+				data: d,
+				success: function(msg){
+				}
+		});
+	}
+	function error_message(){
+		showMessage(DEFAULT_MESSAGE);
+	}
+	function success_message(){
+		showMessage(SUCCESS_MESSAGE);
+	}
+	function runStrFunc(func) {
+		if (func != null) eval(func);
+	}
+	/* INFO: Пример использования:
+	* 		executeMethodBalancerUni('setReconParam(g_ItemId)', 'setBackReconParam(g_ItemId)', 'setBackReconParam(g_ItemId)', 'setParameter', 7, 'control.focus.factor')";
+	*		1. Функция вызывается при успешном изменении
+	*		2. Функция вызывается при ошибке
+	*		3. Функция вызывается при неизвестной ошибке
+	*		4. Следующие параметры, как в простой executeMethodBalancer();
+	*		Если требуется передача строки в функцию: yourFunc(\'your string\')
+	*/
+	function executeMethodBalancerUni(){
+		d = {name: arguments[3]};
+
+		var successFunc = arguments[0];
+		var errorFunc = arguments[1];
+		var undefindedFunc = arguments[2];
+
+		for (var i=4; i < arguments.length; i++) {
+			var z = i - 3;
+			d['arg'+z] = arguments[i];
+		}
+
+		$.ajax({
+				type: "POST",
+				url: "/execute_method_balancer/",
+				data: d,
+				success: function(msg){
+					if (msg == 'True') {
+						runStrFunc(successFunc);
+					} else if (msg == 'False' ){
+						runStrFunc(errorFunc);
+					} else {
+						runStrFunc(undefindedFunc);
+					}
+
+				}, 
+				error: function(msg) {
+					runStrFunc(undefindedFunc);
+				}
+		});
+	}
+	function executeMethodBalancerExt2(){
+		d = {name: arguments[0]};
+
+		for (var i=1; i < arguments.length; i++) {
+			 d['arg'+i]=arguments[i];
+		}
+
+		$.ajax({
+				type: "POST",
+				url: "/execute_method_balancer/",
+				data: d,
+				success: function(msg){
+					if (msg != 'True') {
+						showMessage(DEFAULT_MESSAGE);
+					} else {
+						showMessage(SUCCESS_MESSAGE);
+						setValueParams();			
+					}
+				}
+		});
+	}	
+	
+	function executeCommunicatorMethod(methodName, params, answer_type, successFunc, errorFunc){
+	    var successFunc = successFunc;
+	    var errorFunc = errorFunc;
+	
+	    var d = {'params': params, 'methodName': methodName, 'answer_type': answer_type, 'host': '{{ selected_camera.com_host }}', 'port': '{{ selected_camera.com_port }}' };
+	
+	    $.ajax({
+	            type: "POST",
+	            url: "{% url execute-communicator-method %}",
+	            data: d,
+	            success: function(data){
+	                obj = data;
+	                if (obj.result == 'success') {
+	                    runStrFunc(successFunc);
+	                } else {
+	                    runStrFunc(errorFunc);
+	                }
+	            }
+	    });
+	}
+	
+	
+	function executeAddCamera(){
+
+		var d = {name: arguments[0]};
+
+		for (var i=1; i < arguments.length; i++) {
+			 d['arg'+i]=arguments[i];
+		}
+
+		$.ajax({
+				type: "POST",
+				url: "/execute_method/",
+				data: d,
+				success: function(msg){
+					closeChangeWindow('win_add');
+					if (msg != 'True') {
+						showMessage(ERROR_CAMERA);
+					} else {
+						showMessage(SUCCESS_CAMERA);
+						setTimeout('location.reload(true)', 2000);
+					}
+				}
+		});
+	}		
+	function universalExecutingMethod(params) {
+		var url = params.url ? params.url : "/execute_method_balancer/";
+		var data = {};
+
+		var index_ = 0;
+		if (params.index) {
+			index_ = params.index;
+		}
+		
+		if (params.method) {
+			var method = params.method;
+			data = { name: method, index: index_};
+		}
+		
+		if (params.arguments) {
+			for (var i = 0; i < params.arguments.length; i++) {
+				data['arg' + (i + 1)] = params.arguments[i];
+			}
+		}
+		$.ajax({
+				type: "POST",
+				url: url,
+				data: data,
+				beforeSend: function() {
+					runStrFunc(params.hooks.hook_upload ? params.hooks.hook_upload : null)
+				},  
+				success: function(msg){
+					if (msg == 'True') {
+						runStrFunc(params.hooks.hook_success ? params.hooks.hook_success : null);
+					} else if (msg == 'False' ){
+						runStrFunc(params.hooks.hook_error ? params.hooks.hook_error : null);
+					} else if (msg == 'timeout' ){
+					    if (params.hooks.hook_timeout) {runStrFunc(params.hooks.hook_timeout);}
+					    else{runStrFunc(params.hooks.hook_error ? params.hooks.hook_error : null);}
+					} else {
+						runStrFunc(params.hooks.hook_error_undefinded ? params.hooks.hook_error_undefinded : null);
+					}
+
+				}, 
+				error: function(msg) {
+					runStrFunc(params.hooks.hook_error_global ? params.hooks.hook_error_global : null);
+				}
+		});
+	}
+
+
+	function jsonUniversalExecutingMethod(params) {
+	    showIndicator(true);
+		var url = params.url ? params.url : "/execute_method_balancer/";
+		var data = {};
+		var name = "";
+		var show_name = false;
+		if (params.params) {
+		    name = params.params["name"];
+		    show_name = params.params["show_name"];
+			for (p in params.params){
+				data[p] = params.params[p];
+			}
+		}
+		if (params.arguments) {
+			for (var i = 0; i < params.arguments.length; i++) {
+				data['arg' + (i + 1)] = params.arguments[i];
+			}
+		}
+
+		$.ajax({
+			type: "POST",
+			url: url,
+			dataType: 'text',
+			data: data,
+			beforeSend: function() {
+				if (params.hooks.hook_upload){
+					var args = []
+					if (params.hooks.args_hook_upload){
+						args = params.hooks.args_hook_upload;
+					}
+					params.hooks.hook_upload(args);
+				}
+			},
+			success: function(data){
+				res = eval('('+data+')');
+				if (res.status == true) {
+					if (params.hooks.hook_success){
+						var result = null;
+						if (res.result){
+							result = res.result;
+						}
+						var args = []
+						if (params.hooks.args_hook_success){
+							args = params.hooks.args_hook_success;
+						}
+						if (show_name){ params.hooks.hook_success(args, result, name );}
+						else{ params.hooks.hook_success(args, result );}
+					}
+				} else if (res.status == false){
+					if (params.hooks.hook_error){
+						var result = null;
+						if (res.result){
+							result = res.result;
+						}
+						var args = []
+						if (params.hooks.args_hook_errors){
+							args = params.hooks.args_hook_errors;
+						}
+						if (show_name){ params.hooks.hook_error(args, result, name );}
+						else{ params.hooks.hook_error(args, result );}
+					}
+				} else {
+					if (params.hooks.hook_error_undefinded){
+						var result = null;
+						if (res.result){
+							result = res.result;
+						}
+						var args = []
+						if (params.hooks.args_hook_error_undefinded){
+							args = params.hooks.args_hook_error_undefinded;
+						}
+						if (show_name){ params.hooks.hook_error_undefinded(args, result, name );}
+						else{ params.hooks.hook_error_undefinded(args, result );}
+					}
+				}
+				showIndicator(false);
+			},
+			error: function(data) {
+				if (params.hooks.hook_error_global){
+					var args = []
+					if (params.hooks.args_hook_error_global){
+						args = params.hooks.args_hook_error_global;
+					}
+					if (show_name){ params.hooks.hook_error_global(args);}
+					else{ params.hooks.hook_error_global(args );}
+				}
+				showIndicator(false);
+			}
+		});
+	}
+
+
+</script>

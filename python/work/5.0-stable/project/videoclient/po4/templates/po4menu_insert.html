@@ -1,0 +1,53 @@
+{% load i18n %}
+{% load templatetags %}
+<ul class="menu_vkl">
+	<li {% if select_subpage == 'users' or select_page == 'users' or select_page == 'anketauser' or select_page == 'photouser' or select_page == 'anketaclearuser' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="{% url settings_user %}">{% trans "Пользователи" %}</a>
+			</div>
+		</div>
+	</li>
+	<li {% if select_page == 'settingspage' or select_page == 'camera' or select_page == 'distortion' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="/po4/settingspage/">{% trans "Камеры" %}</a>
+			</div>
+		</div>
+	</li>
+	<li {% if select_page == 'recognition' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="{% url settings_recognition %}">{% trans "Распознавание" %}</a>
+			</div>
+		</div>
+	</li>
+	<li {% if select_page == 'special' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="/po4/special/">{% trans "Специальные" %}</a>
+			</div>
+		</div>
+	</li>	
+	<li {% if select_page == 'settingsus' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="/po4/settingsus/">{% trans "Системные" %}</a>
+			</div>
+		</div>
+	</li>
+	<li {% if select_page == 'events' or select_page == 'sounds' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="/po4/events/">{% trans "Звуки и сигналы" %}</a>
+			</div>
+		</div>
+	</li>
+	<li {% if select_page == 'settings_interface' %} class="menu_vkl_act" {% endif %}>
+		<div>
+			<div>
+				<a href="{% url settings_interface %}">{% trans "Интерфейс" %}</a>
+			</div>
+		</div>
+	</li>	
+</ul>

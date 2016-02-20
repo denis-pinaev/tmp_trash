@@ -1,0 +1,308 @@
+{% extends "base_archive_tab.html" %}
+{% load i18n a_templatetags %}
+{% block title %}{% trans 'Настройки видеоархивов' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="{% url archive_files 'css/settings.css' %}" />
+<script type="text/javascript" src="/files/js/spinbox.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="{% url archive_files 'js/archive_settings_archive.js' %}"></script>
+<script type="text/javascript">
+	var MESSAGE = {
+		"0": "{% trans 'Выберите, пожалуйста, хотя бы один коммуникатор' %}.",
+		"1": "{% trans 'Вы действительно хотите удалить видеоархив?' %}",
+		"2": "{% trans 'Видеоархив успешно добавлен' %}.",
+		"3": "{% trans 'Видеоархив успешно удален' %}.",
+		"4": "{% trans 'Настройки успешно сохранены' %}."
+	}
+	var ERROR = {
+		"0": "{% trans 'Введите хост' %}.",
+		"1": "{% trans 'Введите порт' %}.",
+		"2": "{% trans 'Введено некорректное значение' %}.",
+		"3": "{% trans 'Введено некорректное значение' %}.",
+		"4": "{% trans 'Ошибка добавления видеоархива' %}.",
+		"5": "{% trans 'Ошибка добавления: видеоархив уже добавлен' %}.",
+		"6": "{% trans 'Ошибка! Не удалось удалить видеоархив' %}.",
+		"7": "{% trans 'Введите Url' %}",
+		"8": "{% trans 'Введите Save dir' %}.",
+		"9": "{% trans 'Введите IP' %}",
+		"10": "{% trans 'Настройки не сохранены' %}."
+	}
+	var URL = {
+	    "0": "{% url delete_archive %}",
+	    "1": "{% url add_archive %}",
+	    "2": "{% url archive_settings_archive archive %}",
+	}
+	$(function() {
+        checkFormAddArchive();
+    });
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu/menu_settings.html" %}{% endblock %}
+{% block subcontent %}
+				<h2>{% trans "Настройки видеоархивов" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Видеоархив Настройки видеоархивов' %}');" /></h2>
+				{% include "current_time.html" %}
+				{% if archives|length > 0 %}
+					<div class="message_action">{% trans 'Выберите видеоархив для настройки или редактирования параметров' %}.</div>
+					<div class="bl_param block">							
+						<span id="archive_list">							    
+							{% include "archive_settings/archive_list.html" %}
+						</span>
+						<input type="button" name="" class="inp_btn inp_btn90 dist_left" value="{% trans "Добавить" %}" onClick="javascript: addArchive();" />
+						<input type="button" name="" class="inp_btn inp_btn90 dist_left" value="{% trans 'Удалить' %}" onClick="javascript: deleteArchive();" />    
+					</div>
+					<div class="delim_block"></div>
+					{% if not connect %}
+						<div class="message_warning" style="margin-top: 10px;">{% trans 'Ошибка подключения к демону видеоархива' %} {{ archive_selected.host }}:{{archive_selected.port}}.</div>
+					{% endif %}
+					<form method="post" action="" id="ArchiveForm">						
+						{% comment %}
+						<div class="bl_param bl_head">{% trans 'Настройки видеоархива' %}</div>
+						{% if params %}						
+						{% for set in params %}
+						     <div class="bl_param">
+							    <div class="block">
+								    <label for="thresholdDays" class="bl_txt">{% trans set.name %}:</label>
+								    <div class="bl_enter">
+									    <div class="block_ie">
+										    <div class="block">
+											    <input type="text" name="{{ set.name }}" id="{{ set.name }}" value="{{ set.value }}">
+											    <span class="dist_left">{% trans set.name %}</span>
+										    </div>
+									    </div>
+								    </div>
+							    </div>
+						    </div>
+						{% endfor %}
+						{% else %}
+						    <div class="message_warning" style="margin-top: 10px;">{% trans 'Нет параметров' %}.</div>
+						{% endif %}		
+						{% endcomment %}	
+							
+						{% if connect %}
+						<div class="bl_param bl_head">{% trans 'Настройки для порогов' %}</div>
+						{% if settings.identThreshold %}
+						<div class="bl_param">
+							<div class="block">
+								<label for="rollerIdent" class="bl_txt">{% trans 'Порог идентификации' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+											{% spinbox "rollerIdent" "rollerIdent" settings.identThreshold "38" "0" "1" "0.1" %}
+											<span class="dist_left">{% trans 'порог, при превышении которого персона считается идентифицированной' %}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						{% endif %}
+						<div class="bl_param">
+							<div class="block">
+								<label for="thresholdDays" class="bl_txt">{% trans 'Период хранения видеороликов (в днях)' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+											{% spinbox "thresholdDays" "thresholdDays" settings.delOlderDays "38" "1" "365" "1" %}
+											<span class="dist_left">{% trans 'период времени хранения видеороликов' %}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bl_param">
+							<div class="block">
+								<label for="thresholdAlerts" class="bl_txt">{% trans 'Порог оповещения (в процентах)' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+											{% spinbox "thresholdAlerts" "thresholdAlerts" settings.thresholdFreeSpaceNotif "38" "0" "100" "5" %}
+											<span class="dist_left">{% trans 'порог оповещения об окончании места для хранения видеороликов' %}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bl_param">
+							<div class="block">
+								<label for="thresholdRemove" class="bl_txt">{% trans 'Порог удаления видеороликов (в процентах)' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+											{% spinbox "thresholdRemove" "thresholdRemove" settings.thresholdFreeSpaceDel "38" "0" "100" "5" %}
+											<span class="dist_left">{% trans 'порог, при превышении которого начинается удаление видеороликов' %}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>						
+						<div class="bl_param">
+							<div class="block">
+								<label for="checkIntervalThresholds" class="bl_txt">{% trans 'Интервал проверки порогов (в часах)' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+											{% spinbox "checkIntervalThresholds" "checkIntervalThresholds" settings.delIntervalHours "38" "1" "24" "1" %}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>						
+						<div class="delim_block"></div>
+						<div class="bl_head">{% trans 'Настройки для записи видеоролика' %}</div>
+						{% comment %}
+						<div class="bl_param">
+							<div class="block">
+								<label for="gop_size" class="bl_txt">{% trans 'Частота ключевых кадров' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+											{% spinbox "gop_size" "gop_size" settings.gopSize "38" "1" "20" "1" %}
+											<span class="dist_left">{% trans 'расстояние между ключевыми кадрами' %}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						{% endcomment %}
+						<div class="bl_param">
+							<div class="block">
+								<label for="rollerCapacity" class="bl_txt">{% trans 'Пропускная способность (bitrate, в кбит/с)' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+											{% spinbox "rollerCapacity" "rollerCapacity" settings.bitrate "38" "500" "2500" "100" %}
+											<span class="dist_left">{% trans 'параметр, влияющий на качество видеоролика' %}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>	
+						<div class="bl_param">
+							<div class="block">
+								<label for="rollerCompression" class="bl_txt">{% trans 'Степень сжатия' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+											{% spinbox "rollerCompression" "rollerCompression" settings.compress "38" "0" "1" "0.01" %}
+											<span class="dist_left">{% trans 'параметр, влияющий на качество и размер видеоролика' %}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bl_param">
+							<div class="block">
+								<label for="rollerBlur" class="bl_txt">{% trans 'Коэффициент сглаживания изображения' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+											{% spinbox "rollerBlur" "rollerBlur" settings.blur "38" "0" "1" "0.01" %}
+											<span class="dist_left">{% trans 'фильтр для плавного перехода цвета на изображении' %}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bl_param">
+							<div class="block">
+								<label for="rollerDistance" class="bl_txt">{% trans 'Частота ключевых кадров' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+											{% spinbox "rollerDistance" "rollerDistance" settings.gopSize "38" "1" "10" "1" %}
+											<span class="dist_left">{% trans 'расстояние между соседними кадрами для кодирования' %} ({% trans 'большое расстояние между кадрами уменьшает объем видеоролика и снижает его качество' %})</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>						
+						<div class="bl_param bl_head">{% trans 'Настройки видеоархива' %}</div>
+						{% comment %}
+						<div class="bl_param">
+							<div class="block">
+								<label for="domen" class="bl_txt">{% trans 'URL' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+											<input type="text" name="url" id="url" value="{{ archive_selected.url }}" />
+											<span class="dist_left"></span>
+											<script type="text/javascript">params['url'] = '{{ archive_selected.url }}';</script>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>						
+						<div class="bl_param">
+							<div class="block">
+								<label for="domen" class="bl_txt">{% trans 'Save dir' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+										    {{ archive_selected.save_dir }}											
+											<span class="dist_left"></span>											
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>						
+						{% if settings.adminDomen %}
+						<div class="bl_param">
+							<div class="block">
+								<label for="domen" class="bl_txt">{% trans 'Домен' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+											<input type="text" name="domen" id="domen" value="{{ settings.adminDomen }}" />
+											<span class="dist_left"></span>
+											<script type="text/javascript">params['domen'] = '{{ settings.adminDomen }}';</script>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						{% endif %}
+						{% if settings.adminAlertUrl %}
+						<div class="bl_param">
+							<div class="block">
+								<label for="domenAlert" class="bl_txt">{% trans 'Адрес отправки уведомлений' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+											<input type="text" name="domenAlert" id="domenAlert" value="{{ settings.adminAlertUrl }}" />
+											<span class="dist_left"></span>
+											<script type="text/javascript">params['domenAlert'] = '{{ settings.adminAlertUrl }}';</script>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						{% endif %}
+						{% endcomment %}
+						{% if settings.socketTimeout %}
+						<div class="bl_param">
+							<div class="block">
+								<label for="timeout" class="bl_txt">{% trans 'Тайм-аут соединения' %}:</label>
+								<div class="bl_enter">
+									<div class="block_ie">
+										<div class="block">
+											{% spinbox "timeout" "timeout" settings.socketTimeout "38" "0" "20000" "1000" %}
+											<span class="dist_left"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						{% endif %}
+						<div class="bl_param">
+							<input type="button" name="" class="inp_btn btn_save" onClick="javascript: applyChanges();" value="{% trans 'Сохранить' %}" />
+							<input type="button" name="" class="inp_btn btn_cancel dist_left" onClick="javascript: resetChanges();" value="{% trans 'Отменить' %}" />
+						</div>
+						{% endif %}
+						{% else %}
+						<div class="message_warning">{% trans 'Отсутствуют демоны видеоархива' %}.</div>
+						<div class="bl_param">
+							<input type="button" name="" class="inp_btn inp_btn90" value="{% trans 'Добавить' %}" onClick="javascript: addArchive();" />   
+						</div>
+						{% endif %}
+					</form>					
+{% endblock %}
+{% block windows %}{% include "window_archive_settings.html" %}{% endblock %}

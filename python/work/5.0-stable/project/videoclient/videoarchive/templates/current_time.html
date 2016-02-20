@@ -1,0 +1,43 @@
+{% load i18n %}
+{% load a_templatetags %}
+<div id="current_time" class="current_time" title="{% trans "Время на сервере" %}">{{ now_hour }}:{{ now_minute }}:{{ now_second }}</div>
+<script type="text/javascript">
+	var hour = {{ now_hour }};
+	var minute = {{ now_minute }};
+	var second = {{ now_second }};
+	var ms = 0;
+	function getDoubleNumber(num) {
+		if (num>9){
+			return num;
+		} else {
+			return '0'+num;
+		}
+	}
+	function makeCurrentTime() {
+		return getDoubleNumber(hour)+':'+getDoubleNumber(minute)+':'+getDoubleNumber(second);
+	}
+	function makeCurrentDate(){
+		return '01.01.2010';
+	}
+	function updateTime(add) {
+		ms += add;
+		while (ms >= 1000) {
+			second+=1;
+			ms-=1000;
+		}
+		while (second>=60) {
+			minute+=1;
+			second-=60;
+		}
+		while (minute>=60) {
+			hour+=1;
+			minute-=60;
+		}
+		while (hour>24) {
+			hour-=24;
+		}
+		document.getElementById('current_time').innerHTML = makeCurrentTime()
+		setTimeout('updateTime(500);', 500);
+	}
+	updateTime(0);
+</script>

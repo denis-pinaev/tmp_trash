@@ -1,0 +1,192 @@
+﻿.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.block_req span {
+    color: #ff0000;
+}
+.req {
+    color: #ff0000;
+    font-weight: bold;
+}
+.req_hid {
+    font-weight: bold;
+    visibility: hidden;
+}
+.bl_photo_btn {
+	float: left;
+	width: 190px;
+}
+.bl_photo_btn .photo_user {
+	border: 1px solid #AAAAAA;
+	padding: 5px;
+	background-color: #f2f2f2;
+	margin-bottom: 10px;
+	border-radius: 4px;
+	moz-border-radius: 4px;	
+	text-align: center;
+	position: relative;
+}
+.bl_photo_btn .photo_user img {
+	max-width: 120px;
+	max-height: 120px;
+}
+.bl_photo_btn .photo_user div.user_id {
+	margin-left: -6px;
+	margin-top: -6px;
+	margin-bottom: 5px;
+	border-radius: 4px;
+	moz-border-radius: 4px;	
+	background-color: #666666;
+	width: 190px;
+	text-align: center;
+	color: #ffffff;
+}
+.bl_info_all {
+	margin-left: 230px;
+}
+.menu_anketa li {
+	margin-top: 3px;
+	white-space: nowrap;
+}
+.menu_anketa li.li_ident {
+	border-top: 1px dotted #dadada;
+	padding-top: 5px;
+	margin-top: 6px;
+}
+.menu_anketa li a.blue {
+	text-decoration: none;
+}
+.menu_anketa li a.link_add_photos,
+.menu_anketa li a.link_add_photos.dis {
+	padding-right: 12px;
+}
+.menu_anketa li a.link_add_photos {
+	background: url("/files/images/arrowB_bottom.gif") right 60% no-repeat;
+}
+.menu_anketa li a.blue.dis {
+	color: #9b9b9b;
+	cursor: default;
+}
+.menu_anketa li a.link_add_photos.dis {
+	background-image: url("/files/images/arrowB_bottom_dis.gif");
+}
+.menu_add_photos li {
+	padding-left: 12px;
+	background: url("/files/images/arrowB_left.gif") left 45% no-repeat;
+}
+.inp_btn140 {
+	width: 140px;
+	background: url('/files/images/button140x24_up.gif') top left no-repeat;
+}
+.inp_btn170,
+.link_btn170,
+.link_btn170:hover {
+	width: 170px;
+	background: url('/files/images/button170x24_up.gif') top left no-repeat;
+}
+.btn_blue {
+	width: 90px;
+	background: url('/files/images/btn_blue_90.png') top left no-repeat;
+	-background: none;
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_90.png', sizingMethod='scale');
+	color: #ffffff;
+}
+.bl_photo_btn {
+	float: left;
+	width: 190px;
+}
+.bl_photo_btn .bl_btn {
+	margin-top: 1px;
+}
+.head_info {
+	font-weight:bold;
+	margin-bottom:10px;
+}
+.bl_info {
+	margin-bottom: 10px;
+	width: 100%;
+	overflow: hidden;
+}
+.bl_info .bl_txt {
+	float: left;
+	width: 90px;
+}
+.bl_info .bl_enter {
+	margin-left: 110px;
+}
+.bl_info .inp_txt {
+	width: 220px;
+}
+.bl_info .bl_phone {
+	margin-bottom: 3px;
+}
+.bl_info .bl_phone .inp_txt {
+	width: 120px;
+}
+.bl_info .bl_phone.last {
+	margin-bottom: 0px;
+}
+.bl_info .select {
+	width: 226px;
+}
+.bl_info_btn {
+	width: 380px;
+	text-align: center;
+}
+.bl_btn_photo {
+	float: left;
+}
+.bl_btn_photo .link_btn {
+	float: left;
+	margin-left: 10px;
+}
+.bl_btn_photo .inp_btn {
+	float: left;
+}
+.all_photo {
+	margin-bottom: 5px;
+}
+.no_photo_user {
+	border: 1px solid #AAAAAA;
+	padding: 5px;
+	background-color: #eeeeee;
+	margin-bottom: 10px;
+}
+.no_photo_user div {
+	width: 120px;
+	height: 80px;
+	text-align: center;
+	padding-top: 40px;
+	margin: 0px auto;
+}
+.btn_photos {
+	width: 100%;
+	overflow: hidden;
+}
+.btn_photos .inp_btn {
+	float: right;
+}
+.block_error {
+    clear: both;
+    padding-left: 110px;
+    color: #ff0000;
+}
+.block_error_phone {
+	color: #ff0000;
+}
+.error_border {
+	border-color: #ff0000;
+}
+.inp_txt.err_forms {
+	border-color: #ff0000;
+}
+.block_warning {
+    clear: both;
+    margin-left: 10px;
+	color: #ff9900;
+}
+.inp_txt.border_warning {
+	border-color: #ff9900;
+}

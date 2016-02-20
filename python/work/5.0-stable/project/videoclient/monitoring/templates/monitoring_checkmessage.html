@@ -1,0 +1,65 @@
+{% load i18n %}
+{% load templatetags %}
+{% include "js/js_monitoring_system_window.html" %}
+<script type="text/javascript">
+// вывод сообщений для яваскрипт-ошибок
+function errorJavascript(text) {
+	var block = $("#javascript_error");
+	var content = block.find("div.javascript_error_content div");
+	content.html(text);
+	block.slideDown(100);
+}
+// скрыть сообщение для яваскрипт-ошибок
+function closeErrorJavascript() {
+	var block = $("#javascript_error");
+	block.slideUp(100);
+}
+// вывод системных сообщений
+function checkmessage(check, syscheck){
+	var dd = new Date();
+	$.ajax({
+		timeout: 15000,
+		type: "GET",
+		url: "{% url monitoring_checkmessage %}",
+		data: {check: check, syscheck: syscheck},
+		success: function(msg){
+			var obj = msg;
+			if (obj && obj.status){
+				if (obj.messages.length > 0) {
+					systemWindow(obj.messages);
+				}
+				if (obj.check) check = obj.check;
+				if (obj.syscheck) syscheck = obj.syscheck;
+			}
+			setTimeout('checkmessage('+check+', '+syscheck+')', 9000);
+		},
+		error: function(jqXHR, exception){
+			if (jqXHR.status == 500 || exception == 'timeout' || exception == 'abort') {
+				var date = $("#current_time").html();
+				if (windowIsActive) {
+					errorJavascript(date + ' <span>{% trans "Потеряно соединение с сервером" %}.</span>');
+				}
+			}
+			setTimeout('checkmessage()', 9000);
+		}
+	});
+}
+checkmessage();
+</script>
+<link rel="stylesheet" type="text/css" href="/files/css/po4_system_window.css?v=v{{ version }}" />
+<div class="winSystem" id="winSystem">
+	<div class="bodyWS">
+		<div class="headWS">
+			<div class="headWS_txt">{% trans "Сообщения системы" %} (<span></span>)</div>
+			<input type="button" name="" value="" class="btn_min" title="{% trans "Свернуть окно" %}" />
+		</div>
+		<div class="contWS"><div class="contWS_add">
+		</div></div>
+	</div>
+</div>
+<div class="javascript_error" id="javascript_error" style="display: none;">
+	<div class="javascript_error_content">
+		<input type="button" name="" value="" class="btn_close short_descr" title="{% trans 'Закрыть сообщение' %}" onClick="javascript: closeErrorJavascript();" />
+		<div></div>
+	</div>
+</div>

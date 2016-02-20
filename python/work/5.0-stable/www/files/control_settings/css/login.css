@@ -1,0 +1,47 @@
+﻿h1 {
+    margin-bottom: 7px;
+}
+.header_log {
+    padding: 60px 0px 10px 0px;
+    text-align: center;
+    color: #0088CC;
+    font-weight: bold;
+    font-size: 120%;
+}
+.block_log {
+    width: 300px;
+    margin: 0px auto 0px auto;
+    overflow: hidden;
+    padding: 0px 10px 5px 10px;
+    border: 1px solid #aaaaaa;
+}
+.err_mess {
+    color: #FF6600;
+    text-align: center;
+    padding-bottom: 5px;
+}
+.frm {
+    margin-top: 10px;
+    width: 210px;
+    margin: 0px auto 0px auto;    
+}
+.frm .head {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+.frm .field {
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+.frm .field .label_txt {
+    float: left;
+    width: 60px;
+    margin-right: 10px;
+}
+.frm .field .enter {
+    float: left;
+}
+.frm .field .enter .inp_txt {
+    width: 130px;
+}

@@ -1,0 +1,31 @@
+﻿.frm_block {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 10px;
+}
+.frm_block .tick {
+    float: left;
+    width: 16px;
+    height: 16px;
+    background: url("/files/images/tick.png") top left no-repeat;
+    -background: none;  
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/tick.png', sizingMethod='crop');        
+    margin-right: 5px;
+}
+.frm_block .inp_check {
+    margin-right: 5px;
+}
+.inp_blue140 {
+    width: 140px;
+    color: #ffffff;
+    background: url('/files/images/btn_blue_140.png') top left no-repeat;
+    -background: none;
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_140.png', sizingMethod='scale');
+}
+.list_links li {
+    margin-bottom: 5px;
+}
+.list_links li a {
+    background: url("/files/images/update.gif") top left no-repeat;
+    padding-left: 20px;    
+}

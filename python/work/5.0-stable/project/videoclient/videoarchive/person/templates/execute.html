@@ -1,0 +1,86 @@
+{% load a_templatetags %}
+
+<script type="text/javascript">
+	function executeMethod(){
+		
+		d = {index: document.getElementById('communicator').value,
+			 name: arguments[0]};
+		
+		for (var i=1; i < arguments.length; i++) {
+	         d['arg'+i]=arguments[i];
+		}
+		
+		$.ajax({
+				type: "POST",
+				url: "/person/execute_method/",
+				data: d,
+				success: function(msg){
+					if (msg != 'True') {
+						showMessage('{% trans "Параметр не применился. Пожалуйста, попробуйте ещё раз"%}.');
+					}
+				}
+		});
+	}
+	
+	function executeAddCamera(){
+
+		var d = {name: arguments[0]};
+
+		for (var i=1; i < arguments.length; i++) {
+			 d['arg'+i]=arguments[i];
+		}
+
+		$.ajax({
+				type: "POST",
+				url: "/person/execute_method/",
+				data: d,
+				success: function(msg){
+					closeChangeWindow('win_add');
+					if (msg != 'True') {
+						showMessage('{% trans "Камера не добавлена. Пожалуйста, попробуйте ещё раз"%}.');
+					} else {
+						showMessage('{% trans "Камера успешно добавлена."%}.');
+						setTimeout('location.reload(true)', 2000);
+					}
+				}
+		});
+	}	
+	
+	function executeMethodBalancer(){
+		
+		d = {name: arguments[0]};
+		
+		for (var i=1; i < arguments.length; i++) {
+	         d['arg'+i]=arguments[i];
+		}
+		
+		$.ajax({
+				type: "POST",
+				url: "/person/execute_method_balancer/",
+				data: d,
+				success: function(msg){
+					if (msg != 'True') {
+						showMessage('{% trans "Параметр не применился. Пожалуйста, попробуйте ещё раз"%}.');
+					}
+				}
+		});
+	}
+	
+	function executeMethodBalancer2(){
+		
+		d = {name: arguments[0]};
+		
+		for (var i=1; i < arguments.length; i++) {
+	         d['arg'+i]=arguments[i];
+		}
+		
+		$.ajax({
+				type: "POST",
+				url: "/person/execute_method_balancer/",
+				data: d,
+				success: function(msg){
+				}
+		});
+	}	
+
+</script>

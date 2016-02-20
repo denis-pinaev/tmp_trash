@@ -1,0 +1,207 @@
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>
+{% load templatetags %}
+{% if select_page == "login" %}{% trans "Вход в систему" %}{% endif %}
+{% if select_page == "lists" %}{% trans "Списки" %}{% endif %}
+{% if select_page == "kpp" %}{% trans "Журнал сессий" %}{% endif %}	
+{% if select_page == "personsadm" %}{% trans "Персоны" %}{% endif %}
+{% if select_page == "person" %}{% trans "Персона" %} - {{ person.big }}{% endif %}
+{% if select_page == "learn" %}{% trans "Обучение" %}{% endif %}
+{% if select_page == "maps" %}{% trans "Карты" %}{% endif %}
+{% if select_page == "settings" %}
+	{% if select_subpage == "cameras" %}
+		{% trans "Настройки камер" %}
+	{% endif %}
+
+	{% if select_subpage == "camera" %}
+		{% trans "Настройки камеры" %} {% if camera.info %}"{{ camera.info }}"{% endif %}
+	{% endif %}
+
+	{% if select_subpage == "kpp" %}
+		{% trans "Настройки КПП" %} {% if kpp.name %}"{{ camera.name }}"{% endif %}
+	{% endif %}
+
+	{% if select_subpage == "distortion" %}
+		{% trans "Настройки дисторсии" %} {% if camera.info %}"{{ camera.info }}"{% endif %}
+	{% endif %}
+
+	{% if select_subpage == "recognition" %}
+		{% trans "Настройки распознавания" %}
+	{% endif %}
+{% endif %}
+{% if select_page == "historychange" %}{% trans "Журнал изменений" %}{% endif %}
+{% if select_page == "users" %}{% trans "Настройки пользователей" %}{% endif %}
+{% if select_page == "monitoring_events" %}{% trans "События системы" %}{% endif %}
+{% if select_page == "monitoring_system" %}{% trans "Аналитика управляющей системы" %}{% endif %}
+{% if select_page == "monitoring_communicator" %}{% trans "Графики коммуникаторов" %}{% endif %}
+{% if select_page == "monitoring_testfr" %}{% trans "Тестирование" %}{% endif %}
+{% if select_page == "monitoring" %}{% trans "События системы" %}{% endif %}
+{% if select_page == "monitoring_syslog_journal" %}{% trans "Общий журнал системы" %}{% endif %}
+{% if select_page == "acommunicator" %}{% trans "Аналитика работы коммуникаторов" %}{% endif %}
+{% if select_page == "ident" %}{% trans "Просмотр" %}{% endif %}
+{% if select_page == "help" %}{% trans "Помощь" %}{% endif %}
+{% if select_page == "products" %}{% trans "Продукты" %}{% endif %}
+{% if select_page == "journal" %}{% trans "Журнал идентификаций" %}{% endif %}
+{% if select_page == "export" %}{% trans "Экспорт информации" %}{% endif %}
+{% if select_page == "alert" %}{% trans "Оповещения" %}{% endif %}
+{% if select_page == "settings_interface" %}{% trans "Интерфейс" %}{% endif %}
+{% if select_page == "control_settings_users" %}{% trans "Пользователи УС" %}{% endif %}
+{% if select_page == 'control_settings_settings' %}{% trans "Общие настройки УС" %}{% endif %}
+{% if select_page == 'control_settings_default' %}{% trans "Настройки УС по умолчанию" %}{% endif %}
+{% if select_page == 'video' %}{% trans "Ролики" %}{% endif %}
+{% if select_page == 'journal_videoanalytics' %}{% trans "Журнал видеоаналитики" %}{% endif %}
+{% if select_page == 'settings_vanalytics' %}{% trans "Настройки видеоаналитики" %}{% endif %}
+{% if select_page == 'integration_smtp' %}{% trans "Настройки протокола SMTP" %}{% endif %}
+{% if select_page == 'integration_snmp' %}{% trans "Настройки протокола SNMP" %}{% endif %}
+{% if select_page == 'settings_web_api' %}{% trans "Пользователи WEB API" %}{% endif %}
+{% if select_page == 'anketauser' %}{% trans "Добавление пользователя" %}{% endif %}
+{% if select_page == 'ident_js' %}{% trans "Просмотр" %}{% endif %}
+{% if select_page == 'monitoring_versions' %}{% trans "Версии компонентов" %}{% endif %}
+{% if select_page == 'monitoring_identification' %}{% trans "Идентификация из файлов" %}{% endif %}
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<meta http-equiv="content-language" content="{{ LANGUAGE_CODE }}" />
+
+{% if select_page != "maps" and select_page != "settings_vanalytics" and select_page != "journal_videoanalytics" and select_page != "ident_js" %}
+<link rel="stylesheet" type="text/css" href="/files/css/main.css?v=v{{ version }}" />
+{% if res_interface == "1" %}
+	<link rel="stylesheet" type="text/css" href="/files/css/1920/main.css?v=v{{ version }}" />
+{% endif %}
+<link rel="stylesheet" type="text/css" href="/files/css/windows.css?v=v{{ version }}" />
+
+{% include "javascript.html" %}
+<!-- <script type="text/javascript" src="/files/js/lib/jquery.js?v=v{{ version }}"></script>-->
+<script type="text/javascript" src="/files/js/lib/draw/jquery-1.6.2.js?v=v{{ version }}"></script>
+<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script> 
+<script type="text/javascript" src="/files/js/lib/jquery.validate.js?v=v{{ version }}"></script>
+{% include "system_blocks/datepicker.html" %}
+<script src="/files/js-global/FancyZoom.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js-global/FancyZoomHTML.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/JavaScriptUtil.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/Parsers.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/InputMask.js?v=v{{ version }}" type="text/javascript"></script>
+<script src="/files/js/po4_funcs.js?v=v{{ version }}" type="text/javascript"></script>
+<script type="text/javascript">
+	//Определение активна вкладка или нет
+	// пример добавления функции
+	// windowOnFocusFunctions.push('checkForDetectorsAlerts()');
+	//
+	// пример прекращения какой либо деятельности при использовании ajax
+	//	if (!windowIsActive) {
+	//		return;
+	//	}
+	var windowIsActive = true;  // Переменная значение true значит вкладка активна
+	var windowOnFocusFunctions = []; // Массив вызываемых функций после возобновления активности вкладки
+	$(window).focus(function() {
+		if (!windowIsActive) {
+			windowIsActive = true;
+			for(var i = 0; i < windowOnFocusFunctions.length; i++ ) {
+				eval(windowOnFocusFunctions[i]);
+			}
+		}
+		
+	});
+	$(window).blur(function() {
+		if (windowIsActive) {
+			windowIsActive = false;
+		}
+	});
+	function addDateMask(name) {
+		if (document.getElementsByName(name).length>0) {
+			new DateMask("dd.MM.yyyy", name);
+		}
+	}
+	function setup(){
+		addDateMask("dateVisit1");
+		addDateMask("dateVisit2");
+		addDateMask("dateBegin");
+		addDateMask("dateEnd");
+		addDateMask("passport_date");
+		addDateMask("birthday");
+		//addDateMask("dateVisit1");
+		//addDateMask("dateVisit1");
+
+		elements = document.getElementsByName("passport_series");
+		if (!(elements && elements[0])) {
+			return true
+		}
+		elements = document.getElementsByName("passport_number");
+		if (!(elements && elements[0])) {
+			return true
+		}
+		var intSeparator = '';
+		var groupSeparator = ''; 
+		var numParser1 = new NumberParser(0, intSeparator, groupSeparator, true);
+		var numMask1 = new NumberMask(numParser1, "passport_series");
+		var numParser2 = new NumberParser(0, intSeparator, groupSeparator, true);
+		var numMask2 = new NumberMask(numParser2, "passport_number");
+	}
+</script>
+{% endif %}
+{% block js %}{% endblock %}
+</head>
+<body{% if select_page != 'maps' and select_page != 'settings_vanalytics' and select_page != "journal_videoanalytics" and select_page != "ident_js" %} onLoad="javascript: setupZoom(); setup();"{% endif %}>
+<div class="body1">
+<!-- BEGIN: header -->
+<div class="header">
+	<div class="block_tm">
+		<div class="block_rtm"></div>
+		<div class="block_ltm"></div>
+		<!--<div class="logo"><a href="http://smilart.com"><img src="/files/images/logo.png" alt="" /></a></div>-->
+		<form method="post" action="/i18n/setlang/" class="frm_language" id="frm_language">
+			{% for lang in LANGUAGES %}
+			{% if lang.0 != LANGUAGE_CODE %}
+			<input type="hidden" name="language" value="{% if lang.0 != 'en' %}ru{% else %}en{% endif %}" />
+		   	{% endif %}
+			{% endfor %}
+			<div class="language {{ LANGUAGE_CODE }}" onClick="javascript: $('#frm_language').submit();">{{ LANGUAGE_CODE|upper }}</div>
+		</form>
+		<ul class="right_menu">
+			<li><a href="/logout" class="exit"><span>{% trans "Выход" %}</span></a></li>	
+			<li><span class="user">{% if login_user %}{{ login_user }}{% else %}{{ user }}{% endif %}</span></li>
+		</ul>			
+		<ul class="top_menu">
+			
+			{% if perms.user_perms.perm_view %}
+				<li><a href="/ident/"{% if select_page == "ident" or select_page == 'video' or select_page == "ident_js" %} class="tm_active first"{% else %} class="first"{% endif %}>{% trans "Просмотр" %}</a></li>
+			{% endif %}
+			
+			{% if perms.user_perms.perm_lists %}
+				{% if show_recognition == '1' %}
+					<li><a href="/lists/" {% if select_page == "lists"  %} class="tm_active" {% endif %}>{% trans "Списки" %}</a></li>
+				{% endif %}
+			{% endif %}
+						
+			{% if perms.user_perms.perm_logs %}
+				<li><a href="{% if show_recognition == '1' %}/journal/{% else %}{% url journal-videoanalytics %}{% endif %}" {% if select_page == "journal" or select_page == "kpp" or select_page == "historychange" or select_page == "journal_videoanalytics" %} class="tm_active" {% endif %}>{% trans "Журнал" %}</a></li>
+			{% endif %}
+			
+			{% if perms.user_perms.perm_settings %}			
+				<li><a href="{% url communicator_settings %}" {% if 'integration' in select_page or select_page == 'control_settings_settings' or select_page == 'control_settings_default' or select_page == 'control_settings_users' or select_page == 'settings_interface' or select_page == 'anketauser' or select_page == 'users' or select_page == 'special' or select_page == "settings" or select_page == "export" or select_page == "alert" or select_page == "settings_vanalytics" or select_page == "settings_web_api" %} class="tm_active" {% endif %}>{% trans "Настройки" %}</a></li>
+			{% endif %}
+			
+			{% if perms.user_perms.perm_monitoring %}
+				<li><a href="{% url monitoring %}"{% if 'monitoring' in select_page %} class="tm_active"{% endif %}>{% trans "Мониторинг" %}</a></li>
+			{% endif %}
+			
+			{% if perms.user_perms.perm_maps %}{% if show_maps == '1' %}
+				<li><a href="{% url maps %}" {% if select_page == "maps" %} class="tm_active" {% endif %}>{% trans "Карты" %}</a></li>
+			{% endif %}{% endif %}
+			
+			{% if perms.user_perms.perm_videoarchive %}{% if show_videoarchive == '1' %}
+				 <li><a href="{% url archive %}" target="_blank">{% trans "Видеоархив" %}</a></li>
+			{% endif %}{% endif %}
+
+			<li><a href="/help/" {% if select_page == "help" %} class="last tm_active"{% else %} class="last"{% endif %}>{% trans "Помощь" %}</a></li>
+			
+		</ul>	
+	</div>
+</div>
+<!-- END: header -->
+{% block content %}{% endblock %}
+{% block footer %}{% endblock %}

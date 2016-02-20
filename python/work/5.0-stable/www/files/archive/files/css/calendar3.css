@@ -1,0 +1,91 @@
+﻿.btn_list {
+	padding: 0px;
+	margin: 0px;
+	border: 0px;
+	width: 32px;
+	height: 19px;
+	font-family: arial,helvetica,sans-serif;
+	font-size: 13px;
+	background: url('/files/images/btn_list_left.png');
+	color: #ffffff;
+}
+.cal_block {
+	position: relative;
+	border: 1px solid #DDDDDD;
+	padding: 0px 10px 10px 10px;
+	background-color: #F2F2F2;
+}
+.cal_block .btn_list {
+	position: absolute;
+	top: 13px;
+}
+.cal_block .btn_list.left {
+	left: 29px;
+}
+.cal_block .btn_list.right {
+	right: 29px;
+}
+.cal_cont_month4 {
+	width: 926px;
+	overflow: hidden;
+	padding: 10px 0px 0px 0px;
+	margin: 0px auto;
+}
+.cal_cont_month4 .cal_cont {
+	float: left;
+	padding-right: 10px;
+}
+.cal_cont_month4 .cal_cont.last {
+	padding-right: 0px;
+}
+.cal_month_name {
+	text-align: center;
+	font-weight: bold;
+	padding: 3px 0px;
+	background-color: #999999;
+	color: #ffffff;
+}
+.cal_month {
+	font-family: arial,helvetica,sans-serif;
+	font-size: 13px;
+	border-bottom: 1px solid #cccccc;		
+}
+.cal_month th {
+	text-align: center;
+	width: 32px;
+	font-weight: normal;
+	color: #767676;
+}
+.cal_month td {
+	background-color: #FFFFFF;
+	border-top: 1px solid #cccccc;
+	border-right: 1px solid #cccccc;
+	text-align: center;
+	white-space: nowrap;
+	cursor: pointer;
+	height: 27px;
+}
+.cal_month td a {
+	color: #000000;
+}
+.cal_month td a:hover {
+	text-decoration: none;
+	color: #000000;
+}
+.cal_month td div {
+	margin: 0px 1px;
+}
+.cal_month td.noact {
+	background-color: #dddddd;
+	color: #A6A6A6;
+	cursor: default;
+}
+.cal_month td.first {
+	border-left: 1px solid #cccccc;
+}
+.cal_month td.dayoff a {
+	color: #FF6600;
+}
+.cal_month td.daycur div {
+	border: 1px solid #505050;
+}

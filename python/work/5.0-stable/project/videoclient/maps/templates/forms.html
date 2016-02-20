@@ -1,0 +1,360 @@
+{% load i18n %}
+{% load templatetags %}
+{% if add_map_form %}
+<form method="post" action="" class="form" id="add-map-form">
+	<div class="block_req">{% trans "Поля, отмеченные звёздочкой" %} (<span class="req">*</span>), {% trans "являются обязательными для заполнения." %}</div>
+	<div class="form_block">
+		<div class="error_field error_dist" id="map_error_city">{{ form.city.errors }}</div>
+		<div class="fb_content">
+			<label for="" class="fbc_text_map"><span class="req">*</span>{% trans "Город" %}:</label>
+			<input type="text" name="city" id="map_city" value="{{ city }}" class="inp_txt" />
+			<span class="fbc_help"></span>
+		</div>
+	</div>
+	<div class="form_block">
+		<div class="error_field error_dist" id="map_error_objtype_name">{{ form.obj_type.errors }}</div>
+		<div class="fb_content">
+			<label for="" class="fbc_text_map"><span class="req">*</span>{% trans "Тип объекта" %}:</label>
+			<select name="obj_type" class="select" id="map_type_objects">
+				{% trans  objTypeChoices  %}			
+			</select>
+			<span class="fbc_help"></span>
+		</div>
+		<div class="other_type"><input type="text" name="objtype_name" value="" class="inp_txt" id="objtype_name" /></div>
+	</div>
+	<div class="form_block">
+		<div class="error_field error_dist" id="map_error_obj_name">{{ form.obj_name.errors }}</div>
+		<div class="fb_content">
+			<label for="" class="fbc_text_map"><span class="req">*</span>{% trans "Объект" %}:</label>
+			<input type="text" name="" value="{{ obj_name }}" class="inp_txt" id="map_obj_name"/>
+			<span class="fbc_help"></span>
+		</div>
+	</div>
+</form>
+<form method="post" action="" class="form" id="map-image-form">
+	<div class="form_block">
+		<div class="error_field error_dist" id="map_error_file">{{ form.image.errors }}</div>
+		<div class="fb_content">
+			<label for="" class="fbc_text_map"><span class="req">*</span>{% trans "Файл" %}:</label>
+			<input type="file" id="map_image" name="image" value="" accept="image/*"/>
+			<input type="hidden" name="upload_image" value="1" />
+			<input type="hidden" id="form_map_id" name="map_id" value="" />
+			<span class="fbc_help_map">{% trans "(формат файла: jpg, png, gif)" %}</span>
+		</div>
+	</div>
+</form>
+<script type="text/javascript">initFuncsAddMap();</script>
+{% endif %}
+
+{% if object_type_choices %}
+{% for objType in objTypes %}
+<option value="{{ objType.id }}">{% trans objType.name %}</option>
+{% endfor %}
+<option value="">{% trans "-- Другой тип ---" %}</option>
+{% endif %}
+
+{% if object_type_choices2 %}
+<option value="0">{% trans "--- Выберите тип ---" %}</option>
+{% for objType in objTypes %}
+<option value="{{ objType.id }}" {% ifequal selected_id objType.id %}selected="selected"{% endifequal %}>{% trans objType.name %}</option>
+{% endfor %}
+{% endif %}
+
+{% if city_choices %}
+{% for city in mapcities %}
+<option value="{{ city.id }}" {% ifequal selected_id city.id %}selected="selected"{% endifequal %}>{% trans city.name  %}</option>
+{% endfor %}
+{% endif %}
+
+{% if objname_choices %}
+<option value="0">{% trans "--- Выберите объект ---" %}</option>
+{% for obj in obj_names %}
+<option value="{{ obj.id }}" {% ifequal selected_id obj.pk %}selected="selected"{% endifequal %}>{% trans obj.name %}</option>
+{% endfor %}
+{% endif %}
+
+{% if add_terminal_form %}
+<form method="post" action="" class="form">
+		<div class="block_req">{% trans "Поля, отмеченные звёздочкой" %} (<span class="req">*</span>), {% trans "являются обязательными для заполнения." %}</div>
+		<div class="form_block">
+			<div class="error_field error_dist2">{{ form.name.errors }}</div>
+			<div class="fb_content">
+				<label for="terminal_name" class="fbc_text_terminal"><span class="req">*</span>{% trans "Наименование" %}:</label>
+				<input type="text" name="terminal_name" id="terminal_name" value="{{ terminal_name }}" class="inp_txt" />
+				<span class="fbc_help"></span>
+			</div>
+		</div>
+		<div class="form_block">
+			<div class="error_field error_dist2">{{ form.model.errors }}</div>
+			<div class="fb_content">
+				<label for="terminal_model" class="fbc_text_terminal"><span class="req">*</span>{% trans "Модель" %}:</label>
+				<select name="terminal_model" id="terminal_model" class="select">
+					{% trans  terminal_select_choices  %}
+				</select>
+				<span class="fbc_help"></span>
+			</div>
+			<div class="terminal_model_img" id="terminal_model_img"><img src="/files/images/map/terminal_oxion.jpg" alt="" /></div>
+		</div>		
+		<div class="form_block">
+			<div class="error_field error_dist2">{{ form.number.errors }}</div>
+			<div class="fb_content">
+				<label for="terminal_number" class="fbc_text_terminal"><span class="req">*</span>{% trans "Номер" %}:</label>
+				<input type="text" name="terminal_number" id="terminal_number" value="{{ terminal_number }}" maxlength="3" class="inp_txt inp_small" />
+				<span class="fbc_help"></span>
+			</div>
+		</div>
+		<div class="form_block">
+			<div class="error_field error_dist2">{{ form.direction.errors }}</div>
+			<div class="fb_content">
+				<label for="terminal_direction" class="fbc_text_terminal"><span class="req">*</span>{% trans "Направление" %}:</label>
+				<select name="terminal_direction" id="terminal_direction" class="select">
+					{% trans  terminal_select_direction_choices  %}
+				</select>				
+				<span class="fbc_help"></span>
+			</div>
+		</div>		
+		<div class="form_block">
+			<div class="error_field error_dist2"></div>
+			<div class="fb_content">
+				<label for="terminal_sensors" class="fbc_text_terminal"><span class="req">*</span>{% trans "Датчики" %}:</label>
+				<div class="fbc_content_sensors">
+					<input type="checkbox" name="" id="terminal_sensors" value="" class="inp_check" /><label for="terminal_sensors">{% trans "Выбрать всё" %}</label>
+					<div class="block_sensors" id="block_sensors">
+						<div class="block_sensors_add">
+							<div><input type="checkbox" name="" id="terminal_sensor_0" value="" class="inp_check" /><label for="terminal_sensor_0">{% trans "Концентрация хлора" %}</label></div>
+							<div><input type="checkbox" name="" id="terminal_sensor_1" value="" class="inp_check" /><label for="terminal_sensor_1">{% trans "Датчик взрыва" %}</label></div>
+							<div><input type="checkbox" name="" id="terminal_sensor_2" value="" class="inp_check" /><label for="terminal_sensor_2">{% trans "Идентификация" %}</label></div>
+						</div>
+					</div>
+				</div>
+				<span class="fbc_help"></span>
+			</div>
+		</div>
+		<div class="form_block" id="block_terminal_cameras" style="display: none;">
+			<div class="error_field error_dist2"></div>
+			<div class="fb_content">
+				<label for="terminal_sensors" class="fbc_text_terminal">{% trans "Камеры" %}:</label>
+				<div class="fbc_content_cameras">
+					{% for c in cameras %}
+					<div>{{ c.camera.ip }} {{ c.camera.type }} {% if c.camera.name %}({{ c.camera.name }}){% endif %}</div>
+					{% endfor %}	
+				</div>
+				<span class="fbc_help"></span>
+			</div>
+		</div>
+		<div class="form_block">
+			<div class="error_field error_dist2" id="terminal_location_error"></div>
+			<div class="fb_content">
+				<label for="terminal_description" class="fbc_text_terminal">{% trans "Описание" %}:</label>
+				<script type="text/javascript">
+				$(document).ready(function(){
+					$('#terminal_location').keyup(function(){
+						var max = 250;
+						if($(this).val().length > max){
+							$(this).val($(this).val().substr(0, max));
+							$('#terminal_location_error').html('{% trans "Привышена максимально допустимая длина ввода" %}');
+							$('#terminal_location_error').show();
+						}else{
+							$('#terminal_location_error').hide();
+							$('#terminal_location_error').html();
+						}
+					});
+				});
+				</script>
+				<textarea name="terminal_location" id="terminal_location" class="textarea">{% if terminal_description %}{% trans terminal_description %}{% endif %}</textarea>
+				<span class="fbc_help"></span>
+			</div>
+		</div>
+	</form>
+	<script type="text/javascript">	initTerminalModel();editTerminalImageChange();</script>
+{% endif %}
+
+{% if terminal_model_choices %}
+{% for model_type in terminal_model_types %}
+<option {% ifequal model_type.pk terminal_model_id %}selected="selected" {% endifequal %}value="{{ model_type.pk }}">{% trans model_type.name %}</option>
+{% endfor %}
+{% endif %}
+
+{% if terminal_direction_choices %}
+{% for dir in terminal_direction_types %}
+<option {% ifequal dir.pk terminal_direction %}selected="selected" {% endifequal %}value="{{ dir.pk }}">{% trans dir.name %}</option>
+{% endfor %}
+{% endif %}
+
+{% if terminal_title_info_form %}
+<table cellpadding="0px" cellspacing="0px" class="table_info">
+<tr><td>{% trans "Наименование" %}</td><td class="td_answer">{% trans terminal_name %}</td></tr>
+<tr><td>{% trans "Модель" %}</td><td class="td_answer">{% trans terminal_model %}</td></tr>
+<tr><td>{% trans "Номер" %}</td><td class="td_answer">{{ terminal_number }}</td></tr>
+<tr><td>{% trans "Направление" %}</td><td class="td_answer">{% trans terminal_direction %}</td></tr>
+<!--<tr><td>Датчики</td><td class="td_answer">terminal_sensors</td></tr>-->
+<tr><td>{% trans "Камеры" %}</td><td class="td_answer">{% for c in terminal_cameras %}{{ c.camera.ip }} {{ c.camera.type }}{% if c.camera.name %} ({{ c.camera.name }}){% endif %}<br/>{% endfor %}</td></tr>
+{% if terminal_description %}<tr><td>{% trans "Описание" %}</td><td class="td_answer">{% trans terminal_description %}</td></tr>{% endif %}
+</table>
+{% endif %}
+
+{% if camera_title_info_form %}
+<table cellpadding="0px" cellspacing="0px" class="table_info">
+<tr><td>{% trans "Наименование терминала" %}</td><td class="td_answer">{% trans camera.terminal.name %}</td></tr>
+<tr><td>{% trans "Камера" %}</td><td class="td_answer">{{ camera.camera.ip }} {% if camera.camera.name %}({{ camera.camera.name }}){% endif%}</td></tr>
+<tr><td>{% trans "Модель камеры" %}</td><td class="td_answer">{{ camera.camera.type }}</td></tr>
+<tr><td>{% trans "Модель объектива" %}</td><td class="td_answer">{{ camera.lens.name }}</td></tr>
+<tr><td>{% trans "Направление" %}</td><td class="td_answer">{% trans camera.direction.name %}</td></tr>
+<!-- <tr><td>Дальность</td><td class="td_answer"></td></tr>-->
+{% if camera.visible_objects %}<tr><td>{% trans "Видимые объекты" %}</td><td class="td_answer">{{  camera.visible_objects }}</td></tr>{% endif %}
+</table>
+{% endif %}
+
+{% if camera_terminals_form %}
+{% for t in terminals %}
+<option {% ifequal t.pk terminal_id %}selected="selected" {% endifequal %} value="{{ t.pk }}">{% trans t.name %}</option>
+{% endfor %}
+{% endif %}
+
+{% if terminal_camera_choices %}
+{% for c in terminal_cameras %}
+<option {% ifequal c.pk terminal_camera_id %}selected="selected" {% endifequal %} value="{{ c.pk }}">{% if c.name  %}{% trans c.name %}{% else%}{{ c.ip }} {{ c.type }}{% endif%}</option>
+{% endfor %}
+{% endif %}
+
+{% if terminal_cameras_choices %}
+{% for c in terminal_cameras %}
+<option value="{{ c.camera.pk }}">{% if c.camera.name  %}{% trans c.camera.name %}{% else%}{{ c.camera.ip }} {{ c.camera.type }}{% endif%}</option>
+{% endfor %}
+{% endif %}
+
+{% if terminal_lens_choices %}
+{% for l in terminal_lens %}
+<option {% ifequal l.pk terminal_lens_id %}selected="selected" {% endifequal %} value="{{ l.pk }}">{% trans l.name %}</option>
+{% endfor %}
+{% endif %}
+
+{% if add_camera_form %}
+<form method="post" action="" class="form">
+		<div class="block_req">{% trans "Поля, отмеченные звёздочкой" %} (<span class="req">*</span>), {% trans "являются обязательными для заполнения" %}.</div>
+		<div class="block">
+			<div class="screenshot">
+				<div id="add_camera_video"><img id="add_camera_video_img" src=""/><span id="add_camera_video_info_message">{% trans "Загрузка" %}</span></div>
+			</div>
+			<div style="width: 440px;">		
+				<div class="form_block">
+					<div class="error_field"></div>
+					<div class="fb_content">
+						<label for="camera_terminal" class="fbc_text"><span class="req">*</span>{% trans "Наименование терминала" %}:</label>
+						<select name="camera_terminal" id="camera_terminal" class="required select">
+						{% trans  map_terminal_choices  %}
+						</select>
+						<span class="fbc_help"></span>
+					</div>
+				</div>			
+				<div class="form_block">
+					<div class="error_field"></div>
+					<div class="fb_content">
+						<label for="camera_model" class="fbc_text"><span class="req">*</span>{% trans "Камера" %}:</label>
+						<select name="camera_model" id="camera_model" class="required select" onChange="javascript: changeMJPEGVideoParams(this.value, 1, '');">
+							{{ terminal_select_camera_choices }}
+						</select>
+						<span class="fbc_help"></span>
+					</div>
+				</div>
+				<div class="form_block">
+					<div class="error_field"></div>
+					<div class="fb_content">
+						<label for="camera_model_lens" class="fbc_text"><span class="req">*</span>{% trans "Модель объектива" %}:</label>
+						<select name="camera_model_lens" id="camera_model_lens" class="required select">
+							{{ terminal_select_lens_choices }}
+						</select>
+						<span class="fbc_help">{% trans "характеристики" %}: F{{ focal }} {{ angle }}&deg; <a href="#" class="blue dist_left" id="change_params_lens">{% trans "изменить" %}</a></span>
+					</div>
+					<div class="block_enter" id="block_params_lens" style="display: none;">
+						<div class="block_params_lens"><label for="camera_lens">{% trans "Фокальное число" %}:</label> <input type="text" name="camera_lens" id="camera_lens" value="{{ focal }}" class="required inp_txt inp_small" /></div>
+						<div class="block_params_lens"><label for="camera_angle">{% trans "Угол обзора" %}:</label> <input type="text" name="camera_angle" id="camera_angle" value="{{ angle }}" class="required inp_txt inp_small" /></div>
+					</div>
+				</div>
+				<div class="form_block">
+					<div class="error_field"></div>
+					<div class="fb_content">
+						<label for="camera_direction" class="fbc_text"><span class="req">*</span>{% trans "Направление" %}:</label>
+						<select name="camera_direction" id="camera_direction" class="required select">
+							{% trans  terminal_select_direction_choices  %}
+						</select>
+						<span class="fbc_help"></span>
+					</div>
+				</div>
+			</div>
+		</div>		
+		<div class="form_block">
+			<div class="error_field"></div>
+			<div class="fb_content">
+				<label for="camera_distance" class="fbc_text">{% trans "Дальность (в метрах)" %}:</label>
+				<div class="block_enter">{% trans "видимости" %}: <strong id="txt_camera_distance1">{{ visibility }}</strong>, {% trans "детектирования" %}: <strong id="txt_camera_distance2">{{ range }}</strong>, {% trans "распознавания" %}: <strong id="txt_camera_distance3">{{ recognition }}</strong> <a href="#" class="blue dist_left" id="change_distance">{% trans "изменить" %}</a></div>
+				<div class="block_enter distance" id="block_change_distance"><label for="camera_distance1">{% trans "видимости" %}:</label><input type="text" name="" id="camera_distance1" value="{{ visibility }}" class="inp_txt" /><label for="camera_distance2" class="dist_left">{% trans "детектирования" %}:</label><input type="text" name="" id="camera_distance2" value="{{ range }}" class="inp_txt" /><label for="camera_distance3" class="dist_left">{% trans "распознавания" %}:</label><input type="text" name="" id="camera_distance3" value="{{ recognition }}" class="inp_txt" /></div>
+				<span class="fbc_help"></span>
+			</div>
+		</div>		
+		<div class="form_block">
+			<div class="error_field"></div>
+			<div class="fb_content">
+				<label for="camera_objects" class="fbc_text">{% trans "Видимые объекты" %}:</label>
+				<textarea name="camera_objects" id="camera_objects" class="textarea">{{ visible_objects }}</textarea>
+				<span class="fbc_help"></span>
+			</div>
+		</div>		
+	</form>
+	<script type="text/javascript">
+	initAddCameraWindow();
+	changeMJPEGVideoParams($("#camera_model option:selected").val(), 1, '');
+	</script>
+{% endif %}
+
+{% if camera_video_form %}
+<table cellpadding='0px' cellspacing='0px' class='table_info'>
+<tr><td>{% trans "Наименование терминала" %}</td><td class='td_answer'>{% trans camera.terminal.name %}</td></tr>
+<tr><td>{% trans "Сетевой адрес" %}</td><td class='td_answer'>{{ camera.camera.ip }}</td></tr>
+<tr><td>{% trans "Модель камеры" %}</td><td class='td_answer'>{{ camera.camera.type }}</td></tr>
+<tr><td>{% trans "Модель объектива" %}</td><td class='td_answer'>{{ camera.lens.name }} (F{{ camera.focal }}  {{camera.angle }}&deg;)</td></tr>
+<tr><td>{% trans "Направление" %}</td><td class='td_answer'>{% trans camera.direction.name %}</td></tr>
+<!-- <tr><td>Дальность</td><td class='td_answer'></td></tr>-->
+{% if camera.visible_objects %}<tr class='tr_last'><td>{% trans "Видимые объекты" %}</td><td class='td_answer'>{% trans camera.visible_objects %}</td></tr>{% endif %}
+</table>
+<script type="text/javascript">
+changeMJPEGVideoParams({{ camera.camera.pk }}, 2, '');
+</script>
+{% endif %}
+
+{% if terminal_full_info %}
+<div class="block">
+		<table cellpadding="0px" cellspacing="0px" class="table_info_term">
+			<tr>
+				<th class="tit_first">{% trans "Наименование" %}</th>
+				<th>{% trans "Модель" %}</th>
+				<th>{% trans "Номер" %}</th>
+				<th>{% trans "Направление" %}</th>
+				<th>{% trans "Датчики" %}</th>
+				<th>{% trans "Описание" %}</th>
+			</tr>
+			<tr>
+				<td class="tit_first">{% trans terminal.name %}</td>
+				<td><a href="#" class="blue terminal_model_info" title="<img src='/files/images/map/terminal_{{ terminal.model.pk }}.jpg' alt='' />">{% trans terminal.model.name %}</a></td>
+				<td>{{ terminal.number }}</td>
+				<td>{% trans "Юг" %}</td>
+				<td>&nbsp;</td>
+				<td>{% trans terminal.model.name %} - {% trans map.city.name %} - {% trans map.obj_name.name %} - {% trans "Терминал" %} ({% trans terminal.direction.name %})</td>
+			</tr>
+		</table>
+	</div>
+	<div class="block_list_cam">
+		{% trans "Установленные камеры" %}: 
+		<select name="" class="select dist_left" id="full_info_camera" onchange="javascript: changeMJPEGVideoParams($('#full_info_camera').val(), 3, {{ terminal.number }});">
+			{{ terminal_select_camera_choices }}
+		</select>
+	</div>
+	<div class="block">
+		<div class="video" id="full_terminal_video_{{ terminal.number }}"><img id="terminal_camera_video_img_{{ terminal.number }}" src=""/><span id="terminal_camera_video_info_message_{{ terminal.number }}">{% trans "Загрузка" %}</span></div>
+		<div class="video_info" id="full_terminal_camera_info_{{ terminal.pk }}"><!--  --></div>
+	</div>
+	<script type="text/javascript">
+	imageModelTerminal();
+	changeMJPEGVideoParams($('#full_info_camera').val(), 3, {{ terminal.number }});
+	</script>
+{% endif %}

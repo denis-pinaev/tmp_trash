@@ -1,0 +1,117 @@
+{% extends "base_archive_tab.html" %}
+{% load i18n a_templatetags %}
+{% block title %}{% trans 'Настройки задач' %}{% endblock %}
+{% block js_css %}
+<link rel="stylesheet" type="text/css" href="/files/css/po4/po4menuvkl.css?v=v{{ version }}" />
+<link rel="stylesheet" type="text/css" href="{% url archive_files 'css/settings.css' %}" />
+<script type="text/javascript" src="/files/js/spinbox.js?v=v{{ version }}"></script>
+<script type="text/javascript">
+var params = new Array(); // массив значений, формируется при загрузке страницы
+// применение настроек
+function applyChanges() {
+	var options = {
+	    url: "/archive/command/set_default_archive_settings/",
+	    type: "POST",
+	    dataType: "text",
+	    success: function(msg) {	        
+			var obj = eval('('+msg+')');
+			if (obj && obj.status) {
+				var txt = "{% trans 'Настройки успешно сохранены' %}.";
+				showMessage(txt);
+			} else {
+				var txt = "{% trans 'Настройки не сохранены' %}.";
+				showMessage(txt);
+			}		  
+	    },
+		error: function(msg){
+			var txt = "{% trans 'Настройки не сохранены' %}.";
+			showMessage(txt);
+		}
+	};	
+	$("#formThresholds").ajaxSubmit(options);
+}
+// сброс настроек
+function resetChanges(){
+	var validator = $("#formThresholds").validate();
+	validator.resetForm();
+}
+</script>
+{% endblock %}
+{% block submenu %}{% include "menu/menu_settings.html" %}{% endblock %}
+{% block subcontent %}
+<h2>{% trans "Настройки задач" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans 'контекстная_помощь_Видеоархив Настройки задач' %}');" /></h2>
+{% include "current_time.html" %}
+<form method="post" action="" id="formThresholds">
+	<div class="bl_param bl_head">{% trans 'Параметры для одного видеоролика' %}</div>
+	<div class="bl_param">
+		<div class="block">
+			<label for="gop_size" class="bl_txt">{% trans 'Частота ключевых кадров' %}:</label>
+			<div class="bl_enter">
+				<div class="block_ie">
+					<div class="block">
+						{% spinbox "gop_size" "gop_size" gop_size "38" "1" "20" "1" %}
+						<span class="dist_left">{% trans 'расстояние между ключевыми кадрами' %}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="bl_param">
+		<div class="block">
+			<label for="compress" class="bl_txt">{% trans 'Степень сжатия' %}:</label>
+			<div class="bl_enter">
+				<div class="block_ie">
+					<div class="block">
+						{% spinbox "compress" "compress" compress "38" "0" "1" "0.1" %}
+						<span class="dist_left">{% trans 'параметр, влияющий на качество и размер видеоролика' %}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="bl_param">
+		<div class="block">
+			<label for="bitrate" class="bl_txt">{% trans 'Пропускная способность (bitrate, в кбит/с)' %}:</label>
+			<div class="bl_enter">
+				<div class="block_ie">
+					<div class="block">
+						{% spinbox "bitrate" "bitrate" bitrate "38" "500" "2500" "100" %}
+						<span class="dist_left">{% trans 'параметр, влияющий на качество видеоролика' %}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="bl_param">
+		<div class="block">
+			<label for="blur" class="bl_txt">{% trans 'Коэффициент сглаживания изображения' %}:</label>
+			<div class="bl_enter">
+				<div class="block_ie">
+					<div class="block">
+						{% spinbox "blur" "blur" blur "38" "0" "1" "0.1" %}
+						<span class="dist_left">{% trans 'фильтр для плавного перехода цвета на изображении' %}</span>											
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="bl_param">
+		<input type="button" name="" class="inp_btn btn_save" onClick="javascript: applyChanges();" value="{% trans "Сохранить" %}" />
+		<input type="button" name="" class="inp_btn btn_cancel dist_left" onClick="javascript: resetChanges();" value="{% trans 'Отменить' %}" />
+	</div>
+</form>
+{% endblock %}
+{% block windows %}
+<div id="win_mess" style="display: none;" class="winFloating">
+	<div class="bodyWF">
+		<div class="headWF">
+			<div class="btnCloseWF"><input type="button" name="" value="" class="btn_wf_close" onClick="javascript: closeChangeWindow('win_mess');" title="{% trans "Закрыть окно" %}" /></div>
+			<div class="headWF_txt">{% trans "Предупреждение" %}</div>
+		</div>
+		<div class="contWF1"><div class="contWF" id="win_mess_contWF"></div></div>
+		<div class="footerWF">
+			<input type="button" name="" value="{% trans "ОК" %}" class="btn_wf_blue" onClick="javascript: closeChangeWindow('win_mess');" />    
+		</div>
+	</div>
+</div>
+{% endblock %}

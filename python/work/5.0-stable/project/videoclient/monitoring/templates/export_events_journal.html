@@ -1,0 +1,59 @@
+{% load i18n %}
+{% load templatetags %}
+{% if journal %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="content-language" content="ru" />
+	<title>{% trans "Журнал событий системы" %}</title>
+	{% include "monitoring_export_styles.html" %}
+</head>
+<body>
+<div class="body1">
+	<div class="content">
+		<div class="content_add">	
+			<div class="block_navigation">{{ pagination }}</div>
+			<table cellpadding="0px" cellspacing="0px" class="table">
+				<tr>
+					<th class="first">ID</th>
+					<th class="date_time">{% trans "Дата" %}</th>
+					<th class="date_time">{% trans "Время" %}</th>                        
+					<th>{% trans "Статус" %}</th>
+					<th>{% trans "Тип" %}</th>
+					<th>{% trans "Описание" %}</th>
+				</tr>
+			{% for event in events %}
+				<tr{% cycle '' ' class="odd"' %}>
+					<td class="td_check first">{{ event.id }}</td>
+					<td>{{ event.date|date:"d.m.Y" }}</td>
+					<td>{{ event.time|time:"H:i:s" }}</td>
+					<td{% if event.status == "warning" %} class="error"{% endif %}>{{ event.get_status_display }}</td>                        
+					<td>{{ event.get_type_display }}</td>                        
+					<td>{{ event.description }}</td>
+				</tr>
+			{% endfor %}
+			</table>
+			<div class="block_navigation">{{ pagination }}</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="footer">
+	<div class="version">{% trans "Версия" %}: {{ version }}</div>
+	<div class="block_contacts">
+		<span>{% trans "Контакты" %}:</span><ul class="list_contacts"><li>{% trans "информация" %}: <a href="mailto:info@smilart.com">info@smilart.com</a></li><li>{% trans "техподдержка" %}: <a href="mailto:support@smilart.com">support@smilart.com</a></li></ul>
+		<div class="copyright">Copyright &#169; 2012 "{% trans "Простые решения" %}". {% trans "Все права защищены" %}. <a href="http://www.smilart.com/" target="_blank">http://www.smilart.com/</a></div>
+	</div>
+</div>
+</body>
+</html>
+{% endif %}
+
+{% if pages %}
+{% ifequal sel_page page %}
+<span class="page active">{{ p_name }}</span>
+{% else %}
+<a class="page" href="{{ page }}.html">{{ p_name }}</a>
+{% endifequal %}
+{% endif %}

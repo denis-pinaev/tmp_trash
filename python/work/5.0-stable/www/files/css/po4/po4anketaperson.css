@@ -1,0 +1,294 @@
+﻿.block_req span {
+    color: #ff0000;
+}
+.req {
+    color: #ff0000;
+    font-weight: bold;
+}
+.req_hid {
+    font-weight: bold;
+    visibility: hidden;
+}
+.bl_photo_btn {
+	float: left;
+	width: 190px;
+}
+.bl_photo_btn .photo_user {
+	border: 1px solid #AAAAAA;
+	padding: 5px;
+	background-color: #f2f2f2;
+	margin-bottom: 10px;
+	border-radius: 4px;
+	moz-border-radius: 4px;	
+	text-align: center;
+}
+.bl_photo_btn .photo_user div.user_id {
+	margin-left: -6px;
+	margin-top: -6px;
+	margin-bottom: 5px;
+	border-radius: 4px;
+	moz-border-radius: 4px;	
+	background-color: #666666;
+	width: 190px;
+	text-align: center;
+	color: #ffffff;
+}
+.bl_photo_btn .photo_user img {
+	max-width: 120px;
+	max-height: 120px;
+}
+.bl_info_all {
+	margin-left: 230px;
+}
+.menu_anketa li {
+	margin-top: 3px;
+	white-space: nowrap;
+}
+.menu_anketa li.li_ident {
+	border-top: 1px dotted #dadada;
+	padding-top: 5px;
+	margin-top: 6px;
+}
+.menu_anketa li a.link_add_photos,
+.menu_anketa li a.link_add_photos.dis {
+	padding-right: 12px;
+}
+.menu_anketa li a.link_add_photos {
+	background: url("/files/images/arrowB_bottom.gif") right 60% no-repeat;
+}
+.menu_anketa li a.blue.dis {
+	color: #9b9b9b;
+	cursor: default;
+}
+.menu_anketa li a.link_add_photos.dis {
+	background-image: url("/files/images/arrowB_bottom_dis.gif");
+}
+.menu_add_photos li {
+	padding-left: 12px;
+	background: url("/files/images/arrowB_left.gif") left 45% no-repeat;
+}
+.btn_calend {
+	padding: 0px;
+	margin: 0px;
+	border: none;
+	height: 16px;
+	width: 16px;
+	cursor: pointer;
+	font-size: 13px;
+	font-family: arial,helvetica,sans-serif;
+	background: url('/files/images/calend.png') top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/calend.png', sizingMethod='crop');
+	margin-left: 5px;
+}
+.frm_block {
+	width: 100%;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.btn_blue {
+	width: 90px;
+	background: url('/files/images/btn_blue_90.png') top left no-repeat;
+	-background: none;
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_90.png', sizingMethod='scale');
+	color: #ffffff;
+}
+.inp_btn90 {
+	width: 90px;
+	background: url('/files/images/button90x24_up.gif') top left no-repeat;
+}
+/* anketa */
+.all_photo {
+	margin-bottom: 5px;
+}
+.bl_info_all {
+	margin-left: 230px;
+}
+.head_info {
+	font-weight:bold;
+	margin-bottom:10px;
+}
+.bl_info,
+.bl_passport {
+	margin-bottom: 10px;
+}
+.bl_info,
+.bl_passport {
+	width: 100%;
+	overflow: hidden;
+}
+.bl_info .bl_txt,
+.bl_passport .bl_txt {
+	float: left;
+	width: 260px;
+}
+.bl_enter,
+.bl_date,
+.bl_time {
+	margin-left: 260px;
+}
+.bl_enter2,
+.bl_date2,
+.bl_time2 {
+	margin-left: 210px;
+}
+.bl_info .bl_txt2,
+.bl_passport .bl_txt2 {
+	float: left;
+	width: 200px;
+}
+.bl_enter2,
+.bl_date2,
+.bl_time2 {
+	margin-left: 200px;
+}
+.bl_info .inp_txt {
+	width: 220px;
+}
+.bl_info .bl_phone {
+	margin-bottom: 3px;
+	margin-left: 160px;
+}
+.bl_info .bl_phone div {
+	width: 100px;
+	float: left;
+}
+.bl_info .bl_phone .inp_txt {
+	width: 120px;
+}
+.bl_info .bl_phone.last {
+	margin-bottom: 0px;
+}
+.bl_info .select {
+	width: 226px;
+}
+.bl_info_btn {
+	width: 380px;
+	text-align: center;
+}
+.bl_passport .inp_txt {
+	width: 53px;
+	margin-left: 5px;
+} 
+.info_passport {
+	margin-left: 260px;
+}
+.info_passport2 {
+	margin-left: 200px;
+}
+.passport_field {
+	margin-bottom: 5px;
+}
+.bl_btn {
+	float: left;
+}
+.bl_btn .link_btn {
+	float: left;
+	margin-left: 10px;
+}
+.bl_btn .inp_btn {
+	float: left;
+}
+
+.head_block {
+	padding: 10px 0px 10px 0px; 
+	font-weight: bold;
+}
+.head_block .head_info {
+	float: left;
+	margin-right: 10px;
+}
+.head_block2 {
+	padding-bottom: 10px;
+	font-weight: bold;
+}
+
+.no_photo_user {
+	border: 1px solid #AAAAAA;
+	padding: 5px;
+	background-color: #eeeeee;
+	margin-bottom: 10px;
+}
+.no_photo_user div {
+	width: 120px;
+	height: 80px;
+	text-align: center;
+	padding-top: 40px;
+	margin: 0px auto;
+}
+.bl_articles {
+	overflow: hidden;
+	width: 230px;
+}
+.bl_article {
+	float: left;
+	width: 73px;
+	margin-right: 5px;
+}
+.bl_article.last {
+	margin-right: 0px;
+}
+.bl_permit {
+	padding-top: 10px; 
+	padding-bottom: 10px;
+}
+.bl_permit .inp_check {
+	margin-right: 5px;
+}
+/**/
+.listDoc {
+	width: 158px; 
+	margin-left: 5px;
+}
+.btn_photos {
+	width: 100%;
+	overflow: hidden;
+}
+.btn_photos .inp_btn {
+	float: right;
+}
+.block_error {
+    clear: both;
+    padding-left: 260px;
+    color: #FF0000;
+}
+.block_error.person {
+	padding-left: 200px;
+}
+.block_error_passport {
+	color: #FF0000;
+}
+.error_border {
+	border-color: #FF0000;
+}
+.bl_date .inp_txt {
+	width: 95px;
+}
+.bl_time span {
+	float: left;
+	margin-right: 10px;
+}
+.bl_time span.delim {
+	margin-left: 3px;
+	margin-right: 3px;
+}
+.bl_time .select {
+	width: 55px;
+}
+.error_block {
+    clear: both;
+    margin-left: 200px;
+    color: #FF0000;
+}
+.inp_txt.err_forms,
+.select.err_forms {
+	border-color: #FF0000;
+}
+.block_warning {
+    clear: both;
+    margin-left: 10px;
+	color: #ff9900;
+}
+.inp_txt.border_warning {
+	border-color: #ff9900;
+}

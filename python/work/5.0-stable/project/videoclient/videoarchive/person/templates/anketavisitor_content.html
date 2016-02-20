@@ -1,0 +1,126 @@
+{% load a_templatetags %}
+<!-- BEGIN: content-->
+<div class="content" id="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>
+					<a href="/page_persons/">{% trans "Персоны" %}</a>
+					 - {% trans "Анкета персоны" %} {% if id != None %}: {{ user.first_name }} {{ user.last_name }} {{ user.middle_name }}{% endif %}<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Персоны" %}');" />{% if save %} <b style="color:#0088CC; margin-left:5px;">{% trans "Изменения сохранены" %}</b>{% endif %}</h2>
+				<form method="post" action="" name="" id="frm_visitors">
+					<div class="frm_block">
+						<div class="bl_photo_btn">
+							{% if photoid == -1 %}
+								<div class="no_photo_user">
+									<div>{% trans "Фотография посетителя" %}</div>
+								</div>
+							{% else %}
+								{% if access != 'Оператор' %}
+								<div class="all_photo"><a href="{{ project_url }}/photosperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}">{% trans "Фотографии" %} ({{ photocount }})</a></div>
+								<div class="photo_user">
+									<a href="{{ project_url }}/photosperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}"><img src="{{ project_url }}/image/?id={{ photoid }}&photo={{ photoname }}" alt="" /></a>
+								</div>
+								{% endif %}
+							{% endif %}
+							{% if access != 'Оператор' %}
+								<div class="btn_photos">
+									<input type="submit" name="{{ addphoto }}" value="{% trans "Добавить" %}" class="inp_btn inp_btn90" />
+									<a href="{{ project_url }}/photosperson/{{ user.id }}/{% if group %}?group={{ group }}{% endif %}"{% if photoid == -1 %} class="link_btn dis" onClick="return false"{% else %} class="link_btn"{% endif %}>{% trans "Посмотреть" %}</a>
+								</div>							
+							{% endif %}
+						</div>
+						<div class="bl_info_all">
+							<div class="head_info">{% trans "Информация" %}</div>
+							<div class="bl_info">
+								{% if errors.first_name %}<div class="block_error">{{ errors.first_name }}</div>{% endif %}
+								<div class="bl_txt">{% trans "Фамилия" %}:</div>
+								<div class="bl_enter"><input type="text" name="first_name" value="{{ user.first_name }}" class="inp_txt{%if errors.first_name %} error_border{% endif %}"/></div>
+							</div>
+							<div class="bl_info">
+								{% if errors.last_name %}<div class="block_error">{{ errors.last_name }}</div>{% endif %}
+								<div class="bl_txt">{% trans "Имя" %}:</div>
+								<div class="bl_enter"><input type="text" name="last_name" value="{{ user.last_name }}" class="inp_txt{%if errors.last_name %} error_border{% endif %}" /></div>
+							</div>
+							<div class="bl_info">
+								{% if errors.middle_name %}<div class="block_error">{{ errors.middle_name }}</div>{% endif %}
+								<div class="bl_txt">{% trans "Отчество" %}:</div>
+								<div class="bl_enter"><input type="text" name="middle_name" value="{{ user.middle_name }}" class="inp_txt{%if errors.middle_name %} error_border{% endif %}" /></div>
+							</div>
+							<div class="bl_info">
+								{% if errors.status %}<div class="block_error">{{ errors.status }}</div>{% endif %}
+								<div class="bl_txt">{% trans "Статус" %}:</div>
+								<div class="bl_enter">
+									<select name="status" class="select{%if user2.status != user.status or errors.status %} error_border{% endif %}">
+										{% for status in allstatus %}
+											<option value="{{ status.id }}"{% if status.name == user.status %} selected="selected"{% endif %}>{{ status.name }}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+							<div class="head_block">
+								<div class="head_info">{% trans "Документ, удостоверяющий личность" %}:</div>
+
+								<select name="document" class="select" style="width: 154px;" onChange="javascript: chooseDoc(this);">
+									{% if alldocuments %}
+									{% for document in alldocuments %}
+										<option value="{{ document.id }}"{% if document.name == user.document %} selected="selected"{% endif %}>{{ document.name }}</option>
+									{% endfor %}
+									{% endif %}
+								</select>
+							</div>
+							<div class="bl_passport">
+								<div class="bl_txt" id="passport" style="display: block;">{% trans "Паспортные данные" %}:</div>
+								<div class="bl_txt" id="card" style="display: none;">{% trans "Удостоверение" %}:</div>
+								<div class="info_passport">
+									{% if errors.passport_series or errors.passport_number %}<div class="block_error_passport">{% if errors.passport_series  %}{{ errors.passport_series }}{% else %}{{ errors.passport_number }}{% endif %}</div>{% endif %}				    
+									<div class="passport_field">
+										<span>{% trans "Серия" %}:<input type="text" name="passport_series" class="inp_txt{%if errors.passport_series %} error_border{% endif %}" value="{{ user.passport_series|default_if_none:'' }}" maxlength="4" /></span>
+										<span>{% trans "Номер" %}:<input type="text" name="passport_number" class="inp_txt{%if errors.passport_number %} error_border{% endif %}" value="{{ user.passport_number|default_if_none:'' }}" maxlength="6" /></span>
+									</div>
+									<div>{% trans "Выдан" %}:</div>
+									<div class="passport_field"><textarea name="passport_note" class="textarea" {%if user2.passport_note != user.passport_note %}class="error_border"{% endif %}>{{ user.passport_note }}</textarea></div>
+									{% if errors.passport_date %}<div class="block_error_passport">{{ errors.passport_date }}</div>{% endif %}
+									<div class="passport_field">
+										{% trans "Дата выдачи" %}:<input type="text" name="passport_date" value="{{ user.passport_date|date:"d.m.Y" }}" class="inp_txt{%if errors.passport_date %} error_border{% endif %}" style="width: 90px;" /><input type="button" onclick="javascript: displayDatePicker('passport_date', false, 'dmy', '.');" title="{% trans "Выбрать дату" %}" class="btn_calend" value="" name=""/>
+									</div>
+									<div class="passport_field">
+										{% trans "Код подразделения" %}:<input type="text" name="passport_code" value="{{ user.passport_code }}" class="inp_txt{%if errors.password_code %} error_border{% endif %}" style="width: 95px;" />
+									</div>
+									{% if errors.birthday %}<div class="block_error_passport">{{ errors.birthday }}</div>{% endif %}
+									<div>
+										{% trans "Дата рождения" %}:<input type="text" name="birthday" value="{{ user.birthday|date:"d.m.Y" }}" class="inp_txt{%if errors.birthday %} error_border{% endif %}" style="width: 90px;" /><input type="button" onclick="javascript: displayDatePicker('birthday', false, 'dmy', '.');" title="{% trans "Выбрать дату" %}" class="btn_calend" value="" name=""/>
+									</div>									
+								</div>
+							</div>
+
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Постоянная регистрация" %}:</div>
+								<div class="bl_enter"><textarea name="address" class="textarea" >{{ user.address }}</textarea></div>
+							</div>
+							<div class="bl_info">
+								<div class="bl_txt">{% trans "Временная регистрация" %}:</div>
+								<div class="bl_enter"><textarea name="address_temp" class="textarea" >{{ user.address_temp }}</textarea></div>
+							</div>
+							<div class="bl_info" style="padding-top: 20px;">
+								<div class="bl_txt">{% trans "Дополнительная<br />информация" %}:</div>
+								<div class="bl_enter"><textarea name="note" class="textarea">{{ user.note }}</textarea></div>
+							</div>
+
+						</div>				
+					</div>
+					<div class="frm_block" style="margin-top: 60px;">
+						<input type="hidden" name="id" value="{{ user.id }}"/>
+						{% if group %}<input type="hidden" name="group" value="{% if user.group %}{{ user.group.id }}{% else %}{{ group }}{% endif %}"/>{% endif %}
+						<input type="hidden" name="user" value="{{ user.user }}"/>
+						<input type="hidden" name="id_person" value="{{ user.id }}"/>
+						<input type="hidden" name="division" value="{{ user.division }}"/>
+						<input type="hidden" name="{{ action }}" value=""/>
+						<input type="submit" name="{{ action }}" value="{% trans "Сохранить" %}" class="inp_btn btn_blue"  />
+					</div>					
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->

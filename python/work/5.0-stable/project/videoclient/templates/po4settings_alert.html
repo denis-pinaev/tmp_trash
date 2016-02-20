@@ -1,0 +1,54 @@
+{% load i18n %}
+{% load templatetags %}
+{% if project == "po4" %}{% include "po4header.html" %}{% endif %}
+{% if project == None %}{% include "header.html" %}{% endif %}
+<script src="/files/js/spinbox.js?v=v{{ version }}" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="/files/css/settings_recognition.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content" id="content">
+    <div class="block_settings">
+        {% if project == "po4" %}{% include "po4menu_insert.html" %}{% endif %}
+        {% if project == None %}{% include "menu_insert.html" %}{% endif %}
+        <div class="block_cont">
+            <div class="block_cont_top2">
+                <div class="block_cont_bottom min_height">
+                    <script type="text/javascript">var params=new Array();</script>
+                    <h2>{% trans "Настройки оповещения" %}<input type="button" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '{% trans "контекстная_помощь_Настройки_оповещения" %}');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+					{% include "current_time.html" %}    
+                    <form method="POST" action="" name="">
+                        <div class="frm_block">
+                            <div class="frm_block_txt"><span {% if alerterServer  == None %} class="txt_dis" {% endif %}>{% trans "Адрес, приема оповещений" %}:</span></div>
+                            <input type="text" value='{{alerterServer}}' id="alerterSerser" size=40>
+                            <input type="button" name="" value="{% trans "Применить" %}"  {% if alerterServer == None %} disabled="disabled" class="inp_btn inp_btn90 dist_left dis" {% else %} class="inp_btn inp_btn90 dist_left" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" 
+                                onClick="javascript: executeMethodBalancer('setParameter', document.getElementsByName('alerterServer')[0].value)" {% endif %}/>
+                        </div>
+                        <div class="frm_block">
+                            <div class="frm_block_txt">{% trans "Новый адрес отправки оповещений" %}:</span></div>                           
+                            <input type="text" value='' id="newaddress" name="new_address" size=40>
+                            <input type="submit" name="" value="{% trans "Добавить" %}" class="inp_btn inp_btn90 dist_left"/>
+                        </div>
+                        
+                        {% for a in alerts %}
+                            <div class="frm_block">
+                                {{ forloop.counter }}. {{ a }}
+                            </div>
+                        {% endfor %}
+                    
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>            
+
+{% if project == "po4" %}{% include "po4footer.html" %}{% endif %}
+{% if project == None %}{% include "footer.html" %}{% endif %}
+{% include "execute.html" %}
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+</body>
+</html>

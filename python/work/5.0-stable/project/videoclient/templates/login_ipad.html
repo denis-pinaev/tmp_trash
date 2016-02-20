@@ -1,0 +1,103 @@
+{% load i18n templatetags %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{% trans "Вход в систему" %}</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	
+
+	
+	<link rel="stylesheet" type="text/css" href="/files/css/security/style.css?v=v{{ version }}" />
+	<link rel="stylesheet" type="text/css" href="/files/css/security/login.css?v=v{{ version }}" />
+	
+	<script type="text/javascript" src="/files/js/lib/jquery-ui/jquery-1.8.2.min.js?v=v{{ version }}"></script>		
+	<script type="text/javascript" src="/files/js/lib/jquery.form.js?v=v{{ version }}"></script> 
+	<script type="text/javascript" src="/files/js/lib/jquery.validate.js?v=v{{ version }}"></script>
+	<script type="text/javascript" src="/files/js/lib/additional-methods.js?v=v{{ version }}"></script>	
+	
+	<script type="text/javascript" src="/files/js/security/login.js?v=v{{ version }}"></script>
+	<script type="text/javascript">
+		var VALIDATOR = {
+			"username": {
+				"required": "{% trans 'Введите имя пользователя' %}",
+				"minlength": "{% trans 'Имя пользователя должно содержать не менее 3 символов' %}",
+				"checkLogin": "{% trans 'Введено некорректное значение' %}"
+			},
+			"password": {
+				"required": "{% trans 'Введите пароль' %}",
+				"minlength": "{% trans 'Пароль должен содержать не менее 6 символов' %}"
+			}
+		}
+		
+		var hour = {{ now_hour|default:0 }};      // инициализация для часа
+		var minute = {{ now_minute|default:0 }};  // инициализация для минуты
+		var second = {{ now_second|default:0 }};  // инициализация для секунды		
+		
+		$(function() {
+			init();
+		});		
+	</script>		
+</head>
+<body>
+<div class="body1">
+	<div class="content_login">
+		<div class="login" id="body1">
+			<!-- BEGIN: header -->
+			<div class="header">
+				<div class="header_block">
+					<div class="block top_panel">
+						<!-- передавать в шаблон текущую дату и время -->
+						<div class="time_date">{{ now_datetime|date:"d.m.Y" }}{% if now_hour and now_minute and now_second %}<span id="current_time">{{ now_hour }}:{{ now_minute }}:{{ now_second }}</span>{% endif %}</div>
+						<div class="logo"><img src="/files/images/security/logo.png" alt="{% trans 'Логотип' %} Smilart" /></div>
+						<div class="product">{% trans "Кпп" %}</div>
+					</div>
+				</div>
+			</div>
+			<!-- END: header -->
+			<!-- BEGIN: content -->
+			<form method="post" action="/" class="frm_login" id="frm_login">
+				{% if error %}
+					<div class="error">{% trans "Вы указали неверный логин или пароль" %}</div>
+				{% endif %}
+				<div class="bl_param">
+					<div class="bl_error"></div>
+					<div class="block">
+						<label for="username" class="bl_txt">{% trans "Имя пользователя" %}:</label>
+						<div class="bl_enter">
+							<input type="text" name="login" id="username" value="" maxlength="30" />
+						</div>
+					</div>
+				</div>
+				<div class="bl_param">
+					<div class="bl_error"></div>
+					<div class="block">
+						<label for="password" class="bl_txt">{% trans "Пароль" %}:</label>
+						<div class="bl_enter">
+							<input type="password" name="password" id="password" value="" maxlength="32" />
+						</div>
+					</div>
+				</div>
+				<div class="bl_btn">
+					<button name="" type="submit" value="" class="button b_login"><span class="txt">{% trans "Войти в систему" %}</span></button>
+				</div>		
+			</form>
+			<!-- END: content -->
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+
+<!-- BEGIN: footer -->
+<div class="footer" id="footer">
+	<div class="contacts">
+		<ul class="list_contacts">
+			<li>{% trans "Информация" %}: <a href="mailto:info@smilart.com">info@smilart.com</a></li> 
+			<li>{% trans "Техподдержка" %}: <a href="mailto:support@smilart.com">support@smilart.com</a></li>
+		</ul>
+		<div class="copyright">&#169; {% trans 'OOO "Простые решения", 2012. Все права защищены.' %} <a href="http://www.smilart.com/" target="_blank">http://www.smilart.com/</a></div>
+	</div>	
+</div>
+<!-- END: footer -->
+</body>
+</html>

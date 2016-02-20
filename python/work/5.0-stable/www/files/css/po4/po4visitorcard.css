@@ -1,0 +1,59 @@
+﻿.bl_info_all {
+    margin-left: 230px;
+}
+.btn_blue {
+    width: 90px;
+    background: url('/files/images/btn_blue_90.png') top left no-repeat;
+    -background: none;
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_90.png', sizingMethod='scale');
+    color: #ffffff;
+}
+.head_block {
+    font-weight: bold;
+}
+.frm_block {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 10px;
+}
+.frm_block .select {
+    width: 226px;
+}
+.bl_txt {
+    float: left;
+    width: 120px;
+}
+.bl_enter,
+.bl_time,
+.bl_date {
+    margin-left: 130px;
+}
+.btn_calend {
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    height: 16px;
+    width: 16px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: arial,helvetica,sans-serif;
+    background: url('/files/images/calend.png') top left no-repeat;
+    -background: none;  
+    -filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/calend.png', sizingMethod='crop');
+    margin-left: 5px;
+}
+.bl_date .inp_txt {
+    width: 95px;
+}
+.bl_time .delim {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+.bl_time .select {
+    width: 50px;
+}
+.error_block {
+    clear: both;
+    margin-left: 150px;
+    color: #FF6600;
+}

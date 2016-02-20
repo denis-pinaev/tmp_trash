@@ -1,0 +1,104 @@
+{% load i18n %}
+{% load templatetags %}
+{% include "po1header.html" %}
+<link rel="stylesheet" type="text/css" href="/files/css/po1/po1record.css?v=v{{ version }}" />
+
+<!-- BEGIN: content-->
+<div class="content">
+	<div class="block_cont">
+		<div class="block_cont_top">
+			<div class="block_cont_bottom min_height">
+				<h2>Запись<input type="button" id="img_1" name="" value="" class="btn_quest" onClick="javascript: showHelp(this, '');" onMouseOver="javascript: buttonStatus(this, 'over');" onMouseOut="javascript: buttonStatus(this, 'up');" onMouseDown="javascript: buttonStatus(this, 'down');" onMouseUp="javascript: buttonStatus(this, 'over');" /></h2>
+				<form method="post" action="" name="">
+					<div class="frm_block">
+						<div class="search">
+							<span class="left"></span>
+							<span class="center"><input type="text" name="filter" value="Введите имя пользователя" value="" class="txt_search" /></span>
+							<input type="submit" name="" value="" class="btn_search" title="Найти пользователя" />
+						</div>
+						<div>Всего пользователей: <span class="info_important">45</span></div>
+					</div>
+					<div class="frm_block">
+						<input type="button" name="" class="inp_btn inp_btn90" value="Добавить" />
+						<input type="button" name="" class="inp_btn inp_btn90 dist_left" value="Изменить" />
+						<input type="button" name="" class="inp_btn inp_btn90 dist_left" value="Удалить" />
+						<input type="button" name="" class="inp_btn inp_btn90 dist_left" value="Загрузить" />
+						<input type="button" name="" class="inp_btn inp_btn90 dist_left" value="Сохранить" />
+						<input type="button" name="" class="inp_btn inp_btn90 dist_left" value="Получить" />
+						<input type="button" name="" class="inp_btn inp_btn90 dist_left" value="Отправить" />
+					</div>
+					<div class="frm_block">
+						<table cellspacing="0" cellpadding="0" class="list_report_head">
+							<tr>
+								<th class="th_num" rowspan="2"><input type="button" class="btn_arrow" value="" name="">№</th>
+								<th class="th_name" rowspan="2"><input type="button" class="btn_arrow" value="" name="">ФИО</th>
+								<th rowspan="2"><input type="button" class="btn_arrow" value="" name="">Должность</th>
+								<th class="th_time" colspan="3">Время</th>
+							</tr>
+							<tr>
+								<th class="th_time">Вход</th>
+								<th class="th_time">Выход</th>
+								<th class="th_time_lunch">Обед</th>
+							</tr>							
+						</table>					
+						<table cellspacing="0" cellpadding="0" class="list_users">
+							<tr>
+								<td class="td_num"><span>1.</span><input type="checkbox" name="" value="" class="inp_check" /></td>
+								<td class="td_name">Иванов Иван Иванович</td>
+								<td>Зам. директора</td>
+								<td class="td_time">9.00</td>
+								<td class="td_time">19.00</td>
+								<td class="td_time_lunch">14.00 - 15.00</td>
+							</tr>
+							<tr class="odd">
+								<td class="td_num"><span>2.</span><input type="checkbox" name="" value="" class="inp_check" /></td>
+								<td class="td_name">Иванов Иван Иванович</td>
+								<td>Зам. директора</td>
+								<td class="td_time">9.00</td>
+								<td class="td_time">19.00</td>
+								<td class="td_time_lunch">14.00 - 15.00</td>
+							</tr>
+							<tr>
+								<td class="td_num"><span>3.</span><input type="checkbox" name="" value="" class="inp_check" /></td>
+								<td class="td_name">Иванов Иван Иванович</td>
+								<td>Зам. директора</td>
+								<td class="td_time">9.00</td>
+								<td class="td_time">19.00</td>
+								<td class="td_time_lunch">14.00 - 15.00</td>
+							</tr>
+							<tr class="odd">
+								<td class="td_num"><span>4.</span><input type="checkbox" name="" value="" class="inp_check" /></td>
+								<td class="td_name">Иванов Иван Иванович</td>
+								<td>Зам. директора</td>
+								<td class="td_time">9.00</td>
+								<td class="td_time">19.00</td>
+								<td class="td_time_lunch">14.00 - 15.00</td>
+							</tr>														
+						</table>
+					</div>
+					<div class="frm_block">
+						<input type="button" name="" class="inp_btn inp_btn90" value="Добавить" />
+						<input type="button" name="" class="inp_btn inp_btn90 dist_left" value="Изменить" />
+						<input type="button" name="" class="inp_btn inp_btn90 dist_left" value="Удалить" />
+						<input type="button" name="" class="inp_btn inp_btn90 dist_left" value="Загрузить" />
+						<input type="button" name="" class="inp_btn inp_btn90 dist_left" value="Сохранить" />
+						<input type="button" name="" class="inp_btn inp_btn90 dist_left" value="Получить" />
+						<input type="button" name="" class="inp_btn inp_btn90 dist_left" value="Отправить" />
+					</div>					
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>   
+</div>
+<!-- END: content -->
+</div>
+
+{% include "po1footer.html" %}
+
+<div class="info_photo_block2" id="block_fon" style="display: none;">&nbsp;</div>
+
+{% include "window_help.html" %}
+
+</body>
+</html>

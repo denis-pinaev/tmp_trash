@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+	<string id="ButtonConnect" content="Connect"/>
+	<string id="ButtonDisconnect" content="Disconnect"/>
+	<string id="ButtonStartTrain" content="Start training"/>
+	<string id="ButtonStopTrain" content="Stop training"/>
+	<string id="ButtonFullsize" content="Full screen"/>
+	<string id="ButtonStartTrainFiles" content="Files training"/>
+	<string id="ButtonNormalsize" content="Window mode"/>
+	<string id="ButtonOnProtection" content="Protection on"/>
+	<string id="ButtonOffProtection" content="Protection off"/>
+	<string id="ButtonBaseSettings" content="Persons"/>
+	<string id="ButtonMapSettings" content="Map"/>
+	<string id="ButtonClear" content="Clear"/>
+	<string id="ButtonPrint" content="Print"/>
+	<string id="ButtonCameraSettings" content="Options"/>
+	<string id="ButtonCameraView" content="Camera"/>
+	<string id="ButtonCameraSettingsResolution" content="Capture area:"/>
+	<string id="ButtonCameraSettingsMode" content="Camera permission:"/>
+	<string id="ButtonServerSettingsHead" content="Server adjustment:"/>
+	<string id="ButtonClientSettingsHead" content="Client adjustment:"/>
+	<string id="ButtonCameraSettingsHead" content="Camera adjustment:"/>
+	<string id="ButtonCameraSettingsHeadSize" content="Camera and capture area dimensions:"/>	
+	<string id="ButtonServerSettingsNomer" content="Communicator:"/>
+	<string id="ButtonCameraSettingsNomer" content="Accessible cameras:"/>
+	<string id="ButtonCameraSettingsType" content="Camera type:"/>
+	<string id="TextClientMode" content="Client mode:"/>
+	<string id="TextServerMode" content="Server mode"/>
+	<string id="TextComboVideo" content="Video mode"/>
+	<string id="TextComboDetect" content="Face detection"/>
+	<string id="TextComboRecognize" content="Face recognition"/>
+	<string id="TextComboDisable" content="Camera is switched off"/>
+	<string id="TextCorelation" content="Threshold of similarity:"/>
+	<string id="TextReq" content="Temporal check:"/>
+	<string id="TextMirror" content="Mirror reflect"/>
+	<string id="TextCamerasList" content="Cameras list"/>
+	<string id="TextCameraName" content="Camera name"/>
+	<string id="TextVideoMode" content="Video|mode"/>
+	<string id="TextDetectFaces" content="Faces|detect."/>
+	<string id="TextIdentFaces" content="Faces|recog."/>
+	<string id="TextCameraOff" content="Camera|switch off"/>
+	<string id="TextFramesPS" content="Number of frames per second:"/>
+	<string id="TextFacesPS" content="Number of faces per second:"/>
+	<string id="TextDelay" content="Delay:"/>
+	<string id="TextTimeImg" content="Picture data:"/>
+	<string id="TextFacesVideoDisplay" content="Show on video:"/>
+	<string id="TextFrame" content="Face frame"/>
+	<string id="TextEye" content="Eyes"/>
+	<string id="TextNoseChin" content="Nose, chin"/>
+	<string id="TextYes" content="Yes"/>
+	<string id="TextNo" content="No"/>
+	<string id="TextChooseAccess" content="Protection time check (min.):"/>
+	<string id="TextFPS" content="Number of frames:"/>
+	<string id="TextDistortion" content="Distorsition:"/>
+	<string id="TextDistortionSettings" content="Distortion settings:"/>
+	<string id="ButtonTextSettingsDistortion" content="Setup"/>
+	<string id="ButtonTextSettingsDistortionTooltip" content="Setup distortion for current camera"/>
+	<string id="TextCamber" content="Convexity (-1..+1):"/>
+	<string id="TextIntensity" content="Intensity (0..+1):"/>
+	<string id="TextDistX" content="Shift X (-1..+1):"/>
+	<string id="TextDistY" content="Shift Y (-1..+1):"/>
+	<string id="TextDistanceBetweenEyes" content="Min face width:"/>
+	<string id="TextQuality" content="Quality:"/>
+	<string id="TextQualityHigh" content="High Speed (1-10ms)"/>
+	<string id="TextQualitySpeed" content="Speed"/>
+	<string id="TextQualityBalanced" content="Balanced"/>
+	<string id="TextQualityQuality" content="Quality"/>
+	<string id="TextQualityMoonLight" content="Moon Light (TM)"/>	
+	
+	<string id="TextStatus" content="Status: "/>
+	<string id="TextAlbums" content="Persons"/>
+	<string id="TextPhotoes" content="Person foto"/>
+	<string id="TextPhotoesNext" content="Next fotoes"/>
+	<string id="TextPhotoesPrev" content="Previous fotoes"/>
+	<string id="ButtonTextRestart" content="Restart"/>
+	<string id="ButtonTextSet" content="Apply"/>
+	<string id="ButtonTextSetTooltip" content="Save settings for the current camera. This settings will be actual for the communicator lifetime."/>
+	<string id="ButtonTextSave" content="Save"/>
+	<string id="ButtonTextSaveTooltip" content="Save settings for all cameras of the communicator"/>
+	<string id="ButtonTextUpload" content="Load"/>
+	<string id="ButtonTextUploadTooltip" content="Load settings for all cameras of the communicator"/>
+	<string id="ButtonTextOk" content="Ok"/>
+	<string id="ButtonTextCancel" content="Cancel"/>
+	<string id="ButtonTextClose" content="Close"/>
+	<string id="StatusTextTrain" content="TRAINING IN PROGRESS!"/>
+	<string id="StatusTextTrainEnd" content="Training completed"/>
+	<string id="StatusTextTrainSuccess" content="Trained successfully: "/>
+	<string id="ButtonTextRefresh" content="Find cameras"/>
+	<string id="ButtonTextRefreshTooltip" content="Update the list of cameras for the given communicator"/>
+	<string id="ButtonTextDistanceEyesTooltip" content="Define distance between the eyes for all cameras"/>
+	<string id="ButtonConnectTooltip" content="Button to connect to or disconnect from the server"/>
+	<string id="ButtonStartTrainTooltip" content="The button for switching-on and -off of a training mode"/>
+	<string id="ButtonStartTrainFilesTooltip" content="The button for training by images from files"/>
+	<string id="ButtonFullsizeTooltip" content="The button for switching of a full screen mode"/>
+	<string id="ButtonProtectionTooltip" content="The button for switching-on and -off protection check"/>
+	<string id="ButtonBaseSettingsTooltip" content="Button to go to a database of persons and their photos, with the possibility of removing."/>
+	<string id="ButtonMapSettingsTooltip" content="To look at a metro station map"/>
+	<string id="ButtonClearTooltip" content="The button for cleaning of the list of the found faces"/>
+	<string id="ButtonPrintTooltip" content="To print the list of the found faces"/>
+	<string id="ButtonCameraSettingsTooltip" content="The button for camera adjustments."/>
+	<string id="ButtonTextRestartTooltip" content="Restart selected camera"/>
+	<string id="TextDialogCangeServerMode" content="Are you sure you want to change the server mode?"/>
+	<string id="TextDialogTraining" content="Enter person name.||Input string - name and surname.|For example: &quot;John Jonson&quot;"/>
+	<string id="TextDialogTrainingHead" content="Person training"/>
+	<string id="TextDialogTrainingFilesHead" content="Person training from files"/>
+	<string id="TextMessageHead" content="Caution"/>
+	<string id="TextMessageConnectionClosed" content="Connection is closed by the server or the server is unavailable."/>
+	<string id="TextMessageTrainTextError" content="The identifier can consist only of Latin letters and digits. Length not less than 6 characters."/>
+	<string id="TextButtonDeletePhotos" content="Delete fotoes"/>
+	<string id="TextButtonDeleteAlbum" content="Delete the person"/>
+	<string id="TextDialogDeletePhotoes" content="Are you sure you want delete the selected fotoes?"/>
+	<string id="TextDialogDeleteAlbum" content="Are you sure you want delete the selected user?"/>
+	<string id="TextDialogDeletePhotoesHead" content="Delete fotoes"/>
+	<string id="TextDialogDeleteAlbumHead" content="Delete person"/>
+	<string id="TextDeletePhotos" content='To delete a person: select the appropriate person and click the "Delete Person".|To delete photos person: Click on the photos you want to mark, then click "Delete fotoes".'/>
+	<string id="TextCameraSettings" content="Brightness (0..255):*Saturation (0..255):*Sharpness (0..16):*Contrast (0..255):*Quality (0..255):*Frequency:*Night mode:*Lighting mode:"/>
+	<string id="TextCameraModeLightAuto" content="Automatic"/>
+	<string id="TextCameraModeLightInside" content="Indore"/>
+	<string id="TextCameraModeLightOutside" content="Outdore"/>
+	<string id="TextCameraModeLightMix" content="Mixed"/>
+	<string id="TextFrequency50" content="50 Hz"/>
+	<string id="TextFrequency60" content="60 Hz"/>
+	<string id="TextCameraPicture" content="Image:"/>
+	<string id="TextCameraDayNight" content="Day/Night:"/>
+	<string id="TextCameraModeNightAuto" content="Automatic"/>
+	<string id="TextCameraModeNightDay" content="Day"/>
+	<string id="TextCameraModeNightNight" content="Night"/>	
+	<string id="TextCameraDisable" content="Camera is switched off or unavailable"/>
+	<string id="TextDialogRefresh" content="Enter the maximum number of cameras, that will be found by communicator."/>
+	<string id="TextDialogRefreshHead" content="Updating list of cameras"/>
+	<string id="TextLearnFilesOnePerson" content="Learning or adding photoes of one person.|Type person name:"/>	
+	<string id="TextLearnFilesMuchPersons" content="Photoes learning. Photoes names will be persons names."/>
+	<string id="TextLearnHead" content="Learning from files"/>	
+
+	<string id="TextMapButtonCamera" content="Cameras"/>
+	<string id="TextMapButtonTerminal" content="Terminals"/>
+	<string id="TextMapTerminalNomer" content="Terminal number"/>
+	<string id="TextMapTooltipCameras" content="Cameras installed:"/>
+	<string id="TextMapTooltipPosition" content="North*East*South*West"/>
+
+	<string id="TextMapTableCameraHead" content="Information on cameras"/>
+	<string id="TextMapTableTerminalHead" content="Information on terminals"/>
+
+	<string id="TextMapTooltip_type" content="Terminal type: "/>
+	<string id="TextMapTooltip_nomer" content="Terminal number: "/>
+	<string id="TextMapTooltip_position" content="Terminal position: "/>
+	<string id="TextMapTooltip_name" content="Camera name: "/>
+	<string id="TextMapTooltip_orientName" content="Direction: "/>
+	<string id="TextMapTooltip_ip" content="The network address: "/>
+	<string id="TextMapTooltip_orient" content="Location: "/>
+	<string id="TextMapTooltip_model" content="Camera model: "/>
+	<string id="TextMapTooltip_lens" content="Objective: "/>
+	<string id="TextMapTooltip_angle" content="Vision angle: "/>
+	<string id="TextMapTooltip_distance" content="Range: "/>
+	<string id="TextMapTooltip_height" content="Camera height: "/>
+	<string id="TextMapTooltip_visibleIDs" content="Visible objects: "/>
+	<string id="TextMapTooltip_coords" content="Coordinates on a map: "/>
+
+	<string id="TextMapObjectName_escalatorSouth" content="The escalator with a dark balustrade"/>
+	<string id="TextMapObjectName_boxSouth" content="Box (South)" />
+	<string id="TextMapObjectName_lobbySouth" content="Lobby (South)" />
+	<string id="TextMapObjectName_desksSouth" content="Cash desks(South)" />
+	<string id="TextMapObjectName_turnstilesSouth" content="Turnstile (South)" />
+	<string id="TextMapObjectName_escalatorNorth" content="The escalator with a white balustrade"/>
+	<string id="TextMapObjectName_boxNorth" content="Box (North)" />
+	<string id="TextMapObjectName_lobbyNorth" content="Lobby (North)" />
+	<string id="TextMapObjectName_desksNorth" content="Cash desks (North)" />
+	<string id="TextMapObjectName_turnstilesNorth" content="Turnstile (North)" />
+
+	<string id="TextTerminalPosition1" content="OKSION -> Moscow -> s.st.Okhotny series -> North -> The top comb -> Turnstile (East)" />
+	<string id="TextTerminalPosition2" content="OKSION -> Moscow -> s.st.Okhotny series -> North -> The top comb -> Turnstile (West)" />
+	<string id="TextTerminalPosition3" content="OKSION -> Moscow -> s.st.Okhotny series -> North -> The lower comb -> Turnstile" />
+	<string id="TextTerminalPosition4" content="OKSION -> Moscow -> s.st.Okhotny series -> North -> Platform -> Turnstile" />
+	<string id="TextTerminalPosition5" content="OKSION -> Moscow -> s.st.Okhotny series -> South -> The top comb -> Turnstile (East)" />
+	<string id="TextTerminalPosition6" content="OKSION -> Moscow -> s.st.Okhotny series -> South -> The top comb -> Turnstile (West)" />
+	<string id="TextTerminalPosition7" content="OKSION -> Moscow -> s.st.Okhotny series -> South -> The lower comb -> Turnstile" />
+	<string id="TextTerminalPosition8" content="OKSION -> Moscow -> s.st.Okhotny series -> South -> Platform -> Turnstile" />
+	
+	<string id="TextIdentHead" content="Check Access" />
+	<string id="TextIdentError" content="Attention!||You did not validate.|Access denied!" />
+	<string id="TextIdentSuccess" content="Identification has been successfully completed.|User: " />
+	<string id="TextIdentProcess" content="Please, identify yourself.|Remaining time: %s s." />
+
+	<string id="SendTextGetFrame" content="&lt;?xml version=&quot;1.0&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;getFrame&lt;/methodName&gt;&lt;params&gt;&lt;numcamera&gt;%n&lt;/numcamera&gt;&lt;mode&gt;%m&lt;/mode&gt;&lt;w&gt;%w&lt;/w&gt;&lt;h&gt;%h&lt;/h&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextSetMode" content="&lt;?xml version=&quot;1.0&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;setModeScheduler&lt;/methodName&gt;&lt;params&gt;&lt;numcamera&gt;%n&lt;/numcamera&gt;&lt;mode&gt;%m&lt;/mode&gt;&lt;id_person&gt;%p&lt;/id_person&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextGetMode" content="&lt;?xml version=&quot;1.0&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;getModeScheduler&lt;/methodName&gt;&lt;params&gt;&lt;numcamera&gt;%n&lt;/numcamera&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextSetCorelation" content="&lt;?xml version=&quot;1.0&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;setCorrelationIdent&lt;/methodName&gt;&lt;params&gt;&lt;numcamera&gt;%n&lt;/numcamera&gt;&lt;k&gt;%k&lt;/k&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextGetCorelation" content="&lt;?xml version=&quot;1.0&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;getCorrelationIdent&lt;/methodName&gt;&lt;params&gt;&lt;numcamera&gt;%n&lt;/numcamera&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextSetResolution" content="&lt;?xml version=&quot;1.0&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;setResolutionCamera&lt;/methodName&gt;&lt;params&gt;&lt;numcamera&gt;%n&lt;/numcamera&gt;&lt;width&gt;%w&lt;/width&gt;&lt;height&gt;%h&lt;/height&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextGetResolution" content="&lt;?xml version=&quot;1.0&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;getResolutionCamera&lt;/methodName&gt;&lt;params&gt;&lt;numcamera&gt;%n&lt;/numcamera&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextGetPhotoByName" content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;getpreview&lt;/methodName&gt;&lt;params&gt;&lt;login&gt;%login&lt;/login&gt;&lt;password&gt;%password&lt;/password&gt;&lt;user&gt;%user&lt;/user&gt;&lt;person_id&gt;%p&lt;/person_id&gt;&lt;name_photo&gt;%f&lt;/name_photo&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextGetBasePersons" content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;getpersons&lt;/methodName&gt;&lt;params&gt;&lt;login&gt;%login&lt;/login&gt;&lt;password&gt;%password&lt;/password&gt;&lt;user&gt;%user&lt;/user&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextGetBasePersonPhotoes" content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;getpersonphotos&lt;/methodName&gt;&lt;params&gt;&lt;login&gt;%login&lt;/login&gt;&lt;password&gt;%password&lt;/password&gt;&lt;user&gt;%user&lt;/user&gt;&lt;person_id&gt;%p&lt;/person_id&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextDeleteBasePerson" content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;deleting&lt;/methodName&gt;&lt;params&gt;&lt;login&gt;%login&lt;/login&gt;&lt;password&gt;%password&lt;/password&gt;&lt;user&gt;%user&lt;/user&gt;&lt;person_id&gt;%p&lt;/person_id&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextDeleteBasePhotoes" content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;deleting&lt;/methodName&gt;&lt;params&gt;&lt;login&gt;%login&lt;/login&gt;&lt;password&gt;%password&lt;/password&gt;&lt;user&gt;%user&lt;/user&gt;&lt;person_id&gt;%p&lt;/person_id&gt;&lt;name_photo&gt;%f&lt;/name_photo&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextSetCameraSetting" content="&lt;?xml version=&quot;1.0&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;%m&lt;/methodName&gt;&lt;params&gt;&lt;numcamera&gt;%n&lt;/numcamera&gt;&lt;value&gt;%v&lt;/value&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextGetCameraSetting" content="&lt;?xml version=&quot;1.0&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;%m&lt;/methodName&gt;&lt;params&gt;&lt;numcamera&gt;%n&lt;/numcamera&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextSetCameraCapture" content="&lt;?xml version=&quot;1.0&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;setCaptureRectCamera&lt;/methodName&gt;&lt;params&gt;&lt;numcamera&gt;%n&lt;/numcamera&gt;&lt;x&gt;%x&lt;/x&gt;&lt;y&gt;%y&lt;/y&gt;&lt;width&gt;%w&lt;/width&gt;&lt;height&gt;%h&lt;/height&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextGetCameraCapture" content="&lt;?xml version=&quot;1.0&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;getCaptureRectCamera&lt;/methodName&gt;&lt;params&gt;&lt;numcamera&gt;%n&lt;/numcamera&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextGetCameras" content="&lt;?xml version=&quot;1.0&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;getCameras&lt;/methodName&gt;&lt;params/&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextSetCamera" content="&lt;?xml version=&quot;1.0&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;setCamera&lt;/methodName&gt;&lt;params&gt;&lt;numcamera&gt;%n&lt;/numcamera&gt;&lt;active&gt;%a&lt;/active&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextSendRefreshCameras" content="&lt;?xml version=&quot;1.0&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;foundCameras&lt;/methodName&gt;&lt;params&gt;&lt;count&gt;%c&lt;/count&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+
+	<string id="SendTextSendImage" content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;learning&lt;/methodName&gt;&lt;params&gt;&lt;login&gt;%login&lt;/login&gt;&lt;password&gt;%password&lt;/password&gt;&lt;user&gt;%user&lt;/user&gt;&lt;person_name&gt;%p&lt;/person_name&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextSetParameter" content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;setcameraparameter&lt;/methodName&gt;&lt;params&gt;&lt;login&gt;%login&lt;/login&gt;&lt;password&gt;%password&lt;/password&gt;&lt;user&gt;%user&lt;/user&gt;&lt;source&gt;%ip&lt;/source&gt;&lt;type&gt;%name&lt;/type&gt;&lt;mac&gt;%mac&lt;/mac&gt;&lt;parameter&gt;%p&lt;/parameter&gt;&lt;value&gt;%v&lt;/value&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextGetParameter" content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;getcameraparameter&lt;/methodName&gt;&lt;params&gt;&lt;login&gt;%login&lt;/login&gt;&lt;password&gt;%password&lt;/password&gt;&lt;user&gt;%user&lt;/user&gt;&lt;source&gt;%ip&lt;/source&gt;&lt;type&gt;%name&lt;/type&gt;&lt;mac&gt;%mac&lt;/mac&gt;&lt;parameter&gt;%p&lt;/parameter&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextSetCameraSettings" content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;savecameras&lt;/methodName&gt;&lt;params&gt;&lt;login&gt;%login&lt;/login&gt;&lt;password&gt;%password&lt;/password&gt;&lt;user&gt;%user&lt;/user&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+	<string id="SendTextGetCameraSettings" content="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;methodCall&gt;&lt;methodName&gt;configurecameras&lt;/methodName&gt;&lt;params&gt;&lt;login&gt;%login&lt;/login&gt;&lt;password&gt;%password&lt;/password&gt;&lt;user&gt;%user&lt;/user&gt;&lt;/params&gt;&lt;id_command&gt;%i&lt;/id_command&gt;&lt;/methodCall&gt;"/>
+</strings>

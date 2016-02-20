@@ -1,0 +1,41 @@
+{% load i18n %}
+{% load templatetags %}	
+{% if not error %}
+<script type="text/javascript">
+	var SORTO = {% if sorto %}{{ sorto }}{% else %}''{% endif %};
+	var UP = {% if up %}{{ up }}{% else %}0{% endif %};
+</script>
+
+	{% if ip_list %}
+		<script type="text/javascript">
+			$(function() {
+				initIP();
+			});
+		</script>
+        <div class="block bl_btn">
+            <div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check" id="check_all_ip" /><label for="check_all_ip">{% trans "Выделить всё" %}</label></div></div>
+            <a href="{% url user_ip_add %}{% if user_login %}?user_login={{ user_login }}{% endif %}" class="link_btn_ok"><span>{% trans "Добавить" %}</span></a>
+            <input type="button" id="btn_del" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170" />
+        </div>
+        <table cellpadding="0px" cellspacing="0px" class="table dist_top">
+            <tr>
+                <th class="th_first">№</th>
+                <th><a href="#"{% if sorto == 1 %}{% if up == 1 %}class="sort_up"{% else %}class="sort_down"{% endif %}{% endif %}onClick="javascript: getIpList(1,{% if sorto == 1 and up == 1 %}0{% else %}1{% endif %});" >{% trans "IP-адреса" %}</a></th>
+            </tr>
+            {% for ip in ip_list %}
+            <tr {% cycle '' 'class="odd"' %}>
+                <td class="td_first"><input type="checkbox" name="" value="" class="inp_check" id="ip{{forloop.counter}}"/>{{ forloop.counter }}.</td>
+                <td><label for="ip{{forloop.counter}}">{{ ip }}</label></td>
+            </tr>
+            {% endfor %}
+        </table>
+        <div class="block bl_btn">
+            <div class="bl_btn_check short_descr" title="{% trans "Выделить все записи на данной странице" %}"><div><input type="checkbox" name="" value="" class="inp_check" id="check_all_ip2" /><label for="check_all_ip2">{% trans "Выделить всё" %}</label></div></div>
+            <a href="{% url user_ip_add %}{% if user_login %}?user_login={{ user_login }}{% endif %}" class="link_btn_ok"><span>{% trans "Добавить" %}</span></a>
+            <input type="button" id="btn_del2" name="" value="{% trans "Удалить выделенные" %}" class="inp_btn inp_btn170" />
+        </div>          
+        {% else %}
+        <div class="message_action"><div>{% trans "Список IP-адресов пуст." %}</div>{% trans "Для того чтобы добавить IP-адрес, нажмите на кнопку" %} <strong>"{% trans "Добавить" %}"</strong>.</div> 
+        <div class="block"><a href="{% url user_ip_add %}{% if user_login %}?user_login={{ user_login }}{% endif %}" class="link_btn_ok"><span>{% trans "Добавить" %}</span></a></div>
+        {% endif %}               
+{% endif %}

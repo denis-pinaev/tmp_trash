@@ -1,0 +1,288 @@
+﻿/* block multiply */
+.upload_multiple_file {
+	float: left;
+	margin-right: 10px;
+}
+.block_multiple {
+	width: 170px;
+	height: 24px;
+	position: relative;
+	overflow: hidden;
+	background: url("/files/images/btn_blue_170.png") top left no-repeat;
+	z-index: 0;
+	cursor: pointer;
+}
+.block_multiple .block_multiple_txt {
+	color: #ffffff;
+	width: 170px;
+	position: absolute;
+	top: 2px;
+	left: 0px;
+	text-align: center;
+	z-index: 1;
+	cursor: pointer;
+}
+.block_multiple input {
+	position: absolute;
+	top: 0px;
+	left: -120px;
+	width: 400px;
+	height: 24px;
+	opacity: 0;
+	cursor: pointer;
+	z-index: 2;
+	-moz-transform: scale(7);
+}
+.block_loader {
+    text-align: center;
+    margin-top: 70px;
+}
+.btn_single_file {
+	float: left;
+	margin-right: 10px;
+}
+/* form */
+.inp_btn_blue120 {
+	width: 120px;
+	background: url('/files/images/btn_blue_120.png') top left no-repeat;
+	-background: none;
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/btn_blue_120.png', sizingMethod='scale');
+	color: #ffffff;
+}
+.form {
+	margin-top: 10px;
+}
+.form .block_req {
+	margin-bottom: 5px;
+}
+.form .req {
+	color: #ff0000;
+	font-weight: bold;
+}
+.form .form_block {
+	width: 100%;
+	overflow: hidden;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+.form .form_block .fb_content {
+	width: 100%;
+	overflow: hidden;
+}
+.form .form_block .fb_content .fbc_text {
+	float: left;
+	width: 200px;
+	text-align: left;
+	margin-right: 10px;
+	margin-top: 2px;
+}
+.form .form_block .fbc_help {
+	color: #666666;
+	font-size: 95%;
+	clear: both;
+	margin-left: 210px;
+	display: block;
+	line-height: 1.2;
+	margin-top: 3px;
+}
+.form .form_block .fb_content .fb_enter {
+	float: left;
+}
+.inp_btn_blue120.noact_btn {
+	background: url("/files/images/btns_noact120.png") top left no-repeat;
+	color: #9b9b9b;
+	cursor: default;
+}
+.form .dist_left_form {
+	margin-left: 210px;
+}
+.form .btn_delete {
+	width: 16px;
+	height: 16px;
+	border: 0px;
+	background: url("/files/images/remove.png") top left no-repeat;
+	-background: none;  
+	-filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/files/images/remove.png', sizingMethod='crop');        
+	margin-left: 5px;
+	cursor: pointer;
+}
+/* content */
+.dist_bottom {
+	margin-bottom: 5px;
+}
+.block_results strong {
+	font-size: 110%;
+}
+.block_detect {
+	float: right;
+}
+.inp_check {
+	margin-right: 5px;
+}
+.block_names {
+	text-align: center;
+	font-weight: bold;
+	background-color: #f2f2f2;
+	padding: 2px 0px;
+	border-radius: 3px;
+	moz-border-radius: 3px;
+	margin-bottom: 10px;	
+}
+.block_names .name_faces {
+	float: left;
+	width: 132px;
+}
+.block_names .name_persons {
+	margin-left: 158px;
+}
+.block_delim {
+	border-top: 1px dotted #cccccc;
+	margin-bottom: 10px;
+	margin-top: 5px;
+	height: 1%;
+	line-height: 0;	
+}
+.block_arrow {
+	float: left;
+	width: 16px;
+	height: 16px;
+	background: url("/files/images/arrow_left.png") top left no-repeat;
+	margin-right: 5px;
+	margin-left: 0px;
+	margin-top: 70px;
+}
+.block_face {
+	padding: 5px; 
+	margin: 0px 5px 5px 0px;
+	float: left;
+	position: relative;
+	width: 134px;
+	border-radius: 3px;
+	moz-border-radius: 3px;	
+	background-color: #ffcc99;
+	border: 1px solid #ff9933;
+	box-shadow: 1px 1px 2px rgba(122,122,122,0.5);
+}
+.list_photos {
+	float: left;
+}
+.list_photos li {
+	padding: 5px; 
+	margin: 0px 5px 5px 0px; 
+	border: 1px solid #cccccc; 
+	float: left;
+	background-color: #f2f2f2;
+	position: relative;
+	width: 134px;
+	border-radius: 3px;
+	moz-border-radius: 3px;
+}
+.list_photos li .block_photo,
+.block_face .block_photo {
+	height: 120px;	
+	width: 134px;
+	margin: 0px auto 5px auto;
+	background-color: #dddddd;
+	border-radius: 3px;
+	moz-border-radius: 3px;
+	text-align: center;
+	position: relative;
+}
+.list_photos li .block_photo a.photo,
+.block_face .block_photo a {
+	line-height: 120px;
+	vertical-align: middle;
+	display: table-cell;	
+	height: 120px;	
+	width: 134px;	
+	cursor: pointer;
+	margin: 0px auto;
+}
+.list_photos li .block_photo img,
+.block_face .block_photo img {
+	max-width: 120px;
+	max-height: 120px;
+	vertical-align: middle;
+}
+.list_photos li .block_name,
+.list_photos li .param_ksm {
+	background-color: RGBA(000, 000, 000, 0.7);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#90000000,endColorstr=#90000000);
+	color: #ffffff;
+	cursor: default;
+	z-index: 5;	
+	overflow: hidden;
+	position: absolute;	
+	border-radius: 3px;
+	moz-border-radius: 3px;	
+	line-height: 1;
+}
+.list_photos li .block_name {
+	top: 5px;
+	left: 5px;
+	padding: 1px 2px 2px 2px;
+	width: 124px;	
+}
+.list_photos li .param_ksm {
+	bottom: 0px;
+	left: 0px;
+	padding: 1px 2px 0px 2px;	
+}
+.list_photos li.lp_act {
+	background-color: #ffcc99;
+	border-color: #ff9933;
+	box-shadow: 1px 1px 2px rgba(122,122,122,0.5);
+}
+.list_photos li.lp_last {
+	margin-right: 0px;
+}
+.list_photos li .block_photo a.link_go {
+	display: block;	
+	height: 120px;	
+	width: 134px;	
+	cursor: pointer;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 4;
+}
+.block_ident {
+	width: 120px;
+	height: 120px;
+	position: absolute;
+	top: 0px;
+	left: 7px;
+	text-align: center;
+}
+.list_photos li .block_photo .block_ident a {
+	width: 120px;
+}
+.photo_info {
+	width: 100%;
+	overflow: hidden;
+}
+.photo_info .photo_param {
+	float: left;
+	margin-right: 10px;
+}
+.photo_info .photo_param.eyes {
+	background: url("/files/images/eye.png") left center no-repeat;
+	padding-left: 18px;
+}
+.btn_loupe {
+	display: block;
+	position: absolute;
+	top: 106px;
+	right: 0px;
+	cursor: pointer;
+	width: 21px;
+	height: 21px;	
+	background: url('/files/images/icons.png') -46px -16px no-repeat;	
+	text-decoration: none;
+	z-index: 5;
+}
+.btn_loupe span {
+	display: block;
+	width: 100%;
+	height: 100%;				
+}

@@ -1,0 +1,99 @@
+{% load i18n %}
+{% load templatetags %}
+{% if not values_exists %}
+{% else %}							
+{% if values|length == 0 %}
+	<div class="block_loader">
+		<img src="/files/images/loader.gif" alt="" />
+		<div class="dist_top">{% trans "Идёт процесс обработки данных для тестирования производительности." %}</div>
+		<div>{% trans "Пожалуйста, подождите." %}</div>
+	</div>
+{% else %}				
+	<div id="isResault">
+		<table cellpadding="0px" cellspacing="0px" class="table" id="table_performance_testing">
+			<tr>
+				<th class="first" rowspan="2">{% trans "Компьютер" %}</th>
+				<th rowspan="2">{% trans "Кол-во лиц" %}</th>
+				<th rowspan="2">{% trans "Демон" %}</th>
+				<th colspan="3">{% trans "Время работы демона, мс" %}</th>
+				<th colspan="3">{% trans "Время работы демона (с получением файла по сокету), мс" %}</th>
+				<th colspan="3">{% trans "Время работы демона (с учетом отправления и получения запроса, получено от УС), мс" %}</th>
+				<th colspan="3">{% trans "Время работы балансировщика (получено от УС), мс" %}</th>
+				<th colspan="3">{% trans "Время обработки изображения через скрипт (с пересылкой файлов, с парсингом xml-результатов), мс" %}</th>
+				<th rowspan="2">{% trans "Потери (AVG2 - AVG1)" %}</th>
+			</tr>
+			<tr>
+				<th>{% trans "среднее" %} (AVG1)</th>
+				<th>{% trans "мин." %}</th>
+				<th>{% trans "макc." %}</th>
+				<th>{% trans "среднее" %}</th>
+				<th>{% trans "мин." %}</th>
+				<th>{% trans "макc." %}</th>
+				<th>{% trans "среднее" %}</th>
+				<th>{% trans "мин." %}</th>
+				<th>{% trans "макс." %}</th>
+				<th>{% trans "среднее" %}</th>
+				<th>{% trans "мин." %}</th>
+				<th>{% trans "макс." %}</th>
+				<th>{% trans "среднее" %} (AVG2)</th>
+				<th>{% trans "мин." %}</th>
+				<th>{% trans "макс." %}</th>
+			</tr>
+			{% for v in values %}
+			<tr onMouseOver="javascript: overRow(this);" onMouseOut="javascript: outRow(this);">
+				<td class="first">{{ v.host }}:{{ v.port }}</td>
+				<td>{{ v.faces }}</td>
+				<td>FR</td>
+				<td>{{ v.recognitionDaemonTimeProc.0|floatformat:2 }}</td>
+				<td>{{ v.recognitionDaemonTimeProc.1|floatformat:2 }}</td>
+				<td>{{ v.recognitionDaemonTimeProc.2|floatformat:2 }}</td>
+
+				<td>{{ v.recognitionDaemonTime.0|floatformat:2 }}</td>
+				<td>{{ v.recognitionDaemonTime.1|floatformat:2 }}</td>
+				<td>{{ v.recognitionDaemonTime.2|floatformat:2 }}</td>
+
+				<td>{{ v.recognitionDaemonTimeCS.0|floatformat:2 }}</td>
+				<td>{{ v.recognitionDaemonTimeCS.1|floatformat:2 }}</td>
+				<td>{{ v.recognitionDaemonTimeCS.2|floatformat:2 }}</td>
+
+				<td>{{ v.recognitionTotalTime.0|floatformat:2 }}</td>
+				<td>{{ v.recognitionTotalTime.1|floatformat:2 }}</td>
+				<td>{{ v.recognitionTotalTime.2|floatformat:2 }}</td>
+
+
+				<td>{{ v.scriptTime.0|floatformat:2 }}</td>
+				<td>{{ v.scriptTime.1|floatformat:2 }}</td>
+				<td>{{ v.scriptTime.2|floatformat:2 }}</td>
+				<td>{{ v.scriptTime.0|sub:v.recognitionDaemonTimeProc.0|floatformat:2 }}</td>
+			</tr>
+			<tr class="odd" onMouseOver="javascript: overRow(this);" onMouseOut="javascript: outRow(this);">
+				<td class="first">{{ v.host }}:{{ v.port }}</td>
+				<td>{{ v.faces }}</td>
+				<td>FD</td>
+				<td>{{ v.detectDaemonTimeProc.0|floatformat:2 }}</td>
+				<td>{{ v.detectDaemonTimeProc.1|floatformat:2 }}</td>
+				<td>{{ v.detectDaemonTimeProc.2|floatformat:2 }}</td>
+
+				<td>{{ v.detectDaemonTime.0|floatformat:2 }}</td>
+				<td>{{ v.detectDaemonTime.1|floatformat:2 }}</td>
+				<td>{{ v.detectDaemonTime.2|floatformat:2 }}</td>
+
+				<td>{{ v.detectDaemonTimeCS.0|floatformat:2 }}</td>
+				<td>{{ v.detectDaemonTimeCS.1|floatformat:2 }}</td>
+				<td>{{ v.detectDaemonTimeCS.2|floatformat:2 }}</td>
+
+				<td>{{ v.detectTotalTime.0|floatformat:2 }}</td>
+				<td>{{ v.detectTotalTime.1|floatformat:2 }}</td>
+				<td>{{ v.detectTotalTime.2|floatformat:2 }}</td>
+
+
+				<td>{{ v.scriptTime.0|floatformat:2 }}</td>
+				<td>{{ v.scriptTime.1|floatformat:2 }}</td>
+				<td>{{ v.scriptTime.2|floatformat:2 }}</td>
+				<td>{{ v.scriptTime.0|sub:v.recognitionDaemonTimeProc.0|floatformat:2 }}</td>
+			</tr>
+			{% endfor %}
+		 </table>
+	 </div>
+{% endif %}
+{% endif %}				             

@@ -1,0 +1,48 @@
+.block_result {
+	width: 600px;
+	padding: 10px;
+	border: 1px solid #aaaaaa;
+	margin: 0px auto;
+}
+.block_photo {
+	width: 450px;
+	overflow: hidden;
+	margin: 0px auto;
+}
+.block_photo .photo {
+	float: left;
+}
+.photo_head {
+	text-align: center;
+}
+.block_info {
+	width: 100%;
+	overflow: hidden;
+}
+.block_info.first {
+	margin-top: 20px;
+}
+.block_info.last {
+	margin-bottom: 0px;
+}
+.block_info div {
+	float: left;
+	width: 130px;
+}
+.block_head {
+	text-align: center;
+	font-weight: bold;
+}
+.block_danger {
+	text-align: center;
+	font-weight: bold;
+	color: #FF6600;
+	margin-bottom: 10px;
+	text-decoration: blink;	
+	font-size: 24px;
+}
+.block_koeff {
+	text-align: center;
+	font-weight: bold;
+	color: #0088CC;	
+}

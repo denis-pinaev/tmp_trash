@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configs>
+	<config id="server" content="192.168.0.233*192.168.0.235*192.168.0.55*192.168.0.55*192.168.0.55*192.168.0.55*192.168.0.123*192.168.0.123*192.168.0.123*192.168.0.123"/><!-- Сервера для подключения к сокетам для разных коммуникаторов -->
+	<config id="port" content="12600*12600*11600*12600*13600*14600*11600*12600*13600*14600"/><!-- Порты для подключения к сокетам для разных коммуникаторов -->
+
+	<config id="control_system_server" content="192.168.0.55"/><!-- Сервер для подключения к сокету управляющей системы -->
+	<config id="control_system_port" content="16544"/><!-- Порт для подключения к сокету управляющей системы -->
+	<config id="control_system_login" content="lLogin"/><!-- Логин для управляющей системы -->
+	<config id="control_system_password" content="pPasword"/><!-- Пароль для управляющей системы -->
+	<config id="control_system_user" content="oxion"/><!-- Пользователь для базы -->
+
+	<config id="isIdent" content="true"/><!-- Делать ли проверку доступа -->
+	<config id="isIdentStart" content="false"/><!-- Делать ли проверку доступа при запуске приложения-->
+	<config id="timeIdent" content="6"/><!-- Время на проверку доступа в секундах -->
+	<config id="serverIdent" content="127.0.0.1"/><!-- Сервер для проверки доступа 127.0.0.1-->
+	<config id="portIdent" content="6666"/><!-- Порт сервера для проверки доступа -->
+	<config id="idsIdent" content="all_access"/><!-- Список идентификаторов доступа, если есть all_access то проверка завершается при 1ом успешном -->
+	<config id="settingsIdent" content="1,30,1,5"/><!-- Для настроек слайдера (min,max,step,default) -->
+
+	<config id="clientMode" content="2"/><!-- Режим работы клиента по умолчанию -->
+	<config id="serverMode" content="1"/><!-- Режим работы сервера по умолчанию, при подключении берется параметр с сервера -->
+	<config id="serverNomer" content="5"/><!-- Коммуникатор по умолчанию -->
+	<config id="cameraIP" content="192.168.0.15"/><!-- Камера по IP, приоритетнее чем cameraNomer -->
+	<config id="cameraNomer" content="0"/><!-- Камера по умолчанию -->
+	<config id="cameraModeType" content="0"/><!-- Не используется, атавизм -->
+		
+
+	<config id="corelationSettings" content="0.01,1,0.01"/><!-- Настройки мин,макс,шаг для кореляции -->
+	<config id="timeCheckSettings" content="1,10,1"/><!-- Настройки мин,макс,шаг для временнОй проверки -->
+	<config id="frameCoeffSettings" content="0.5,2,0.1"/><!-- Настройки мин,макс,шаг для ширины рамки -->
+	<config id="hatCoeffSettings" content="0.5,2,0.1"/><!-- Настройки мин,макс,шаг для ширины шапок -->
+	<config id="frameDelaySettings" content="0.1,5,0.1"/><!-- Настройки мин,макс,шаг для задержки рамки -->
+	<config id="hatDelaySettings" content="0.1,10,0.1"/><!-- Настройки мин,макс,шаг для задержки шапок -->
+		
+		
+	<config id="corelation" content="0.42"/><!-- Коэфициент кореляции по умолчанию -->
+	<config id="timeCheck" content="1"/><!-- Коэфициент временнОй проверки по умолчанию -->
+
+	<config id="reconnectTime" content="10"/><!-- Интервал переподключения в миллисекундах -->
+	<config id="firstCommandTime" content="10"/><!-- Время перед первой коммандой на сервер в миллисекундах -->
+	<config id="firstImageTime" content="200"/><!-- Время перед началом получения изображений в миллисекундах -->
+	<config id="cameraResolutions" content="320x240x30*352x288x30*640x480x30*704x480x30*704x570x30*800x600x30*1024x768x30*1280x720x30*1280x1024x30*1600x1200x24*1920x1080x22*1920x1200x20*2048x1536x15"/><!-- Доступные режимы камеры, после максимальный затирается ответом от сервера -->
+	<config id="cameraNomers" content=""/><!-- Доступные камеры, теперь перезаписываются ответом от сервера -->
+	<config id="cameraSettings" content="BrightnessCamera*SaturationCamera*SharpnessCamera*ContrastCamera*QualityCamera*LightHZCamera*NightModeCamera*IlluminationMode*LowLight*Shortexposures"/><!-- Список изменяющихся настроек камеры -->
+	<config id="cameraSettingsValues" content="0,255,1*0,255,1*0,16,1*0,255,1*0,255,1*50,60,10*0,1,1*0,3,1*0,4,1*0,10,1"/><!-- Список настроек изменяющихся настроек камеры -->
+	<config id="cameraResolution" content="0"/><!-- Режим камеры по умолчанию, берется с сервера -->
+	<config id="temperatureCoeffs" content="70,85"/><!-- Коэфициенты разных границ для температуры -->
+	<config id="eyesCoeffs" content="100,180"/><!-- Коэфициенты разных границ для фокуса -->
+	<config id="focusCoeffs" content="9990.012,9990.013"/><!-- Коэфициенты разных границ для фокуса -->
+	<config id="noiseCoeffs" content="9991270,9991300"/><!-- Коэфициенты разных границ для шума -->
+	<config id="signalCoeffs" content="9991900,9992000"/><!-- Коэфициенты разных границ для сигнал/шум -->
+	<config id="isMirror" content="false"/><!-- Отображать ли зеркально -->
+	<config id="frameCoeff" content="1"/><!-- Коэфициент размера рамки лица -->
+	<config id="frameDelay" content="500"/><!-- Задержка рамки лица в миллисекундах -->
+	<config id="hatCoeff" content="1"/><!-- Коэфициент размера шапок -->
+	<config id="hatDelay" content="700"/><!-- Задержка шапок в миллисекундах -->
+	<config id="displayFrameSettings" content="true,true,true,false"/><!-- Показывать или нет рамку,глаза,нос,шапки -->
+	<config id="FPS" content="true"/><!-- Отображать ли FPS, уже не важен -->
+	<config id="corelationVisible" content="true"/><!-- Виден ли тахометр -->
+	<config id="showTemperature" content="true"/><!-- Показывать ли температуру -->
+	
+	<config id="version" content="v 2.00.0090"/><!-- Версия приложения -->
+	<config id="autoConnect" content="true"/><!-- Подсоединяться ли к серверу автоматически -->
+	
+	<config id="language" content="ru"/><!-- Язык (постфикс ХМЛ strings) -->
+</configs>

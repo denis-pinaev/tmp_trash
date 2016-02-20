@@ -1,0 +1,12 @@
+{% load i18n %}
+{% load a_templatetags %}	
+	<div class="contacts">
+		<div class="block_contacts">
+			{% trans "Контакты" %}:
+			<ul class="list_contacts">
+				<li>{% trans "информация" %}: <a href="mailto:info@smilart.com">info@smilart.com</a></li> 
+				<li>{% trans "техподдержка" %}: <a href="mailto:support@smilart.com">support@smilart.com</a></li>
+			</ul>
+			<div class="copyright">Copyright &#169; 2012 "{% trans "Простые решения" %}". {% trans "Все права защищены" %}. <a href="http://www.smilart.com/" target="_blank">http://www.smilart.com/</a></div>
+		</div>
+	</div>

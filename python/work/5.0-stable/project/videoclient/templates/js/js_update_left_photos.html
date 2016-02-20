@@ -1,0 +1,54 @@
+<script type="text/javascript">
+
+
+var all_persons = 0;
+var all_photos = 0;
+
+function updatePersonPhotosCount(id, bal_id_update){
+	var bal_id_update_value = 'false';
+	if (bal_id_update) {
+		bal_id_update_value = 'true';
+	}
+	
+	$.ajax({
+			type: "POST",
+			url: "{% url api_list_lists %}",
+			data: {'id':id, 'get_photos_count': 'true', 'bal_id_update': bal_id_update_value},
+			success: function(msg){
+				if (msg && msg.status && msg.lists){
+					var lists = msg.lists;
+					if (lists.length > 0) {
+						var list = lists[0];
+						try {
+							$("#lCount"+id).html(list.person_count);
+							$("#pCount"+id).html(list.person_photos_count);
+						} catch(e){
+							
+                        }
+						all_persons+=list.person_count;
+						all_photos+=list.person_photos_count;
+						$("#all_persons").html(all_persons);
+						$("#all_photos").html(all_photos);
+					}						
+				}
+			}
+	});
+}
+
+// загрузка ограничения на добавления фотографий
+function updateLeftPhotos(){
+	$.ajax({
+			type: "POST",
+			url: "{% url api_left_photos %}",
+			data: {},
+			success: function(msg){
+				if (msg && msg.status){
+					$("#left_photos").html(msg.left_photos);
+				}
+			}
+	});
+}
+
+updateLeftPhotos();
+
+</script>
